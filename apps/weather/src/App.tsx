@@ -1,6 +1,7 @@
 import { BridgethingClient, type ConnectionState, type PlayerState } from '@bridgething/client';
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 
+import { accentFrom, type Accent } from './artwork-color';
 import { daemonUrl } from './daemon';
 
 // one rotary detent lands around deltaX 1, so this is roughly two seconds a click
@@ -17,6 +18,7 @@ export default function App() {
   const [conn, setConn] = useState<ConnectionState>(client.connectionState);
   const [state, setState] = useState<PlayerState | null>(null);
   const [artUrl, setArtUrl] = useState<string | null>(null);
+  const [accent, setAccent] = useState<Accent | null>(null);
 
   useEffect(() => {
     const offConn = client.on(event => {
@@ -41,6 +43,7 @@ export default function App() {
   useEffect(() => {
     if (!artworkId) {
       setArtUrl(null);
+      setAccent(null);
       return;
     }
     let revoked = false;
@@ -50,8 +53,11 @@ export default function App() {
       if (revoked) return;
       if (result.ok) {
         const bytes = new Uint8Array(result.response.bytes as unknown as number[]);
-        blobUrl = URL.createObjectURL(new Blob([bytes], { type: result.response.mime ?? 'image/jpeg' }));
+        const blob = new Blob([bytes], { type: result.response.mime ?? 'image/jpeg' });
+        blobUrl = URL.createObjectURL(blob);
         setArtUrl(blobUrl);
+        const next = await accentFrom(blob);
+        if (!revoked) setAccent(next);
       }
     })();
     return () => {
@@ -141,7 +147,9 @@ export default function App() {
         <div className="flex h-full min-w-0 flex-1 flex-col">
           <div className="flex items-center gap-2.5">
             <span className={`h-1.5 w-1.5 rounded-full ${conn === 'open' ? 'bg-ok' : 'bg-warn'}`} />
-            <span className="min-w-0 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
+            <span
+              className="min-w-0 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase transition-colors duration-500"
+              style={accent ? { color: accent.soft } : undefined}>
               {conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
             </span>
           </div>
@@ -154,7 +162,7 @@ export default function App() {
           </div>
 
           <div>
-            <Rail progress={progress} onSeek={ratio => seek(ratio * duration)} />
+            <Rail progress={progress} accent={accent} onSeek={ratio => seek(ratio * duration)} />
             <div className="mt-2.5 flex justify-between font-mono text-hint tabular-nums text-dim">
               <span>{clock(elapsed)}</span>
               <span>{duration ? `-${clock(duration - elapsed)}` : '--:--'}</span>
@@ -167,7 +175,8 @@ export default function App() {
               <button
                 aria-label={playing ? 'pause' : 'play'}
                 onClick={toggle}
-                className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition active:scale-95 active:bg-near">
+                style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}
+                className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition duration-500 active:scale-95">
                 {playing ? <Pause className="h-6 w-6" /> : <Play className="ml-0.5 h-6 w-6" />}
               </button>
               <Ghost label="next" onClick={() => client.player.skipNext()}>
@@ -199,7 +208,7 @@ function Backdrop({ url }: { url: string | null }) {
 }
 
 // pointer anywhere on the strip seeks, and the hit area is taller than the visible rail
-function Rail({ progress, onSeek }: { progress: number; onSeek: (ratio: number) => void }) {
+function Rail({ progress, accent, onSeek }: { progress: number; accent: Accent | null; onSeek: (ratio: number) => void }) {
   const pick = (e: PointerEvent<HTMLDivElement>) => {
     const box = e.currentTarget.getBoundingClientRect();
     onSeek(Math.min(1, Math.max(0, (e.clientX - box.left) / box.width)));
@@ -211,12 +220,12 @@ function Rail({ progress, onSeek }: { progress: number; onSeek: (ratio: number) 
       onPointerMove={e => e.buttons === 1 && pick(e)}>
       <div className="relative h-[3px] w-full rounded-full bg-white/18">
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-off-white"
-          style={{ width: `${Math.min(100, progress * 100)}%` }}
+          className="absolute inset-y-0 left-0 rounded-full bg-off-white transition-colors duration-500"
+          style={{ width: `${Math.min(100, progress * 100)}%`, backgroundColor: accent?.fill }}
         />
         <div
-          className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-off-white shadow"
-          style={{ left: `${Math.min(100, progress * 100)}%` }}
+          className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-off-white shadow transition-colors duration-500"
+          style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: accent?.fill }}
         />
       </div>
     </div>
