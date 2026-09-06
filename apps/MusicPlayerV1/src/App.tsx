@@ -6,8 +6,6 @@ import { usePrefs } from './config';
 import { daemonUrl } from './daemon';
 
 const SCRUB_COMMIT_MS = 340;
-// one rotary detent lands around deltaX 1, so this is roughly two seconds a click
-const SEEK_MS_PER_DELTA = 2000;
 // one rotary detent lands around deltaX 1, so a detent is a volume step
 const WHEEL_PER_STEP = 1;
 // a hard spin should not queue a hundred commands at the daemon
@@ -32,6 +30,7 @@ export default function App() {
   const [accent, setAccent] = useState<Accent | null>(null);
   const [volume, setVolume] = useState<Volume | null>(null);
   const [hud, setHud] = useState(false);
+  const [playTap, bumpPlay] = useState(0);
 
   useEffect(() => {
     const offConn = client.on(event => {
@@ -157,7 +156,7 @@ export default function App() {
     const onWheel = (e: WheelEvent) => {
       if (!e.deltaX) return;
       if (prefs.wheel === 'seek') {
-        if (duration) seek((scrub ?? live) + e.deltaX * SEEK_MS_PER_DELTA);
+        if (duration) seek((scrub ?? live) + e.deltaX * prefs.seekSeconds * 1000);
         return;
       }
       detents.current += e.deltaX;
@@ -183,7 +182,7 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
     };
-  }, [client, duration, flashHud, live, prefs.wheel, press, scrub, seek]);
+  }, [client, duration, flashHud, live, prefs.seekSeconds, prefs.wheel, press, scrub, seek]);
 
   if (!track)
     return (
@@ -243,19 +242,27 @@ export default function App() {
             </div>
 
             <div className="mt-8 flex items-center justify-center gap-5">
-              <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
+              <Ghost label="previous" nudge="left" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
                 <Skip className="h-6 w-6 -scale-x-100" />
               </Ghost>
               <button
                 aria-label={playing ? 'pause' : 'play'}
+                onPointerDown={() => bumpPlay(n => n + 1)}
                 onClick={toggle}
                 style={accentOn ? { backgroundColor: accentOn.fill, color: accentOn.ink } : undefined}
-                className="grid h-20 w-20 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
+                className="relative grid h-20 w-20 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
+                {playTap > 0 && (
+                  <span
+                    key={playTap}
+                    className="pointer-events-none absolute inset-0 animate-ripple rounded-full ring-3"
+                    style={{ color: accentOn?.fill ?? '#efefef' }}
+                  />
+                )}
                 <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
                   {playing ? <Pause className="h-8 w-8" /> : <Play className="ml-1 h-8 w-8" />}
                 </span>
               </button>
-              <Ghost label="next" onClick={() => client.player.skipNext()}>
+              <Ghost label="next" nudge="right" onClick={() => client.player.skipNext()}>
                 <Skip className="h-6 w-6" />
               </Ghost>
             </div>
@@ -329,13 +336,31 @@ function Rail({
   );
 }
 
-function Ghost({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+function Ghost({
+  label,
+  nudge,
+  onClick,
+  children,
+}: {
+  label: string;
+  nudge: 'left' | 'right';
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  // remounting on the tap counter is what replays the keyframes on every press
+  const [tap, bump] = useState(0);
   return (
     <button
       aria-label={label}
+      onPointerDown={() => bump(n => n + 1)}
       onClick={onClick}
-      className="grid h-16 w-16 shrink-0 place-items-center rounded-full text-near ring-1 ring-white/15 transition-[transform,background-color] duration-300 ease-spring active:scale-90 active:bg-white/20">
-      {children}
+      className="relative grid h-16 w-16 shrink-0 place-items-center rounded-full text-near ring-1 ring-white/15 transition-[transform,background-color] duration-300 ease-spring active:scale-90 active:bg-white/20">
+      {tap > 0 && (
+        <span key={tap} className="pointer-events-none absolute inset-0 animate-ripple rounded-full text-off-white ring-2" />
+      )}
+      <span key={tap} className={nudge === 'right' ? 'animate-nudge-right' : 'animate-nudge-left'}>
+        {children}
+      </span>
     </button>
   );
 }

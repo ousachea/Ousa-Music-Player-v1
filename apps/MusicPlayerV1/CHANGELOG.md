@@ -1,5 +1,9 @@
 # weather
 
+## 0.3.0
+
+Adjustable seek sensitivity, and press animations on the transport buttons.
+
 ## 0.2.0
 
 Settings page, store icon, bigger transport, and knob click actions.

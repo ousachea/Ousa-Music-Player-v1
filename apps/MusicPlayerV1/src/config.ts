@@ -4,19 +4,29 @@ import { useEffect, useState } from 'react';
 
 export type Prefs = {
   wheel: 'volume' | 'seek';
+  seekSeconds: number;
   accent: 'artwork' | 'mono';
   backdrop: boolean;
   motion: boolean;
   remaining: boolean;
 };
 
-const DEFAULTS: Prefs = { wheel: 'volume', accent: 'artwork', backdrop: true, motion: true, remaining: true };
+const DEFAULTS: Prefs = { wheel: 'volume', seekSeconds: 2, accent: 'artwork', backdrop: true, motion: true, remaining: true };
+
+const SEEK_MIN = 1;
+const SEEK_MAX = 30;
 
 function apply(prefs: Prefs, key: string, value: string | null): Prefs {
   if (value === null) return { ...prefs, [key]: DEFAULTS[key as keyof Prefs] };
   switch (key) {
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };
+    case 'seekSeconds': {
+      // a stored value can be anything, and a zero or a NaN here would freeze scrubbing outright
+      const n = Number(value);
+      if (!Number.isFinite(n)) return { ...prefs, seekSeconds: DEFAULTS.seekSeconds };
+      return { ...prefs, seekSeconds: Math.min(SEEK_MAX, Math.max(SEEK_MIN, n)) };
+    }
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
     case 'backdrop':

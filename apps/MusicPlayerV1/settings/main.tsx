@@ -13,6 +13,7 @@ const CHOICE_LABELS: Record<string, string> = {
 
 const HINTS: Record<string, string> = {
   wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',
+  seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
   accent: 'The progress bar, play button and header take this colour.',
 };
 
@@ -111,6 +112,10 @@ function Settings() {
                   id={key}
                   type={field.type === 'number' ? 'number' : field.type === 'secret' ? 'password' : 'text'}
                   value={value}
+                  // the manifest's own bounds, so the field cannot be saved outside what the app accepts
+                  min={field.type === 'number' ? (field.data.min ?? undefined) : undefined}
+                  max={field.type === 'number' ? (field.data.max ?? undefined) : undefined}
+                  step={field.type === 'number' ? (field.data.step ?? undefined) : undefined}
                   onChange={e => set(key, e.currentTarget.value)}
                 />
               )}

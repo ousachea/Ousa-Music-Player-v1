@@ -89,6 +89,46 @@
     }
   }
 
+  --animate-ripple: ripple 520ms cubic-bezier(0.2, 0.7, 0.3, 1);
+  --animate-nudge-right: nudge-right 320ms cubic-bezier(0.34, 1.4, 0.64, 1);
+  --animate-nudge-left: nudge-left 320ms cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* a ring leaving the button, so a press reads from arm's length in a car */
+  @keyframes ripple {
+    from {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    to {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+  }
+
+  @keyframes nudge-right {
+    0% {
+      transform: translateX(0);
+    }
+    40% {
+      transform: translateX(5px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes nudge-left {
+    0% {
+      transform: translateX(0);
+    }
+    40% {
+      transform: translateX(-5px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
   @keyframes halo {
     0% {
       transform: translate(-50%, -50%) scale(1);
