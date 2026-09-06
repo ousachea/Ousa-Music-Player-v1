@@ -1,12 +1,12 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-06T15:19:11.107Z",
+  "updated_at": "2026-09-06T15:34:01.622Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
     "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
-    "icon": null
+    "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.png"
   },
   "apps": [
     {
@@ -14,10 +14,27 @@
       "name": "Ousa Music player v1",
       "description": "Now playing from your phone, on the Car Thing.",
       "author": "Ousa Chea",
-      "icon": null,
+      "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.png",
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.2.0",
+          "released_at": "2026-09-06T15:34:01.621Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.2.0.zip",
+            "size": 943645,
+            "sha256": "bad25697fb4983052d81d4c24623df962d39ac1d09d9440c3ce5b4e770f577f2"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.2.0.html",
+            "size": 27893,
+            "sha256": "21d0211f1076cae8eb3e999179ae1547b2047ce664d8acdf71be93c301b5a273"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Settings page, store icon, bigger transport, and knob click actions."
+        },
         {
           "version": "0.1.5",
           "released_at": "2026-09-06T15:19:11.106Z",
