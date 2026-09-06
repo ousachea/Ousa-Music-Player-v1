@@ -1,10 +1,4 @@
-import {
-  BridgethingClient,
-  type ConnectionState,
-  type MusicProvider,
-  type PlayerState,
-  type RepeatMode,
-} from '@bridgething/client';
+import { BridgethingClient, type ConnectionState, type PlayerState } from '@bridgething/client';
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 
 import { daemonUrl } from './daemon';
@@ -12,8 +6,6 @@ import { daemonUrl } from './daemon';
 // one rotary detent lands around deltaX 1, so this is roughly two seconds a click
 const SCRUB_MS_PER_DELTA = 2000;
 const SCRUB_COMMIT_MS = 340;
-// how long an unconfirmed shuffle or repeat press holds before the daemon's own value wins again
-const OPTIMISTIC_MS = 3000;
 
 function clock(ms: number) {
   const total = Math.max(0, Math.round(ms / 1000));
@@ -68,15 +60,6 @@ export default function App() {
     };
   }, [client, artworkId]);
 
-  // shuffle and repeat need a real provider behind the gateway; generic now-playing relays drop them
-  const [provider, setProvider] = useState<MusicProvider | null>(null);
-
-  useEffect(() => {
-    const off = client.capabilities.onUpdate(msg => setProvider(msg.capabilities.musicProvider));
-    client.capabilities.get().then(r => r.ok && setProvider(r.response.capabilities.musicProvider));
-    return off;
-  }, [client]);
-
   // snapshots are sparse, so the bar runs off an anchor and wall clock between them
   const anchor = useRef({ posMs: 0, at: 0 });
   const [, setTick] = useState(0);
@@ -110,18 +93,6 @@ export default function App() {
     [client, duration],
   );
 
-  // these commands are fire and forget, so show the press immediately and let the next snapshot correct it
-  const [wish, setWish] = useState<{ shuffle?: boolean; repeat?: RepeatMode }>({});
-  const wishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const intend = useCallback((next: { shuffle?: boolean; repeat?: RepeatMode }) => {
-    setWish(next);
-    if (wishTimer.current) clearTimeout(wishTimer.current);
-    wishTimer.current = setTimeout(() => setWish({}), OPTIMISTIC_MS);
-  }, []);
-
-  useEffect(() => setWish({}), [playback?.shuffle, playback?.repeat]);
-
   const toggle = useCallback(() => {
     if (playback?.state === 'playing') client.player.pause();
     else client.player.resume();
@@ -146,11 +117,6 @@ export default function App() {
   }, [client, duration, live, scrub, seek, toggle]);
 
   if (!track) return <Empty conn={conn} />;
-
-  const shuffle = wish.shuffle ?? playback?.shuffle === true;
-  const repeat = wish.repeat ?? playback?.repeat ?? 'off';
-  // 'none' is a gateway relaying generic now-playing, which has nowhere to send a mode change
-  const modes = provider !== 'none';
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-screen">
@@ -205,30 +171,6 @@ export default function App() {
               <Ghost label="next" onClick={() => client.player.skipNext()}>
                 <Skip className="h-5 w-5" />
               </Ghost>
-
-              <div className="ml-auto flex items-center gap-2">
-                <Toggle
-                  label="shuffle"
-                  on={shuffle}
-                  available={modes}
-                  onClick={() => {
-                    intend({ shuffle: !shuffle });
-                    client.player.setShuffle({ on: !shuffle });
-                  }}>
-                  <Shuffle className="h-4.5 w-4.5" />
-                </Toggle>
-                <Toggle
-                  label={`repeat ${repeat}`}
-                  on={repeat !== 'off'}
-                  available={modes}
-                  onClick={() => {
-                    const next: RepeatMode = repeat === 'off' ? 'all' : repeat === 'all' ? 'one' : 'off';
-                    intend({ repeat: next });
-                    client.player.setRepeat({ mode: next });
-                  }}>
-                  <Repeat className="h-4.5 w-4.5" one={repeat === 'one'} />
-                </Toggle>
-              </div>
             </div>
           </div>
         </div>
@@ -290,33 +232,6 @@ function Ghost({ label, onClick, children }: { label: string; onClick: () => voi
   );
 }
 
-function Toggle({
-  label,
-  on,
-  available,
-  onClick,
-  children,
-}: {
-  label: string;
-  on: boolean;
-  available: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      aria-label={available ? label : `${label} unavailable`}
-      aria-pressed={on}
-      disabled={!available}
-      onClick={onClick}
-      className={`grid h-10 w-10 place-items-center rounded-full transition active:scale-95 ${
-        !available ? 'text-off-white/12' : on ? 'bg-accent-soft text-accent' : 'text-dim'
-      }`}>
-      {children}
-    </button>
-  );
-}
-
 function Empty({ conn }: { conn: ConnectionState }) {
   return (
     <div className="grid h-full w-full place-items-center bg-screen px-16 text-center">
@@ -355,37 +270,6 @@ function Skip({ className }: { className?: string }) {
     <svg viewBox="0 0 24 24" className={className} fill="currentColor">
       <path d="M5 6.3v11.4a1 1 0 0 0 1.54.84l8.9-5.7a1 1 0 0 0 0-1.68l-8.9-5.7A1 1 0 0 0 5 6.3Z" />
       <rect x="17" y="5" width="2.6" height="14" rx="1.3" />
-    </svg>
-  );
-}
-
-function Shuffle({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round">
-      <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" />
-    </svg>
-  );
-}
-
-function Repeat({ className, one }: { className?: string; one?: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round">
-      <path d="M17 2l4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3" />
-      {one && <path d="M11 10.5l1.5-1v5" />}
     </svg>
   );
 }
