@@ -242,7 +242,7 @@ export default function App() {
             </div>
 
             <div className="mt-8 flex items-center justify-center gap-5">
-              <Ghost label="previous" nudge="left" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
+              <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
                 <Skip className="h-6 w-6 -scale-x-100" />
               </Ghost>
               <button
@@ -262,7 +262,7 @@ export default function App() {
                   {playing ? <Pause className="h-8 w-8" /> : <Play className="ml-1 h-8 w-8" />}
                 </span>
               </button>
-              <Ghost label="next" nudge="right" onClick={() => client.player.skipNext()}>
+              <Ghost label="next" onClick={() => client.player.skipNext()}>
                 <Skip className="h-6 w-6" />
               </Ghost>
             </div>
@@ -336,17 +336,7 @@ function Rail({
   );
 }
 
-function Ghost({
-  label,
-  nudge,
-  onClick,
-  children,
-}: {
-  label: string;
-  nudge: 'left' | 'right';
-  onClick: () => void;
-  children: ReactNode;
-}) {
+function Ghost({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   // remounting on the tap counter is what replays the keyframes on every press
   const [tap, bump] = useState(0);
   return (
@@ -358,7 +348,7 @@ function Ghost({
       {tap > 0 && (
         <span key={tap} className="pointer-events-none absolute inset-0 animate-ripple rounded-full text-off-white ring-2" />
       )}
-      <span key={tap} className={nudge === 'right' ? 'animate-nudge-right' : 'animate-nudge-left'}>
+      <span key={tap} className="grid animate-tap place-items-center">
         {children}
       </span>
     </button>

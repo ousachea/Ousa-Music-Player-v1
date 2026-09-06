@@ -1,5 +1,9 @@
 # weather
 
+## 0.3.1
+
+Keep the transport glyphs centred while a press animates.
+
 ## 0.3.0
 
 Adjustable seek sensitivity, and press animations on the transport buttons.
