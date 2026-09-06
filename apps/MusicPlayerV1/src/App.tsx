@@ -703,8 +703,8 @@ function Poster({
           aria-label="previous"
           onClick={onPrev}
           style={{ color: tint }}
-          className="shrink-0 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
-          <Skip className="h-7 w-7 -scale-x-100" />
+          className="-m-3 shrink-0 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
+          <Skip className="h-9 w-9 -scale-x-100" />
         </button>
 
         <Wave progress={progress} playing={playing} motion={motion} tint={tint} onSeek={onSeek} />
@@ -713,8 +713,8 @@ function Poster({
           aria-label="next"
           onClick={onNext}
           style={{ color: tint }}
-          className="shrink-0 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
-          <Skip className="h-7 w-7" />
+          className="-m-3 shrink-0 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
+          <Skip className="h-9 w-9" />
         </button>
       </div>
     </div>

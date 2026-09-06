@@ -1,5 +1,9 @@
 # weather
 
+## 0.8.1
+
+Bigger skip buttons in the poster style.
+
 ## 0.8.0
 
 Own the volume readout, centre the poster track block, tint its controls.
