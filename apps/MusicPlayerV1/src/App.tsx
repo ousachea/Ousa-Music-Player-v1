@@ -246,6 +246,7 @@ export default function App() {
           context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
           title={track.title ?? 'unknown'}
           artist={track.artist ?? '—'}
+          accent={accentOn}
           playing={playing}
           motion={prefs.motion}
           progress={progress}
@@ -634,6 +635,7 @@ function Poster({
   context,
   title,
   artist,
+  accent,
   playing,
   motion,
   progress,
@@ -648,6 +650,7 @@ function Poster({
   context: string;
   title: string;
   artist: string;
+  accent: Accent | null;
   playing: boolean;
   motion: boolean;
   progress: number;
@@ -658,6 +661,8 @@ function Poster({
   onNext: () => void;
   onSeek: (ratio: number) => void;
 }) {
+  // soft is the lighter, less saturated variant; over an arbitrary cover it holds up where the full fill would not
+  const tint = accent?.soft ?? '#f2f4f6';
   return (
     <div className="absolute inset-0 overflow-hidden">
       {artUrl ? (
@@ -672,13 +677,14 @@ function Poster({
       <button
         aria-label={playing ? 'pause' : 'play'}
         onClick={onToggle}
-        className="absolute right-7 top-1/2 grid h-24 w-24 -translate-y-1/2 place-items-center rounded-[30px] bg-off-white text-screen shadow-2xl transition-transform duration-300 ease-spring active:scale-90">
+        style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}
+        className="absolute right-7 top-1/2 grid h-24 w-24 -translate-y-1/2 place-items-center rounded-[30px] bg-off-white text-screen shadow-2xl transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
         <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
           {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
         </span>
       </button>
 
-      <div className="absolute bottom-24 left-8 w-[52%]">
+      <div className="absolute left-8 top-1/2 w-[52%] -translate-y-1/2">
         <div className="mb-2 truncate font-mono text-eyebrow tracking-[0.22em] text-off-white/65 uppercase">
           {context}
         </div>
@@ -696,16 +702,18 @@ function Poster({
         <button
           aria-label="previous"
           onClick={onPrev}
-          className="shrink-0 text-off-white transition-transform duration-300 ease-spring active:scale-90">
+          style={{ color: tint }}
+          className="shrink-0 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
           <Skip className="h-7 w-7 -scale-x-100" />
         </button>
 
-        <Wave progress={progress} playing={playing} motion={motion} onSeek={onSeek} />
+        <Wave progress={progress} playing={playing} motion={motion} tint={tint} onSeek={onSeek} />
 
         <button
           aria-label="next"
           onClick={onNext}
-          className="shrink-0 text-off-white transition-transform duration-300 ease-spring active:scale-90">
+          style={{ color: tint }}
+          className="shrink-0 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
           <Skip className="h-7 w-7" />
         </button>
       </div>
@@ -732,11 +740,13 @@ function Wave({
   progress,
   playing,
   motion,
+  tint,
   onSeek,
 }: {
   progress: number;
   playing: boolean;
   motion: boolean;
+  tint: string;
   onSeek: (ratio: number) => void;
 }) {
   const box = useRef<HTMLDivElement>(null);
@@ -787,14 +797,14 @@ function Wave({
               animationPlayState: playing && motion ? 'running' : 'paused',
             }}
             d={wavePath(-WAVE_LENGTH, played + WAVE_LENGTH, mid)}
-            stroke="#f2f4f6"
+            stroke={tint}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
         </g>
-        <rect x={played - 1.5} y={mid - 9} width="3" height="18" rx="1.5" fill="#f2f4f6" />
+        <rect x={played - 1.5} y={mid - 9} width="3" height="18" rx="1.5" fill={tint} />
       </svg>
     </div>
   );

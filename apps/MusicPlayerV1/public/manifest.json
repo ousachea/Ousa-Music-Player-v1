@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "Ousa Music player v1",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "description": "Now playing from your phone, on the Car Thing.",
   "icon": "icon.png",
   "settings": "settings.html",
@@ -82,6 +82,9 @@
   "permissions": [
     "net.proxy"
   ],
+  "overlays": {
+    "volume": false
+  },
   "art": {
     "heroPx": 248,
     "thumbPx": 96

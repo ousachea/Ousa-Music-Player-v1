@@ -1,5 +1,9 @@
 # weather
 
+## 0.8.0
+
+Own the volume readout, centre the poster track block, tint its controls.
+
 ## 0.7.3
 
 Poster: the album sits above the title.
