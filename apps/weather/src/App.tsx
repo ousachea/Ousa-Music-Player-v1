@@ -4,9 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, t
 import { accentFrom, type Accent } from './artwork-color';
 import { daemonUrl } from './daemon';
 
-// one rotary detent lands around deltaX 1, so this is roughly two seconds a click
-const SCRUB_MS_PER_DELTA = 2000;
 const SCRUB_COMMIT_MS = 340;
+// one rotary detent lands around deltaX 1, so a detent is a volume step
+const WHEEL_PER_STEP = 1;
+// a hard spin should not queue a hundred commands at the daemon
+const MAX_STEPS_PER_EVENT = 3;
+const HUD_MS = 1400;
+
+type Volume = { level: number; muted: boolean };
 
 function clock(ms: number) {
   const total = Math.max(0, Math.round(ms / 1000));
@@ -19,6 +24,8 @@ export default function App() {
   const [state, setState] = useState<PlayerState | null>(null);
   const [artUrl, setArtUrl] = useState<string | null>(null);
   const [accent, setAccent] = useState<Accent | null>(null);
+  const [volume, setVolume] = useState<Volume | null>({ level: 0.65, muted: false });
+  const [hud, setHud] = useState(true);
 
   useEffect(() => {
     const offConn = client.on(event => {
@@ -99,15 +106,42 @@ export default function App() {
     [client, duration],
   );
 
+  const hudTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flashHud = useCallback(() => {
+    setHud(true);
+    if (hudTimer.current) clearTimeout(hudTimer.current);
+    hudTimer.current = setTimeout(() => setHud(false), HUD_MS);
+  }, []);
+
+  useEffect(() => {
+    const off = client.audio.onVolumeChanged(msg => {
+      setVolume({ level: msg.level, muted: msg.muted });
+      flashHud();
+    });
+    return off;
+  }, [client, flashHud]);
+
   const toggle = useCallback(() => {
     if (playback?.state === 'playing') client.player.pause();
     else client.player.resume();
   }, [client, playback?.state]);
 
+  // the daemon owns the step size and the clamping, and its level cannot be read back, so nudge rather than compute one
+  const detents = useRef(0);
+
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
-      if (!duration || !e.deltaX) return;
-      seek((scrub ?? live) + e.deltaX * SCRUB_MS_PER_DELTA);
+      if (!e.deltaX) return;
+      detents.current += e.deltaX;
+      const steps = Math.trunc(detents.current / WHEEL_PER_STEP);
+      if (!steps) return;
+      detents.current -= steps * WHEEL_PER_STEP;
+      const count = Math.min(Math.abs(steps), MAX_STEPS_PER_EVENT);
+      for (let i = 0; i < count; i++) {
+        if (steps > 0) client.audio.volumeUp();
+        else client.audio.volumeDown();
+      }
+      flashHud();
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Enter') toggle();
@@ -120,9 +154,15 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
     };
-  }, [client, duration, live, scrub, seek, toggle]);
+  }, [client, flashHud, toggle]);
 
-  if (!track) return <Empty conn={conn} />;
+  if (!track)
+    return (
+      <>
+        <Empty conn={conn} />
+        <VolumeHud show={hud} volume={volume} accent={accent} />
+      </>
+    );
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-screen">
@@ -162,7 +202,7 @@ export default function App() {
           </div>
 
           <div>
-            <Rail progress={progress} accent={accent} onSeek={ratio => seek(ratio * duration)} />
+            <Rail progress={progress} accent={accent} playing={playing} onSeek={ratio => seek(ratio * duration)} />
             <div className="mt-2.5 flex justify-between font-mono text-hint tabular-nums text-dim">
               <span>{clock(elapsed)}</span>
               <span>{duration ? `-${clock(duration - elapsed)}` : '--:--'}</span>
@@ -176,8 +216,10 @@ export default function App() {
                 aria-label={playing ? 'pause' : 'play'}
                 onClick={toggle}
                 style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}
-                className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition duration-500 active:scale-95">
-                {playing ? <Pause className="h-6 w-6" /> : <Play className="ml-0.5 h-6 w-6" />}
+                className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
+                <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+                  {playing ? <Pause className="h-6 w-6" /> : <Play className="ml-0.5 h-6 w-6" />}
+                </span>
               </button>
               <Ghost label="next" onClick={() => client.player.skipNext()}>
                 <Skip className="h-5 w-5" />
@@ -186,6 +228,8 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      <VolumeHud show={hud} volume={volume} accent={accent} />
     </div>
   );
 }
@@ -208,7 +252,17 @@ function Backdrop({ url }: { url: string | null }) {
 }
 
 // pointer anywhere on the strip seeks, and the hit area is taller than the visible rail
-function Rail({ progress, accent, onSeek }: { progress: number; accent: Accent | null; onSeek: (ratio: number) => void }) {
+function Rail({
+  progress,
+  accent,
+  playing,
+  onSeek,
+}: {
+  progress: number;
+  accent: Accent | null;
+  playing: boolean;
+  onSeek: (ratio: number) => void;
+}) {
   const pick = (e: PointerEvent<HTMLDivElement>) => {
     const box = e.currentTarget.getBoundingClientRect();
     onSeek(Math.min(1, Math.max(0, (e.clientX - box.left) / box.width)));
@@ -220,9 +274,18 @@ function Rail({ progress, accent, onSeek }: { progress: number; accent: Accent |
       onPointerMove={e => e.buttons === 1 && pick(e)}>
       <div className="relative h-[3px] w-full rounded-full bg-white/18">
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-off-white transition-colors duration-500"
-          style={{ width: `${Math.min(100, progress * 100)}%`, backgroundColor: accent?.fill }}
-        />
+          className="absolute inset-y-0 left-0 overflow-hidden rounded-full bg-off-white transition-colors duration-500"
+          style={{ width: `${Math.min(100, progress * 100)}%`, backgroundColor: accent?.fill }}>
+          {playing && (
+            <div className="absolute inset-y-0 w-1/3 animate-sheen bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+          )}
+        </div>
+        {playing && (
+          <div
+            className="pointer-events-none absolute top-1/2 h-3 w-3 animate-halo rounded-full bg-off-white"
+            style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: accent?.fill }}
+          />
+        )}
         <div
           className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-off-white shadow transition-colors duration-500"
           style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: accent?.fill }}
@@ -237,9 +300,48 @@ function Ghost({ label, onClick, children }: { label: string; onClick: () => voi
     <button
       aria-label={label}
       onClick={onClick}
-      className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-near ring-1 ring-white/15 transition active:scale-95 active:bg-white/12">
+      className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-near ring-1 ring-white/15 transition-[transform,background-color] duration-300 ease-spring active:scale-90 active:bg-white/20">
       {children}
     </button>
+  );
+}
+
+function VolumeHud({ show, volume, accent }: { show: boolean; volume: Volume | null; accent: Accent | null }) {
+  const level = volume ? (volume.muted ? 0 : volume.level) : 0;
+  return (
+    <div
+      className={`pointer-events-none fixed inset-0 grid place-items-center transition-opacity duration-300 ${
+        show ? 'opacity-100' : 'opacity-0'
+      }`}>
+      <div className="flex items-center gap-3.5 rounded-full bg-black/72 px-5 py-3.5 ring-1 ring-white/12 backdrop-blur-md">
+        <Speaker className="h-5 w-5 text-off-white" muted={volume?.muted === true} />
+        <div className="relative h-[3px] w-40 rounded-full bg-white/20">
+          <div
+            className="absolute inset-y-0 left-0 rounded-full bg-off-white transition-[width,background-color] duration-200"
+            style={{ width: `${Math.round(level * 100)}%`, backgroundColor: accent?.fill }}
+          />
+        </div>
+        <span className="w-9 text-right font-mono text-hint tabular-nums text-dim">
+          {volume ? `${Math.round(level * 100)}%` : '--'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function Speaker({ className, muted }: { className?: string; muted?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round">
+      <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4Z" fill="currentColor" stroke="none" />
+      {muted ? <path d="m16 9.5 4.5 5M20.5 9.5l-4.5 5" /> : <path d="M15.5 9.2a4 4 0 0 1 0 5.6M18.2 6.8a7.6 7.6 0 0 1 0 10.4" />}
+    </svg>
   );
 }
 

@@ -60,6 +60,48 @@
   --tracking-tight-1: -0.01em;
 
   --radius-none: 0;
+
+  /* overshoot on release is what makes a press feel physical rather than dimmed */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-pop: pop 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-sheen: sheen 2.4s ease-in-out infinite;
+  --animate-halo: halo 2.4s ease-out infinite;
+
+  @keyframes pop {
+    from {
+      transform: scale(0.72);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* a strip travelling the filled length, so the rail reads as running rather than parked */
+  @keyframes sheen {
+    from {
+      transform: translateX(-160%);
+    }
+    to {
+      transform: translateX(420%);
+    }
+  }
+
+  @keyframes halo {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.5;
+    }
+    70% {
+      opacity: 0;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(2.6);
+      opacity: 0;
+    }
+  }
 }
 
 @layer base {
