@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-06T15:52:58.639Z",
+  "updated_at": "2026-09-06T15:57:47.343Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -18,6 +18,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.4.1",
+          "released_at": "2026-09-06T15:57:47.343Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.4.1.zip",
+            "size": 949633,
+            "sha256": "a70e073d050ba81b42354ef9ed99bb2e191ccc6207d636160b1e79e2234826be"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.4.1.html",
+            "size": 28149,
+            "sha256": "67897f78b74e919c0023c0f71db6d506ae713541cb032e1abfe7e5a94b2741fa"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Seek uses the same detent gate as volume; bigger settings panel, inset from the dial."
+        },
         {
           "version": "0.4.0",
           "released_at": "2026-09-06T15:52:58.638Z",
