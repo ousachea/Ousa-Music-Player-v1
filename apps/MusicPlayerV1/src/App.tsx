@@ -163,17 +163,21 @@ export default function App() {
   }, [client, toggle]);
 
   useEffect(() => {
+    // both modes go through the same detent gate, so a click means the same amount either way
     const onWheel = (e: WheelEvent) => {
       if (!e.deltaX) return;
-      if (prefs.wheel === 'seek') {
-        if (duration) seek((scrub ?? live) + e.deltaX * prefs.seekSeconds * 1000);
-        return;
-      }
       detents.current += e.deltaX;
       const steps = Math.trunc(detents.current / WHEEL_PER_STEP);
       if (!steps) return;
       detents.current -= steps * WHEEL_PER_STEP;
       const count = Math.min(Math.abs(steps), MAX_STEPS_PER_EVENT);
+
+      if (prefs.wheel === 'seek') {
+        if (!duration) return;
+        seek((scrub ?? live) + Math.sign(steps) * count * prefs.seekSeconds * 1000);
+        return;
+      }
+
       for (let i = 0; i < count; i++) {
         if (steps > 0) client.audio.volumeUp();
         else client.audio.volumeDown();
@@ -315,31 +319,31 @@ function Panel({
 }) {
   const tint = accent?.fill ?? '#efefef';
   return (
-    <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 px-7 py-5 backdrop-blur-sm">
+    <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 py-5 pl-8 pr-24 backdrop-blur-sm">
       <div className="flex items-center justify-between">
-        <span className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Settings</span>
+        <span className="font-mono text-hint tracking-[0.22em] text-dim uppercase">Settings</span>
         <button
           aria-label="close settings"
           onClick={onClose}
-          className="rounded-full px-4 py-1.5 text-hint text-near ring-1 ring-white/15 transition active:scale-95 active:bg-white/15">
+          className="rounded-full px-5 py-2 text-row text-near ring-1 ring-white/15 transition active:scale-95 active:bg-white/15">
           Done
         </button>
       </div>
 
-      <div className="mt-3 flex min-h-0 flex-1 flex-col justify-center gap-1.5">
+      <div className="mt-2 flex min-h-0 flex-1 flex-col justify-center gap-0.5">
         {ROWS.map(row => {
           const enumeration = ENUMS[row.key];
           const value = prefs[row.key];
           return (
-            <div key={row.key} className="flex items-center justify-between gap-4 border-b border-white/6 py-2.5">
-              <span className="min-w-0 truncate text-row text-near">{row.label}</span>
+            <div key={row.key} className="flex items-center justify-between gap-5 border-b border-white/6 py-2.5">
+              <span className="min-w-0 truncate text-title text-near">{row.label}</span>
 
               {row.key === 'seekSeconds' ? (
-                <div className="flex shrink-0 items-center gap-2.5">
+                <div className="flex shrink-0 items-center gap-3">
                   <Step label="less" onClick={() => setPref(row.key, String(Math.max(1, (value as number) - 1)))}>
                     −
                   </Step>
-                  <span className="w-10 text-center font-mono text-row tabular-nums" style={{ color: tint }}>
+                  <span className="w-12 text-center font-mono text-title tabular-nums" style={{ color: tint }}>
                     {value as number}s
                   </span>
                   <Step label="more" onClick={() => setPref(row.key, String(Math.min(30, (value as number) + 1)))}>
@@ -352,8 +356,8 @@ function Panel({
                     const i = enumeration.values.indexOf(String(value));
                     setPref(row.key, enumeration.values[(i + 1) % enumeration.values.length]);
                   }}
-                  className="shrink-0 rounded-full px-4 py-1.5 text-hint font-medium transition active:scale-95"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: tint }}>
+                  className="shrink-0 rounded-full px-5 py-2 text-row font-medium transition active:scale-95"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
                   {enumeration.labels[Math.max(0, enumeration.values.indexOf(String(value)))]}
                 </button>
               ) : (
@@ -361,11 +365,11 @@ function Panel({
                   role="switch"
                   aria-checked={value === true}
                   onClick={() => setPref(row.key, value ? 'false' : 'true')}
-                  className="relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200"
+                  className="relative h-9 w-16 shrink-0 rounded-full transition-colors duration-200"
                   style={{ backgroundColor: value ? tint : 'rgba(255,255,255,0.16)' }}>
                   <span
-                    className="absolute top-1 h-5 w-5 rounded-full bg-screen transition-[left] duration-200"
-                    style={{ left: value ? '26px' : '4px' }}
+                    className="absolute top-1 h-7 w-7 rounded-full bg-screen transition-[left] duration-200"
+                    style={{ left: value ? '32px' : '4px' }}
                   />
                 </button>
               )}
@@ -374,7 +378,7 @@ function Panel({
         })}
       </div>
 
-      <p className="text-hint text-dim">Back closes this. The companion app overrides anything you change here.</p>
+      <p className="text-hint text-dim">Back closes this. Changing a setting in the companion app overrides it here.</p>
     </div>
   );
 }
@@ -384,7 +388,7 @@ function Step({ label, onClick, children }: { label: string; onClick: () => void
     <button
       aria-label={label}
       onClick={onClick}
-      className="grid h-8 w-8 place-items-center rounded-full text-row text-near ring-1 ring-white/15 transition active:scale-90 active:bg-white/15">
+      className="grid h-11 w-11 place-items-center rounded-full text-title text-near ring-1 ring-white/15 transition active:scale-90 active:bg-white/15">
       {children}
     </button>
   );

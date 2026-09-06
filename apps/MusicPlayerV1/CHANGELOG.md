@@ -1,5 +1,9 @@
 # weather
 
+## 0.4.1
+
+Seek uses the same detent gate as volume; bigger settings panel, inset from the dial.
+
 ## 0.4.0
 
 Rolling titles, an on-device settings panel on Back, and a centred play glyph.
