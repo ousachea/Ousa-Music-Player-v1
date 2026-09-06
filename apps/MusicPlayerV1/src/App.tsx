@@ -12,6 +12,7 @@ import {
 
 import { accentFrom, type Accent } from './artwork-color';
 import { usePrefs, type Prefs } from './config';
+import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 
 const SCRUB_COMMIT_MS = 340;
@@ -287,7 +288,7 @@ export default function App() {
       </div>
 
       <VolumeHud show={hud} volume={volume} accent={accentOn} />
-      {panel && <Panel prefs={prefs} setPref={setPref} accent={accentOn} onClose={() => setPanel(false)} />}
+      {panel && <Panel client={client} prefs={prefs} setPref={setPref} accent={accentOn} onClose={() => setPanel(false)} />}
     </div>
   );
 }
@@ -307,17 +308,20 @@ const ROWS: { key: keyof Prefs; label: string }[] = [
 ];
 
 function Panel({
+  client,
   prefs,
   setPref,
   accent,
   onClose,
 }: {
+  client: BridgethingClient;
   prefs: Prefs;
   setPref: (key: keyof Prefs, value: string) => void;
   accent: Accent | null;
   onClose: () => void;
 }) {
   const tint = accent?.fill ?? '#efefef';
+  const { state: update, check } = useUpdateCheck(client);
   return (
     <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 py-5 pl-8 pr-24 backdrop-blur-sm">
       <div className="flex items-center justify-between">
@@ -335,7 +339,7 @@ function Panel({
           const enumeration = ENUMS[row.key];
           const value = prefs[row.key];
           return (
-            <div key={row.key} className="flex items-center justify-between gap-5 border-b border-white/6 py-2.5">
+            <div key={row.key} className="flex items-center justify-between gap-5 border-b border-white/6 py-1.5">
               <span className="min-w-0 truncate text-title text-near">{row.label}</span>
 
               {row.key === 'seekSeconds' ? (
@@ -376,6 +380,20 @@ function Panel({
             </div>
           );
         })}
+
+        <div className="flex items-center justify-between gap-5 py-1.5">
+          <div className="min-w-0">
+            <div className="truncate text-title text-near">Software update</div>
+            <div className="truncate text-hint text-dim">{updateLine(update)}</div>
+          </div>
+          <button
+            onClick={check}
+            disabled={update.kind === 'checking'}
+            className="shrink-0 rounded-full px-5 py-2 text-row font-medium transition active:scale-95 disabled:opacity-50"
+            style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
+            {update.kind === 'checking' ? 'Checking...' : 'Check'}
+          </button>
+        </div>
       </div>
 
       <p className="text-hint text-dim">Back closes this. Changing a setting in the companion app overrides it here.</p>
@@ -383,12 +401,28 @@ function Panel({
   );
 }
 
+function updateLine(state: UpdateState) {
+  switch (state.kind) {
+    case 'idle':
+      return 'Ask the store whether a newer version is published';
+    case 'checking':
+      return 'Asking the store...';
+    case 'current':
+      return `Up to date on ${state.version}`;
+    case 'behind':
+      // the device installs from the store, so the app can only report, never pull
+      return `${state.latest} is out. You are on ${state.installed}. Install it from the store.`;
+    case 'failed':
+      return `Could not check: ${state.reason}`;
+  }
+}
+
 function Step({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return (
     <button
       aria-label={label}
       onClick={onClick}
-      className="grid h-11 w-11 place-items-center rounded-full text-title text-near ring-1 ring-white/15 transition active:scale-90 active:bg-white/15">
+      className="grid h-10 w-10 place-items-center rounded-full text-title text-near ring-1 ring-white/15 transition active:scale-90 active:bg-white/15">
       {children}
     </button>
   );

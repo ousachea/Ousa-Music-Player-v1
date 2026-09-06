@@ -1,5 +1,9 @@
 # weather
 
+## 0.5.0
+
+Check for updates from the settings panel.
+
 ## 0.4.1
 
 Seek uses the same detent gate as volume; bigger settings panel, inset from the dial.
