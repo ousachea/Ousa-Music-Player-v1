@@ -1,5 +1,9 @@
 # weather
 
+## 0.2.0
+
+Settings page, store icon, bigger transport, and knob click actions.
+
 ## 0.1.5
 
 Rotary wheel controls volume, with a press spring on the buttons and a running seek bar.

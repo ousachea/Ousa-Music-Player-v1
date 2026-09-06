@@ -2,14 +2,19 @@ import { BridgethingClient, type ConnectionState, type PlayerState } from '@brid
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 
 import { accentFrom, type Accent } from './artwork-color';
+import { usePrefs } from './config';
 import { daemonUrl } from './daemon';
 
 const SCRUB_COMMIT_MS = 340;
+// one rotary detent lands around deltaX 1, so this is roughly two seconds a click
+const SEEK_MS_PER_DELTA = 2000;
 // one rotary detent lands around deltaX 1, so a detent is a volume step
 const WHEEL_PER_STEP = 1;
 // a hard spin should not queue a hundred commands at the daemon
 const MAX_STEPS_PER_EVENT = 3;
 const HUD_MS = 1400;
+// how long a knob press waits for a second or third one before it commits to an action
+const MULTI_CLICK_MS = 300;
 
 type Volume = { level: number; muted: boolean };
 
@@ -20,6 +25,7 @@ function clock(ms: number) {
 
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
+  const prefs = usePrefs(client);
   const [conn, setConn] = useState<ConnectionState>(client.connectionState);
   const [state, setState] = useState<PlayerState | null>(null);
   const [artUrl, setArtUrl] = useState<string | null>(null);
@@ -41,6 +47,7 @@ export default function App() {
     };
   }, [client]);
 
+  const accentOn = prefs.accent === 'artwork' ? accent : null;
   const track = state?.track ?? null;
   const playback = state?.playback ?? null;
   const artworkId = track?.artworkId ?? null;
@@ -129,9 +136,30 @@ export default function App() {
   // the daemon owns the step size and the clamping, and its level cannot be read back, so nudge rather than compute one
   const detents = useRef(0);
 
+  // one press plays or pauses, two skip forward, three skip back
+  const clicks = useRef(0);
+  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const press = useCallback(() => {
+    clicks.current += 1;
+    if (clickTimer.current) clearTimeout(clickTimer.current);
+    clickTimer.current = setTimeout(() => {
+      const count = clicks.current;
+      clicks.current = 0;
+      if (count === 1) toggle();
+      else if (count === 2) client.player.skipNext();
+      // a triple press means the previous track, never a restart of this one
+      else client.player.skipPrev({ allowSeeking: false });
+    }, MULTI_CLICK_MS);
+  }, [client, toggle]);
+
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       if (!e.deltaX) return;
+      if (prefs.wheel === 'seek') {
+        if (duration) seek((scrub ?? live) + e.deltaX * SEEK_MS_PER_DELTA);
+        return;
+      }
       detents.current += e.deltaX;
       const steps = Math.trunc(detents.current / WHEEL_PER_STEP);
       if (!steps) return;
@@ -144,7 +172,8 @@ export default function App() {
       flashHud();
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === ' ' || e.key === 'Enter') toggle();
+      if (e.repeat) return;
+      if (e.key === ' ' || e.key === 'Enter') press();
       else if (e.key === 'ArrowLeft') client.player.skipPrev({ allowSeeking: true });
       else if (e.key === 'ArrowRight') client.player.skipNext();
     };
@@ -154,19 +183,19 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
     };
-  }, [client, flashHud, toggle]);
+  }, [client, duration, flashHud, live, prefs.wheel, press, scrub, seek]);
 
   if (!track)
     return (
       <>
         <Empty conn={conn} />
-        <VolumeHud show={hud} volume={volume} accent={accent} />
+        <VolumeHud show={hud} volume={volume} accent={accentOn} />
       </>
     );
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-screen">
-      <Backdrop url={artUrl} />
+      <Backdrop url={prefs.backdrop ? artUrl : null} />
 
       <div className="relative flex h-full w-full items-stretch gap-7 p-7">
         <div className="relative aspect-square h-full shrink-0">
@@ -189,7 +218,7 @@ export default function App() {
             <span className={`h-1.5 w-1.5 rounded-full ${conn === 'open' ? 'bg-ok' : 'bg-warn'}`} />
             <span
               className="min-w-0 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase transition-colors duration-500"
-              style={accent ? { color: accent.soft } : undefined}>
+              style={accentOn ? { color: accentOn.soft } : undefined}>
               {conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
             </span>
           </div>
@@ -202,34 +231,39 @@ export default function App() {
           </div>
 
           <div>
-            <Rail progress={progress} accent={accent} playing={playing} onSeek={ratio => seek(ratio * duration)} />
+            <Rail
+              progress={progress}
+              accent={accentOn}
+              playing={playing && prefs.motion}
+              onSeek={ratio => seek(ratio * duration)}
+            />
             <div className="mt-2.5 flex justify-between font-mono text-hint tabular-nums text-dim">
               <span>{clock(elapsed)}</span>
-              <span>{duration ? `-${clock(duration - elapsed)}` : '--:--'}</span>
+              <span>{duration ? (prefs.remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}</span>
             </div>
 
-            <div className="mt-6 flex items-center justify-center gap-4">
+            <div className="mt-8 flex items-center justify-center gap-5">
               <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
-                <Skip className="h-5 w-5 -scale-x-100" />
+                <Skip className="h-6 w-6 -scale-x-100" />
               </Ghost>
               <button
                 aria-label={playing ? 'pause' : 'play'}
                 onClick={toggle}
-                style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}
-                className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
+                style={accentOn ? { backgroundColor: accentOn.fill, color: accentOn.ink } : undefined}
+                className="grid h-20 w-20 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
                 <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-                  {playing ? <Pause className="h-6 w-6" /> : <Play className="ml-0.5 h-6 w-6" />}
+                  {playing ? <Pause className="h-8 w-8" /> : <Play className="ml-1 h-8 w-8" />}
                 </span>
               </button>
               <Ghost label="next" onClick={() => client.player.skipNext()}>
-                <Skip className="h-5 w-5" />
+                <Skip className="h-6 w-6" />
               </Ghost>
             </div>
           </div>
         </div>
       </div>
 
-      <VolumeHud show={hud} volume={volume} accent={accent} />
+      <VolumeHud show={hud} volume={volume} accent={accentOn} />
     </div>
   );
 }
@@ -300,7 +334,7 @@ function Ghost({ label, onClick, children }: { label: string; onClick: () => voi
     <button
       aria-label={label}
       onClick={onClick}
-      className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-near ring-1 ring-white/15 transition-[transform,background-color] duration-300 ease-spring active:scale-90 active:bg-white/20">
+      className="grid h-16 w-16 shrink-0 place-items-center rounded-full text-near ring-1 ring-white/15 transition-[transform,background-color] duration-300 ease-spring active:scale-90 active:bg-white/20">
       {children}
     </button>
   );

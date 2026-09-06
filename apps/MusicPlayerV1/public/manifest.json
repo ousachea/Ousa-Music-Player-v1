@@ -1,10 +1,60 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "Ousa Music player v1",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Now playing from your phone, on the Car Thing.",
+  "icon": "icon.png",
   "settings": "settings.html",
-  "config": [],
+  "config": [
+    {
+      "type": "enum",
+      "data": {
+        "key": "wheel",
+        "label": "Rotary wheel",
+        "choices": [
+          "volume",
+          "seek"
+        ],
+        "default": "volume"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "accent",
+        "label": "Accent colour",
+        "choices": [
+          "artwork",
+          "mono"
+        ],
+        "default": "artwork"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "backdrop",
+        "label": "Blurred artwork background",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "motion",
+        "label": "Animate the seek bar while playing",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "remaining",
+        "label": "Show time remaining instead of track length",
+        "default": true
+      }
+    }
+  ],
   "permissions": [],
   "art": {
     "heroPx": 248,

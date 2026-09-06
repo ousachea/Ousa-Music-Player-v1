@@ -83,3 +83,26 @@ button:disabled {
   opacity: 0.8;
   min-height: 1.2em;
 }
+
+.field.check label {
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+  display: flex;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.field.check input {
+  width: 17px;
+  height: 17px;
+  accent-color: #00a8e8;
+  padding: 0;
+  flex: none;
+}
+
+.sub {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  opacity: 0.65;
+}

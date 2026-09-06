@@ -1,10 +1,25 @@
 import { settings, type ConfigField, type SettingsContext } from '@bridgething/client/settings';
-import { useEffect, useState, type FormEvent, type InputEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 
-function fieldMeta(field: ConfigField): { key: string; label: string } {
-  return { key: field.data.key, label: field.data.label };
+// the enum keys are terse on purpose so they read well in the manifest; spell them out for a person
+const CHOICE_LABELS: Record<string, string> = {
+  volume: 'Volume',
+  seek: 'Scrub the track',
+  artwork: 'Pulled from the album art',
+  mono: 'Plain white',
+};
+
+const HINTS: Record<string, string> = {
+  wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',
+  accent: 'The progress bar, play button and header take this colour.',
+};
+
+function defaultFor(field: ConfigField): string {
+  const value = field.data.default;
+  if (value === null || value === undefined) return field.type === 'boolean' ? 'false' : '';
+  return String(value);
 }
 
 function Settings() {
@@ -12,64 +27,82 @@ function Settings() {
   const [fields, setFields] = useState<ConfigField[]>([]);
   const [values, setValues] = useState<Record<string, string>>({});
   const [status, setStatus] = useState('');
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     (async () => {
       try {
         setCtx(await settings.context());
         const [schema, entries] = await Promise.all([settings.config.fields(), settings.config.list()]);
+        const stored = Object.fromEntries(entries.map(e => [e.key, e.value]));
         setFields(schema);
-        setValues(Object.fromEntries(entries.map(e => [e.key, e.value])));
+        // an unset key is absent from list, so the field's own default fills the gap
+        setValues(Object.fromEntries(schema.map(f => [f.data.key, stored[f.data.key] ?? defaultFor(f)])));
       } catch (err) {
         setStatus(err instanceof Error ? err.message : String(err));
       }
     })();
   }, []);
 
-  async function saveConfig(event: FormEvent<HTMLFormElement>) {
+  async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setBusy(true);
     setStatus('saving...');
     try {
       for (const field of fields) {
-        const { key } = fieldMeta(field);
-        await settings.config.set(key, values[key] ?? '');
+        const key = field.data.key;
+        await settings.config.set(key, values[key] ?? defaultFor(field));
       }
-      setStatus('settings saved');
+      setStatus('saved, the device picks it up straight away');
     } catch (err) {
       setStatus(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
     }
   }
 
-  async function saveToDevice() {
-    setStatus('writing to device...');
-    try {
-      await settings.doc.set('preferences', JSON.stringify({ values, savedAt: Date.now() }));
-      setStatus('synced a preferences doc to the device');
-    } catch (err) {
-      setStatus(err instanceof Error ? err.message : String(err));
-    }
+  function reset() {
+    setValues(Object.fromEntries(fields.map(f => [f.data.key, defaultFor(f)])));
+    setStatus('defaults restored, save to apply them');
   }
+
+  const set = (key: string, value: string) => setValues(v => ({ ...v, [key]: value }));
 
   return (
     <main>
-      <h1>{ctx?.name ?? 'weather'} settings</h1>
+      <h1>{ctx?.name ?? 'Ousa Music player v1'}</h1>
       <p className="hint">{ctx ? `${ctx.webappId} on ${ctx.deviceId}` : 'connecting to the companion host...'}</p>
 
-      <form onSubmit={saveConfig}>
+      <form onSubmit={save}>
         {fields.length === 0 && <p className="hint">this webapp declares no config fields yet.</p>}
         {fields.map(field => {
-          const { key, label } = fieldMeta(field);
-          const value = values[key] ?? '';
-          const onInput = (e: InputEvent<HTMLInputElement | HTMLSelectElement>) =>
-            setValues({ ...values, [key]: (e.target as HTMLInputElement).value });
+          const key = field.data.key;
+          const value = values[key] ?? defaultFor(field);
+
+          if (field.type === 'boolean') {
+            return (
+              <div className="field check" key={key}>
+                <label htmlFor={key}>
+                  <input
+                    id={key}
+                    type="checkbox"
+                    checked={value !== 'false'}
+                    onChange={e => set(key, e.currentTarget.checked ? 'true' : 'false')}
+                  />
+                  <span>{field.data.label}</span>
+                </label>
+              </div>
+            );
+          }
+
           return (
             <div className="field" key={key}>
-              <label htmlFor={key}>{label}</label>
+              <label htmlFor={key}>{field.data.label}</label>
               {field.type === 'enum' ? (
-                <select id={key} value={value} onInput={onInput}>
+                <select id={key} value={value} onChange={e => set(key, e.currentTarget.value)}>
                   {field.data.choices.map(choice => (
                     <option value={choice} key={choice}>
-                      {choice}
+                      {CHOICE_LABELS[choice] ?? choice}
                     </option>
                   ))}
                 </select>
@@ -78,17 +111,20 @@ function Settings() {
                   id={key}
                   type={field.type === 'number' ? 'number' : field.type === 'secret' ? 'password' : 'text'}
                   value={value}
-                  onInput={onInput}
+                  onChange={e => set(key, e.currentTarget.value)}
                 />
               )}
+              {HINTS[key] && <p className="sub">{HINTS[key]}</p>}
             </div>
           );
         })}
 
         <div className="row">
-          <button type="submit">Save settings</button>
-          <button type="button" className="secondary" onClick={saveToDevice}>
-            Save to device
+          <button type="submit" disabled={busy || fields.length === 0}>
+            Save settings
+          </button>
+          <button type="button" className="secondary" onClick={reset} disabled={busy || fields.length === 0}>
+            Reset to defaults
           </button>
           <button type="button" className="secondary" onClick={() => settings.done()}>
             Done

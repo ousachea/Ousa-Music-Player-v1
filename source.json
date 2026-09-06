@@ -2,7 +2,7 @@
   "name": "OusaMusic",
   "description": "Ousa Music player app",
   "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
-  "icon": null,
+  "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.png",
   "base_url": "https://ousachea.github.io/Ousa-Music-Player-v1",
   "recommended_sources": []
 }
