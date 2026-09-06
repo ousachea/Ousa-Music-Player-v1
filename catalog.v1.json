@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-06T15:40:57.433Z",
+  "updated_at": "2026-09-06T15:44:20.994Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -18,6 +18,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.3.1",
+          "released_at": "2026-09-06T15:44:20.993Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.3.1.zip",
+            "size": 944540,
+            "sha256": "8f8394cb0b55487d0a61061c40ddad95fa44ece82be5aa64ed37d652b732c112"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.3.1.html",
+            "size": 28149,
+            "sha256": "67897f78b74e919c0023c0f71db6d506ae713541cb032e1abfe7e5a94b2741fa"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Keep the transport glyphs centred while a press animates."
+        },
         {
           "version": "0.3.0",
           "released_at": "2026-09-06T15:40:57.432Z",
