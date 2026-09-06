@@ -1,15 +1,15 @@
-# **SOURCE_NAME**
+# **OusaMusic**
 
-**SOURCE_DESCRIPTION**
+Ousa Music player app
 
 Webapps for the Spotify Car Thing running [bridgething](https://bridgething.com).
 
 ## First run
 
-1. Push this repo to `https://github.com/ousachea/ousamusic`.
+1. Push this repo to `https://github.com/ousachea/Ousa-Music-Player-v1`.
 2. In **Settings > Pages**, set the source to **Deploy from a branch**, branch `gh-pages`, folder `/ (root)`.
 
-The catalog is published to `https://ousachea.github.io/ousamusic/catalog.v1.json`, which can be submitted to <bridgething.com/apps>
+The catalog is published to `https://ousachea.github.io/Ousa-Music-Player-v1/catalog.v1.json`, which can be submitted to <bridgething.com/apps>
 
 ## Develop
 
