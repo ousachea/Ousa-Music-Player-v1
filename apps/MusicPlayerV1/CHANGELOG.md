@@ -1,5 +1,9 @@
 # weather
 
+## 0.7.3
+
+Poster: the album sits above the title.
+
 ## 0.7.2
 
 Poster: the play time sits under the artist.

@@ -669,11 +669,6 @@ function Poster({
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/45" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/40" />
 
-      <div className="absolute right-7 top-6 flex max-w-[42%] items-center gap-2.5 rounded-full bg-black/45 px-4 py-2 ring-1 ring-white/15 backdrop-blur-md">
-        <Disc className="h-4 w-4 shrink-0 text-off-white/80" />
-        <span className="truncate text-hint text-off-white">{context}</span>
-      </div>
-
       <button
         aria-label={playing ? 'pause' : 'play'}
         onClick={onToggle}
@@ -684,6 +679,9 @@ function Poster({
       </button>
 
       <div className="absolute bottom-24 left-8 w-[52%]">
+        <div className="mb-2 truncate font-mono text-eyebrow tracking-[0.22em] text-off-white/65 uppercase">
+          {context}
+        </div>
         <Roll
           text={title}
           className="font-display text-[2.375rem] leading-[1.15] font-semibold tracking-display text-off-white"
