@@ -13,9 +13,12 @@ export type Prefs = {
   motion: boolean;
   remaining: boolean;
   clock: boolean;
+  clockPos: 'left' | 'center' | 'right';
+  clockSeconds: boolean;
+  clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: 40, motion: true, remaining: true, clock: true };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: 40, motion: true, remaining: true, clock: true, clockPos: 'right', clockSeconds: true, clockFormat: 'auto' };
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
@@ -54,6 +57,11 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
     case 'motion':
+    case 'clockPos':
+      return { ...prefs, clockPos: value === 'left' || value === 'center' ? value : 'right' };
+    case 'clockFormat':
+      return { ...prefs, clockFormat: value === 'h12' || value === 'h24' ? value : 'auto' };
+    case 'clockSeconds':
     case 'clock':
     case 'remaining':
       return { ...prefs, [key]: value !== 'false' };

@@ -4,9 +4,23 @@ import { useEffect, useMemo, useState } from 'react';
 
 type Zone = { tz: string | null; locale: string | null; offsetMs: number };
 
-export function useClock(client: BridgethingClient, enabled: boolean): string | null {
+export type ClockParts = {
+  hour: string;
+  minute: string;
+  second: string | null;
+  dayPeriod: string | null;
+  // the colon blinks on the half second, so the readout has to be rebuilt at that rate
+  colon: boolean;
+};
+
+export function useClock(
+  client: BridgethingClient,
+  enabled: boolean,
+  seconds: boolean,
+  format: 'auto' | 'h12' | 'h24',
+): ClockParts | null {
   const [zone, setZone] = useState<Zone>({ tz: null, locale: null, offsetMs: 0 });
-  const [tick, setTick] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     if (!enabled) return;
@@ -29,30 +43,37 @@ export function useClock(client: BridgethingClient, enabled: boolean): string | 
     };
   }, [client, enabled]);
 
-  // only minutes are shown, so wake on the minute boundary rather than every second
   useEffect(() => {
     if (!enabled) return;
-    let interval: ReturnType<typeof setInterval> | null = null;
-    const untilNextMinute = 60_000 - ((Date.now() + zone.offsetMs) % 60_000);
-    const timeout = setTimeout(() => {
-      setTick(t => t + 1);
-      interval = setInterval(() => setTick(t => t + 1), 60_000);
-    }, untilNextMinute + 50);
-    return () => {
-      clearTimeout(timeout);
-      if (interval) clearInterval(interval);
-    };
-  }, [enabled, zone.offsetMs, tick]);
+    const id = setInterval(() => setNow(Date.now()), 250);
+    return () => clearInterval(id);
+  }, [enabled]);
 
   return useMemo(() => {
     if (!enabled) return null;
-    const at = new Date(Date.now() + zone.offsetMs);
-    const options: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit' };
+    const at = new Date(now + zone.offsetMs);
+    const options: Intl.DateTimeFormatOptions = {
+      hour: 'numeric',
+      minute: '2-digit',
+      ...(seconds ? { second: '2-digit' } : {}),
+      ...(format === 'auto' ? {} : { hour12: format === 'h12' }),
+    };
+    const read = (formatter: Intl.DateTimeFormat) => {
+      const parts = formatter.formatToParts(at);
+      const of = (type: string) => parts.find(p => p.type === type)?.value ?? null;
+      return {
+        hour: of('hour') ?? '--',
+        minute: of('minute') ?? '--',
+        second: seconds ? of('second') : null,
+        dayPeriod: of('dayPeriod'),
+        colon: (now + zone.offsetMs) % 1000 < 500,
+      };
+    };
     try {
       // a zone the runtime does not know would throw and take the whole screen with it
-      return new Intl.DateTimeFormat(zone.locale ?? undefined, { ...options, timeZone: zone.tz ?? undefined }).format(at);
+      return read(new Intl.DateTimeFormat(zone.locale ?? undefined, { ...options, timeZone: zone.tz ?? undefined }));
     } catch {
-      return new Intl.DateTimeFormat(undefined, options).format(at);
+      return read(new Intl.DateTimeFormat(undefined, options));
     }
-  }, [enabled, zone, tick]);
+  }, [enabled, seconds, format, zone, now]);
 }

@@ -1,5 +1,9 @@
 # weather
 
+## 0.13.0
+
+Clock gains position, seconds, 24h and a blinking colon.
+
 ## 0.12.0
 
 Clock, and the album now sits with the track it names.

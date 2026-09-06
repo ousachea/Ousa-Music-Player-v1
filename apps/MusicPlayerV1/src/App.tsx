@@ -11,7 +11,7 @@ import {
 } from 'react';
 
 import { accentFrom, type Accent } from './artwork-color';
-import { useClock } from './clock';
+import { useClock, type ClockParts } from './clock';
 import { usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
@@ -39,7 +39,7 @@ function clock(ms: number) {
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
   const { prefs, setPref } = usePrefs(client);
-  const wallClock = useClock(client, prefs.clock);
+  const wallClock = useClock(client, prefs.clock, prefs.clockSeconds, prefs.clockFormat);
   const [panel, setPanel] = useState(false);
   const [hint, setHint] = useState(false);
   const hintSaved = useRef(false);
@@ -258,6 +258,7 @@ export default function App() {
           elapsed={elapsed}
           duration={duration}
           wallClock={wallClock}
+          clockPos={prefs.clockPos}
           onToggle={toggle}
           onPrev={() => client.player.skipPrev({ allowSeeking: true })}
           onNext={() => client.player.skipNext()}
@@ -288,10 +289,8 @@ export default function App() {
             )}
 
             <div className="flex h-full min-w-0 flex-1 flex-col">
-              <div className="flex h-5 items-center justify-end">
-                {wallClock && (
-                  <span className="shrink-0 font-mono text-eyebrow tabular-nums text-dim">{wallClock}</span>
-                )}
+              <div className={`flex h-5 items-center ${JUSTIFY[prefs.clockPos]}`}>
+                <ClockView parts={wallClock} className="text-eyebrow text-dim" />
               </div>
 
               <div className="flex min-h-0 flex-1 flex-col justify-center">
@@ -368,6 +367,8 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: { values: ['card', 'vinyl', 'poster'], labels: ['Cover', 'Vinyl', 'Poster'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
+  clockPos: { values: ['left', 'center', 'right'], labels: ['Left', 'Centre', 'Right'] },
+  clockFormat: { values: ['auto', 'h12', 'h24'], labels: ['Auto', '12h', '24h'] },
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
 };
 
@@ -406,7 +407,15 @@ const GROUPS: { title: string; rows: { key: keyof Prefs; label: string }[] }[] =
     rows: [
       { key: 'motion', label: 'Animations' },
       { key: 'remaining', label: 'Show time remaining' },
-      { key: 'clock', label: 'Clock' },
+    ],
+  },
+  {
+    title: 'Clock',
+    rows: [
+      { key: 'clock', label: 'Show clock' },
+      { key: 'clockPos', label: 'Position' },
+      { key: 'clockFormat', label: 'Format' },
+      { key: 'clockSeconds', label: 'Seconds' },
     ],
   },
 ];
@@ -770,6 +779,7 @@ function Poster({
   motion,
   seekStyle,
   wallClock,
+  clockPos,
   progress,
   elapsed,
   duration,
@@ -786,7 +796,8 @@ function Poster({
   playing: boolean;
   motion: boolean;
   seekStyle: 'bar' | 'wave';
-  wallClock: string | null;
+  wallClock: ClockParts | null;
+  clockPos: 'left' | 'center' | 'right';
   progress: number;
   elapsed: number;
   duration: number;
@@ -808,9 +819,9 @@ function Poster({
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/45" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/40" />
 
-      {wallClock && (
-        <span className="absolute right-8 top-6 font-mono text-hint tabular-nums text-off-white/75">{wallClock}</span>
-      )}
+      <div className={`absolute inset-x-8 top-6 flex ${JUSTIFY[clockPos]}`}>
+        <ClockView parts={wallClock} className="text-hint text-off-white/75" />
+      </div>
 
       <button
         aria-label={playing ? 'pause' : 'play'}
@@ -963,6 +974,36 @@ function Seek({
     <Wave progress={progress} playing={playing} tint={tint} onSeek={onSeek} />
   ) : (
     <Rail progress={progress} playing={playing} tint={tint} onSeek={onSeek} />
+  );
+}
+
+const JUSTIFY: Record<'left' | 'center' | 'right', string> = {
+  left: 'justify-start',
+  center: 'justify-center',
+  right: 'justify-end',
+};
+
+// the colon is its own element so it can blink without the digits reflowing
+function ClockView({ parts, className }: { parts: ClockParts | null; className?: string }) {
+  if (!parts) return null;
+  const colon = (
+    <span className="transition-opacity duration-150" style={{ opacity: parts.colon ? 1 : 0.2 }}>
+      :
+    </span>
+  );
+  return (
+    <span className={`shrink-0 font-mono tabular-nums ${className ?? ''}`}>
+      {parts.hour}
+      {colon}
+      {parts.minute}
+      {parts.second !== null && (
+        <>
+          {colon}
+          {parts.second}
+        </>
+      )}
+      {parts.dayPeriod && <span className="ml-1.5">{parts.dayPeriod}</span>}
+    </span>
   );
 }
 
