@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-06T15:12:26.390Z",
+  "updated_at": "2026-09-06T15:19:11.107Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -18,6 +18,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.1.5",
+          "released_at": "2026-09-06T15:19:11.106Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.1.5.zip",
+            "size": 822028,
+            "sha256": "8d5b73d152d8aeaccb3beedf1f328f3bb23723cda269788c146c989584e1a023"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.1.5.html",
+            "size": 26917,
+            "sha256": "97540baa33388cee218efd19ccc47433a94acff55b9c3f20ffe404856160b55b"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Rotary wheel controls volume, with a press spring on the buttons and a running seek bar."
+        },
         {
           "version": "0.1.4",
           "released_at": "2026-09-06T15:12:26.389Z",
