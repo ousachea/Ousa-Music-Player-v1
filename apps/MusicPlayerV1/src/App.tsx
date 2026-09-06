@@ -23,6 +23,9 @@ const MAX_STEPS_PER_EVENT = 3;
 const HUD_MS = 1400;
 // how long a knob press waits for a second or third one before it commits to an action
 const MULTI_CLICK_MS = 300;
+// the panel is only reachable by a hardware button, so say so once and then stop
+const HINT_KEY = 'hint.settingsSeen';
+const HINT_MS = 7000;
 
 type Volume = { level: number; muted: boolean };
 
@@ -35,6 +38,8 @@ export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
   const { prefs, setPref } = usePrefs(client);
   const [panel, setPanel] = useState(false);
+  const [hint, setHint] = useState(false);
+  const hintSaved = useRef(false);
   const [conn, setConn] = useState<ConnectionState>(client.connectionState);
   const [state, setState] = useState<PlayerState | null>(null);
   const [artUrl, setArtUrl] = useState<string | null>(null);
@@ -122,6 +127,31 @@ export default function App() {
     },
     [client, duration],
   );
+
+  useEffect(() => {
+    let stale = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    client.doc
+      .get({ key: HINT_KEY })
+      .then(r => {
+        if (stale || !r.ok || r.response.value) return;
+        setHint(true);
+        timer = setTimeout(() => setHint(false), HINT_MS);
+      })
+      .catch(() => {});
+    return () => {
+      stale = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [client]);
+
+  useEffect(() => {
+    if (!panel) return;
+    setHint(false);
+    if (hintSaved.current) return;
+    hintSaved.current = true;
+    client.doc.set({ key: HINT_KEY, value: 'true' });
+  }, [panel, client]);
 
   const hudTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flashHud = useCallback(() => {
@@ -292,7 +322,14 @@ export default function App() {
       </div>
 
       <VolumeHud show={hud} volume={volume} accent={accentOn} />
-      {panel && <Panel client={client} prefs={prefs} setPref={setPref} accent={accentOn} onClose={() => setPanel(false)} />}
+      <div
+        className={`pointer-events-none absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded-full bg-black/78 px-4 py-2.5 text-hint text-near ring-1 ring-white/12 backdrop-blur-md transition-opacity duration-500 ${
+          hint && !panel ? 'opacity-100' : 'opacity-0'
+        }`}>
+        <BackGlyph className="h-3.5 w-3.5" />
+        Press the button under the wheel for settings
+      </div>
+      {panel && <Panel client={client} prefs={prefs} setPref={setPref} accent={accentOn} />}
     </div>
   );
 }
@@ -318,34 +355,30 @@ function Panel({
   prefs,
   setPref,
   accent,
-  onClose,
 }: {
   client: BridgethingClient;
   prefs: Prefs;
   setPref: (key: keyof Prefs, value: string) => void;
   accent: Accent | null;
-  onClose: () => void;
 }) {
   const tint = accent?.fill ?? '#efefef';
   const { state: update, check } = useUpdateCheck(client);
   return (
     <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 py-5 pl-8 pr-24 backdrop-blur-sm">
-      <div className="flex items-center justify-between">
+      <div className="flex items-baseline justify-between gap-4">
         <span className="font-mono text-hint tracking-[0.22em] text-dim uppercase">Settings</span>
-        <button
-          aria-label="close settings"
-          onClick={onClose}
-          className="rounded-full px-5 py-2 text-row text-near ring-1 ring-white/15 transition active:scale-95 active:bg-white/15">
-          Done
-        </button>
+        <span className="flex items-center gap-2 text-hint text-dim">
+          <BackGlyph className="h-3.5 w-3.5" />
+          the button under the wheel closes this
+        </span>
       </div>
 
-      <div className="mt-2 flex min-h-0 flex-1 flex-col justify-center gap-0.5">
+      <div className="mt-2 flex min-h-0 flex-1 flex-col justify-center">
         {ROWS.map(row => {
           const enumeration = ENUMS[row.key];
           const value = prefs[row.key];
           return (
-            <div key={row.key} className="flex items-center justify-between gap-5 border-b border-white/6 py-1.5">
+            <div key={row.key} className="flex items-center justify-between gap-5 border-b border-white/6 py-1">
               <span className="min-w-0 truncate text-title text-near">{row.label}</span>
 
               {row.key === 'seekSeconds' ? (
@@ -387,7 +420,7 @@ function Panel({
           );
         })}
 
-        <div className="flex items-center justify-between gap-5 py-1.5">
+        <div className="flex items-center justify-between gap-5 py-1">
           <div className="min-w-0">
             <div className="truncate text-title text-near">Software update</div>
             <div className="truncate text-hint text-dim">{updateLine(update)}</div>
@@ -402,8 +435,23 @@ function Panel({
         </div>
       </div>
 
-      <p className="text-hint text-dim">Back closes this. Changing a setting in the companion app overrides it here.</p>
+      <p className="text-hint text-dim">Changing a setting in the companion app overrides it here.</p>
     </div>
+  );
+}
+
+function BackGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round">
+      <path d="M10 5 3 12l7 7M3 12h13a5 5 0 0 1 0 10h-1" />
+    </svg>
   );
 }
 

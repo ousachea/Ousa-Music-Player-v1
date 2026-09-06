@@ -1,5 +1,9 @@
 # weather
 
+## 0.6.1
+
+Drop the Done button; the Back button closes the panel and now says so.
+
 ## 0.6.0
 
 Player style setting, with a vinyl turntable alongside the cover layout.
