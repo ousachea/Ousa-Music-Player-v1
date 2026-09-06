@@ -259,6 +259,7 @@ export default function App() {
           duration={duration}
           wallClock={wallClock}
           clockPos={prefs.clockPos}
+          clockSize={prefs.clockSize}
           onToggle={toggle}
           onPrev={() => client.player.skipPrev({ allowSeeking: true })}
           onNext={() => client.player.skipNext()}
@@ -289,8 +290,8 @@ export default function App() {
             )}
 
             <div className="flex h-full min-w-0 flex-1 flex-col">
-              <div className={`flex h-5 items-center ${JUSTIFY[prefs.clockPos]}`}>
-                <ClockView parts={wallClock} className="text-eyebrow text-dim" />
+              <div className={`flex min-h-5 items-center ${JUSTIFY[prefs.clockPos]}`}>
+                <ClockView parts={wallClock} size={(11 * prefs.clockSize) / 100} className="text-dim" />
               </div>
 
               <div className="flex min-h-0 flex-1 flex-col justify-center">
@@ -376,6 +377,7 @@ const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: 
   seekSeconds: { min: 1, max: 30, step: 1, suffix: 's' },
   backdrop: { min: 0, max: 100, step: 10, suffix: '%' },
   drift: { min: 0, max: 100, step: 10, suffix: '%' },
+  clockSize: { min: 70, max: 200, step: 10, suffix: '%' },
 };
 
 // grouped so a related pair reads together rather than as nine unrelated lines
@@ -414,6 +416,7 @@ const GROUPS: { title: string; rows: { key: keyof Prefs; label: string }[] }[] =
     rows: [
       { key: 'clock', label: 'Show clock' },
       { key: 'clockPos', label: 'Position' },
+      { key: 'clockSize', label: 'Size' },
       { key: 'clockFormat', label: 'Format' },
       { key: 'clockSeconds', label: 'Seconds' },
     ],
@@ -780,6 +783,7 @@ function Poster({
   seekStyle,
   wallClock,
   clockPos,
+  clockSize,
   progress,
   elapsed,
   duration,
@@ -798,6 +802,7 @@ function Poster({
   seekStyle: 'bar' | 'wave';
   wallClock: ClockParts | null;
   clockPos: 'left' | 'center' | 'right';
+  clockSize: number;
   progress: number;
   elapsed: number;
   duration: number;
@@ -820,7 +825,7 @@ function Poster({
       <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/40" />
 
       <div className={`absolute inset-x-8 top-6 flex ${JUSTIFY[clockPos]}`}>
-        <ClockView parts={wallClock} className="text-hint text-off-white/75" />
+        <ClockView parts={wallClock} size={(12 * clockSize) / 100} className="text-off-white/75" />
       </div>
 
       <button
@@ -984,7 +989,7 @@ const JUSTIFY: Record<'left' | 'center' | 'right', string> = {
 };
 
 // the colon is its own element so it can blink without the digits reflowing
-function ClockView({ parts, className }: { parts: ClockParts | null; className?: string }) {
+function ClockView({ parts, size, className }: { parts: ClockParts | null; size: number; className?: string }) {
   if (!parts) return null;
   const colon = (
     <span className="transition-opacity duration-150" style={{ opacity: parts.colon ? 1 : 0.2 }}>
@@ -992,7 +997,7 @@ function ClockView({ parts, className }: { parts: ClockParts | null; className?:
     </span>
   );
   return (
-    <span className={`shrink-0 font-mono tabular-nums ${className ?? ''}`}>
+    <span className={`shrink-0 font-mono tabular-nums ${className ?? ''}`} style={{ fontSize: `${size}px` }}>
       {parts.hour}
       {colon}
       {parts.minute}

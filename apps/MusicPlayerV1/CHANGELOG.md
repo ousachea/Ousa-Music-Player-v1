@@ -1,5 +1,9 @@
 # weather
 
+## 0.14.0
+
+New app icon, and the clock size is adjustable.
+
 ## 0.13.0
 
 Clock gains position, seconds, 24h and a blinking colon.

@@ -15,10 +15,11 @@ export type Prefs = {
   clock: boolean;
   clockPos: 'left' | 'center' | 'right';
   clockSeconds: boolean;
+  clockSize: number;
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: 40, motion: true, remaining: true, clock: true, clockPos: 'right', clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: 40, motion: true, remaining: true, clock: true, clockPos: 'right', clockSize: 100, clockSeconds: true, clockFormat: 'auto' };
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
@@ -57,6 +58,11 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
     case 'motion':
+    case 'clockSize': {
+      const size = Number(value);
+      if (!Number.isFinite(size)) return { ...prefs, clockSize: DEFAULTS.clockSize };
+      return { ...prefs, clockSize: Math.min(200, Math.max(70, size)) };
+    }
     case 'clockPos':
       return { ...prefs, clockPos: value === 'left' || value === 'center' ? value : 'right' };
     case 'clockFormat':

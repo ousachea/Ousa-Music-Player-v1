@@ -25,6 +25,7 @@ const HINTS: Record<string, string> = {
   backdrop: 'How strongly the blurred album art tints the screen behind the player. 0 turns it off. Poster does not use it.',
   drift: 'How far and how fast the blurred backdrop pans. 0 holds it still.',
   clock: 'Shows the time from your phone, in its own timezone.',
+  clockSize: 'Scales the clock relative to its normal size.',
   accent: 'The progress bar, play button and header take this colour.',
 };
 
