@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-06T15:01:23.808Z",
+  "updated_at": "2026-09-06T15:05:09.857Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -12,12 +12,29 @@
     {
       "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
       "name": "Ousa Music player v1",
-      "description": "Weather at a glance on the Car Thing.",
+      "description": "Now playing from your phone, on the Car Thing.",
       "author": "Ousa Chea",
       "icon": null,
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.1.2",
+          "released_at": "2026-09-06T15:05:09.857Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.1.2.zip",
+            "size": 816277,
+            "sha256": "9699997333264cd28f6f597898f179aee08e644af303a23185bc4ec46ec5185b"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.1.2.html",
+            "size": 26917,
+            "sha256": "97540baa33388cee218efd19ccc47433a94acff55b9c3f20ffe404856160b55b"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Remove the shuffle and repeat buttons."
+        },
         {
           "version": "0.1.1",
           "released_at": "2026-09-06T15:01:23.807Z",
