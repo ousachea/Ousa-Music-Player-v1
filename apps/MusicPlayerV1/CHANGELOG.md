@@ -1,5 +1,9 @@
 # weather
 
+## 0.4.0
+
+Rolling titles, an on-device settings panel on Back, and a centred play glyph.
+
 ## 0.3.1
 
 Keep the transport glyphs centred while a press animates.

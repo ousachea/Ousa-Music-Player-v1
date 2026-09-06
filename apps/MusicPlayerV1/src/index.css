@@ -132,6 +132,26 @@
   }
 }
 
+/* titles that do not fit roll: hold, travel to the end, hold, travel back */
+@keyframes roll {
+  0%,
+  12% {
+    transform: translateX(0);
+  }
+  45%,
+  57% {
+    transform: translateX(var(--roll-shift, 0));
+  }
+  92%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.roll {
+  animation: roll var(--roll-duration, 9s) ease-in-out infinite;
+}
+
 @layer base {
   :root {
     color-scheme: dark;

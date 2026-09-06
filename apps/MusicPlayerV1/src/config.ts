@@ -1,6 +1,6 @@
 // mirrors the config block in public/manifest.json; the daemon stores every value as a string
 import type { BridgethingClient } from '@bridgething/client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Prefs = {
   wheel: 'volume' | 'seek';
@@ -38,18 +38,84 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
   }
 }
 
-export function usePrefs(client: BridgethingClient): Prefs {
+export const PREF_KEYS = Object.keys(DEFAULTS) as (keyof Prefs)[];
+
+// the device can only read config, so anything changed on the device is written as a doc override
+const DOC_PREFIX = 'pref.';
+
+export function usePrefs(client: BridgethingClient): {
+  prefs: Prefs;
+  setPref: (key: keyof Prefs, value: string) => void;
+} {
   const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
+  const config = useRef<Record<string, string>>({});
+  const overrides = useRef<Record<string, string>>({});
+
+  const recompute = useCallback(() => {
+    let next = PREF_KEYS.reduce((p, k) => ({ ...p, [k]: DEFAULTS[k] }), {} as Prefs);
+    for (const [k, v] of Object.entries(config.current)) next = apply(next, k, v);
+    for (const [k, v] of Object.entries(overrides.current)) next = apply(next, k, v);
+    setPrefs(next);
+  }, []);
 
   useEffect(() => {
-    // an unset key never comes back from list, so the defaults have to stand on their own
-    const off = client.config.onChanged(msg => setPrefs(p => apply(p, msg.key, msg.value)));
-    client.config.list().then(r => {
-      if (!r.ok) return;
-      setPrefs(r.response.entries.reduce((p, e) => apply(p, e.key, e.value), DEFAULTS));
+    const offConfig = client.config.onChanged(msg => {
+      if (msg.value === null) delete config.current[msg.key];
+      else config.current[msg.key] = msg.value;
+      // the companion app just spoke, so its value wins over whatever the device set earlier
+      if (overrides.current[msg.key] !== undefined) {
+        delete overrides.current[msg.key];
+        client.doc.delete({ key: DOC_PREFIX + msg.key });
+      }
+      recompute();
     });
-    return off;
-  }, [client]);
 
-  return prefs;
+    const offDoc = client.doc.onChanged(msg => {
+      if (!msg.key.startsWith(DOC_PREFIX)) return;
+      const key = msg.key.slice(DOC_PREFIX.length);
+      if (msg.value === null) delete overrides.current[key];
+      else overrides.current[key] = msg.value;
+      recompute();
+    });
+
+    // an unset key never comes back from either list, so the defaults have to stand on their own.
+    // the two are kept independent: one of them timing out must not drop the other's values.
+    client.config
+      .list()
+      .then(c => {
+        if (!c.ok) return;
+        config.current = Object.fromEntries(c.response.entries.map(e => [e.key, e.value]));
+        recompute();
+      })
+      .catch(() => {});
+
+    client.doc
+      .list()
+      .then(d => {
+        if (!d.ok) return;
+        overrides.current = Object.fromEntries(
+          d.response.entries
+            .filter(e => e.key.startsWith(DOC_PREFIX) && e.value !== null)
+            .map(e => [e.key.slice(DOC_PREFIX.length), e.value as string]),
+        );
+        recompute();
+      })
+      .catch(() => {});
+
+    return () => {
+      offConfig();
+      offDoc();
+    };
+  }, [client, recompute]);
+
+  const setPref = useCallback(
+    (key: keyof Prefs, value: string) => {
+      overrides.current[key] = value;
+      recompute();
+      client.doc.set({ key: DOC_PREFIX + key, value });
+    },
+    [client, recompute],
+  );
+
+  return { prefs, setPref };
 }

@@ -1,8 +1,17 @@
 import { BridgethingClient, type ConnectionState, type PlayerState } from '@bridgething/client';
-import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+  type ReactNode,
+} from 'react';
 
 import { accentFrom, type Accent } from './artwork-color';
-import { usePrefs } from './config';
+import { usePrefs, type Prefs } from './config';
 import { daemonUrl } from './daemon';
 
 const SCRUB_COMMIT_MS = 340;
@@ -23,7 +32,8 @@ function clock(ms: number) {
 
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
-  const prefs = usePrefs(client);
+  const { prefs, setPref } = usePrefs(client);
+  const [panel, setPanel] = useState(false);
   const [conn, setConn] = useState<ConnectionState>(client.connectionState);
   const [state, setState] = useState<PlayerState | null>(null);
   const [artUrl, setArtUrl] = useState<string | null>(null);
@@ -173,6 +183,7 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
       if (e.key === ' ' || e.key === 'Enter') press();
+      else if (e.key === 'Escape') setPanel(open => !open);
       else if (e.key === 'ArrowLeft') client.player.skipPrev({ allowSeeking: true });
       else if (e.key === 'ArrowRight') client.player.skipNext();
     };
@@ -223,10 +234,11 @@ export default function App() {
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col justify-center">
-            <h1 className="line-clamp-3 font-display text-[1.75rem] leading-[1.15] font-semibold tracking-display text-off-white">
-              {track.title ?? 'unknown'}
-            </h1>
-            <p className="mt-2 truncate text-title text-soft">{track.artist ?? '—'}</p>
+            <Roll
+              text={track.title ?? 'unknown'}
+              className="font-display text-[2.125rem] leading-[1.2] font-semibold tracking-display text-off-white"
+            />
+            <Roll text={track.artist ?? '—'} className="mt-2 text-title text-soft" />
           </div>
 
           <div>
@@ -259,7 +271,7 @@ export default function App() {
                   />
                 )}
                 <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-                  {playing ? <Pause className="h-8 w-8" /> : <Play className="ml-1 h-8 w-8" />}
+                  {playing ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
                 </span>
               </button>
               <Ghost label="next" onClick={() => client.player.skipNext()}>
@@ -271,6 +283,150 @@ export default function App() {
       </div>
 
       <VolumeHud show={hud} volume={volume} accent={accentOn} />
+      {panel && <Panel prefs={prefs} setPref={setPref} accent={accentOn} onClose={() => setPanel(false)} />}
+    </div>
+  );
+}
+
+const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
+  wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
+  accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
+};
+
+const ROWS: { key: keyof Prefs; label: string }[] = [
+  { key: 'wheel', label: 'Rotary wheel' },
+  { key: 'seekSeconds', label: 'Seek step' },
+  { key: 'accent', label: 'Accent colour' },
+  { key: 'backdrop', label: 'Artwork backdrop' },
+  { key: 'motion', label: 'Animate seek bar' },
+  { key: 'remaining', label: 'Show time remaining' },
+];
+
+function Panel({
+  prefs,
+  setPref,
+  accent,
+  onClose,
+}: {
+  prefs: Prefs;
+  setPref: (key: keyof Prefs, value: string) => void;
+  accent: Accent | null;
+  onClose: () => void;
+}) {
+  const tint = accent?.fill ?? '#efefef';
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 px-7 py-5 backdrop-blur-sm">
+      <div className="flex items-center justify-between">
+        <span className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Settings</span>
+        <button
+          aria-label="close settings"
+          onClick={onClose}
+          className="rounded-full px-4 py-1.5 text-hint text-near ring-1 ring-white/15 transition active:scale-95 active:bg-white/15">
+          Done
+        </button>
+      </div>
+
+      <div className="mt-3 flex min-h-0 flex-1 flex-col justify-center gap-1.5">
+        {ROWS.map(row => {
+          const enumeration = ENUMS[row.key];
+          const value = prefs[row.key];
+          return (
+            <div key={row.key} className="flex items-center justify-between gap-4 border-b border-white/6 py-2.5">
+              <span className="min-w-0 truncate text-row text-near">{row.label}</span>
+
+              {row.key === 'seekSeconds' ? (
+                <div className="flex shrink-0 items-center gap-2.5">
+                  <Step label="less" onClick={() => setPref(row.key, String(Math.max(1, (value as number) - 1)))}>
+                    −
+                  </Step>
+                  <span className="w-10 text-center font-mono text-row tabular-nums" style={{ color: tint }}>
+                    {value as number}s
+                  </span>
+                  <Step label="more" onClick={() => setPref(row.key, String(Math.min(30, (value as number) + 1)))}>
+                    +
+                  </Step>
+                </div>
+              ) : enumeration ? (
+                <button
+                  onClick={() => {
+                    const i = enumeration.values.indexOf(String(value));
+                    setPref(row.key, enumeration.values[(i + 1) % enumeration.values.length]);
+                  }}
+                  className="shrink-0 rounded-full px-4 py-1.5 text-hint font-medium transition active:scale-95"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: tint }}>
+                  {enumeration.labels[Math.max(0, enumeration.values.indexOf(String(value)))]}
+                </button>
+              ) : (
+                <button
+                  role="switch"
+                  aria-checked={value === true}
+                  onClick={() => setPref(row.key, value ? 'false' : 'true')}
+                  className="relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200"
+                  style={{ backgroundColor: value ? tint : 'rgba(255,255,255,0.16)' }}>
+                  <span
+                    className="absolute top-1 h-5 w-5 rounded-full bg-screen transition-[left] duration-200"
+                    style={{ left: value ? '26px' : '4px' }}
+                  />
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="text-hint text-dim">Back closes this. The companion app overrides anything you change here.</p>
+    </div>
+  );
+}
+
+function Step({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      aria-label={label}
+      onClick={onClick}
+      className="grid h-8 w-8 place-items-center rounded-full text-row text-near ring-1 ring-white/15 transition active:scale-90 active:bg-white/15">
+      {children}
+    </button>
+  );
+}
+
+// a marquee only earns its motion when the text actually overflows, so the width is measured rather than guessed
+function Roll({ text, className }: { text: string; className?: string }) {
+  const outer = useRef<HTMLDivElement>(null);
+  const inner = useRef<HTMLSpanElement>(null);
+  const [shift, setShift] = useState(0);
+
+  useEffect(() => {
+    let stale = false;
+    const measure = () => {
+      if (stale || !outer.current || !inner.current) return;
+      const over = Math.ceil(inner.current.scrollWidth - outer.current.clientWidth);
+      setShift(over > 2 ? over : 0);
+    };
+    measure();
+    // the bundled faces land after first paint and change every width
+    document.fonts?.ready.then(measure).catch(() => {});
+    // and the box itself can change without the text doing so, which would leave the measurement stale
+    const observer = new ResizeObserver(measure);
+    if (outer.current) observer.observe(outer.current);
+    return () => {
+      stale = true;
+      observer.disconnect();
+    };
+  }, [text]);
+
+  return (
+    <div ref={outer} className={`overflow-hidden ${className ?? ''}`}>
+      <span
+        ref={inner}
+        className={`inline-block whitespace-nowrap ${shift ? 'roll' : ''}`}
+        style={
+          shift
+            ? ({ '--roll-shift': `-${shift}px`, '--roll-duration': `${2600 + shift * 34}ms` } as CSSProperties)
+            : undefined
+        }>
+        {text}
+      </span>
     </div>
   );
 }
@@ -413,7 +569,11 @@ function Empty({ conn }: { conn: ConnectionState }) {
 function Play({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="currentColor">
-      <path d="M8 5.2v13.6a1 1 0 0 0 1.53.85l10.7-6.8a1 1 0 0 0 0-1.7L9.53 4.35A1 1 0 0 0 8 5.2Z" />
+      {/* the triangle's ink runs 8 to 20.5, so it is pulled back to sit centred with a hair of optical lead */}
+      <path
+        transform="translate(-1.6 0)"
+        d="M8 5.2v13.6a1 1 0 0 0 1.53.85l10.7-6.8a1 1 0 0 0 0-1.7L9.53 4.35A1 1 0 0 0 8 5.2Z"
+      />
     </svg>
   );
 }
