@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-06T15:57:47.343Z",
+  "updated_at": "2026-09-06T16:03:08.564Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -19,6 +19,25 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.5.0",
+          "released_at": "2026-09-06T16:03:08.563Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.5.0.zip",
+            "size": 952175,
+            "sha256": "aed9c24fcb9c8ccc31cf47355f12775eafdce0e066cdc72029b6716ccbb303db"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.5.0.html",
+            "size": 28149,
+            "sha256": "67897f78b74e919c0023c0f71db6d506ae713541cb032e1abfe7e5a94b2741fa"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Check for updates from the settings panel."
+        },
+        {
           "version": "0.4.1",
           "released_at": "2026-09-06T15:57:47.343Z",
           "download": {
@@ -31,7 +50,9 @@
             "size": 28149,
             "sha256": "67897f78b74e919c0023c0f71db6d506ae713541cb032e1abfe7e5a94b2741fa"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Seek uses the same detent gate as volume; bigger settings panel, inset from the dial."
         },
@@ -48,7 +69,9 @@
             "size": 28149,
             "sha256": "67897f78b74e919c0023c0f71db6d506ae713541cb032e1abfe7e5a94b2741fa"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Rolling titles, an on-device settings panel on Back, and a centred play glyph."
         },
@@ -65,7 +88,9 @@
             "size": 28149,
             "sha256": "67897f78b74e919c0023c0f71db6d506ae713541cb032e1abfe7e5a94b2741fa"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Keep the transport glyphs centred while a press animates."
         },
@@ -82,7 +107,9 @@
             "size": 28149,
             "sha256": "67897f78b74e919c0023c0f71db6d506ae713541cb032e1abfe7e5a94b2741fa"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Adjustable seek sensitivity, and press animations on the transport buttons."
         },
@@ -99,7 +126,9 @@
             "size": 27893,
             "sha256": "21d0211f1076cae8eb3e999179ae1547b2047ce664d8acdf71be93c301b5a273"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Settings page, store icon, bigger transport, and knob click actions."
         },
@@ -116,7 +145,9 @@
             "size": 26917,
             "sha256": "97540baa33388cee218efd19ccc47433a94acff55b9c3f20ffe404856160b55b"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Rotary wheel controls volume, with a press spring on the buttons and a running seek bar."
         },
@@ -133,7 +164,9 @@
             "size": 26917,
             "sha256": "97540baa33388cee218efd19ccc47433a94acff55b9c3f20ffe404856160b55b"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Tint the accent elements with a colour pulled from the album art."
         },
@@ -150,7 +183,9 @@
             "size": 26917,
             "sha256": "97540baa33388cee218efd19ccc47433a94acff55b9c3f20ffe404856160b55b"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Fill the 800x480 screen: full-height artwork and a stretched now-playing column."
         },
@@ -167,7 +202,9 @@
             "size": 26917,
             "sha256": "97540baa33388cee218efd19ccc47433a94acff55b9c3f20ffe404856160b55b"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Remove the shuffle and repeat buttons."
         },
@@ -184,7 +221,9 @@
             "size": 26917,
             "sha256": "97540baa33388cee218efd19ccc47433a94acff55b9c3f20ffe404856160b55b"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Rename the app to Ousa Music player v1."
         },
@@ -201,7 +240,9 @@
             "size": 26917,
             "sha256": "97540baa33388cee218efd19ccc47433a94acff55b9c3f20ffe404856160b55b"
           },
-          "permissions": [],
+          "permissions": [
+            "net.proxy"
+          ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "First release."
         }
