@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-06T14:56:56.989Z",
+  "updated_at": "2026-09-06T15:01:23.808Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -11,13 +11,30 @@
   "apps": [
     {
       "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
-      "name": "weather",
+      "name": "Ousa Music player v1",
       "description": "Weather at a glance on the Car Thing.",
       "author": "Ousa Chea",
       "icon": null,
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.1.1",
+          "released_at": "2026-09-06T15:01:23.807Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.1.1.zip",
+            "size": 818359,
+            "sha256": "205e5fc4cbf87f52f58fb7c7cee3f099662dd1886ccf5e24e6c061d39fd15684"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.1.1.html",
+            "size": 26917,
+            "sha256": "97540baa33388cee218efd19ccc47433a94acff55b9c3f20ffe404856160b55b"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Rename the app to Ousa Music player v1."
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-09-06T14:56:56.988Z",
