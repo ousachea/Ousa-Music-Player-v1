@@ -1,5 +1,9 @@
 # weather
 
+## 0.10.1
+
+Segmented control for settings with more than two choices.
+
 ## 0.10.0
 
 Backdrop intensity is adjustable; ask the source for larger artwork.

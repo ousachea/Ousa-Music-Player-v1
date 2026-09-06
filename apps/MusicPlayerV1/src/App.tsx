@@ -395,6 +395,7 @@ function Panel({
   accent: Accent | null;
 }) {
   const tint = accent?.fill ?? '#efefef';
+  const ink = accent?.ink ?? '#060809';
   const { state: update, check } = useUpdateCheck(client);
   const list = useRef<HTMLDivElement>(null);
 
@@ -454,6 +455,15 @@ function Panel({
                     +
                   </Step>
                 </div>
+              ) : enumeration && enumeration.values.length > 2 ? (
+                <Segments
+                  values={enumeration.values}
+                  labels={enumeration.labels}
+                  value={String(value)}
+                  tint={tint}
+                  ink={ink}
+                  onPick={next => setPref(row.key, next)}
+                />
               ) : enumeration ? (
                 <button
                   onClick={() => {
@@ -530,6 +540,42 @@ function updateLine(state: UpdateState) {
     case 'failed':
       return `Could not check: ${state.reason}`;
   }
+}
+
+function Segments({
+  values,
+  labels,
+  value,
+  tint,
+  ink,
+  onPick,
+}: {
+  values: string[];
+  labels: string[];
+  value: string;
+  tint: string;
+  ink: string;
+  onPick: (next: string) => void;
+}) {
+  return (
+    <div className="flex shrink-0 items-center gap-1 rounded-full bg-white/10 p-1">
+      {values.map((option, i) => {
+        const on = option === value;
+        return (
+          <button
+            key={option}
+            aria-pressed={on}
+            onClick={() => onPick(option)}
+            style={on ? { backgroundColor: tint, color: ink } : undefined}
+            className={`rounded-full px-4 py-1.5 text-row font-medium transition duration-200 active:scale-95 ${
+              on ? '' : 'text-dim'
+            }`}>
+            {labels[i]}
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 function Step({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
