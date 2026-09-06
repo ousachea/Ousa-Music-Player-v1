@@ -1,5 +1,9 @@
 # weather
 
+## 0.7.1
+
+The poster wave travels while playing.
+
 ## 0.7.0
 
 Poster style: full bleed artwork with a wavy progress line.

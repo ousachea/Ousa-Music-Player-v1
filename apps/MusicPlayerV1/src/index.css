@@ -156,6 +156,17 @@
   }
 }
 
+/* the wave travels one wavelength and repeats, so the crests appear to run toward the playhead */
+@keyframes wave-travel {
+  to {
+    transform: translateX(var(--wave-step, 26px));
+  }
+}
+
+.wave-travel {
+  animation: wave-travel var(--wave-duration, 1.7s) linear infinite;
+}
+
 .roll {
   animation: roll var(--roll-duration, 9s) ease-in-out infinite;
 }

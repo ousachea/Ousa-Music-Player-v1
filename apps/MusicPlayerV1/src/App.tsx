@@ -247,6 +247,7 @@ export default function App() {
           title={track.title ?? 'unknown'}
           artist={track.artist ?? '—'}
           playing={playing}
+          motion={prefs.motion}
           progress={progress}
           elapsed={elapsed}
           duration={duration}
@@ -634,6 +635,7 @@ function Poster({
   title,
   artist,
   playing,
+  motion,
   progress,
   elapsed,
   duration,
@@ -647,6 +649,7 @@ function Poster({
   title: string;
   artist: string;
   playing: boolean;
+  motion: boolean;
   progress: number;
   elapsed: number;
   duration: number;
@@ -696,7 +699,7 @@ function Poster({
           <Skip className="h-7 w-7 -scale-x-100" />
         </button>
 
-        <Wave progress={progress} onSeek={onSeek} />
+        <Wave progress={progress} playing={playing} motion={motion} onSeek={onSeek} />
 
         <button
           aria-label="next"
@@ -716,17 +719,29 @@ function Poster({
 const WAVE_AMPLITUDE = 5;
 const WAVE_LENGTH = 26;
 
-// played is drawn as a wave and the rest as a flat line, which is what separates this style from a plain bar
-function wavePath(width: number, mid: number) {
-  if (width <= 0) return '';
-  let d = `M 0 ${mid}`;
-  for (let x = 2; x <= width; x += 2) {
-    d += ` L ${x.toFixed(1)} ${(mid - Math.sin((x / WAVE_LENGTH) * Math.PI * 2) * WAVE_AMPLITUDE).toFixed(2)}`;
+// played is drawn as a wave and the rest as a flat line, which is what separates this style from a plain bar.
+// it runs a wavelength past each end so the travelling animation always has crests to pull into view.
+function wavePath(from: number, to: number, mid: number) {
+  if (to <= from) return '';
+  let d = '';
+  for (let x = from; x <= to; x += 2) {
+    const y = (mid - Math.sin((x / WAVE_LENGTH) * Math.PI * 2) * WAVE_AMPLITUDE).toFixed(2);
+    d += `${d ? ' L' : 'M'} ${x.toFixed(1)} ${y}`;
   }
   return d;
 }
 
-function Wave({ progress, onSeek }: { progress: number; onSeek: (ratio: number) => void }) {
+function Wave({
+  progress,
+  playing,
+  motion,
+  onSeek,
+}: {
+  progress: number;
+  playing: boolean;
+  motion: boolean;
+  onSeek: (ratio: number) => void;
+}) {
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
@@ -761,14 +776,27 @@ function Wave({ progress, onSeek }: { progress: number; onSeek: (ratio: number) 
           strokeLinecap="round"
           fill="none"
         />
-        <path
-          d={wavePath(played, mid)}
-          stroke="#f2f4f6"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
+        <defs>
+          {/* the wave is drawn long and clipped back to the playhead, so travel never spills past it */}
+          <clipPath id="wave-played">
+            <rect x="0" y="0" width={Math.max(0, played)} height={height} />
+          </clipPath>
+        </defs>
+        <g clipPath="url(#wave-played)">
+          <path
+            className="wave-travel"
+            style={{
+              ['--wave-step' as string]: `${WAVE_LENGTH}px`,
+              animationPlayState: playing && motion ? 'running' : 'paused',
+            }}
+            d={wavePath(-WAVE_LENGTH, played + WAVE_LENGTH, mid)}
+            stroke="#f2f4f6"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </g>
         <rect x={played - 1.5} y={mid - 9} width="3" height="18" rx="1.5" fill="#f2f4f6" />
       </svg>
     </div>
