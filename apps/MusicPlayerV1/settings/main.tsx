@@ -8,6 +8,9 @@ const CHOICE_LABELS: Record<string, string> = {
   card: 'Cover',
   vinyl: 'Vinyl record',
   poster: 'Full bleed artwork',
+  auto: 'Match the player style',
+  bar: 'Straight line',
+  wave: 'Wave',
   volume: 'Volume',
   seek: 'Scrub the track',
   artwork: 'Pulled from the album art',
@@ -18,6 +21,7 @@ const HINTS: Record<string, string> = {
   wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',
   seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
   theme: 'Cover shows the album art square. Vinyl puts it on a spinning record. Poster fills the screen with it.',
+  seek: 'Auto gives Poster the wave and the other styles a line. Pick one to use it everywhere.',
   accent: 'The progress bar, play button and header take this colour.',
 };
 

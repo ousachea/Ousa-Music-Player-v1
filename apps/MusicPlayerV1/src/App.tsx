@@ -26,6 +26,7 @@ const MULTI_CLICK_MS = 300;
 // the panel is only reachable by a hardware button, so say so once and then stop
 const HINT_KEY = 'hint.settingsSeen';
 const HINT_MS = 7000;
+const WHEEL_SCROLL_PX = 26;
 
 type Volume = { level: number; muted: boolean };
 
@@ -63,6 +64,7 @@ export default function App() {
   }, [client]);
 
   const accentOn = prefs.accent === 'artwork' ? accent : null;
+  const seekStyle = prefs.seek === 'auto' ? (prefs.theme === 'poster' ? 'wave' : 'bar') : prefs.seek;
   const track = state?.track ?? null;
   const playback = state?.playback ?? null;
   const artworkId = track?.artworkId ?? null;
@@ -196,7 +198,7 @@ export default function App() {
   useEffect(() => {
     // both modes go through the same detent gate, so a click means the same amount either way
     const onWheel = (e: WheelEvent) => {
-      if (!e.deltaX) return;
+      if (panel || !e.deltaX) return;
       detents.current += e.deltaX;
       const steps = Math.trunc(detents.current / WHEEL_PER_STEP);
       if (!steps) return;
@@ -228,7 +230,7 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
     };
-  }, [client, duration, flashHud, live, prefs.seekSeconds, prefs.wheel, press, scrub, seek]);
+  }, [client, duration, flashHud, live, panel, prefs.seekSeconds, prefs.wheel, press, scrub, seek]);
 
   if (!track)
     return (
@@ -249,6 +251,7 @@ export default function App() {
           accent={accentOn}
           playing={playing}
           motion={prefs.motion}
+          seekStyle={seekStyle}
           progress={progress}
           elapsed={elapsed}
           duration={duration}
@@ -300,10 +303,11 @@ export default function App() {
               </div>
 
               <div>
-                <Rail
+                <Seek
+                  style={seekStyle}
                   progress={progress}
-                  accent={accentOn}
                   playing={playing && prefs.motion}
+                  tint={accentOn?.fill ?? '#efefef'}
                   onSeek={ratio => seek(ratio * duration)}
                 />
                 <div className="mt-2.5 flex justify-between font-mono text-hint tabular-nums text-dim">
@@ -358,6 +362,7 @@ export default function App() {
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: { values: ['card', 'vinyl', 'poster'], labels: ['Cover', 'Vinyl', 'Poster'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
+  seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
 };
 
@@ -365,6 +370,7 @@ const ROWS: { key: keyof Prefs; label: string }[] = [
   { key: 'theme', label: 'Player style' },
   { key: 'wheel', label: 'Rotary wheel' },
   { key: 'seekSeconds', label: 'Seek step' },
+  { key: 'seek', label: 'Seek bar' },
   { key: 'accent', label: 'Accent colour' },
   { key: 'backdrop', label: 'Artwork backdrop' },
   { key: 'motion', label: 'Animations' },
@@ -384,6 +390,17 @@ function Panel({
 }) {
   const tint = accent?.fill ?? '#efefef';
   const { state: update, check } = useUpdateCheck(client);
+  const list = useRef<HTMLDivElement>(null);
+
+  // the wheel drives volume everywhere else, but while this is open it belongs to the list
+  useEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      if (!list.current || !e.deltaX) return;
+      list.current.scrollTop += e.deltaX * WHEEL_SCROLL_PX;
+    };
+    window.addEventListener('wheel', onWheel, { passive: true });
+    return () => window.removeEventListener('wheel', onWheel);
+  }, []);
   return (
     <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 py-5 pl-8 pr-24 backdrop-blur-sm">
       <div className="flex items-baseline justify-between gap-4">
@@ -394,7 +411,9 @@ function Panel({
         </span>
       </div>
 
-      <div className="mt-2 flex min-h-0 flex-1 flex-col justify-center">
+      <div
+        ref={list}
+        className="mt-2 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-width:none]">
         {ROWS.map(row => {
           const enumeration = ENUMS[row.key];
           const value = prefs[row.key];
@@ -638,6 +657,7 @@ function Poster({
   accent,
   playing,
   motion,
+  seekStyle,
   progress,
   elapsed,
   duration,
@@ -653,6 +673,7 @@ function Poster({
   accent: Accent | null;
   playing: boolean;
   motion: boolean;
+  seekStyle: 'bar' | 'wave';
   progress: number;
   elapsed: number;
   duration: number;
@@ -707,7 +728,7 @@ function Poster({
           <Skip className="h-9 w-9 -scale-x-100" />
         </button>
 
-        <Wave progress={progress} playing={playing} motion={motion} tint={tint} onSeek={onSeek} />
+        <Seek style={seekStyle} progress={progress} playing={playing && motion} tint={tint} onSeek={onSeek} />
 
         <button
           aria-label="next"
@@ -739,13 +760,11 @@ function wavePath(from: number, to: number, mid: number) {
 function Wave({
   progress,
   playing,
-  motion,
   tint,
   onSeek,
 }: {
   progress: number;
   playing: boolean;
-  motion: boolean;
   tint: string;
   onSeek: (ratio: number) => void;
 }) {
@@ -772,7 +791,7 @@ function Wave({
   return (
     <div
       ref={box}
-      className="-my-3 flex h-11 min-w-0 flex-1 cursor-pointer items-center py-3"
+      className="-my-3 flex h-11 w-full min-w-0 flex-1 cursor-pointer items-center py-3"
       onPointerDown={pick}
       onPointerMove={e => e.buttons === 1 && pick(e)}>
       <svg width="100%" height={height} viewBox={`0 0 ${Math.max(1, width)} ${height}`} className="overflow-visible">
@@ -794,7 +813,7 @@ function Wave({
             className="wave-travel"
             style={{
               ['--wave-step' as string]: `${WAVE_LENGTH}px`,
-              animationPlayState: playing && motion ? 'running' : 'paused',
+              animationPlayState: playing ? 'running' : 'paused',
             }}
             d={wavePath(-WAVE_LENGTH, played + WAVE_LENGTH, mid)}
             stroke={tint}
@@ -807,6 +826,26 @@ function Wave({
         <rect x={played - 1.5} y={mid - 9} width="3" height="18" rx="1.5" fill={tint} />
       </svg>
     </div>
+  );
+}
+
+function Seek({
+  style,
+  progress,
+  playing,
+  tint,
+  onSeek,
+}: {
+  style: 'bar' | 'wave';
+  progress: number;
+  playing: boolean;
+  tint: string;
+  onSeek: (ratio: number) => void;
+}) {
+  return style === 'wave' ? (
+    <Wave progress={progress} playing={playing} tint={tint} onSeek={onSeek} />
+  ) : (
+    <Rail progress={progress} playing={playing} tint={tint} onSeek={onSeek} />
   );
 }
 
@@ -830,13 +869,13 @@ function Backdrop({ url }: { url: string | null }) {
 // pointer anywhere on the strip seeks, and the hit area is taller than the visible rail
 function Rail({
   progress,
-  accent,
   playing,
+  tint,
   onSeek,
 }: {
   progress: number;
-  accent: Accent | null;
   playing: boolean;
+  tint: string;
   onSeek: (ratio: number) => void;
 }) {
   const pick = (e: PointerEvent<HTMLDivElement>) => {
@@ -851,7 +890,7 @@ function Rail({
       <div className="relative h-[3px] w-full rounded-full bg-white/18">
         <div
           className="absolute inset-y-0 left-0 overflow-hidden rounded-full bg-off-white transition-colors duration-500"
-          style={{ width: `${Math.min(100, progress * 100)}%`, backgroundColor: accent?.fill }}>
+          style={{ width: `${Math.min(100, progress * 100)}%`, backgroundColor: tint }}>
           {playing && (
             <div className="absolute inset-y-0 w-1/3 animate-sheen bg-gradient-to-r from-transparent via-white/70 to-transparent" />
           )}
@@ -859,12 +898,12 @@ function Rail({
         {playing && (
           <div
             className="pointer-events-none absolute top-1/2 h-3 w-3 animate-halo rounded-full bg-off-white"
-            style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: accent?.fill }}
+            style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: tint }}
           />
         )}
         <div
           className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-off-white shadow transition-colors duration-500"
-          style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: accent?.fill }}
+          style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: tint }}
         />
       </div>
     </div>

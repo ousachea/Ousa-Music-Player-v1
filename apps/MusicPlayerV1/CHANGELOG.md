@@ -1,5 +1,9 @@
 # weather
 
+## 0.9.0
+
+Seek bar style is a setting; the settings list scrolls.
+
 ## 0.8.1
 
 Bigger skip buttons in the poster style.

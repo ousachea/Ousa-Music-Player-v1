@@ -6,13 +6,14 @@ export type Prefs = {
   theme: 'card' | 'vinyl' | 'poster';
   wheel: 'volume' | 'seek';
   seekSeconds: number;
+  seek: 'auto' | 'bar' | 'wave';
   accent: 'artwork' | 'mono';
   backdrop: boolean;
   motion: boolean;
   remaining: boolean;
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, accent: 'artwork', backdrop: true, motion: true, remaining: true };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: true, motion: true, remaining: true };
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
@@ -30,6 +31,8 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       if (!Number.isFinite(n)) return { ...prefs, seekSeconds: DEFAULTS.seekSeconds };
       return { ...prefs, seekSeconds: Math.min(SEEK_MAX, Math.max(SEEK_MIN, n)) };
     }
+    case 'seek':
+      return { ...prefs, seek: value === 'bar' || value === 'wave' ? value : 'auto' };
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
     case 'backdrop':
