@@ -1,5 +1,9 @@
 # weather
 
+## 0.7.0
+
+Poster style: full bleed artwork with a wavy progress line.
+
 ## 0.6.1
 
 Drop the Done button; the Back button closes the panel and now says so.

@@ -240,86 +240,105 @@ export default function App() {
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-screen">
-      <Backdrop url={prefs.backdrop ? artUrl : null} />
+      {prefs.theme === 'poster' ? (
+        <Poster
+          artUrl={artUrl}
+          context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
+          title={track.title ?? 'unknown'}
+          artist={track.artist ?? '—'}
+          playing={playing}
+          progress={progress}
+          elapsed={elapsed}
+          duration={duration}
+          onToggle={toggle}
+          onPrev={() => client.player.skipPrev({ allowSeeking: true })}
+          onNext={() => client.player.skipNext()}
+          onSeek={ratio => seek(ratio * duration)}
+        />
+      ) : (
+        <>
+          <Backdrop url={prefs.backdrop ? artUrl : null} />
 
-      <div className="relative flex h-full w-full items-stretch gap-7 p-7">
-        {prefs.theme === 'vinyl' ? (
-          <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} />
-        ) : (
-          <div className="relative aspect-square h-full shrink-0">
-            <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />
-            {artUrl ? (
-              <img
-                src={artUrl}
-                alt=""
-                className="relative h-full w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/12"
-              />
+          <div className="relative flex h-full w-full items-stretch gap-7 p-7">
+            {prefs.theme === 'vinyl' ? (
+              <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} />
             ) : (
-              <div className="relative grid h-full w-full place-items-center rounded-2xl bg-white/6 ring-1 ring-white/12">
-                <Disc className="h-16 w-16 text-off-white/25" />
+              <div className="relative aspect-square h-full shrink-0">
+                <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />
+                {artUrl ? (
+                  <img
+                    src={artUrl}
+                    alt=""
+                    className="relative h-full w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/12"
+                  />
+                ) : (
+                  <div className="relative grid h-full w-full place-items-center rounded-2xl bg-white/6 ring-1 ring-white/12">
+                    <Disc className="h-16 w-16 text-off-white/25" />
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        <div className="flex h-full min-w-0 flex-1 flex-col">
-          <div className="flex items-center gap-2.5">
-            <span className={`h-1.5 w-1.5 rounded-full ${conn === 'open' ? 'bg-ok' : 'bg-warn'}`} />
-            <span
-              className="min-w-0 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase transition-colors duration-500"
-              style={accentOn ? { color: accentOn.soft } : undefined}>
-              {conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
-            </span>
-          </div>
-
-          <div className="flex min-h-0 flex-1 flex-col justify-center">
-            <Roll
-              text={track.title ?? 'unknown'}
-              className="font-display text-[2.125rem] leading-[1.2] font-semibold tracking-display text-off-white"
-            />
-            <Roll text={track.artist ?? '—'} className="mt-2 text-title text-soft" />
-          </div>
-
-          <div>
-            <Rail
-              progress={progress}
-              accent={accentOn}
-              playing={playing && prefs.motion}
-              onSeek={ratio => seek(ratio * duration)}
-            />
-            <div className="mt-2.5 flex justify-between font-mono text-hint tabular-nums text-dim">
-              <span>{clock(elapsed)}</span>
-              <span>{duration ? (prefs.remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}</span>
-            </div>
-
-            <div className="mt-8 flex items-center justify-center gap-5">
-              <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
-                <Skip className="h-6 w-6 -scale-x-100" />
-              </Ghost>
-              <button
-                aria-label={playing ? 'pause' : 'play'}
-                onPointerDown={() => bumpPlay(n => n + 1)}
-                onClick={toggle}
-                style={accentOn ? { backgroundColor: accentOn.fill, color: accentOn.ink } : undefined}
-                className="relative grid h-20 w-20 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
-                {playTap > 0 && (
-                  <span
-                    key={playTap}
-                    className="pointer-events-none absolute inset-0 animate-ripple rounded-full ring-3"
-                    style={{ color: accentOn?.fill ?? '#efefef' }}
-                  />
-                )}
-                <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-                  {playing ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+            <div className="flex h-full min-w-0 flex-1 flex-col">
+              <div className="flex items-center gap-2.5">
+                <span className={`h-1.5 w-1.5 rounded-full ${conn === 'open' ? 'bg-ok' : 'bg-warn'}`} />
+                <span
+                  className="min-w-0 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase transition-colors duration-500"
+                  style={accentOn ? { color: accentOn.soft } : undefined}>
+                  {conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
                 </span>
-              </button>
-              <Ghost label="next" onClick={() => client.player.skipNext()}>
-                <Skip className="h-6 w-6" />
-              </Ghost>
+              </div>
+
+              <div className="flex min-h-0 flex-1 flex-col justify-center">
+                <Roll
+                  text={track.title ?? 'unknown'}
+                  className="font-display text-[2.125rem] leading-[1.2] font-semibold tracking-display text-off-white"
+                />
+                <Roll text={track.artist ?? '—'} className="mt-2 text-title text-soft" />
+              </div>
+
+              <div>
+                <Rail
+                  progress={progress}
+                  accent={accentOn}
+                  playing={playing && prefs.motion}
+                  onSeek={ratio => seek(ratio * duration)}
+                />
+                <div className="mt-2.5 flex justify-between font-mono text-hint tabular-nums text-dim">
+                  <span>{clock(elapsed)}</span>
+                  <span>{duration ? (prefs.remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}</span>
+                </div>
+
+                <div className="mt-8 flex items-center justify-center gap-5">
+                  <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
+                    <Skip className="h-6 w-6 -scale-x-100" />
+                  </Ghost>
+                  <button
+                    aria-label={playing ? 'pause' : 'play'}
+                    onPointerDown={() => bumpPlay(n => n + 1)}
+                    onClick={toggle}
+                    style={accentOn ? { backgroundColor: accentOn.fill, color: accentOn.ink } : undefined}
+                    className="relative grid h-20 w-20 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
+                    {playTap > 0 && (
+                      <span
+                        key={playTap}
+                        className="pointer-events-none absolute inset-0 animate-ripple rounded-full ring-3"
+                        style={{ color: accentOn?.fill ?? '#efefef' }}
+                      />
+                    )}
+                    <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+                      {playing ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+                    </span>
+                  </button>
+                  <Ghost label="next" onClick={() => client.player.skipNext()}>
+                    <Skip className="h-6 w-6" />
+                  </Ghost>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       <VolumeHud show={hud} volume={volume} accent={accentOn} />
       <div
@@ -335,7 +354,7 @@ export default function App() {
 }
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
-  theme: { values: ['card', 'vinyl'], labels: ['Cover', 'Vinyl'] },
+  theme: { values: ['card', 'vinyl', 'poster'], labels: ['Cover', 'Vinyl', 'Poster'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
 };
@@ -605,6 +624,154 @@ function Tonearm({ playing }: { playing: boolean }) {
         <rect x="322" y="142" width="17" height="26" rx="4" fill="url(#chrome)" transform="rotate(28 330 155)" />
       </g>
     </svg>
+  );
+}
+
+// the artwork is the whole ground here, so everything else sits on top of it
+function Poster({
+  artUrl,
+  context,
+  title,
+  artist,
+  playing,
+  progress,
+  elapsed,
+  duration,
+  onToggle,
+  onPrev,
+  onNext,
+  onSeek,
+}: {
+  artUrl: string | null;
+  context: string;
+  title: string;
+  artist: string;
+  playing: boolean;
+  progress: number;
+  elapsed: number;
+  duration: number;
+  onToggle: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onSeek: (ratio: number) => void;
+}) {
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {artUrl ? (
+        <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      ) : (
+        <div className="absolute inset-0 bg-white/6" />
+      )}
+      {/* the art is arbitrary, so the text needs its own guaranteed contrast underneath */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/45" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/40" />
+
+      <div className="absolute right-7 top-6 flex max-w-[42%] items-center gap-2.5 rounded-full bg-black/45 px-4 py-2 ring-1 ring-white/15 backdrop-blur-md">
+        <Disc className="h-4 w-4 shrink-0 text-off-white/80" />
+        <span className="truncate text-hint text-off-white">{context}</span>
+      </div>
+
+      <button
+        aria-label={playing ? 'pause' : 'play'}
+        onClick={onToggle}
+        className="absolute right-7 top-1/2 grid h-24 w-24 -translate-y-1/2 place-items-center rounded-[30px] bg-off-white text-screen shadow-2xl transition-transform duration-300 ease-spring active:scale-90">
+        <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+          {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
+        </span>
+      </button>
+
+      <div className="absolute bottom-24 left-8 w-[52%]">
+        <Roll
+          text={title}
+          className="font-display text-[2.375rem] leading-[1.15] font-semibold tracking-display text-off-white"
+        />
+        <Roll text={artist} className="mt-1 text-title text-off-white/70" />
+      </div>
+
+      <div className="absolute inset-x-8 bottom-7 flex items-center gap-6">
+        <button
+          aria-label="previous"
+          onClick={onPrev}
+          className="shrink-0 text-off-white transition-transform duration-300 ease-spring active:scale-90">
+          <Skip className="h-7 w-7 -scale-x-100" />
+        </button>
+
+        <Wave progress={progress} onSeek={onSeek} />
+
+        <button
+          aria-label="next"
+          onClick={onNext}
+          className="shrink-0 text-off-white transition-transform duration-300 ease-spring active:scale-90">
+          <Skip className="h-7 w-7" />
+        </button>
+
+        <span className="w-24 shrink-0 text-right font-mono text-hint tabular-nums text-off-white/70">
+          {clock(elapsed)} / {duration ? clock(duration) : '--:--'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+const WAVE_AMPLITUDE = 5;
+const WAVE_LENGTH = 26;
+
+// played is drawn as a wave and the rest as a flat line, which is what separates this style from a plain bar
+function wavePath(width: number, mid: number) {
+  if (width <= 0) return '';
+  let d = `M 0 ${mid}`;
+  for (let x = 2; x <= width; x += 2) {
+    d += ` L ${x.toFixed(1)} ${(mid - Math.sin((x / WAVE_LENGTH) * Math.PI * 2) * WAVE_AMPLITUDE).toFixed(2)}`;
+  }
+  return d;
+}
+
+function Wave({ progress, onSeek }: { progress: number; onSeek: (ratio: number) => void }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    if (!box.current) return;
+    const measure = () => box.current && setWidth(box.current.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(box.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const height = 22;
+  const mid = height / 2;
+  const played = Math.max(0, Math.min(width, width * progress));
+  const pick = (e: PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    onSeek(Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width)));
+  };
+
+  return (
+    <div
+      ref={box}
+      className="-my-3 flex h-11 min-w-0 flex-1 cursor-pointer items-center py-3"
+      onPointerDown={pick}
+      onPointerMove={e => e.buttons === 1 && pick(e)}>
+      <svg width="100%" height={height} viewBox={`0 0 ${Math.max(1, width)} ${height}`} className="overflow-visible">
+        <path
+          d={`M ${played} ${mid} L ${width} ${mid}`}
+          stroke="rgba(255,255,255,0.32)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <path
+          d={wavePath(played, mid)}
+          stroke="#f2f4f6"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
+        <rect x={played - 1.5} y={mid - 9} width="3" height="18" rx="1.5" fill="#f2f4f6" />
+      </svg>
+    </div>
   );
 }
 

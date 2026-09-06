@@ -7,6 +7,7 @@ import './style.css';
 const CHOICE_LABELS: Record<string, string> = {
   card: 'Cover',
   vinyl: 'Vinyl record',
+  poster: 'Full bleed artwork',
   volume: 'Volume',
   seek: 'Scrub the track',
   artwork: 'Pulled from the album art',
@@ -16,7 +17,7 @@ const CHOICE_LABELS: Record<string, string> = {
 const HINTS: Record<string, string> = {
   wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',
   seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
-  theme: 'Cover shows the album art square. Vinyl puts it on a spinning record with a tonearm.',
+  theme: 'Cover shows the album art square. Vinyl puts it on a spinning record. Poster fills the screen with it.',
   accent: 'The progress bar, play button and header take this colour.',
 };
 
