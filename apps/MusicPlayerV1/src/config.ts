@@ -9,12 +9,12 @@ export type Prefs = {
   seek: 'auto' | 'bar' | 'wave';
   accent: 'artwork' | 'mono';
   backdrop: number;
-  drift: boolean;
+  drift: number;
   motion: boolean;
   remaining: boolean;
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: true, motion: true, remaining: true };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: 40, motion: true, remaining: true };
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
@@ -26,6 +26,14 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, theme: value === 'vinyl' || value === 'poster' ? value : 'card' };
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };
+    case 'drift': {
+      // this key used to be a boolean too, so an old stored value still has to mean something sensible
+      if (value === 'true') return { ...prefs, drift: DEFAULTS.drift };
+      if (value === 'false') return { ...prefs, drift: 0 };
+      const amount = Number(value);
+      if (!Number.isFinite(amount)) return { ...prefs, drift: DEFAULTS.drift };
+      return { ...prefs, drift: Math.min(100, Math.max(0, amount)) };
+    }
     case 'backdrop': {
       // this key used to be a boolean, so an old stored value still has to mean something sensible
       if (value === 'true') return { ...prefs, backdrop: DEFAULTS.backdrop };
@@ -44,7 +52,6 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, seek: value === 'bar' || value === 'wave' ? value : 'auto' };
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
-    case 'drift':
     case 'motion':
     case 'remaining':
       return { ...prefs, [key]: value !== 'false' };

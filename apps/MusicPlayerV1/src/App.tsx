@@ -369,18 +369,40 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
 const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: string }> = {
   seekSeconds: { min: 1, max: 30, step: 1, suffix: 's' },
   backdrop: { min: 0, max: 100, step: 10, suffix: '%' },
+  drift: { min: 0, max: 100, step: 10, suffix: '%' },
 };
 
-const ROWS: { key: keyof Prefs; label: string }[] = [
-  { key: 'theme', label: 'Player style' },
-  { key: 'wheel', label: 'Rotary wheel' },
-  { key: 'seekSeconds', label: 'Seek step' },
-  { key: 'seek', label: 'Seek bar' },
-  { key: 'accent', label: 'Accent colour' },
-  { key: 'backdrop', label: 'Backdrop intensity' },
-  { key: 'drift', label: 'Backdrop drift' },
-  { key: 'motion', label: 'Animations' },
-  { key: 'remaining', label: 'Show time remaining' },
+// grouped so a related pair reads together rather than as nine unrelated lines
+const GROUPS: { title: string; rows: { key: keyof Prefs; label: string }[] }[] = [
+  {
+    title: 'Player',
+    rows: [
+      { key: 'theme', label: 'Player style' },
+      { key: 'accent', label: 'Accent colour' },
+    ],
+  },
+  {
+    title: 'Controls',
+    rows: [
+      { key: 'wheel', label: 'Rotary wheel' },
+      { key: 'seekSeconds', label: 'Seek step' },
+      { key: 'seek', label: 'Seek bar' },
+    ],
+  },
+  {
+    title: 'Backdrop',
+    rows: [
+      { key: 'backdrop', label: 'Intensity' },
+      { key: 'drift', label: 'Drift' },
+    ],
+  },
+  {
+    title: 'Display',
+    rows: [
+      { key: 'motion', label: 'Animations' },
+      { key: 'remaining', label: 'Show time remaining' },
+    ],
+  },
 ];
 
 function Panel({
@@ -408,6 +430,71 @@ function Panel({
     window.addEventListener('wheel', onWheel, { passive: true });
     return () => window.removeEventListener('wheel', onWheel);
   }, []);
+
+  const control = (key: keyof Prefs) => {
+    const enumeration = ENUMS[key];
+    const value = prefs[key];
+    const numeric = NUMERIC[key];
+
+    if (numeric) {
+      return (
+        <div className="flex shrink-0 items-center gap-3">
+          <Step label="less" onClick={() => setPref(key, String(Math.max(numeric.min, (value as number) - numeric.step)))}>
+            −
+          </Step>
+          <span className="w-14 text-center font-mono text-title tabular-nums" style={{ color: tint }}>
+            {value as number}
+            {numeric.suffix}
+          </span>
+          <Step label="more" onClick={() => setPref(key, String(Math.min(numeric.max, (value as number) + numeric.step)))}>
+            +
+          </Step>
+        </div>
+      );
+    }
+
+    if (enumeration && enumeration.values.length > 2) {
+      return (
+        <Segments
+          values={enumeration.values}
+          labels={enumeration.labels}
+          value={String(value)}
+          tint={tint}
+          ink={ink}
+          onPick={next => setPref(key, next)}
+        />
+      );
+    }
+
+    if (enumeration) {
+      return (
+        <button
+          onClick={() => {
+            const i = enumeration.values.indexOf(String(value));
+            setPref(key, enumeration.values[(i + 1) % enumeration.values.length]);
+          }}
+          className="shrink-0 rounded-full px-5 py-2 text-row font-medium transition active:scale-95"
+          style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
+          {enumeration.labels[Math.max(0, enumeration.values.indexOf(String(value)))]}
+        </button>
+      );
+    }
+
+    return (
+      <button
+        role="switch"
+        aria-checked={value === true}
+        onClick={() => setPref(key, value ? 'false' : 'true')}
+        className="relative h-9 w-16 shrink-0 rounded-full transition-colors duration-200"
+        style={{ backgroundColor: value ? tint : 'rgba(255,255,255,0.16)' }}>
+        <span
+          className="absolute top-1 h-7 w-7 rounded-full bg-screen transition-[left] duration-200"
+          style={{ left: value ? '32px' : '4px' }}
+        />
+      </button>
+    );
+  };
+
   return (
     <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 py-5 pl-8 pr-24 backdrop-blur-sm">
       <div className="flex items-baseline justify-between gap-4">
@@ -420,93 +507,44 @@ function Panel({
 
       <div
         ref={list}
-        className="mt-2 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-width:none]">
-        {ROWS.map(row => {
-          const enumeration = ENUMS[row.key];
-          const value = prefs[row.key];
-          return (
-            <div key={row.key} className="flex items-center justify-between gap-5 border-b border-white/6 py-1">
-              <span className="min-w-0 truncate text-title text-near">{row.label}</span>
-
-              {NUMERIC[row.key] ? (
-                <div className="flex shrink-0 items-center gap-3">
-                  <Step
-                    label="less"
-                    onClick={() =>
-                      setPref(
-                        row.key,
-                        String(Math.max(NUMERIC[row.key].min, (value as number) - NUMERIC[row.key].step)),
-                      )
-                    }>
-                    −
-                  </Step>
-                  <span className="w-14 text-center font-mono text-title tabular-nums" style={{ color: tint }}>
-                    {value as number}
-                    {NUMERIC[row.key].suffix}
-                  </span>
-                  <Step
-                    label="more"
-                    onClick={() =>
-                      setPref(
-                        row.key,
-                        String(Math.min(NUMERIC[row.key].max, (value as number) + NUMERIC[row.key].step)),
-                      )
-                    }>
-                    +
-                  </Step>
+        className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-width:none]">
+        {GROUPS.map((group, gi) => (
+          <section key={group.title} className={gi === 0 ? '' : 'mt-6'}>
+            <h2 className="mb-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{group.title}</h2>
+            <div className="rounded-2xl bg-white/4">
+              {group.rows.map((row, ri) => (
+                <div
+                  key={row.key}
+                  className={`flex items-center justify-between gap-5 px-4 py-2 ${
+                    ri === group.rows.length - 1 ? '' : 'border-b border-white/6'
+                  }`}>
+                  <span className="min-w-0 truncate text-title text-near">{row.label}</span>
+                  {control(row.key)}
                 </div>
-              ) : enumeration && enumeration.values.length > 2 ? (
-                <Segments
-                  values={enumeration.values}
-                  labels={enumeration.labels}
-                  value={String(value)}
-                  tint={tint}
-                  ink={ink}
-                  onPick={next => setPref(row.key, next)}
-                />
-              ) : enumeration ? (
-                <button
-                  onClick={() => {
-                    const i = enumeration.values.indexOf(String(value));
-                    setPref(row.key, enumeration.values[(i + 1) % enumeration.values.length]);
-                  }}
-                  className="shrink-0 rounded-full px-5 py-2 text-row font-medium transition active:scale-95"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
-                  {enumeration.labels[Math.max(0, enumeration.values.indexOf(String(value)))]}
-                </button>
-              ) : (
-                <button
-                  role="switch"
-                  aria-checked={value === true}
-                  onClick={() => setPref(row.key, value ? 'false' : 'true')}
-                  className="relative h-9 w-16 shrink-0 rounded-full transition-colors duration-200"
-                  style={{ backgroundColor: value ? tint : 'rgba(255,255,255,0.16)' }}>
-                  <span
-                    className="absolute top-1 h-7 w-7 rounded-full bg-screen transition-[left] duration-200"
-                    style={{ left: value ? '32px' : '4px' }}
-                  />
-                </button>
-              )}
+              ))}
             </div>
-          );
-        })}
+          </section>
+        ))}
 
-        <div className="flex items-center justify-between gap-5 py-1">
-          <div className="min-w-0">
-            <div className="truncate text-title text-near">Software update</div>
-            <div className="truncate text-hint text-dim">{updateLine(update)}</div>
+        <section className="mt-6 mb-1">
+          <h2 className="mb-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">About</h2>
+          <div className="flex items-center justify-between gap-5 rounded-2xl bg-white/4 px-4 py-2">
+            <div className="min-w-0">
+              <div className="truncate text-title text-near">Software update</div>
+              <div className="truncate text-hint text-dim">{updateLine(update)}</div>
+            </div>
+            <button
+              onClick={check}
+              disabled={update.kind === 'checking'}
+              className="shrink-0 rounded-full px-5 py-2 text-row font-medium transition active:scale-95 disabled:opacity-50"
+              style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
+              {update.kind === 'checking' ? 'Checking...' : 'Check'}
+            </button>
           </div>
-          <button
-            onClick={check}
-            disabled={update.kind === 'checking'}
-            className="shrink-0 rounded-full px-5 py-2 text-row font-medium transition active:scale-95 disabled:opacity-50"
-            style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
-            {update.kind === 'checking' ? 'Checking...' : 'Check'}
-          </button>
-        </div>
+        </section>
       </div>
 
-      <p className="text-hint text-dim">Changing a setting in the companion app overrides it here.</p>
+      <p className="mt-2 text-hint text-dim">Changing a setting in the companion app overrides it here.</p>
     </div>
   );
 }
@@ -916,8 +954,16 @@ function Seek({
   );
 }
 
-function Backdrop({ url, intensity, drift }: { url: string | null; intensity: number; drift: boolean }) {
+function Backdrop({ url, intensity, drift }: { url: string | null; intensity: number; drift: number }) {
   const level = Math.min(1, Math.max(0, intensity / 100));
+  // travel has to stay inside the overhang the zoom creates, or the pan would drag an edge into frame
+  const d = Math.min(1, Math.max(0, drift / 100));
+  const driftVars = {
+    '--drift-scale': (1.5 + 0.6 * d).toFixed(3),
+    '--drift-x': `${-(1 + 9 * d).toFixed(2)}%`,
+    '--drift-y': `${(0.6 + 5 * d).toFixed(2)}%`,
+    '--drift-duration': `${Math.round(40 - 22 * d)}s`,
+  } as CSSProperties;
   // the scrims were fixed, so raising the image opacity alone did almost nothing; they have to yield as it rises
   const scrim = (alpha: number) => `rgba(6, 8, 9, ${(alpha * (1 - 0.62 * level)).toFixed(3)})`;
   return (
@@ -928,9 +974,9 @@ function Backdrop({ url, intensity, drift }: { url: string | null; intensity: nu
           alt=""
           // tailwind's scale utility sets the separate scale property, which would compound with the
           // keyframes' own transform, so the zoom is owned by one of them and never both
-          style={{ opacity: level, transform: drift ? undefined : 'scale(1.5)' }}
+          style={{ opacity: level, transform: d > 0 ? undefined : 'scale(1.5)', ...(d > 0 ? driftVars : {}) }}
           className={`absolute inset-0 h-full w-full object-cover blur-[72px] saturate-[1.6] transition-opacity duration-500 ${
-            drift ? 'drift' : ''
+            d > 0 ? 'drift' : ''
           }`}
         />
       )}

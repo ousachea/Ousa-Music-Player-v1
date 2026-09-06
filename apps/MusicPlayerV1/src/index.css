@@ -167,13 +167,13 @@
   animation: wave-travel var(--wave-duration, 1.7s) linear infinite;
 }
 
-/* a slow pan across the blurred cover, long enough that it reads as ambient rather than as movement */
+/* a pan across the blurred cover; the travel and the pace both come from the intensity setting */
 @keyframes drift {
   0% {
     transform: scale(1.5) translate3d(0, 0, 0);
   }
   50% {
-    transform: scale(1.72) translate3d(-2.5%, 1.5%, 0);
+    transform: scale(var(--drift-scale, 1.74)) translate3d(var(--drift-x, -4.6%), var(--drift-y, 2.6%), 0);
   }
   100% {
     transform: scale(1.5) translate3d(0, 0, 0);
@@ -181,7 +181,7 @@
 }
 
 .drift {
-  animation: drift 34s ease-in-out infinite;
+  animation: drift var(--drift-duration, 31s) ease-in-out infinite;
 }
 
 .roll {

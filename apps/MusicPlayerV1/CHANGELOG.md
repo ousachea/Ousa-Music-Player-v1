@@ -1,5 +1,9 @@
 # weather
 
+## 0.11.0
+
+Drift intensity, and the settings are grouped into sections.
+
 ## 0.10.1
 
 Segmented control for settings with more than two choices.
