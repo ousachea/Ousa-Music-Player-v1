@@ -1,0 +1,10 @@
+{
+  "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
+  "name": "weather",
+  "version": "0.1.0",
+  "description": "",
+  "settings": "settings.html",
+  "config": [],
+  "permissions": [],
+  "art": { "heroPx": 248, "thumbPx": 96 }
+}
