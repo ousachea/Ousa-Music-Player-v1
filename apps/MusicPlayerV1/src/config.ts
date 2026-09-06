@@ -12,9 +12,10 @@ export type Prefs = {
   drift: number;
   motion: boolean;
   remaining: boolean;
+  clock: boolean;
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: 40, motion: true, remaining: true };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: 40, motion: true, remaining: true, clock: true };
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
@@ -53,6 +54,7 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
     case 'motion':
+    case 'clock':
     case 'remaining':
       return { ...prefs, [key]: value !== 'false' };
     default:

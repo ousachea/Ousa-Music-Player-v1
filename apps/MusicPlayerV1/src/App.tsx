@@ -11,6 +11,7 @@ import {
 } from 'react';
 
 import { accentFrom, type Accent } from './artwork-color';
+import { useClock } from './clock';
 import { usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
@@ -38,6 +39,7 @@ function clock(ms: number) {
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
   const { prefs, setPref } = usePrefs(client);
+  const wallClock = useClock(client, prefs.clock);
   const [panel, setPanel] = useState(false);
   const [hint, setHint] = useState(false);
   const hintSaved = useRef(false);
@@ -255,6 +257,7 @@ export default function App() {
           progress={progress}
           elapsed={elapsed}
           duration={duration}
+          wallClock={wallClock}
           onToggle={toggle}
           onPrev={() => client.player.skipPrev({ allowSeeking: true })}
           onNext={() => client.player.skipNext()}
@@ -285,16 +288,18 @@ export default function App() {
             )}
 
             <div className="flex h-full min-w-0 flex-1 flex-col">
-              <div className="flex items-center gap-2.5">
-                <span className={`h-1.5 w-1.5 rounded-full ${conn === 'open' ? 'bg-ok' : 'bg-warn'}`} />
-                <span
-                  className="min-w-0 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase transition-colors duration-500"
-                  style={accentOn ? { color: accentOn.soft } : undefined}>
-                  {conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
-                </span>
+              <div className="flex h-5 items-center justify-end">
+                {wallClock && (
+                  <span className="shrink-0 font-mono text-eyebrow tabular-nums text-dim">{wallClock}</span>
+                )}
               </div>
 
               <div className="flex min-h-0 flex-1 flex-col justify-center">
+                <div
+                  className="mb-2 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase transition-colors duration-500"
+                  style={accentOn ? { color: accentOn.soft } : undefined}>
+                  {conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
+                </div>
                 <Roll
                   text={track.title ?? 'unknown'}
                   className="font-display text-[2.125rem] leading-[1.2] font-semibold tracking-display text-off-white"
@@ -401,6 +406,7 @@ const GROUPS: { title: string; rows: { key: keyof Prefs; label: string }[] }[] =
     rows: [
       { key: 'motion', label: 'Animations' },
       { key: 'remaining', label: 'Show time remaining' },
+      { key: 'clock', label: 'Clock' },
     ],
   },
 ];
@@ -763,6 +769,7 @@ function Poster({
   playing,
   motion,
   seekStyle,
+  wallClock,
   progress,
   elapsed,
   duration,
@@ -779,6 +786,7 @@ function Poster({
   playing: boolean;
   motion: boolean;
   seekStyle: 'bar' | 'wave';
+  wallClock: string | null;
   progress: number;
   elapsed: number;
   duration: number;
@@ -799,6 +807,10 @@ function Poster({
       {/* the art is arbitrary, so the text needs its own guaranteed contrast underneath */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/45" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/40" />
+
+      {wallClock && (
+        <span className="absolute right-8 top-6 font-mono text-hint tabular-nums text-off-white/75">{wallClock}</span>
+      )}
 
       <button
         aria-label={playing ? 'pause' : 'play'}

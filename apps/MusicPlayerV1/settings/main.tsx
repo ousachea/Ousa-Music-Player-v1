@@ -24,6 +24,7 @@ const HINTS: Record<string, string> = {
   seek: 'Auto gives Poster the wave and the other styles a line. Pick one to use it everywhere.',
   backdrop: 'How strongly the blurred album art tints the screen behind the player. 0 turns it off. Poster does not use it.',
   drift: 'How far and how fast the blurred backdrop pans. 0 holds it still.',
+  clock: 'Shows the time from your phone, in its own timezone.',
   accent: 'The progress bar, play button and header take this colour.',
 };
 

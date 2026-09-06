@@ -1,5 +1,9 @@
 # weather
 
+## 0.12.0
+
+Clock, and the album now sits with the track it names.
+
 ## 0.11.0
 
 Drift intensity, and the settings are grouped into sections.
