@@ -22,6 +22,8 @@ const HINTS: Record<string, string> = {
   seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
   theme: 'Cover shows the album art square. Vinyl puts it on a spinning record. Poster fills the screen with it.',
   seek: 'Auto gives Poster the wave and the other styles a line. Pick one to use it everywhere.',
+  backdrop: 'How strongly the blurred album art tints the screen behind the player. 0 turns it off. Poster does not use it.',
+  drift: 'Pans the blurred backdrop very slowly. Off holds it still.',
   accent: 'The progress bar, play button and header take this colour.',
 };
 

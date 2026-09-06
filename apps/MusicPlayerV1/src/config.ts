@@ -8,12 +8,13 @@ export type Prefs = {
   seekSeconds: number;
   seek: 'auto' | 'bar' | 'wave';
   accent: 'artwork' | 'mono';
-  backdrop: boolean;
+  backdrop: number;
+  drift: boolean;
   motion: boolean;
   remaining: boolean;
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: true, motion: true, remaining: true };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: true, motion: true, remaining: true };
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
@@ -25,6 +26,14 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, theme: value === 'vinyl' || value === 'poster' ? value : 'card' };
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };
+    case 'backdrop': {
+      // this key used to be a boolean, so an old stored value still has to mean something sensible
+      if (value === 'true') return { ...prefs, backdrop: DEFAULTS.backdrop };
+      if (value === 'false') return { ...prefs, backdrop: 0 };
+      const level = Number(value);
+      if (!Number.isFinite(level)) return { ...prefs, backdrop: DEFAULTS.backdrop };
+      return { ...prefs, backdrop: Math.min(100, Math.max(0, level)) };
+    }
     case 'seekSeconds': {
       // a stored value can be anything, and a zero or a NaN here would freeze scrubbing outright
       const n = Number(value);
@@ -35,7 +44,7 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, seek: value === 'bar' || value === 'wave' ? value : 'auto' };
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
-    case 'backdrop':
+    case 'drift':
     case 'motion':
     case 'remaining':
       return { ...prefs, [key]: value !== 'false' };

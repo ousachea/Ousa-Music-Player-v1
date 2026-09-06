@@ -1,5 +1,13 @@
 # weather
 
+## 0.10.0
+
+Backdrop intensity is adjustable; ask the source for larger artwork.
+
+## 0.9.1
+
+Ask for larger artwork so the poster style is not upscaling.
+
 ## 0.9.0
 
 Seek bar style is a setting; the settings list scrolls.

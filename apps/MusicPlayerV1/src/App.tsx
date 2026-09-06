@@ -262,7 +262,7 @@ export default function App() {
         />
       ) : (
         <>
-          <Backdrop url={prefs.backdrop ? artUrl : null} />
+          <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />
 
           <div className="relative flex h-full w-full items-stretch gap-7 p-7">
             {prefs.theme === 'vinyl' ? (
@@ -366,13 +366,19 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
 };
 
+const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: string }> = {
+  seekSeconds: { min: 1, max: 30, step: 1, suffix: 's' },
+  backdrop: { min: 0, max: 100, step: 10, suffix: '%' },
+};
+
 const ROWS: { key: keyof Prefs; label: string }[] = [
   { key: 'theme', label: 'Player style' },
   { key: 'wheel', label: 'Rotary wheel' },
   { key: 'seekSeconds', label: 'Seek step' },
   { key: 'seek', label: 'Seek bar' },
   { key: 'accent', label: 'Accent colour' },
-  { key: 'backdrop', label: 'Artwork backdrop' },
+  { key: 'backdrop', label: 'Backdrop intensity' },
+  { key: 'drift', label: 'Backdrop drift' },
   { key: 'motion', label: 'Animations' },
   { key: 'remaining', label: 'Show time remaining' },
 ];
@@ -421,15 +427,30 @@ function Panel({
             <div key={row.key} className="flex items-center justify-between gap-5 border-b border-white/6 py-1">
               <span className="min-w-0 truncate text-title text-near">{row.label}</span>
 
-              {row.key === 'seekSeconds' ? (
+              {NUMERIC[row.key] ? (
                 <div className="flex shrink-0 items-center gap-3">
-                  <Step label="less" onClick={() => setPref(row.key, String(Math.max(1, (value as number) - 1)))}>
+                  <Step
+                    label="less"
+                    onClick={() =>
+                      setPref(
+                        row.key,
+                        String(Math.max(NUMERIC[row.key].min, (value as number) - NUMERIC[row.key].step)),
+                      )
+                    }>
                     −
                   </Step>
-                  <span className="w-12 text-center font-mono text-title tabular-nums" style={{ color: tint }}>
-                    {value as number}s
+                  <span className="w-14 text-center font-mono text-title tabular-nums" style={{ color: tint }}>
+                    {value as number}
+                    {NUMERIC[row.key].suffix}
                   </span>
-                  <Step label="more" onClick={() => setPref(row.key, String(Math.min(30, (value as number) + 1)))}>
+                  <Step
+                    label="more"
+                    onClick={() =>
+                      setPref(
+                        row.key,
+                        String(Math.min(NUMERIC[row.key].max, (value as number) + NUMERIC[row.key].step)),
+                      )
+                    }>
                     +
                   </Step>
                 </div>
@@ -849,19 +870,33 @@ function Seek({
   );
 }
 
-function Backdrop({ url }: { url: string | null }) {
+function Backdrop({ url, intensity, drift }: { url: string | null; intensity: number; drift: boolean }) {
+  const level = Math.min(1, Math.max(0, intensity / 100));
+  // the scrims were fixed, so raising the image opacity alone did almost nothing; they have to yield as it rises
+  const scrim = (alpha: number) => `rgba(6, 8, 9, ${(alpha * (1 - 0.62 * level)).toFixed(3)})`;
   return (
     <div className="pointer-events-none absolute inset-0">
-      {url && (
+      {url && level > 0 && (
         <img
           src={url}
           alt=""
-          className="absolute inset-0 h-full w-full scale-150 object-cover opacity-70 blur-[72px] saturate-[1.6]"
+          // tailwind's scale utility sets the separate scale property, which would compound with the
+          // keyframes' own transform, so the zoom is owned by one of them and never both
+          style={{ opacity: level, transform: drift ? undefined : 'scale(1.5)' }}
+          className={`absolute inset-0 h-full w-full object-cover blur-[72px] saturate-[1.6] transition-opacity duration-500 ${
+            drift ? 'drift' : ''
+          }`}
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-r from-screen/62 via-screen/58 to-screen/86" />
-      <div className="absolute inset-0 bg-gradient-to-t from-screen/72 via-transparent to-screen/45" />
-      <div className="absolute inset-0 shadow-[inset_0_0_140px_60px_var(--color-screen)]" />
+      <div
+        className="absolute inset-0"
+        style={{ background: `linear-gradient(to right, ${scrim(0.62)}, ${scrim(0.58)}, ${scrim(0.86)})` }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{ background: `linear-gradient(to top, ${scrim(0.72)}, rgba(6, 8, 9, 0), ${scrim(0.45)})` }}
+      />
+      <div className="absolute inset-0" style={{ boxShadow: `inset 0 0 140px 60px ${scrim(1)}` }} />
     </div>
   );
 }
