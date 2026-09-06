@@ -1,5 +1,9 @@
 # weather
 
+## 0.15.0
+
+Seek bars gradient between two album colours; the clock takes the tint.
+
 ## 0.14.0
 
 New app icon, and the clock size is adjustable.

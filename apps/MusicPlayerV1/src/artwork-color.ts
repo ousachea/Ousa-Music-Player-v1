@@ -3,7 +3,7 @@
 const SAMPLE_PX = 32;
 const HUE_BUCKETS = 12;
 
-export type Accent = { fill: string; ink: string; soft: string };
+export type Accent = { fill: string; fill2: string; ink: string; soft: string; soft2: string };
 
 function toHsl(r: number, g: number, b: number) {
   r /= 255;
@@ -88,16 +88,39 @@ export async function accentFrom(blob: Blob): Promise<Accent | null> {
   }
   if (best < 0) return null;
 
-  let h = Math.atan2(sinSum[best], cosSum[best]) / (2 * Math.PI);
-  if (h < 0) h += 1;
+  // the runner-up hue gives the gradient a second colour that is genuinely off the cover
+  let runnerUp = -1;
+  let runnerWeight = 0;
+  for (let i = 0; i < HUE_BUCKETS; i++) {
+    if (i !== best && weight[i] > runnerWeight) {
+      runnerWeight = weight[i];
+      runnerUp = i;
+    }
+  }
+
+  const hueOf = (bucket: number) => {
+    let h = Math.atan2(sinSum[bucket], cosSum[bucket]) / (2 * Math.PI);
+    if (h < 0) h += 1;
+    return h;
+  };
   // the cover's own saturation would read muddy at this size, so it is pushed up and floored
-  const s = Math.min(0.92, Math.max(0.55, (satSum[best] / weight[best]) * 1.25));
-  const deg = Math.round(h * 360);
-  const sat = Math.round(s * 100);
+  const satOf = (bucket: number) => Math.min(0.92, Math.max(0.55, (satSum[bucket] / weight[bucket]) * 1.25));
+
+  const h = hueOf(best);
+  const s = satOf(best);
+  // a cover with one hue would otherwise gradient from a colour to itself, so it is shifted instead
+  const paired = runnerUp >= 0 && runnerWeight > bestWeight * 0.12;
+  const h2 = paired ? hueOf(runnerUp) : (h + 0.075) % 1;
+  const s2 = paired ? satOf(runnerUp) : s;
+
+  const css = (hue: number, sat: number, light: number) =>
+    `hsl(${Math.round(hue * 360)} ${Math.round(sat * 100)}% ${light}%)`;
 
   return {
-    fill: `hsl(${deg} ${sat}% 62%)`,
+    fill: css(h, s, 62),
+    fill2: css(h2, s2, 62),
     ink: luminance(h, s, 0.62) > 0.42 ? '#060809' : '#f4f6f8',
-    soft: `hsl(${deg} ${Math.round(Math.min(s, 0.6) * 100)}% 74%)`,
+    soft: css(h, Math.min(s, 0.6), 74),
+    soft2: css(h2, Math.min(s2, 0.6), 74),
   };
 }

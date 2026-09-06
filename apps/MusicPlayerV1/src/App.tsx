@@ -291,7 +291,12 @@ export default function App() {
 
             <div className="flex h-full min-w-0 flex-1 flex-col">
               <div className={`flex min-h-5 items-center ${JUSTIFY[prefs.clockPos]}`}>
-                <ClockView parts={wallClock} size={(11 * prefs.clockSize) / 100} className="text-dim" />
+                <ClockView
+                  parts={wallClock}
+                  size={(11 * prefs.clockSize) / 100}
+                  className="text-dim"
+                  color={accentOn?.soft}
+                />
               </div>
 
               <div className="flex min-h-0 flex-1 flex-col justify-center">
@@ -313,6 +318,7 @@ export default function App() {
                   progress={progress}
                   playing={playing && prefs.motion}
                   tint={accentOn?.fill ?? '#efefef'}
+                  tint2={accentOn?.fill2 ?? '#efefef'}
                   onSeek={ratio => seek(ratio * duration)}
                 />
                 <div className="mt-2.5 flex justify-between font-mono text-hint tabular-nums text-dim">
@@ -813,6 +819,7 @@ function Poster({
 }) {
   // soft is the lighter, less saturated variant; over an arbitrary cover it holds up where the full fill would not
   const tint = accent?.soft ?? '#f2f4f6';
+  const tint2 = accent?.soft2 ?? '#f2f4f6';
   return (
     <div className="absolute inset-0 overflow-hidden">
       {artUrl ? (
@@ -825,7 +832,7 @@ function Poster({
       <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/40" />
 
       <div className={`absolute inset-x-8 top-6 flex ${JUSTIFY[clockPos]}`}>
-        <ClockView parts={wallClock} size={(12 * clockSize) / 100} className="text-off-white/75" />
+        <ClockView parts={wallClock} size={(12 * clockSize) / 100} className="text-off-white/75" color={tint} />
       </div>
 
       <button
@@ -861,7 +868,14 @@ function Poster({
           <Skip className="h-9 w-9 -scale-x-100" />
         </button>
 
-        <Seek style={seekStyle} progress={progress} playing={playing && motion} tint={tint} onSeek={onSeek} />
+        <Seek
+          style={seekStyle}
+          progress={progress}
+          playing={playing && motion}
+          tint={tint}
+          tint2={tint2}
+          onSeek={onSeek}
+        />
 
         <button
           aria-label="next"
@@ -894,11 +908,13 @@ function Wave({
   progress,
   playing,
   tint,
+  tint2,
   onSeek,
 }: {
   progress: number;
   playing: boolean;
   tint: string;
+  tint2: string;
   onSeek: (ratio: number) => void;
 }) {
   const box = useRef<HTMLDivElement>(null);
@@ -940,6 +956,10 @@ function Wave({
           <clipPath id="wave-played">
             <rect x="0" y="0" width={Math.max(0, played)} height={height} />
           </clipPath>
+          <linearGradient id="wave-tint" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={Math.max(1, width)} y2="0">
+            <stop offset="0%" stopColor={tint} />
+            <stop offset="100%" stopColor={tint2} />
+          </linearGradient>
         </defs>
         <g clipPath="url(#wave-played)">
           <path
@@ -949,14 +969,14 @@ function Wave({
               animationPlayState: playing ? 'running' : 'paused',
             }}
             d={wavePath(-WAVE_LENGTH, played + WAVE_LENGTH, mid)}
-            stroke={tint}
+            stroke="url(#wave-tint)"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
         </g>
-        <rect x={played - 1.5} y={mid - 9} width="3" height="18" rx="1.5" fill={tint} />
+        <rect x={played - 1.5} y={mid - 9} width="3" height="18" rx="1.5" fill={tint2} />
       </svg>
     </div>
   );
@@ -967,18 +987,20 @@ function Seek({
   progress,
   playing,
   tint,
+  tint2,
   onSeek,
 }: {
   style: 'bar' | 'wave';
   progress: number;
   playing: boolean;
   tint: string;
+  tint2: string;
   onSeek: (ratio: number) => void;
 }) {
   return style === 'wave' ? (
-    <Wave progress={progress} playing={playing} tint={tint} onSeek={onSeek} />
+    <Wave progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
   ) : (
-    <Rail progress={progress} playing={playing} tint={tint} onSeek={onSeek} />
+    <Rail progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
   );
 }
 
@@ -989,7 +1011,17 @@ const JUSTIFY: Record<'left' | 'center' | 'right', string> = {
 };
 
 // the colon is its own element so it can blink without the digits reflowing
-function ClockView({ parts, size, className }: { parts: ClockParts | null; size: number; className?: string }) {
+function ClockView({
+  parts,
+  size,
+  className,
+  color,
+}: {
+  parts: ClockParts | null;
+  size: number;
+  className?: string;
+  color?: string;
+}) {
   if (!parts) return null;
   const colon = (
     <span className="transition-opacity duration-150" style={{ opacity: parts.colon ? 1 : 0.2 }}>
@@ -997,7 +1029,9 @@ function ClockView({ parts, size, className }: { parts: ClockParts | null; size:
     </span>
   );
   return (
-    <span className={`shrink-0 font-mono tabular-nums ${className ?? ''}`} style={{ fontSize: `${size}px` }}>
+    <span
+      className={`shrink-0 font-mono tabular-nums transition-colors duration-500 ${className ?? ''}`}
+      style={{ fontSize: `${size}px`, color }}>
       {parts.hour}
       {colon}
       {parts.minute}
@@ -1056,13 +1090,27 @@ function Rail({
   progress,
   playing,
   tint,
+  tint2,
   onSeek,
 }: {
   progress: number;
   playing: boolean;
   tint: string;
+  tint2: string;
   onSeek: (ratio: number) => void;
 }) {
+  const track = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  // the gradient spans the whole track, so its colours do not slide as the played length grows
+  useEffect(() => {
+    if (!track.current) return;
+    const measure = () => track.current && setWidth(track.current.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(track.current);
+    return () => observer.disconnect();
+  }, []);
   const pick = (e: PointerEvent<HTMLDivElement>) => {
     const box = e.currentTarget.getBoundingClientRect();
     onSeek(Math.min(1, Math.max(0, (e.clientX - box.left) / box.width)));
@@ -1072,10 +1120,17 @@ function Rail({
       className="group -my-3 flex h-6 w-full cursor-pointer items-center py-3"
       onPointerDown={pick}
       onPointerMove={e => e.buttons === 1 && pick(e)}>
-      <div className="relative h-[3px] w-full rounded-full bg-white/18">
+      <div ref={track} className="relative h-[3px] w-full rounded-full bg-white/18">
         <div
-          className="absolute inset-y-0 left-0 overflow-hidden rounded-full bg-off-white transition-colors duration-500"
-          style={{ width: `${Math.min(100, progress * 100)}%`, backgroundColor: tint }}>
+          className="absolute inset-y-0 left-0 overflow-hidden rounded-full"
+          style={{ width: `${Math.min(100, progress * 100)}%` }}>
+          <div
+            className="absolute inset-y-0 left-0 transition-[background] duration-500"
+            style={{
+              width: width ? `${width}px` : '100%',
+              background: `linear-gradient(90deg, ${tint}, ${tint2})`,
+            }}
+          />
           {playing && (
             <div className="absolute inset-y-0 w-1/3 animate-sheen bg-gradient-to-r from-transparent via-white/70 to-transparent" />
           )}
@@ -1083,12 +1138,12 @@ function Rail({
         {playing && (
           <div
             className="pointer-events-none absolute top-1/2 h-3 w-3 animate-halo rounded-full bg-off-white"
-            style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: tint }}
+            style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: tint2 }}
           />
         )}
         <div
           className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-off-white shadow transition-colors duration-500"
-          style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: tint }}
+          style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: tint2 }}
         />
       </div>
     </div>
