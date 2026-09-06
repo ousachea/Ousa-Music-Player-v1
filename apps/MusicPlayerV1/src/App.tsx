@@ -689,6 +689,9 @@ function Poster({
           className="font-display text-[2.375rem] leading-[1.15] font-semibold tracking-display text-off-white"
         />
         <Roll text={artist} className="mt-1 text-title text-off-white/70" />
+        <div className="mt-2.5 font-mono text-hint tabular-nums text-off-white/60">
+          {clock(elapsed)} / {duration ? clock(duration) : '--:--'}
+        </div>
       </div>
 
       <div className="absolute inset-x-8 bottom-7 flex items-center gap-6">
@@ -707,10 +710,6 @@ function Poster({
           className="shrink-0 text-off-white transition-transform duration-300 ease-spring active:scale-90">
           <Skip className="h-7 w-7" />
         </button>
-
-        <span className="w-24 shrink-0 text-right font-mono text-hint tabular-nums text-off-white/70">
-          {clock(elapsed)} / {duration ? clock(duration) : '--:--'}
-        </span>
       </div>
     </div>
   );

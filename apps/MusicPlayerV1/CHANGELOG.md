@@ -1,5 +1,9 @@
 # weather
 
+## 0.7.2
+
+Poster: the play time sits under the artist.
+
 ## 0.7.1
 
 The poster wave travels while playing.
