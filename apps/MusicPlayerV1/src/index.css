@@ -91,6 +91,14 @@
 
   --animate-ripple: ripple 520ms cubic-bezier(0.2, 0.7, 0.3, 1);
   --animate-tap: tap 300ms cubic-bezier(0.34, 1.5, 0.64, 1);
+  /* a 33rpm turn is 1.8s; slowed here because a record spinning at speed on a dashboard reads as a strobe */
+  --animate-platter: platter 3.4s linear infinite;
+
+  @keyframes platter {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 
   /* a ring leaving the button, so a press reads from arm's length in a car */
   @keyframes ripple {

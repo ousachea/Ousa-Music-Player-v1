@@ -1,11 +1,23 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "Ousa Music player v1",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Now playing from your phone, on the Car Thing.",
   "icon": "icon.png",
   "settings": "settings.html",
   "config": [
+    {
+      "type": "enum",
+      "data": {
+        "key": "theme",
+        "label": "Player style",
+        "choices": [
+          "card",
+          "vinyl"
+        ],
+        "default": "card"
+      }
+    },
     {
       "type": "enum",
       "data": {
@@ -53,7 +65,7 @@
       "type": "boolean",
       "data": {
         "key": "motion",
-        "label": "Animate the seek bar while playing",
+        "label": "Animations (seek bar, record spin)",
         "default": true
       }
     },

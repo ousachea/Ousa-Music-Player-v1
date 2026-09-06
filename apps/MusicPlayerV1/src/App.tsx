@@ -213,20 +213,24 @@ export default function App() {
       <Backdrop url={prefs.backdrop ? artUrl : null} />
 
       <div className="relative flex h-full w-full items-stretch gap-7 p-7">
-        <div className="relative aspect-square h-full shrink-0">
-          <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />
-          {artUrl ? (
-            <img
-              src={artUrl}
-              alt=""
-              className="relative h-full w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/12"
-            />
-          ) : (
-            <div className="relative grid h-full w-full place-items-center rounded-2xl bg-white/6 ring-1 ring-white/12">
-              <Disc className="h-16 w-16 text-off-white/25" />
-            </div>
-          )}
-        </div>
+        {prefs.theme === 'vinyl' ? (
+          <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} />
+        ) : (
+          <div className="relative aspect-square h-full shrink-0">
+            <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />
+            {artUrl ? (
+              <img
+                src={artUrl}
+                alt=""
+                className="relative h-full w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/12"
+              />
+            ) : (
+              <div className="relative grid h-full w-full place-items-center rounded-2xl bg-white/6 ring-1 ring-white/12">
+                <Disc className="h-16 w-16 text-off-white/25" />
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex h-full min-w-0 flex-1 flex-col">
           <div className="flex items-center gap-2.5">
@@ -294,16 +298,18 @@ export default function App() {
 }
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
+  theme: { values: ['card', 'vinyl'], labels: ['Cover', 'Vinyl'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
 };
 
 const ROWS: { key: keyof Prefs; label: string }[] = [
+  { key: 'theme', label: 'Player style' },
   { key: 'wheel', label: 'Rotary wheel' },
   { key: 'seekSeconds', label: 'Seek step' },
   { key: 'accent', label: 'Accent colour' },
   { key: 'backdrop', label: 'Artwork backdrop' },
-  { key: 'motion', label: 'Animate seek bar' },
+  { key: 'motion', label: 'Animations' },
   { key: 'remaining', label: 'Show time remaining' },
 ];
 
@@ -466,6 +472,91 @@ function Roll({ text, className }: { text: string; className?: string }) {
         {text}
       </span>
     </div>
+  );
+}
+
+// the sleeve sits behind, the record carries the art as its label, and the arm drops when the track runs
+function Turntable({ artUrl, playing, spin }: { artUrl: string | null; playing: boolean; spin: boolean }) {
+  return (
+    <div className="relative aspect-square h-full shrink-0">
+      <div className="absolute bottom-3 left-6 right-6 h-8 rounded-full bg-black/75 blur-2xl" />
+
+      <div className="absolute left-0 top-[3%] h-[62%] w-[62%] -rotate-6 overflow-hidden rounded shadow-2xl ring-1 ring-white/10">
+        {artUrl ? (
+          <img src={artUrl} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full bg-white/8" />
+        )}
+      </div>
+
+      <div
+        className="absolute bottom-0 right-0 h-[88%] w-[88%] animate-platter rounded-full shadow-2xl"
+        style={{
+          animationPlayState: playing && spin ? 'running' : 'paused',
+          background: [
+            'repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.055) 0 1px, rgba(0,0,0,0) 1px 4px)',
+            'radial-gradient(circle at 50% 50%, #121212 0 33%, #0b0b0b 33.4% 100%)',
+          ].join(','),
+        }}>
+        {/* the sheen stays with the disc, which is what makes the rotation legible on a plain black circle */}
+        <div
+          className="absolute inset-0 rounded-full opacity-70"
+          style={{
+            background:
+              'conic-gradient(from 210deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.16) 38deg, rgba(255,255,255,0) 92deg, rgba(255,255,255,0) 180deg, rgba(255,255,255,0.11) 220deg, rgba(255,255,255,0) 275deg)',
+          }}
+        />
+        <div className="absolute inset-0 rounded-full ring-1 ring-white/10" />
+
+        <div className="absolute left-1/2 top-1/2 h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full ring-1 ring-black/40">
+          {artUrl ? (
+            <img src={artUrl} alt="" className="h-full w-full scale-[1.6] object-cover" />
+          ) : (
+            <div className="h-full w-full bg-white/12" />
+          )}
+        </div>
+        <div className="absolute left-1/2 top-1/2 h-[4.5%] w-[4.5%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-screen ring-1 ring-white/25" />
+      </div>
+
+      <Tonearm playing={playing} />
+    </div>
+  );
+}
+
+function Tonearm({ playing }: { playing: boolean }) {
+  // box coordinates: the record is 373 wide anchored bottom right, so its centre is 237,237 with radius 186
+  return (
+    <svg viewBox="0 0 424 424" className="pointer-events-none absolute inset-0 h-full w-full">
+      <defs>
+        <linearGradient id="chrome" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#f6f8fa" />
+          <stop offset="45%" stopColor="#bcc3c9" />
+          <stop offset="100%" stopColor="#79828a" />
+        </linearGradient>
+      </defs>
+
+      {/* the pivot sits clear of the record, up and to its right, the way a deck is actually laid out */}
+      <circle cx="386" cy="40" r="27" fill="rgba(255,255,255,0.09)" />
+      <circle cx="386" cy="40" r="15" fill="url(#chrome)" />
+      <circle cx="386" cy="40" r="5.5" fill="#6b747b" />
+
+      <g
+        style={{
+          transformOrigin: '386px 40px',
+          transform: `rotate(${playing ? 0 : -16}deg)`,
+          transition: 'transform 700ms cubic-bezier(0.4,0,0.2,1)',
+        }}>
+        <path
+          d="M386 40 C 398 92, 380 128, 336 152"
+          fill="none"
+          stroke="url(#chrome)"
+          strokeWidth="7"
+          strokeLinecap="round"
+        />
+        {/* the headshell lands on the outer grooves, never over the label */}
+        <rect x="322" y="142" width="17" height="26" rx="4" fill="url(#chrome)" transform="rotate(28 330 155)" />
+      </g>
+    </svg>
   );
 }
 

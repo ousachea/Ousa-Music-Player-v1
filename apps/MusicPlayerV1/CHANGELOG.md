@@ -1,5 +1,9 @@
 # weather
 
+## 0.6.0
+
+Player style setting, with a vinyl turntable alongside the cover layout.
+
 ## 0.5.0
 
 Check for updates from the settings panel.

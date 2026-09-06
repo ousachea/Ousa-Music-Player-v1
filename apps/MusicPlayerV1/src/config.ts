@@ -3,6 +3,7 @@ import type { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Prefs = {
+  theme: 'card' | 'vinyl';
   wheel: 'volume' | 'seek';
   seekSeconds: number;
   accent: 'artwork' | 'mono';
@@ -11,7 +12,7 @@ export type Prefs = {
   remaining: boolean;
 };
 
-const DEFAULTS: Prefs = { wheel: 'volume', seekSeconds: 2, accent: 'artwork', backdrop: true, motion: true, remaining: true };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, accent: 'artwork', backdrop: true, motion: true, remaining: true };
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
@@ -19,6 +20,8 @@ const SEEK_MAX = 30;
 function apply(prefs: Prefs, key: string, value: string | null): Prefs {
   if (value === null) return { ...prefs, [key]: DEFAULTS[key as keyof Prefs] };
   switch (key) {
+    case 'theme':
+      return { ...prefs, theme: value === 'vinyl' ? 'vinyl' : 'card' };
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };
     case 'seekSeconds': {
