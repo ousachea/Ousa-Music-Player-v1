@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-06T15:44:20.994Z",
+  "updated_at": "2026-09-06T15:52:58.639Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -18,6 +18,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.4.0",
+          "released_at": "2026-09-06T15:52:58.638Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.4.0.zip",
+            "size": 949504,
+            "sha256": "c04431723c6aa6d52f356160f7f387deda6c37fcd82fe247c1ddf787cc1fb958"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.4.0.html",
+            "size": 28149,
+            "sha256": "67897f78b74e919c0023c0f71db6d506ae713541cb032e1abfe7e5a94b2741fa"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Rolling titles, an on-device settings panel on Back, and a centred play glyph."
+        },
         {
           "version": "0.3.1",
           "released_at": "2026-09-06T15:44:20.993Z",
