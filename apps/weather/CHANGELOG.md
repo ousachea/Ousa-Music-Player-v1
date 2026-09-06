@@ -1,5 +1,9 @@
 # weather
 
+## 0.1.3
+
+Fill the 800x480 screen: full-height artwork and a stretched now-playing column.
+
 ## 0.1.2
 
 Remove the shuffle and repeat buttons.
