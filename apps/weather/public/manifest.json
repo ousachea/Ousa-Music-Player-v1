@@ -1,10 +1,13 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
-  "name": "weather",
-  "version": "0.1.0",
+  "name": "Ousa Music player v1",
+  "version": "0.1.1",
   "description": "Weather at a glance on the Car Thing.",
   "settings": "settings.html",
   "config": [],
   "permissions": [],
-  "art": { "heroPx": 248, "thumbPx": 96 }
+  "art": {
+    "heroPx": 248,
+    "thumbPx": 96
+  }
 }
