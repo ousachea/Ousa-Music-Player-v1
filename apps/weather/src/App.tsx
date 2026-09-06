@@ -24,8 +24,8 @@ export default function App() {
   const [state, setState] = useState<PlayerState | null>(null);
   const [artUrl, setArtUrl] = useState<string | null>(null);
   const [accent, setAccent] = useState<Accent | null>(null);
-  const [volume, setVolume] = useState<Volume | null>({ level: 0.65, muted: false });
-  const [hud, setHud] = useState(true);
+  const [volume, setVolume] = useState<Volume | null>(null);
+  const [hud, setHud] = useState(false);
 
   useEffect(() => {
     const offConn = client.on(event => {

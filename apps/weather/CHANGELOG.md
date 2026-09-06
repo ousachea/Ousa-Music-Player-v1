@@ -1,5 +1,9 @@
 # weather
 
+## 0.1.5
+
+Rotary wheel controls volume, with a press spring on the buttons and a running seek bar.
+
 ## 0.1.4
 
 Tint the accent elements with a colour pulled from the album art.
