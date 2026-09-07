@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.6.2
+
+Centre the pagination and tighten it.
+
 ## 0.6.1
 
 Pagination across the full width, favourite at the top centre.

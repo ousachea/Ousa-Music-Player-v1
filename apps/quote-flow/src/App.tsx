@@ -535,18 +535,18 @@ const Pager = memo(function Pager({
 }) {
   if (total === 0) return <span />;
   return (
-    <div className="flex w-full items-center gap-2.5">
+    <div className="flex w-full items-center justify-center gap-2">
       <button
         aria-label="previous"
         onClick={onPrev}
-        className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/8 text-near transition active:scale-90 active:bg-white/16">
-        <Chevron className="h-5 w-5 rotate-180" />
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/8 text-near transition active:scale-90 active:bg-white/16">
+        <Chevron className="h-4.5 w-4.5 rotate-180" />
       </button>
 
-      <div className="flex flex-1 items-center justify-center gap-1 rounded-full bg-white/8 px-2 py-1.5">
+      <div className="flex items-center gap-0.5 rounded-full bg-white/8 px-1.5 py-1">
         {pageList(total, index).map((page, i) =>
           page === 'gap' ? (
-            <span key={`gap-${i}`} className="px-1.5 font-mono text-hint text-dim">
+            <span key={`gap-${i}`} className="px-1 font-mono text-hint text-dim">
               ...
             </span>
           ) : (
@@ -555,7 +555,7 @@ const Pager = memo(function Pager({
               aria-current={page === index ? 'true' : undefined}
               onClick={() => onPick(page)}
               style={page === index ? { backgroundColor: colour, color: '#0a0c0e' } : undefined}
-              className={`min-w-9 rounded-full px-2.5 py-1.5 font-mono text-row tabular-nums transition active:scale-90 ${
+              className={`min-w-8 rounded-full px-2 py-1 font-mono text-hint tabular-nums transition active:scale-90 ${
                 page === index ? 'font-semibold' : 'text-soft'
               }`}>
               {page + 1}
@@ -568,8 +568,8 @@ const Pager = memo(function Pager({
         aria-label="next"
         onClick={onNext}
         style={{ backgroundColor: colour, color: '#0a0c0e' }}
-        className="grid h-11 w-11 shrink-0 place-items-center rounded-full transition active:scale-90">
-        <Chevron className="h-5 w-5" />
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-full transition active:scale-90">
+        <Chevron className="h-4.5 w-4.5" />
       </button>
     </div>
   );
