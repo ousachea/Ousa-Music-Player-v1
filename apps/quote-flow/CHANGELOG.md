@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.5.1
+
+Round the countdown border to match the screen.
+
 ## 0.5.0
 
 Shuffled rotation with no repeats, and a countdown border toggle.

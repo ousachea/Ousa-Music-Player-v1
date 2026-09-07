@@ -426,6 +426,9 @@ const Wash = memo(function Wash({ quoteId }: { quoteId: string }) {
   );
 });
 
+// the screen itself is rounded, so a square rule fights the bezel at every corner
+const SCREEN_RADIUS = 34;
+
 /** a rule around all four edges that empties as the interval runs down */
 const Countdown = memo(function Countdown({
   quoteId,
@@ -440,14 +443,24 @@ const Countdown = memo(function Countdown({
 }) {
   return (
     <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 800 480" preserveAspectRatio="none">
-      <rect x="1.5" y="1.5" width="797" height="477" fill="none" stroke="rgba(239,239,239,0.07)" strokeWidth="3" />
+      <rect
+        x="3"
+        y="3"
+        width="794"
+        height="474"
+        rx={SCREEN_RADIUS}
+        fill="none"
+        stroke="rgba(239,239,239,0.07)"
+        strokeWidth="3"
+      />
       <rect
         key={`${quoteId}-${seconds}`}
         className="countdown"
-        x="1.5"
-        y="1.5"
-        width="797"
-        height="477"
+        x="3"
+        y="3"
+        width="794"
+        height="474"
+        rx={SCREEN_RADIUS}
         fill="none"
         stroke={colour}
         strokeWidth="3"
