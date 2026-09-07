@@ -59,12 +59,15 @@ export function usd(n: number, decimals = 2) {
   return `$${n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
 }
 
+/** a value that rounds away to nothing gets no sign: "−0.00%" claims a direction it does not have */
 export function signedUsd(n: number, decimals = 2) {
-  return `${n >= 0 ? '+' : '−'}${usd(Math.abs(n), decimals)}`;
+  const zero = Math.abs(n) < 0.5 / 10 ** decimals;
+  return `${zero ? '' : n > 0 ? '+' : '−'}${usd(Math.abs(n), decimals)}`;
 }
 
 export function signedPct(n: number) {
-  return `${n >= 0 ? '+' : '−'}${Math.abs(n).toFixed(2)}%`;
+  const zero = Math.abs(n) < 0.005;
+  return `${zero ? '' : n > 0 ? '+' : '−'}${Math.abs(n).toFixed(2)}%`;
 }
 
 /** a weight the way someone would say it out loud: 1 chi, not 1.0000 chi */

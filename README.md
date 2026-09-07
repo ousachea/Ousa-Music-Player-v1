@@ -233,6 +233,10 @@ same goes for the chart: a short history is a short line.
 
 ![Unit converter](apps/gold-tracker/screenshots/02-converter.png)
 
+Spot is quoted twice: per troy ounce, which is how the market prices gold, and per damlung, which is
+how it is actually bought. Pressing the wheel asks the provider again, with a light running the
+width of the screen while the request is out.
+
 The converter covers li, hun, chi, damlung, grams and troy ounces — 1 damlung = 10 chi = 100 hun =
 1000 li, and 1 troy ounce = 31.1034768 g. Everything is priced off the purity you select: 24K, 22K,
 18K, or a percentage of your own.
@@ -255,11 +259,13 @@ your device.
 | Preset button 4 | Quick reference |
 | Mode, the button past the presets | Next view |
 | Turn the wheel | Change the window, the amount, or scroll the ledger |
+| Press the wheel | Ask the provider for the price again |
 | Button under the wheel | Opens and closes data settings |
 
 ### Settings
 
-On the device: refresh interval, valuation purity including a custom percentage, the default unit,
+On the device: refresh interval, valuation purity including a custom percentage (which sets the
+valuation used by the converter, ledger and reference, not the spot quote itself), the default unit,
 and clearing the observation history. In the companion app: the provider URL, the API key, and the
 purchase ledger itself.
 

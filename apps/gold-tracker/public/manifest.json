@@ -1,7 +1,7 @@
 {
   "id": "01a07c7f-7529-7704-b7be-4ea1a6e66d1d",
   "name": "Gold Tracker",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Live gold spot, Khmer weight conversion and a private purchase ledger.",
   "settings": "settings.html",
   "config": [

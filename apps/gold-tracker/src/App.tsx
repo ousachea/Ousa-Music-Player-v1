@@ -82,6 +82,7 @@ export default function App() {
   const [panel, setPanel] = useState(false);
   const [adding, setAdding] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [refreshing, setRefreshing] = useState(false);
   // config is read only on the device, so anything changed here is kept as a doc override
   const [overrides, setOverrides] = useState<Record<string, string>>({});
 
@@ -165,18 +166,12 @@ export default function App() {
     if (o.unit && o.unit in GRAMS) setBaseUnit(o.unit as Unit);
   }, [overrides]);
 
-  // one poll loop, restarted whenever the provider or the interval changes
-  const observationsRef = useRef(observations);
-  observationsRef.current = observations;
-
-  useEffect(() => {
-    let stopped = false;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-
-    const run = async () => {
+  const load = useCallback(
+    async (manual: boolean) => {
+      if (manual) setRefreshing(true);
+      const started = Date.now();
       try {
         const next = await fetchQuote(client, endpoint, apiKey);
-        if (stopped) return;
         setQuote(next);
         setError(null);
         setObservations(current => {
@@ -188,18 +183,28 @@ export default function App() {
           return merged;
         });
       } catch (err) {
-        if (!stopped) setError(err instanceof Error ? err.message : String(err));
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
-        if (!stopped) timer = setTimeout(run, refreshS * 1000);
+        // a fast answer would otherwise finish before the sweep reads as anything at all
+        if (manual) setTimeout(() => setRefreshing(false), Math.max(0, 480 - (Date.now() - started)));
       }
-    };
+    },
+    [client, endpoint, apiKey],
+  );
 
-    run();
+  useEffect(() => {
+    let stopped = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const tick = async () => {
+      await load(false);
+      if (!stopped) timer = setTimeout(tick, refreshS * 1000);
+    };
+    tick();
     return () => {
       stopped = true;
       if (timer) clearTimeout(timer);
     };
-  }, [client, endpoint, apiKey, refreshS]);
+  }, [load, refreshS]);
 
   const factor = purityFactor(purity, customPurity);
   const spot = quote?.usdPerOzt ?? 0;
@@ -227,6 +232,10 @@ export default function App() {
       else if (e.key === '3') setView('ledger');
       else if (e.key === '4') setView('reference');
       else if (e.key === 'm') setView(v => VIEWS[(VIEWS.findIndex(x => x.key === v) + 1) % VIEWS.length]!.key);
+      else if (e.key === ' ' || e.key === 'Enter') {
+        setView('spot');
+        load(true);
+      }
     };
     const onWheel = (e: WheelEvent) => {
       if (!e.deltaX) return;
@@ -245,22 +254,28 @@ export default function App() {
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('wheel', onWheel);
     };
-  }, [view]);
+  }, [view, load]);
 
   useEffect(() => setScroll(0), [view]);
 
   const fresh = quote !== null && now - quote.at < STALE_MS;
-  const status = error && !quote ? 'Offline' : fresh ? 'Live' : quote ? 'Stale' : 'Waiting';
+  const status = refreshing
+    ? 'Checking'
+    : error && !quote
+      ? 'Offline'
+      : fresh
+        ? 'Live'
+        : quote
+          ? 'Stale'
+          : 'Waiting';
 
   return (
     <div className="flex h-full w-full flex-col bg-screen text-off-white">
-      <header className="flex h-11 shrink-0 items-center gap-3 border-b border-rule px-5">
-        <Pill tone={status === 'Live' ? 'ok' : status === 'Offline' ? 'err' : 'warn'}>⬡ {status}</Pill>
-        <Pill tone="neutral">
-          ✦ {PURITY_LABEL[purity]}
-          {purity === 'custom' ? ` ${customPurity}%` : ''}
+      <header className="flex h-11 shrink-0 items-center gap-3 border-b border-gold-line/60 px-5">
+        <Pill tone={status === 'Live' ? 'ok' : status === 'Checking' ? 'neutral' : status === 'Offline' ? 'err' : 'warn'}>
+          ⬡ {status}
         </Pill>
-        <span className="font-display text-row font-semibold tracking-display">Gold</span>
+        <span className="metal font-display text-row font-semibold tracking-display">Gold</span>
         <span className="font-mono text-eyebrow tracking-[0.2em] text-dim uppercase">
           {error && quote ? 'Last verified quote' : 'Verified live quote'}
         </span>
@@ -269,19 +284,23 @@ export default function App() {
         </span>
       </header>
 
+      {refreshing && (
+        <div className="relative h-px shrink-0 overflow-hidden bg-rule">
+          <div className="sweep h-full w-[30%] bg-gold" />
+        </div>
+      )}
+
       <div className="relative min-h-0 flex-1">
         {view === 'spot' && (
           <Spot
             quote={quote}
             error={error}
-            factor={factor}
             now={now}
             observations={observations}
             windowKey={windowKey}
             onWindow={setWindowKey}
-            purity={purity}
-            customPurity={customPurity}
-            onPurity={next => setOverride('purity', next)}
+            refreshing={refreshing}
+            onRefresh={() => load(true)}
           />
         )}
         {view === 'convert' && (
@@ -305,14 +324,14 @@ export default function App() {
         {view === 'reference' && <Reference gramPrice={gramPrice} />}
       </div>
 
-      <nav className="flex h-8 shrink-0 items-stretch border-t border-rule">
+      <nav className="flex h-8 shrink-0 items-stretch border-t border-gold-line/60">
         {VIEWS.map(v => (
           <button
             key={v.key}
             onClick={() => setView(v.key)}
             aria-pressed={v.key === view}
             className={`flex flex-1 items-center justify-center gap-1.5 font-mono text-hint transition ${
-              v.key === view ? 'bg-white/10 text-off-white' : 'text-dim active:bg-white/5'
+              v.key === view ? 'bg-gold-soft text-gold' : 'text-dim active:bg-white/5'
             }`}>
             <span className="text-eyebrow text-dim">{v.hint}</span>
             {v.label}
@@ -367,49 +386,69 @@ function Pill({ tone, children }: { tone: 'ok' | 'err' | 'warn' | 'neutral'; chi
   return <span className={`rounded-full px-2 py-0.5 font-mono text-eyebrow ${tones[tone]}`}>{children}</span>;
 }
 
+/** the market quotes gold per troy ounce; a damlung is what it is actually bought in here */
 function Spot({
   quote,
   error,
-  factor,
   now,
   observations,
   windowKey,
   onWindow,
-  purity,
-  customPurity,
-  onPurity,
+  refreshing,
+  onRefresh,
 }: {
   quote: Quote | null;
   error: string | null;
-  factor: number;
   now: number;
   observations: Observation[];
   windowKey: WindowKey;
   onWindow: (next: WindowKey) => void;
-  purity: PurityKey;
-  customPurity: number;
-  onPurity: (next: PurityKey) => void;
+  refreshing: boolean;
+  onRefresh: () => void;
 }) {
   const window = WINDOWS.find(w => w.key === windowKey) ?? WINDOWS[0];
-  const price = (quote?.usdPerOzt ?? 0) * factor;
+  const price = quote?.usdPerOzt ?? 0;
+  const damlung = perGram(price) * GRAMS.damlung;
   const range = quote ? rangeOver(observations, now, window.ms) : null;
-  const move = range ? price - range.first * factor : 0;
-  const movePct = range && range.first > 0 ? (move / (range.first * factor)) * 100 : 0;
-  const [dollars, cents] = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split('.');
+  const move = range ? price - range.first : 0;
+  const movePct = range && range.first > 0 ? (move / range.first) * 100 : 0;
   const tone = move > 0 ? 'text-ok' : move < 0 ? 'text-err' : 'text-soft';
 
+  // a landing quote carries the direction of the step that brought it in, not the session's
+  const previous = useRef(price);
+  const step = price > previous.current ? 1 : price < previous.current ? -1 : 0;
+  useEffect(() => {
+    previous.current = price;
+  });
+  const arrive = step === 0 ? 'price-in' : 'price-arrive';
+  const tick = step > 0 ? 'var(--color-ok)' : 'var(--color-err)';
+
+  const [dollars, cents] = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split('.');
+  const [dlDollars, dlCents] = damlung
+    .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    .split('.');
+
   return (
-    <div className="flex h-full gap-6 px-5 py-3">
+    <div className="glow flex h-full gap-6 px-5 py-3">
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-baseline">
-          <span className="font-mono text-[68px] leading-none font-medium tracking-tight-1 tabular-nums">
+        <div key={`ozt-${price}`} className={`flex items-baseline ${arrive}`} style={{ '--tick': tick } as React.CSSProperties}>
+          <span className="metal font-mono text-[64px] leading-none font-medium tracking-tight-1 tabular-nums">
             ${dollars}
           </span>
-          <span className="font-mono text-title tabular-nums text-soft">.{cents}</span>
+          <span className="font-mono text-title tabular-nums text-gold-deep">.{cents}</span>
           <span className="ml-2 font-mono text-hint text-dim">/ troy oz</span>
         </div>
 
-        <div className="mt-4 flex flex-col gap-1.5">
+        <div
+          key={`dl-${price}`}
+          className={`mt-1.5 flex items-baseline ${arrive}`}
+          style={{ '--tick': tick } as React.CSSProperties}>
+          <span className="metal font-mono text-[38px] leading-none tabular-nums">${dlDollars}</span>
+          <span className="font-mono text-body tabular-nums text-gold-dim">.{dlCents}</span>
+          <span className="ml-2 font-mono text-hint text-dim">/ damlung</span>
+        </div>
+
+        <div className="mt-3 flex flex-col gap-1.5">
           <Meta label="Source" value={quote?.source ?? 'waiting for the provider'} />
           <Meta
             label="Observed"
@@ -419,13 +458,13 @@ function Spot({
                 : '—'
             }
           />
-          <Meta label="Standard" value={`1 oz t = ${TROY_OUNCE_G} g`} />
+          <Meta label="Standard" value={`1 oz t = ${TROY_OUNCE_G} g · 1 damlung = ${GRAMS.damlung} g`} />
         </div>
 
         {error && <div className="mt-2 font-mono text-hint text-err">{error}</div>}
 
-        <div className="mt-3 min-h-0 flex-1">
-          <ObservationChart observations={observations} now={now} ms={window.ms} factor={factor} rising={move >= 0} />
+        <div className="mt-2 min-h-0 flex-1">
+          <ObservationChart observations={observations} now={now} ms={window.ms} factor={1} rising={move >= 0} />
         </div>
 
         <p className="mt-2 text-[11px] leading-snug text-dim">
@@ -435,16 +474,18 @@ function Spot({
       </div>
 
       <div className="flex w-[300px] shrink-0 flex-col gap-3">
-        <div>
-          <Label>Valuation purity</Label>
-          <div className="mt-1.5 flex gap-1.5">
-            {PURITIES.map(p => (
-              <Chip key={p} on={p === purity} onClick={() => onPurity(p)}>
-                {p === 'custom' && purity === 'custom' ? `${customPurity}%` : PURITY_LABEL[p]}
-              </Chip>
-            ))}
-          </div>
-        </div>
+        <button
+          onClick={onRefresh}
+          disabled={refreshing}
+          className="flex items-center justify-between rounded-xl bg-gold-soft px-4 py-3 text-left ring-1 ring-gold-line transition active:scale-[0.98] active:bg-gold/25 disabled:opacity-60">
+          <span>
+            <span className="block font-mono text-eyebrow tracking-[0.2em] text-gold-deep uppercase">
+              {refreshing ? 'Asking the provider' : 'Press the wheel'}
+            </span>
+            <span className="block text-body text-gold">{refreshing ? 'Checking now...' : 'Check the price again'}</span>
+          </span>
+          <span className={`font-mono text-title text-gold ${refreshing ? 'animate-spin' : ''}`}>⟳</span>
+        </button>
 
         <div>
           <div className="flex items-baseline justify-between">
@@ -471,11 +512,11 @@ function Spot({
           {range ? (
             <div className="mt-1 grid grid-cols-2 gap-2">
               <div>
-                <div className="font-mono text-row tabular-nums text-err">{usd(range.low * factor, 0)}</div>
+                <div className="font-mono text-row tabular-nums text-err">{usd(range.low, 0)}</div>
                 <div className="font-mono text-eyebrow text-dim">Low · {ago(now - range.lowAt)}</div>
               </div>
               <div>
-                <div className="font-mono text-row tabular-nums text-ok">{usd(range.high * factor, 0)}</div>
+                <div className="font-mono text-row tabular-nums text-ok">{usd(range.high, 0)}</div>
                 <div className="font-mono text-eyebrow text-dim">High · {ago(now - range.highAt)}</div>
               </div>
             </div>
@@ -489,7 +530,6 @@ function Spot({
     </div>
   );
 }
-
 
 /** the app draws only what it watched, so a short history is a short line rather than a fabricated one */
 function ObservationChart({
@@ -602,9 +642,9 @@ function Convert({
           ))}
         </div>
 
-        <div className="mt-auto flex items-baseline justify-between rounded-xl bg-white/4 px-3 py-2">
+        <div className="mt-auto flex items-baseline justify-between rounded-xl bg-gold-soft px-3 py-2 ring-1 ring-gold-line">
           <span className="font-mono text-eyebrow tracking-[0.2em] text-dim uppercase">≈ USD value</span>
-          <span className="font-mono text-title tabular-nums text-off-white">{usd(grams * gramPrice)}</span>
+          <span className="metal font-mono text-title tabular-nums">{usd(grams * gramPrice)}</span>
         </div>
       </div>
 
@@ -615,7 +655,7 @@ function Convert({
             <div key={u} className="flex items-baseline gap-2 border-b border-rule py-[7px]">
               <span className="w-[68px] shrink-0 font-mono text-body">{UNIT_LABEL[u]}</span>
               <span className="flex-1 font-mono text-eyebrow text-dim tabular-nums">{gramText(GRAMS[u])}</span>
-              <span className="font-mono text-body tabular-nums">{usd(GRAMS[u] * gramPrice)}</span>
+              <span className="font-mono text-body tabular-nums text-gold">{usd(GRAMS[u] * gramPrice)}</span>
             </div>
           ))}
         </div>
@@ -659,7 +699,7 @@ function Ledger({
     <div className="flex h-full flex-col px-5 py-2.5">
       <div className="flex items-stretch gap-2">
         <Summary label="Invested" value={usd(invested)} />
-        <Summary label="Value now" value={usd(value)} />
+        <Summary label="Value now" value={usd(value)} tone="text-gold" />
         <Summary label="Total G/L" value={signedUsd(gain)} tone={gain >= 0 ? 'text-ok' : 'text-err'} note={signedPct(pct)} />
         <Summary label="Weight" value={`${amountText(grams / GRAMS.chi)} chi`} note={gramText(grams)} />
         <button
@@ -718,7 +758,7 @@ function Ledger({
                 <span className="w-[72px] shrink-0 text-right font-mono text-hint text-soft tabular-nums">
                   {usd(p.paid)}
                 </span>
-                <span className="w-[84px] shrink-0 text-right font-mono text-body tabular-nums">{usd(current)}</span>
+                <span className="w-[84px] shrink-0 text-right font-mono text-body tabular-nums text-gold">{usd(current)}</span>
                 <span
                   className={`w-[116px] shrink-0 text-right font-mono tabular-nums ${up ? 'text-ok' : 'text-err'} ${
                     compact ? 'flex items-baseline justify-end gap-1.5 text-hint' : 'text-hint'
@@ -774,14 +814,14 @@ function Reference({ gramPrice }: { gramPrice: number }) {
       <div className="mt-2 grid flex-1 grid-cols-3 gap-4">
         {QUICK.map(group => (
           <div key={group.unit}>
-            <div className="font-mono text-body text-near">{UNIT_LABEL[group.unit]}</div>
+            <div className="font-mono text-body text-gold-deep">{UNIT_LABEL[group.unit]}</div>
             <div className="mt-1">
               {group.counts.map(n => (
                 <div key={n} className="flex items-baseline justify-between border-b border-rule py-2">
                   <span className="font-mono text-hint text-dim">
                     {n} {UNIT_LABEL[group.unit]}
                   </span>
-                  <span className="font-mono text-body tabular-nums">{usd(n * GRAMS[group.unit] * gramPrice)}</span>
+                  <span className="font-mono text-body tabular-nums text-gold">{usd(n * GRAMS[group.unit] * gramPrice)}</span>
                 </div>
               ))}
             </div>
@@ -898,7 +938,7 @@ function AddPurchase({
       <div className="mt-auto flex items-center gap-3">
         <button
           onClick={() => onSave({ id: newId(), amount, unit, paid, at })}
-          className="rounded-full bg-off-white px-5 py-2 text-body font-medium text-screen transition active:scale-95">
+          className="rounded-full bg-gold px-5 py-2 text-body font-medium text-screen transition active:scale-95">
           Save purchase
         </button>
         <button
@@ -967,7 +1007,7 @@ function Panel({
           ))}
         </Group>
 
-        <Group label="Valuation purity">
+        <Group label="Valuation purity · converter, ledger and reference">
           {PURITIES.map(p => (
             <Chip key={p} on={p === purity} onClick={() => onPurity(p)}>
               {PURITY_LABEL[p]}
@@ -1014,7 +1054,7 @@ function Panel({
         <span>3 · purchases</span>
         <span>4 · quick reference</span>
         <span>M · next view</span>
-        <span>Esc · close this</span>
+        <span>Press the wheel · check the price again</span>
       </div>
 
       <p className="mt-2 font-mono text-hint text-dim">
@@ -1044,7 +1084,7 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
       aria-pressed={on}
       onClick={onClick}
       className={`rounded-full px-3 py-1.5 text-hint font-medium transition active:scale-95 ${
-        on ? 'bg-off-white text-screen' : 'bg-white/8 text-dim'
+        on ? 'bg-gold text-screen' : 'bg-white/8 text-dim'
       }`}>
       {children}
     </button>

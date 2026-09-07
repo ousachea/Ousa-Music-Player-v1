@@ -1,5 +1,21 @@
 # gold-tracker
 
+## 0.3.0
+
+The spot screen quotes both units that matter: per troy ounce, which is how the market prices gold,
+and per damlung, which is how it is actually bought. The purity selector is gone from this screen,
+so spot is now the plain market quote; purity still sets the valuation used by the converter, the
+ledger and the reference table, from the settings panel or the companion app.
+
+Pressing the wheel asks the provider again. A light runs the width of the screen while the request
+is out, and the new price lands carrying the colour of the step that brought it.
+
+The app is finally the colour of its subject. The quote is struck in metal over a warm ground, the
+chips, tabs and controls carry the same gold, and green and red are left to mean only what they
+have always meant here: which way the price went.
+
+A move that rounds away to nothing no longer prints a sign it cannot justify.
+
 ## 0.2.1
 
 The purchases screen no longer deletes. A stray tap on a touchscreen is how a whole holding

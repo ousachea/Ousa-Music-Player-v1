@@ -17,12 +17,16 @@
 }
 
 @theme {
-  --color-off-white: #efefef;
-  --color-bg: #0a0c0e;
-  --color-screen: #060809;
-  --color-fg: #efefef;
-  --color-muted: #a7adb5;
-  --color-accent: #00a8e8;
+  --color-off-white: #f4efe6;
+  --color-bg: #0d0a06;
+  --color-screen: #0a0805;
+  --color-fg: #f4efe6;
+  --color-muted: #b5ac9c;
+  --color-accent: #f0c04a;
+
+  --color-gold: #f0c04a;
+  --color-gold-deep: #c8922c;
+  --color-gold-dim: #8a6a24;
   --color-ok: #3ddc84;
   --color-err: #dc3d3d;
   --color-warn: #ff7070;
@@ -36,6 +40,8 @@
   --color-near: color-mix(in srgb, var(--color-fg) 80%, transparent);
 
   --color-accent-soft: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  --color-gold-soft: color-mix(in srgb, var(--color-gold) 16%, transparent);
+  --color-gold-line: color-mix(in srgb, var(--color-gold) 30%, transparent);
   --color-ok-soft: color-mix(in srgb, var(--color-ok) 14%, transparent);
   --color-err-soft: color-mix(in srgb, var(--color-err) 14%, transparent);
   --color-warn-soft: color-mix(in srgb, var(--color-warn) 14%, transparent);
@@ -60,6 +66,64 @@
   --tracking-tight-1: -0.01em;
 
   --radius-none: 0;
+}
+
+/* a refresh the eye can follow: a light runs the width of the screen while the request is out */
+@keyframes sweep {
+  from {
+    transform: translateX(-40%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+
+.sweep {
+  animation: sweep 1000ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes price-in {
+  from {
+    opacity: 0.3;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* a new quote lands with its direction on it, then settles back to the reading colour */
+@keyframes tick-flash {
+  from {
+    color: var(--tick);
+  }
+  to {
+    color: inherit;
+  }
+}
+
+.price-in {
+  animation: price-in 420ms cubic-bezier(0.22, 0.7, 0.3, 1) both;
+}
+
+.price-arrive {
+  animation:
+    price-in 420ms cubic-bezier(0.22, 0.7, 0.3, 1) both,
+    tick-flash 1200ms ease-out both;
+}
+
+/* the big price is struck rather than printed: a warm face falling to a deeper edge */
+.metal {
+  background: linear-gradient(170deg, #fbe3a0 4%, var(--color-gold) 42%, var(--color-gold-deep) 96%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* a low warm glow under the quote, so the screen is not a flat black rectangle */
+.glow {
+  background: radial-gradient(120% 80% at 8% 0%, color-mix(in srgb, var(--color-gold) 13%, transparent), transparent 62%);
 }
 
 @layer base {
