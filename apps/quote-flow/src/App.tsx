@@ -23,16 +23,27 @@ function hueOf(id: string) {
   return (hash >>> 0) % 360;
 }
 
-function washFor(id: string) {
-  const a = hueOf(id);
-  // the partner hue sits far enough round the wheel to read as a second colour, not a smudge
-  const b = (a + 70 + (hueOf(id + 'b') % 90)) % 360;
-  return {
-    background:
-      `radial-gradient(62% 58% at 26% 28%, hsl(${a} 70% 45% / 0.30), transparent 70%),` +
-      `radial-gradient(58% 52% at 78% 74%, hsl(${b} 65% 48% / 0.24), transparent 70%)`,
-    edge: `hsl(${a} 70% 62%)`,
-  };
+/** everything about a blob comes off the quote's id, so the same quote always paints the same scene */
+function blobsFor(id: string) {
+  const base = hueOf(id);
+  const pick = (salt: string, span: number, from = 0) => from + (hueOf(id + salt) % span);
+  return [0, 1, 2].map(i => ({
+    // the hues fan out from the quote's own so the three read as one palette
+    hue: (base + i * pick(`h${i}`, 60, 40)) % 360,
+    x: pick(`x${i}`, 70, 12),
+    y: pick(`y${i}`, 66, 14),
+    size: pick(`s${i}`, 26, 42),
+    alpha: 0.3 - i * 0.06,
+    // travel and pace differ per blob, so they never line up into a single sweep
+    bx: pick(`bx${i}`, 18, -9),
+    by: pick(`by${i}`, 16, -8),
+    scale: 1.06 + pick(`bs${i}`, 16, 0) / 100,
+    duration: 22 + pick(`d${i}`, 26),
+  }));
+}
+
+function edgeFor(id: string) {
+  return `hsl(${hueOf(id)} 70% 62%)`;
 }
 
 
@@ -181,7 +192,7 @@ export default function App() {
         quoteId={quote?.id ?? 'none'}
         seconds={intervalS}
         paused={paused || deck.length < 2 || panel}
-        colour={washFor(quote?.id ?? 'none').edge}
+        colour={edgeFor(quote?.id ?? 'none')}
       />
 
       <div className="relative flex h-full w-full flex-col px-12 py-6">
@@ -342,28 +353,42 @@ function Step({ label, onClick, children }: { label: string; onClick: () => void
   );
 }
 
-/** the outgoing colour stays underneath while the incoming one fades over it, so there is no cut */
+/** the outgoing scene stays underneath while the incoming one fades over it, so there is no cut */
 const Wash = memo(function Wash({ quoteId }: { quoteId: string }) {
-  const [layers, setLayers] = useState<{ id: string; background: string }[]>(() => [
-    { id: quoteId, background: washFor(quoteId).background },
-  ]);
+  const [layers, setLayers] = useState<string[]>([quoteId]);
 
   useEffect(() => {
     setLayers(current => {
-      if (current[current.length - 1]?.id === quoteId) return current;
+      if (current[current.length - 1] === quoteId) return current;
       // only the one being replaced is worth keeping; anything older is already covered
-      return [...current.slice(-1), { id: quoteId, background: washFor(quoteId).background }];
+      return [...current.slice(-1), quoteId];
     });
   }, [quoteId]);
 
   return (
-    <div className="pointer-events-none absolute inset-0">
-      {layers.map((layer, i) => (
-        <div
-          key={layer.id}
-          className={`wash absolute inset-0 ${i === layers.length - 1 && layers.length > 1 ? 'tint-in' : ''}`}
-          style={{ background: layer.background }}
-        />
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {layers.map((id, i) => (
+        <div key={id} className={`absolute inset-0 ${i === layers.length - 1 && layers.length > 1 ? 'tint-in' : ''}`}>
+          {blobsFor(id).map((b, n) => (
+            <div
+              key={n}
+              className="blob absolute rounded-full"
+              style={{
+                left: `${b.x}%`,
+                top: `${b.y}%`,
+                width: `${b.size}%`,
+                height: `${b.size * 1.6}%`,
+                translate: '-50% -50%',
+                background: `radial-gradient(closest-side, hsl(${b.hue} 72% 48% / ${b.alpha}), transparent 72%)`,
+                ['--bx' as string]: `${b.bx}%`,
+                ['--by' as string]: `${b.by}%`,
+                ['--bs' as string]: String(b.scale),
+                ['--bdur' as string]: `${b.duration}s`,
+                animationDelay: `-${b.duration / (n + 2)}s`,
+              }}
+            />
+          ))}
+        </div>
       ))}
     </div>
   );
@@ -402,7 +427,6 @@ const Countdown = memo(function Countdown({
   );
 });
 
-/** keyed on the quote so react remounts it, which is what replays the entrance */
 const EXIT_MS = 260;
 
 const Stage = memo(function Stage({ quote, direction }: { quote: Quote | undefined; direction: number }) {

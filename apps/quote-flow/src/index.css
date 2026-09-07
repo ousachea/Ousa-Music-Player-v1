@@ -94,19 +94,20 @@
   animation: quote-out 260ms cubic-bezier(0.4, 0, 1, 1) both;
 }
 
-/* a very slow wash behind the text, so the screen is never quite static */
-@keyframes wash {
+/* each blob wanders on its own path and its own clock, so the background never repeats a pose */
+@keyframes blob-drift {
   0%,
   100% {
-    transform: translate3d(-3%, -2%, 0) scale(1.05);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(3%, 2%, 0) scale(1.12);
+    transform: translate3d(var(--bx, 6%), var(--by, -4%), 0) scale(var(--bs, 1.15));
   }
 }
 
-.wash {
-  animation: wash 48s ease-in-out infinite;
+.blob {
+  animation: blob-drift var(--bdur, 26s) ease-in-out infinite;
+  will-change: transform;
 }
 
 /* the perimeter empties as the interval runs down. pathLength normalises the rect to 1000 units,

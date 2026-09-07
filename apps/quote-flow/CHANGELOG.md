@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.4.0
+
+Scatter the background blobs per quote and set them drifting.
+
 ## 0.3.1
 
 Crossfade between quotes instead of a cut.
