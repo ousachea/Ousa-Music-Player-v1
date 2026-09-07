@@ -1,10 +1,15 @@
-# Music Player
+# Ousa apps for the Car Thing
 
-A now-playing player for the [Spotify Car Thing](https://bridgething.com), running on bridgething.
-It shows what your phone is playing, takes its colours from the album art, and gives you three
-different ways to look at it.
+Three apps for the [Spotify Car Thing](https://bridgething.com), published from one source: a music
+player, a queue controller, and a network monitor. Add the source once and all three are available.
 
 ![Cover style](apps/MusicPlayerV1/screenshots/01-cover.png)
+
+| App | What it does |
+| --- | --- |
+| **Music Player** | Now playing, in three styles, coloured by the album art |
+| **Queue Manager** | The up-next queue, with select, bump and shuffle/repeat |
+| **Network Monitor** | Link status, latency and measured throughput |
 
 ## Put it on your Car Thing
 
@@ -19,16 +24,19 @@ to your phone. Then:
    https://ousachea.github.io/Ousa-Music-Player-v1/catalog.v1.json
    ```
 
-4. **Music Player** appears in the list. Install it.
-5. Open it from the device's launcher.
+4. The apps appear in the list. Install the ones you want.
+5. Open them from the device's launcher.
 
-Updates show up in the same place. The app can also tell you when it is behind: open its settings
-on the device and press **Check** under *Software update*.
+Updates show up in the same place. Music Player can also tell you when it is behind: open its
+settings on the device and press **Check** under *Software update*.
 
-> The listing asks for one permission, `net.proxy`. It is used to fetch a sharper copy of the album
-> art than the device receives on its own, and you can turn that off in the settings.
+> Music Player and Network Monitor each ask for `net.proxy`. Music Player uses it to fetch a sharper
+> copy of the album art than the device receives on its own, which you can turn off in its settings;
+> Network Monitor uses it to time the requests it measures with. Queue Manager asks for nothing.
 
-## The three player styles
+## Music Player
+
+### The three player styles
 
 Switch between them in the settings, under **Player style**.
 
@@ -56,7 +64,7 @@ The artwork fills the whole screen with the track laid over it. The progress lin
 for the part you have played and a flat line for the rest, and the wave travels while the music runs.
 This is the style that benefits most from the sharper artwork lookup.
 
-## Controls
+### Controls
 
 | What you do | What happens |
 | --- | --- |
@@ -75,7 +83,7 @@ This is the style that benefits most from the sharper artwork lookup.
 A press waits a moment to see whether another one follows, so play/pause from the wheel is very
 slightly delayed. The on-screen button is instant.
 
-## Settings
+### Settings
 
 ![Settings](apps/MusicPlayerV1/screenshots/04-settings.png)
 
@@ -91,6 +99,26 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
 
 Everything is also editable from the companion app, which has room for longer explanations. Whichever
 one you changed last wins.
+
+## Queue Manager
+
+The up-next queue on its own screen, so you can steer what plays without picking up your phone.
+
+![Queue Manager](apps/queue-manager/screenshots/01-queue.png)
+
+The current track sits on the left with its artwork, progress and transport, and the queue fills the
+right in a list you can scroll by touch or with the wheel. Tapping a row jumps straight to that
+track; the button beside it pushes that track to the front of what plays next. Shuffle and repeat
+are there too.
+
+**What the player will and will not allow.** It can read the queue, jump to an index, and queue a
+track to play next, so those work. It exposes no way to *remove* an entry, and re-queueing without a
+remove would duplicate a track rather than move it, so remove and free reordering are reported as
+unavailable rather than faked. Bumping a track to play next is the honest version of moving it up.
+
+With no phone attached it falls back to a mock queue, marked **DEMO DATA**, which is also what
+exercises the awkward cases: titles and artists long enough to truncate, and a queue longer than the
+panel.
 
 ## Network Monitor
 
