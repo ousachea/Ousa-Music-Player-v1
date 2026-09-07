@@ -21,7 +21,12 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', pulse: true, pulseBpm: 90, backdrop: 70, drift: 40, motion: true, remaining: true, clock: true, clockPos: 'right', clockSize: 100, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', pulse: true, pulseBpm: 0, backdrop: 70, drift: 40, motion: true, remaining: true, clock: true, clockPos: 'right', clockSize: 100, clockSeconds: true, clockFormat: 'auto' };
+
+// zero means auto, which is only ever this tempo: the app has no way to know the song's own
+export const AUTO_PULSE_BPM = 90;
+export const PULSE_BPM_MIN = 40;
+export const PULSE_BPM_MAX = 180;
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
@@ -38,7 +43,8 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'pulseBpm': {
       const bpm = Number(value);
       if (!Number.isFinite(bpm)) return { ...prefs, pulseBpm: DEFAULTS.pulseBpm };
-      return { ...prefs, pulseBpm: Math.min(180, Math.max(40, bpm)) };
+      if (bpm <= 0) return { ...prefs, pulseBpm: 0 };
+      return { ...prefs, pulseBpm: Math.min(PULSE_BPM_MAX, Math.max(PULSE_BPM_MIN, bpm)) };
     }
     case 'drift': {
       // this key used to be a boolean too, so an old stored value still has to mean something sensible

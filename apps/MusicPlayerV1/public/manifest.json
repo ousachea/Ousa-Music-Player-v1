@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "Ousa Music player v1",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "description": "Now playing from your phone, on the Car Thing.",
   "icon": "icon.png",
   "settings": "settings.html",
@@ -79,11 +79,11 @@
       "type": "number",
       "data": {
         "key": "pulseBpm",
-        "label": "Pulse tempo (BPM)",
-        "min": 40,
+        "label": "Pulse tempo in BPM (0 for auto)",
+        "min": 0,
         "max": 180,
         "step": 5,
-        "default": 90
+        "default": 0
       }
     },
     {

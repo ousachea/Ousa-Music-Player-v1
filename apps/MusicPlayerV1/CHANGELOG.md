@@ -1,5 +1,9 @@
 # weather
 
+## 0.17.1
+
+Pulse tempo can be set to auto.
+
 ## 0.17.0
 
 Pulse gets a beat envelope, a tempo and an on/off; fix the Animations toggle.

@@ -12,7 +12,7 @@ import {
 
 import { accentFrom, type Accent } from './artwork-color';
 import { useClock, type ClockParts } from './clock';
-import { usePrefs, type Prefs } from './config';
+import { AUTO_PULSE_BPM, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 
@@ -280,7 +280,7 @@ export default function App() {
                     className="cover-pulse pointer-events-none absolute inset-0 rounded-2xl"
                     style={{
                       boxShadow: `0 0 0 1.5px ${accentOn.soft}, 0 0 38px 5px ${accentOn.fill}`,
-                      ['--pulse-duration' as string]: `${Math.round(60000 / prefs.pulseBpm)}ms`,
+                      ['--pulse-duration' as string]: `${Math.round(60000 / (prefs.pulseBpm || AUTO_PULSE_BPM))}ms`,
                     }}
                   />
                 )}
@@ -388,12 +388,12 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
 };
 
-const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: string }> = {
+const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: string; auto?: number }> = {
   seekSeconds: { min: 1, max: 30, step: 1, suffix: 's' },
   backdrop: { min: 0, max: 100, step: 10, suffix: '%' },
   drift: { min: 0, max: 100, step: 10, suffix: '%' },
   clockSize: { min: 70, max: 200, step: 10, suffix: '%' },
-  pulseBpm: { min: 40, max: 180, step: 5, suffix: ' bpm' },
+  pulseBpm: { min: PULSE_BPM_MIN, max: PULSE_BPM_MAX, step: 5, suffix: '', auto: 0 },
 };
 
 // grouped so a related pair reads together rather than as nine unrelated lines
@@ -473,16 +473,22 @@ function Panel({
     const numeric = NUMERIC[key];
 
     if (numeric) {
+      const current = value as number;
+      const isAuto = numeric.auto !== undefined && current === numeric.auto;
+      const less = () =>
+        numeric.auto !== undefined && current <= numeric.min
+          ? numeric.auto
+          : Math.max(numeric.min, current - numeric.step);
+      const more = () => (isAuto ? numeric.min : Math.min(numeric.max, current + numeric.step));
       return (
         <div className="flex shrink-0 items-center gap-3">
-          <Step label="less" onClick={() => setPref(key, String(Math.max(numeric.min, (value as number) - numeric.step)))}>
+          <Step label="less" onClick={() => setPref(key, String(less()))}>
             −
           </Step>
-          <span className="w-14 text-center font-mono text-title tabular-nums" style={{ color: tint }}>
-            {value as number}
-            {numeric.suffix}
+          <span className="w-20 text-center font-mono text-title tabular-nums" style={{ color: tint }}>
+            {isAuto ? 'Auto' : `${current}${numeric.suffix}`}
           </span>
-          <Step label="more" onClick={() => setPref(key, String(Math.min(numeric.max, (value as number) + numeric.step)))}>
+          <Step label="more" onClick={() => setPref(key, String(more()))}>
             +
           </Step>
         </div>
