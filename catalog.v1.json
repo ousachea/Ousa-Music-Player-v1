@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T13:18:26.538Z",
+  "updated_at": "2026-09-07T13:24:33.606Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -15,9 +15,34 @@
       "description": "Now playing from your phone, on the Car Thing.",
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.jpg",
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/01-cover.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/02-vinyl.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-poster.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/04-settings.png"
+      ],
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.18.3",
+          "released_at": "2026-09-07T13:24:33.605Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.18.3.zip",
+            "size": 929454,
+            "sha256": "f1efd9d998655b7a7963bc32abdbc7c9d6ef593c8a23e8508c8d4e7e292372f9"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.18.3.html",
+            "size": 29262,
+            "sha256": "c3578239b1088d4dee7461d595e3cdcdfd35f201f840239a4b02c9156c3166f9"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Publish screenshots of each player style."
+        },
         {
           "version": "0.18.2",
           "released_at": "2026-09-07T13:18:26.537Z",
