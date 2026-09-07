@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T13:33:24.847Z",
+  "updated_at": "2026-09-07T13:44:51.435Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -745,6 +745,39 @@
           ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "First release."
+        }
+      ]
+    },
+    {
+      "id": "01a07c16-be12-7003-91aa-482b107fdccb",
+      "name": "Network Monitor",
+      "description": "Live link status, latency and throughput for the Car Thing.",
+      "author": "Ousa Chea",
+      "icon": null,
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c16-be12-7003-91aa-482b107fdccb/01-dashboard.png"
+      ],
+      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-09-07T13:44:51.432Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c16-be12-7003-91aa-482b107fdccb/0.1.0.zip",
+            "size": 816596,
+            "sha256": "d7d7eb8412b4d7d9579d9fe8709dc3e4d349dd185270ef0ccb64dfc1f1e6e055"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c16-be12-7003-91aa-482b107fdccb/0.1.0.html",
+            "size": 26933,
+            "sha256": "49a1db6d5704fc351b6196e3b5979ef92a40b0f656c96af108dfb7806a0fff22"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "First release. Link status, latency, measured download and a 60 second graph.\nUpload and local IP report as unavailable: they need interface counters that the\ndaemon does not expose."
         }
       ]
     }
