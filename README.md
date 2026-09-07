@@ -88,6 +88,31 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
 Everything is also editable from the companion app, which has room for longer explanations. Whichever
 one you changed last wins.
 
+## Network Monitor
+
+A second app in this source: a live view of the device's connection.
+
+![Network Monitor](apps/network-monitor/screenshots/01-dashboard.png)
+
+It shows link status (connected, degraded, offline), round trip latency, measured download
+throughput, the connection kind and whether it is metered, your public address, and how long the
+link has been up as this app has observed it. The graph keeps the last 60 seconds.
+
+**What is measured, and what is not.** The daemon proxies HTTP and reports the link kind, but it
+exposes no interface counters. So latency and download are measured by timing real transfers, which
+means download is what the app can pull *through the proxy* rather than the line's ceiling, and
+throughput sampling pauses itself on a metered link. Upload and the local address are reported as
+unavailable rather than estimated.
+
+**To make those real, a desktop extension would need to expose `net.interface`:**
+
+- `rx_bytes` and `tx_bytes` per interface, sampled on a timer, so throughput needs no traffic of its own
+- the active interface name, its local address and its link speed
+- the timestamp the link last came up, for real uptime rather than observed uptime
+
+The app already routes everything through a provider in `src/net.ts`, so an extension-backed provider
+drops in beside the probe one without touching the dashboard.
+
 ## Working on it
 
 ```sh
