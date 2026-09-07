@@ -1,5 +1,9 @@
 # weather
 
+## 0.17.2
+
+Smooth the pulse: seamless loop with an eased rise and settle.
+
 ## 0.17.1
 
 Pulse tempo can be set to auto.

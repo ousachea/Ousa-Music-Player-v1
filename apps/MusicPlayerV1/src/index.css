@@ -186,23 +186,30 @@
 
 /* a glow around the cover's edge; it sits outside the art so it never veils it.
    the envelope hits and decays like a beat rather than breathing evenly, and the
-   period comes from the tempo setting, not from the audio, which the app never sees. */
+   period comes from the tempo setting, not from the audio, which the app never sees.
+   start and end match so the loop has no seam, and each leg carries its own easing:
+   a quick eased rise, then a long settle. */
 @keyframes cover-pulse {
   0% {
-    opacity: 0.95;
-    transform: scale(1.016);
+    opacity: 0.3;
+    transform: scale(1);
+    animation-timing-function: cubic-bezier(0.22, 0.7, 0.35, 1);
   }
-  22% {
-    opacity: 0.5;
+  14% {
+    opacity: 0.92;
+    transform: scale(1.014);
+    animation-timing-function: cubic-bezier(0.35, 0, 0.45, 1);
   }
   100% {
-    opacity: 0.26;
+    opacity: 0.3;
     transform: scale(1);
   }
 }
 
 .cover-pulse {
-  animation: cover-pulse var(--pulse-duration, 667ms) ease-out infinite;
+  /* the timing lives in the keyframes; promoting the layer keeps the shadow from repainting each frame */
+  animation: cover-pulse var(--pulse-duration, 667ms) linear infinite;
+  will-change: opacity, transform;
 }
 
 .roll {
