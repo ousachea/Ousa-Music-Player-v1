@@ -1,5 +1,9 @@
 # weather
 
+## 0.20.1
+
+Cover pulse defaults to off.
+
 ## 0.20.0
 
 New defaults: full backdrop and drift, wave seek bar, clock left at 150%.
