@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T14:00:36.889Z",
+  "updated_at": "2026-09-07T14:03:30.031Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -24,6 +24,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.20.1",
+          "released_at": "2026-09-07T14:03:30.027Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.20.1.zip",
+            "size": 929672,
+            "sha256": "fd4118d1bbdfe911156ca4a9270fa1d6262e48fcae88ce32f64ca68f9f696f71"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.20.1.html",
+            "size": 29244,
+            "sha256": "3353d3e0c7b8f5792a11799ab85e9bca7ab2cf537a298170aa8836a61f97f791"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Cover pulse defaults to off."
+        },
         {
           "version": "0.20.0",
           "released_at": "2026-09-07T14:00:36.886Z",
