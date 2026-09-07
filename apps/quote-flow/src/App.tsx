@@ -567,8 +567,7 @@ const Pager = memo(function Pager({
       <button
         aria-label="next"
         onClick={onNext}
-        style={{ backgroundColor: colour, color: '#0a0c0e' }}
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-full transition active:scale-90">
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/8 text-near transition active:scale-90 active:bg-white/16">
         <Chevron className="h-4.5 w-4.5" />
       </button>
     </div>

@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.6.3
+
+Both pagination arrows read the same.
+
 ## 0.6.2
 
 Centre the pagination and tighten it.
