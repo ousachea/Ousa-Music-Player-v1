@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T14:17:58.109Z",
+  "updated_at": "2026-09-07T14:28:05.146Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -894,9 +894,30 @@
       "description": "A quote of the moment, rotating quietly on the dashboard.",
       "author": "Ousa Chea",
       "icon": null,
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c31-5053-72cd-a790-a2be27c8bc79/01-quote.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c31-5053-72cd-a790-a2be27c8bc79/02-settings.png"
+      ],
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.2.0",
+          "released_at": "2026-09-07T14:28:05.144Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c31-5053-72cd-a790-a2be27c8bc79/0.2.0.zip",
+            "size": 849945,
+            "sha256": "95bdf91d2a8f40915d99bb39c7249f00569d33a6fe8f580766a043ccf7009b0a"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c31-5053-72cd-a790-a2be27c8bc79/0.2.0.html",
+            "size": 28607,
+            "sha256": "d553101d44a532160f2633f1e414894a70dd9507260c27277e11aed9212a944d"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Adds a settings panel on the device, opened with the button under the wheel:\ncategory, rotation interval, favourites only, and pause. Ships the collection\nthis player was built for, 364 quotes across fifteen categories."
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-09-07T14:11:21.616Z",
@@ -912,7 +933,7 @@
           },
           "permissions": [],
           "min_libbridgething_version": "0.12.1",
-          "changelog": "First release. Rotating quotes with categories, favourites and your own lines.\nFavourites persist on the device; custom quotes are typed in the companion app,\nwhich is the only place with a real keyboard."
+          "changelog": "First release. Rotating quotes with categories, favourites and your own lines."
         }
       ]
     }
