@@ -1,5 +1,9 @@
 # weather
 
+## 0.16.0
+
+Cover art pulses, and the transport borders take the album colour.
+
 ## 0.15.0
 
 Seek bars gradient between two album colours; the clock takes the tint.

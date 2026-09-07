@@ -184,6 +184,23 @@
   animation: drift var(--drift-duration, 31s) ease-in-out infinite;
 }
 
+/* a glow that breathes around the cover's edge; it sits outside the art so it never veils it */
+@keyframes cover-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.012);
+  }
+}
+
+.cover-pulse {
+  animation: cover-pulse 3.4s ease-in-out infinite;
+}
+
 .roll {
   animation: roll var(--roll-duration, 9s) ease-in-out infinite;
 }

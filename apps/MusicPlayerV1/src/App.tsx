@@ -275,6 +275,12 @@ export default function App() {
             ) : (
               <div className="relative aspect-square h-full shrink-0">
                 <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />
+                {accentOn && prefs.motion && (
+                  <div
+                    className="cover-pulse pointer-events-none absolute inset-0 rounded-2xl"
+                    style={{ boxShadow: `0 0 0 1.5px ${accentOn.soft}, 0 0 38px 5px ${accentOn.fill}` }}
+                  />
+                )}
                 {artUrl ? (
                   <img
                     src={artUrl}
@@ -327,7 +333,7 @@ export default function App() {
                 </div>
 
                 <div className="mt-8 flex items-center justify-center gap-5">
-                  <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
+                  <Ghost label="previous" tint={accentOn?.soft} onClick={() => client.player.skipPrev({ allowSeeking: true })}>
                     <Skip className="h-6 w-6 -scale-x-100" />
                   </Ghost>
                   <button
@@ -347,7 +353,7 @@ export default function App() {
                       {playing ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
                     </span>
                   </button>
-                  <Ghost label="next" onClick={() => client.player.skipNext()}>
+                  <Ghost label="next" tint={accentOn?.soft} onClick={() => client.player.skipNext()}>
                     <Skip className="h-6 w-6" />
                   </Ghost>
                 </div>
@@ -1150,7 +1156,17 @@ function Rail({
   );
 }
 
-function Ghost({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+function Ghost({
+  label,
+  tint,
+  onClick,
+  children,
+}: {
+  label: string;
+  tint?: string;
+  onClick: () => void;
+  children: ReactNode;
+}) {
   // remounting on the tap counter is what replays the keyframes on every press
   const [tap, bump] = useState(0);
   return (
@@ -1158,7 +1174,9 @@ function Ghost({ label, onClick, children }: { label: string; onClick: () => voi
       aria-label={label}
       onPointerDown={() => bump(n => n + 1)}
       onClick={onClick}
-      className="relative grid h-16 w-16 shrink-0 place-items-center rounded-full text-near ring-1 ring-white/15 transition-[transform,background-color] duration-300 ease-spring active:scale-90 active:bg-white/20">
+      // the ring reads currentcolor by default, which the glyph also uses, so the colour goes on the ring itself
+      style={{ ['--tw-ring-color' as string]: tint ?? 'rgba(255,255,255,0.15)' }}
+      className="relative grid h-16 w-16 shrink-0 place-items-center rounded-full text-near ring-1 transition-[transform,background-color] duration-300 ease-spring active:scale-90 active:bg-white/20">
       {tap > 0 && (
         <span key={tap} className="pointer-events-none absolute inset-0 animate-ripple rounded-full text-off-white ring-2" />
       )}
