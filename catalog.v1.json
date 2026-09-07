@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T15:44:00.860Z",
+  "updated_at": "2026-09-07T15:51:23.867Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -58,6 +58,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.2.0",
+          "released_at": "2026-09-07T15:51:23.865Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.2.0.zip",
+            "size": 838517,
+            "sha256": "ae69d12fba60f9094c12b93b17e935b56fe76ee19303c65b8c7eb96a4b9fdf90"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.2.0.html",
+            "size": 32644,
+            "sha256": "1236d2d5a1ec09aa6e5735b468ecb7e37186ec3dd78c94ed955c48ddfbf9a4ab"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The purchases screen now fits a real holding. Past six positions the rows go compact and the whole\nledger sits on one screen instead of paging, and the gain column is wide enough that a loss and its\npercentage stay on one line.\n\nThe companion app reads and writes CSV: `Weight,Unit,Paid,Date`, one purchase per line, which is\nwhat a spreadsheet exports."
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-09-07T15:44:00.857Z",
