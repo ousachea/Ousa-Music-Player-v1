@@ -1,0 +1,91 @@
+{
+  "id": "01a07c6f-f65a-732a-ab3b-acae5a84b207",
+  "name": "Desk Exchange",
+  "version": "0.1.0",
+  "description": "A fictional stock market for your desk. Invented tickers, invented headlines, nothing real.",
+  "settings": "settings.html",
+  "config": [
+    {
+      "type": "enum",
+      "data": {
+        "key": "pace",
+        "label": "Market pace",
+        "choices": [
+          "0.5",
+          "1",
+          "2",
+          "4"
+        ],
+        "default": "1"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "volatility",
+        "label": "Volatility",
+        "choices": [
+          "calm",
+          "normal",
+          "wild"
+        ],
+        "default": "normal"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "palette",
+        "label": "Colours",
+        "choices": [
+          "green-up",
+          "red-up"
+        ],
+        "default": "green-up"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "span",
+        "label": "Chart span",
+        "choices": [
+          "1h",
+          "4h",
+          "1d",
+          "1w"
+        ],
+        "default": "4h"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "tape",
+        "label": "Show the ticker tape",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "headlines",
+        "label": "Show the headline wire",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "watchlistOnly",
+        "label": "Board shows only the watchlist",
+        "default": false
+      }
+    }
+  ],
+  "permissions": [],
+  "art": {
+    "heroPx": 248,
+    "thumbPx": 96
+  }
+}

@@ -11,6 +11,7 @@ source once and all of them are available.
 | **Queue Manager** | The up-next queue, with select, bump and shuffle/repeat |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
+| **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
 
 ## Put it on your Car Thing
 
@@ -164,6 +165,53 @@ after a dash or a pipe, because that is the only place with a real keyboard.
 
 Favourites are kept in the app's own storage on the device, so they survive a restart. Narrowing to
 a set with nothing in it falls back to the wider one rather than leaving the screen blank.
+
+## Desk Exchange
+
+A stock market that does not exist, running on your desk.
+
+![Desk Exchange](apps/desk-exchange/screenshots/01-board.png)
+
+Twelve invented companies, each with its own price, sparkline and session move. The header carries
+the Desk Exchange Index, how many names are up against how many are down, and the clock. The wire
+under it runs headlines, and a headline is not decoration: the shock it describes is applied to that
+company's price, ramping in over seconds and bleeding off over the next half hour, so a bad story is
+visible in the chart. The tape along the bottom rolls the latest print for every name.
+
+![Desk Exchange chart](apps/desk-exchange/screenshots/02-chart.png)
+
+Press 2, or tap a name, for its chart: 1H, 4H, 1D or 1W, with the session open, high, low, volume
+and market cap beside it, and the latest headline for that company. The wheel moves through the
+names and the chart follows.
+
+Prices are a pure function of the clock rather than a running simulation. The same instant always
+gives the same price, which means any span can be charted on demand, the chart and the board never
+disagree, and closing the app does not reset the market. Thin names print less often than liquid
+ones, so the board does not flash every cell at once.
+
+![Desk Exchange settings](apps/desk-exchange/screenshots/03-settings.png)
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Preset button 1 | The board |
+| Preset button 2 | The chart of the selected name |
+| Preset button 3 | Add or drop the selected name from the watchlist |
+| Preset button 4 | Hold the market where it is |
+| Mode, the button past the presets | Swap between board and chart |
+| Turn the wheel | Move through the names |
+| Button under the wheel | Opens and closes settings |
+| Tap a name | Its chart |
+
+### Settings
+
+Pace runs the market at 0.5x to 4x. Volatility is calm, normal or wild. Colours are green for gains
+or red for gains, which is how much of Asia reads a board. You can also set the default chart span,
+show only your watchlist, and hide the tape or the wire. The watchlist lives in the app's own storage
+on the device, so it survives a restart.
+
+Every symbol, price and headline in this app is invented. None of it is a quote for anything real.
 
 ## Working on it
 
