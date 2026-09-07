@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T15:53:50.336Z",
+  "updated_at": "2026-09-07T16:00:50.795Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -58,6 +58,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.3.0",
+          "released_at": "2026-09-07T16:00:50.793Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.0.zip",
+            "size": 840210,
+            "sha256": "e92e7eb3d5ee927ea06b7284e350ad414118969babf35fd538e0699e4f7e91bc"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.0.html",
+            "size": 32644,
+            "sha256": "1236d2d5a1ec09aa6e5735b468ecb7e37186ec3dd78c94ed955c48ddfbf9a4ab"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The spot screen quotes both units that matter: per troy ounce, which is how the market prices gold,\nand per damlung, which is how it is actually bought. The purity selector is gone from this screen,\nso spot is now the plain market quote; purity still sets the valuation used by the converter, the\nledger and the reference table, from the settings panel or the companion app.\n\nPressing the wheel asks the provider again. A light runs the width of the screen while the request\nis out, and the new price lands carrying the colour of the step that brought it.\n\nThe app is finally the colour of its subject. The quote is struck in metal over a warm ground, the\nchips, tabs and controls carry the same gold, and green and red are left to mean only what they\nhave always meant here: which way the price went.\n\nA move that rounds away to nothing no longer prints a sign it cannot justify."
+        },
         {
           "version": "0.2.1",
           "released_at": "2026-09-07T15:53:50.334Z",
