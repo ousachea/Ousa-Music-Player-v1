@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T15:51:23.867Z",
+  "updated_at": "2026-09-07T15:53:50.336Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -58,6 +58,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.2.1",
+          "released_at": "2026-09-07T15:53:50.334Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.2.1.zip",
+            "size": 838204,
+            "sha256": "687edc47889ac5179a9629613bf67ab6c568ffd93daca3e70bca3e9b5ed92cfa"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.2.1.html",
+            "size": 32644,
+            "sha256": "1236d2d5a1ec09aa6e5735b468ecb7e37186ec3dd78c94ed955c48ddfbf9a4ab"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The purchases screen no longer deletes. A stray tap on a touchscreen is how a whole holding\ndisappears, and there is no undo on the device, so removing a position is now a companion-app job\nwhere it takes a deliberate save."
+        },
         {
           "version": "0.2.0",
           "released_at": "2026-09-07T15:51:23.865Z",
