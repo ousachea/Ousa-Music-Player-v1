@@ -116,10 +116,14 @@ export function usePrefs(client: BridgethingClient): {
 
   useEffect(() => {
     const offConfig = client.config.onChanged(msg => {
+      const before = config.current[msg.key];
       if (msg.value === null) delete config.current[msg.key];
       else config.current[msg.key] = msg.value;
-      // the companion app just spoke, so its value wins over whatever the device set earlier
-      if (overrides.current[msg.key] !== undefined) {
+
+      // only a real change means the companion chose something: installing or updating rewrites every
+      // declared default with the value that was already there, and that must not wipe a device setting
+      const changed = msg.value !== null && msg.value !== before && before !== undefined;
+      if (changed && overrides.current[msg.key] !== undefined) {
         delete overrides.current[msg.key];
         client.doc.delete({ key: DOC_PREFIX + msg.key });
       }

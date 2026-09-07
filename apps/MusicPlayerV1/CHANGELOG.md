@@ -1,5 +1,9 @@
 # weather
 
+## 0.20.2
+
+Keep device settings when an update rewrites the same config.
+
 ## 0.20.1
 
 Cover pulse defaults to off.
