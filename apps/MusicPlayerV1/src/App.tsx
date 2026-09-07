@@ -11,6 +11,7 @@ import {
 } from 'react';
 
 import { accentFrom, type Accent } from './artwork-color';
+import { hdArtwork } from './hd-art';
 import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
@@ -98,6 +99,24 @@ export default function App() {
       if (blobUrl) URL.revokeObjectURL(blobUrl);
     };
   }, [client, artworkId]);
+
+  // the daemon's 512 shows immediately; the sharper copy replaces it when it arrives
+  useEffect(() => {
+    if (!prefs.hdArt || !track?.artist || !track?.album) return;
+    let stale = false;
+    hdArtwork(client, { artist: track.artist, album: track.album, title: track.title ?? null })
+      .then(async url => {
+        if (stale || !url) return;
+        setArtUrl(url);
+        // the sharper source also gives the palette more to work with
+        const blob = await fetch(url).then(r => r.blob());
+        if (!stale) setAccent(await accentFrom(blob));
+      })
+      .catch(() => {});
+    return () => {
+      stale = true;
+    };
+  }, [client, prefs.hdArt, track?.artist, track?.album]);
 
   // snapshots are sparse, so the bar runs off an anchor and wall clock between them
   const anchor = useRef({ posMs: 0, at: 0 });
@@ -397,14 +416,17 @@ const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: 
 };
 
 // grouped so a related pair reads together rather than as nine unrelated lines
-const GROUPS: { title: string; rows: { key: keyof Prefs; label: string }[] }[] = [
+type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
+
+const GROUPS: { title: string; rows: Row[] }[] = [
   {
     title: 'Player',
     rows: [
       { key: 'theme', label: 'Player style' },
       { key: 'accent', label: 'Accent colour' },
-      { key: 'pulse', label: 'Cover pulse' },
-      { key: 'pulseBpm', label: 'Pulse tempo' },
+      { key: 'hdArt', label: 'Sharper artwork' },
+      { key: 'pulse', label: 'Cover pulse', only: ['card'] },
+      { key: 'pulseBpm', label: 'Pulse tempo', only: ['card'] },
     ],
   },
   {
@@ -418,15 +440,15 @@ const GROUPS: { title: string; rows: { key: keyof Prefs; label: string }[] }[] =
   {
     title: 'Backdrop',
     rows: [
-      { key: 'backdrop', label: 'Intensity' },
-      { key: 'drift', label: 'Drift' },
+      { key: 'backdrop', label: 'Intensity', only: ['card', 'vinyl'] },
+      { key: 'drift', label: 'Drift', only: ['card', 'vinyl'] },
     ],
   },
   {
     title: 'Display',
     rows: [
       { key: 'motion', label: 'Animations' },
-      { key: 'remaining', label: 'Show time remaining' },
+      { key: 'remaining', label: 'Show time remaining', only: ['card', 'vinyl'] },
     ],
   },
   {
@@ -550,23 +572,25 @@ function Panel({
       <div
         ref={list}
         className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-width:none]">
-        {GROUPS.map((group, gi) => (
-          <section key={group.title} className={gi === 0 ? '' : 'mt-6'}>
-            <h2 className="mb-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{group.title}</h2>
-            <div className="rounded-2xl bg-white/4">
-              {group.rows.map((row, ri) => (
-                <div
-                  key={row.key}
-                  className={`flex items-center justify-between gap-5 px-4 py-2 ${
-                    ri === group.rows.length - 1 ? '' : 'border-b border-white/6'
-                  }`}>
-                  <span className="min-w-0 truncate text-title text-near">{row.label}</span>
-                  {control(row.key)}
-                </div>
-              ))}
-            </div>
-          </section>
-        ))}
+        {GROUPS.map(group => ({ ...group, rows: group.rows.filter(r => !r.only || r.only.includes(prefs.theme)) }))
+          .filter(group => group.rows.length > 0)
+          .map((group, gi) => (
+            <section key={group.title} className={gi === 0 ? '' : 'mt-6'}>
+              <h2 className="mb-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{group.title}</h2>
+              <div className="rounded-2xl bg-white/4">
+                {group.rows.map((row, ri) => (
+                  <div
+                    key={row.key}
+                    className={`flex items-center justify-between gap-5 px-4 py-2 ${
+                      ri === group.rows.length - 1 ? '' : 'border-b border-white/6'
+                    }`}>
+                    <span className="min-w-0 truncate text-title text-near">{row.label}</span>
+                    {control(row.key)}
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
 
         <section className="mt-6 mb-1">
           <h2 className="mb-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">About</h2>

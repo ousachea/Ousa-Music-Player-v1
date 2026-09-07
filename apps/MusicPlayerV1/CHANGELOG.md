@@ -1,5 +1,9 @@
 # weather
 
+## 0.18.0
+
+Sharper artwork, and settings filtered by player style.
+
 ## 0.17.2
 
 Smooth the pulse: seamless loop with an eased rise and settle.

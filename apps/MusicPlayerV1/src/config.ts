@@ -8,6 +8,7 @@ export type Prefs = {
   seekSeconds: number;
   seek: 'auto' | 'bar' | 'wave';
   accent: 'artwork' | 'mono';
+  hdArt: boolean;
   pulse: boolean;
   pulseBpm: number;
   backdrop: number;
@@ -21,7 +22,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', pulse: true, pulseBpm: 0, backdrop: 70, drift: 40, motion: true, remaining: true, clock: true, clockPos: 'right', clockSize: 100, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', hdArt: true, pulse: true, pulseBpm: 0, backdrop: 70, drift: 40, motion: true, remaining: true, clock: true, clockPos: 'right', clockSize: 100, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -83,6 +84,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, clockFormat: value === 'h12' || value === 'h24' ? value : 'auto' };
     case 'clockSeconds':
     case 'clock':
+    case 'hdArt':
     case 'motion':
     case 'pulse':
     case 'remaining':
