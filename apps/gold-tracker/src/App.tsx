@@ -2,13 +2,13 @@ import { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { daemonUrl } from './daemon';
+import { clockAt, dateAt, timeAt, useZone, type Zone } from './device-time';
 import {
   LEDGER_KEY,
   gramsIn,
   newId,
   parseLedger,
   saveLedger,
-  shortDate,
   totalGrams,
   totalPaid,
   type Position,
@@ -62,6 +62,7 @@ const STALE_MS = 10 * 60e3;
 
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
+  const zone = useZone(client);
 
   const [endpoint, setEndpoint] = useState(DEFAULT_ENDPOINT);
   const [apiKey, setApiKey] = useState('');
@@ -279,9 +280,7 @@ export default function App() {
         <span className="font-mono text-eyebrow tracking-[0.2em] text-dim uppercase">
           {error && quote ? 'Last verified quote' : 'Verified live quote'}
         </span>
-        <span className="ml-auto font-mono text-hint text-soft tabular-nums">
-          {new Date(now).toLocaleTimeString('en-GB', { hour12: false })}
-        </span>
+        <span className="ml-auto font-mono text-hint text-soft tabular-nums">{clockAt(now, zone)}</span>
       </header>
 
       {refreshing && (
@@ -301,6 +300,7 @@ export default function App() {
             onWindow={setWindowKey}
             refreshing={refreshing}
             onRefresh={() => load(true)}
+            zone={zone}
           />
         )}
         {view === 'convert' && (
@@ -316,6 +316,7 @@ export default function App() {
           <Ledger
             positions={positions}
             gramPrice={gramPrice}
+            zone={zone}
             scroll={scroll}
             onScroll={setScroll}
             onAdd={() => setAdding(true)}
@@ -343,6 +344,7 @@ export default function App() {
         <AddPurchase
           gramPrice={gramPrice}
           baseUnit={baseUnit}
+          zone={zone}
           onCancel={() => setAdding(false)}
           onSave={position => {
             addPosition(position);
@@ -396,6 +398,7 @@ function Spot({
   onWindow,
   refreshing,
   onRefresh,
+  zone,
 }: {
   quote: Quote | null;
   error: string | null;
@@ -405,6 +408,7 @@ function Spot({
   onWindow: (next: WindowKey) => void;
   refreshing: boolean;
   onRefresh: () => void;
+  zone: Zone;
 }) {
   const window = WINDOWS.find(w => w.key === windowKey) ?? WINDOWS[0];
   const price = quote?.usdPerOzt ?? 0;
@@ -454,7 +458,7 @@ function Spot({
             label="Observed"
             value={
               quote
-                ? `${new Date(quote.at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · ${ago(now - quote.at)}`
+                ? `${timeAt(quote.at, zone)} · ${ago(now - quote.at)}`
                 : '—'
             }
           />
@@ -674,12 +678,14 @@ const COMPACT_ROWS = 9;
 function Ledger({
   positions,
   gramPrice,
+  zone,
   scroll,
   onScroll,
   onAdd,
 }: {
   positions: Position[];
   gramPrice: number;
+  zone: Zone;
   scroll: number;
   onScroll: (next: number) => void;
   onAdd: () => void;
@@ -753,7 +759,7 @@ function Ledger({
                   {!compact && <span className="block font-mono text-[9px] text-dim">{gramText(g)}</span>}
                 </span>
                 <span className="min-w-0 flex-1 truncate font-mono text-eyebrow text-dim">
-                  {shortDate(p.at)} · {usd(p.paid / g)}/g cost{compact ? ` · ${gramText(g)}` : ''}
+                  {dateAt(p.at, zone)} · {usd(p.paid / g)}/g cost{compact ? ` · ${gramText(g)}` : ''}
                 </span>
                 <span className="w-[72px] shrink-0 text-right font-mono text-hint text-soft tabular-nums">
                   {usd(p.paid)}
@@ -840,11 +846,13 @@ const PAID_STEPS = [-500, -100, -10, 10, 100, 500];
 function AddPurchase({
   gramPrice,
   baseUnit,
+  zone,
   onCancel,
   onSave,
 }: {
   gramPrice: number;
   baseUnit: Unit;
+  zone: Zone;
   onCancel: () => void;
   onSave: (position: Position) => void;
 }) {
@@ -914,7 +922,7 @@ function AddPurchase({
           <Step label="earlier" onClick={() => setDaysAgo(d => d + 1)}>
             −
           </Step>
-          <span className="w-[150px] text-center font-mono text-body tabular-nums">{shortDate(at)}</span>
+          <span className="w-[150px] text-center font-mono text-body tabular-nums">{dateAt(at, zone)}</span>
           <Step label="later" onClick={() => setDaysAgo(d => Math.max(0, d - 1))}>
             +
           </Step>

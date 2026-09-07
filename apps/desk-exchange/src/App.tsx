@@ -2,6 +2,7 @@ import { BridgethingClient } from '@bridgething/client';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { daemonUrl } from './daemon';
+import { clockAt, useZone, type Zone } from './device-time';
 import {
   LISTINGS,
   SESSION_MS,
@@ -43,6 +44,7 @@ function spanMs(key: SpanKey) {
 
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
+  const zone = useZone(client);
 
   const [pace, setPace] = useState(1);
   const [volatility, setVolatility] = useState('normal');
@@ -190,6 +192,7 @@ export default function App() {
         pct={indexPct}
         colours={colours}
         clock={clock}
+        zone={zone}
         held={held !== null}
         pace={pace}
         breadth={LISTINGS.filter(l => lastPrint(l.sym, t, vol) >= priceAt(l.sym, t - SESSION_MS, vol)).length}
@@ -259,6 +262,7 @@ function Header({
   pct,
   colours,
   clock,
+  zone,
   held,
   pace,
   breadth,
@@ -267,13 +271,14 @@ function Header({
   pct: number;
   colours: Colours;
   clock: number;
+  zone: Zone;
   held: boolean;
   pace: number;
   breadth: number;
 }) {
   const up = pct >= 0;
   const colour = up ? colours.up : colours.down;
-  const time = new Date(clock).toLocaleTimeString('en-GB', { hour12: false });
+  const time = clockAt(clock, zone);
   return (
     <header className="flex h-11 shrink-0 items-center gap-4 border-b border-rule px-5">
       <div className="flex items-center gap-2">

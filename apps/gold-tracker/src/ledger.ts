@@ -56,6 +56,3 @@ export function newId() {
   return `${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`;
 }
 
-export function shortDate(at: number) {
-  return new Date(at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
-}

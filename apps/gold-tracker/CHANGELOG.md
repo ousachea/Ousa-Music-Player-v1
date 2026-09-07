@@ -1,5 +1,11 @@
 # gold-tracker
 
+## 0.3.1
+
+Every time on screen now comes from the daemon's zone rather than the browser's. The kiosk's
+chromium reports UTC whatever the device's own clock says, so the header clock and the observed
+time were running hours behind the device sitting under them.
+
 ## 0.3.0
 
 The spot screen quotes both units that matter: per troy ounce, which is how the market prices gold,

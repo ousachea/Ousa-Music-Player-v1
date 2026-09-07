@@ -1,5 +1,10 @@
 # desk-exchange
 
+## 0.1.1
+
+The clock in the header now comes from the daemon's zone rather than the browser's, which reports
+UTC on the kiosk whatever the device's own clock says.
+
 ## 0.1.0
 
 A fictional stock exchange for the dashboard: twelve invented companies, a live board with
