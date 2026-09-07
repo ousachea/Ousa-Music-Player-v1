@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T16:00:50.795Z",
+  "updated_at": "2026-09-07T16:08:20.982Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -23,6 +23,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.1.1",
+          "released_at": "2026-09-07T16:08:20.461Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.1.zip",
+            "size": 833289,
+            "sha256": "8d5808ca9cf30785892dc5cbbef405eceb6ada1c3e7b43c51d86b7a02b117fc7"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.1.html",
+            "size": 27797,
+            "sha256": "d79981f52c531d00e9990148de4b9b16c1bf509aba3aa1194adad2f7d7335ce3"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The clock in the header now comes from the daemon's zone rather than the browser's, which reports\nUTC on the kiosk whatever the device's own clock says."
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-09-07T15:28:05.075Z",
@@ -58,6 +75,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.3.1",
+          "released_at": "2026-09-07T16:08:20.980Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.1.zip",
+            "size": 841166,
+            "sha256": "d24abfd2dd87708e29ccf48259e11733575da36897003652208504fa41642770"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.1.html",
+            "size": 32644,
+            "sha256": "1236d2d5a1ec09aa6e5735b468ecb7e37186ec3dd78c94ed955c48ddfbf9a4ab"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Every time on screen now comes from the daemon's zone rather than the browser's. The kiosk's\nchromium reports UTC whatever the device's own clock says, so the header clock and the observed\ntime were running hours behind the device sitting under them."
+        },
         {
           "version": "0.3.0",
           "released_at": "2026-09-07T16:00:50.793Z",
