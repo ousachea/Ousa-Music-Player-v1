@@ -1,5 +1,9 @@
 # weather
 
+## 0.18.3
+
+Publish screenshots of each player style.
+
 ## 0.18.2
 
 Re-encode the icon so it is 77KB instead of 474KB.
