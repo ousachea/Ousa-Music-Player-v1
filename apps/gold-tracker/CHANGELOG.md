@@ -1,5 +1,11 @@
 # gold-tracker
 
+## 0.2.1
+
+The purchases screen no longer deletes. A stray tap on a touchscreen is how a whole holding
+disappears, and there is no undo on the device, so removing a position is now a companion-app job
+where it takes a deliberate save.
+
 ## 0.2.0
 
 The purchases screen now fits a real holding. Past six positions the rows go compact and the whole

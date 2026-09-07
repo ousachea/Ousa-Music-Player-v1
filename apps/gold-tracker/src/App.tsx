@@ -216,17 +216,6 @@ export default function App() {
     [client],
   );
 
-  const dropPosition = useCallback(
-    (id: string) => {
-      setPositions(current => {
-        const next = current.filter(p => p.id !== id);
-        saveLedger(client, next);
-        return next;
-      });
-    },
-    [client],
-  );
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
@@ -311,7 +300,6 @@ export default function App() {
             scroll={scroll}
             onScroll={setScroll}
             onAdd={() => setAdding(true)}
-            onDrop={dropPosition}
           />
         )}
         {view === 'reference' && <Reference gramPrice={gramPrice} />}
@@ -649,14 +637,12 @@ function Ledger({
   scroll,
   onScroll,
   onAdd,
-  onDrop,
 }: {
   positions: Position[];
   gramPrice: number;
   scroll: number;
   onScroll: (next: number) => void;
   onAdd: () => void;
-  onDrop: (id: string) => void;
 }) {
   const invested = totalPaid(positions);
   const grams = totalGrams(positions);
@@ -694,7 +680,6 @@ function Ledger({
           <span className="w-[72px] shrink-0 text-right">Paid</span>
           <span className="w-[84px] shrink-0 text-right">Now</span>
           <span className="w-[116px] shrink-0 text-right">G / L</span>
-          <span className="w-7 shrink-0" />
         </div>
       )}
 
@@ -741,12 +726,6 @@ function Ledger({
                   <span>{signedUsd(delta)}</span>
                   <span className={compact ? 'text-[9px]' : 'block text-[9px]'}>{signedPct(deltaPct)}</span>
                 </span>
-                <button
-                  aria-label={`remove position ${top + i + 1}`}
-                  onClick={() => onDrop(p.id)}
-                  className="grid h-6 w-7 shrink-0 place-items-center rounded-full text-dim transition active:scale-90 active:bg-white/10">
-                  ✕
-                </button>
               </div>
             );
           })}
