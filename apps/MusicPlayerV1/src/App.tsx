@@ -424,7 +424,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
     rows: [
       { key: 'theme', label: 'Player style' },
       { key: 'accent', label: 'Accent colour' },
-      { key: 'hdArt', label: 'Sharper artwork' },
+      { key: 'hdArt', label: 'HD album art' },
       { key: 'pulse', label: 'Cover pulse', only: ['card'] },
       { key: 'pulseBpm', label: 'Pulse tempo', only: ['card'] },
     ],
@@ -586,7 +586,7 @@ function Panel({
             <div className="font-mono text-row tabular-nums" style={{ color: tint }}>
               {artPx ?? '...'}
             </div>
-            <div className="text-hint text-dim">{prefs.hdArt ? 'sharper lookup on' : 'straight from the device'}</div>
+            <div className="text-hint text-dim">{prefs.hdArt ? 'HD lookup on' : 'device copy only'}</div>
           </div>
         </div>
       )}

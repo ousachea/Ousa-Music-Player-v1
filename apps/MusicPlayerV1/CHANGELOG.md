@@ -1,5 +1,9 @@
 # weather
 
+## 0.18.5
+
+Call the artwork setting HD album art.
+
 ## 0.18.4
 
 Rename the app to Music Player.

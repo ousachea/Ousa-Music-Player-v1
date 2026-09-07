@@ -26,7 +26,7 @@ const HINTS: Record<string, string> = {
   drift: 'How far and how fast the blurred backdrop pans. 0 holds it still.',
   clock: 'Shows the time from your phone, in its own timezone.',
   clockSize: 'Scales the clock relative to its normal size.',
-  hdArt: 'The device receives 512px artwork. This looks the album up by artist and album name on Apple\u2019s public search endpoint to get a sharper copy, which matters most in the Poster style. Turn it off to keep the player entirely offline.',
+  hdArt: 'The device only receives 512px artwork. This looks the album up by artist and album name on Apple\u2019s public search and uses the 1000px cover instead, which matters most in the Poster style. Off keeps the player entirely offline.',
   pulse: 'A glow that beats around the cover art. Cover style only.',
   pulseBpm: 'How fast the glow beats, in BPM. 0 means auto, which is simply a steady 90: the app never receives the audio, so it cannot know the song\u2019s own tempo.',
   accent: 'The progress bar, play button and header take this colour.',
