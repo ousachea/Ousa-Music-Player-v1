@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T13:48:15.765Z",
+  "updated_at": "2026-09-07T13:55:56.048Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -797,6 +797,37 @@
           ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "First release. Link status, latency, measured download and a 60 second graph.\nUpload and local IP report as unavailable: they need interface counters that the\ndaemon does not expose."
+        }
+      ]
+    },
+    {
+      "id": "01a07c23-71f5-75f8-b2b1-d6bd65e2eb98",
+      "name": "Queue Manager",
+      "description": "See and steer the up-next queue from the Car Thing.",
+      "author": "Ousa Chea",
+      "icon": null,
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c23-71f5-75f8-b2b1-d6bd65e2eb98/01-queue.png"
+      ],
+      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-09-07T13:55:56.047Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c23-71f5-75f8-b2b1-d6bd65e2eb98/0.1.0.zip",
+            "size": 819767,
+            "sha256": "12def859cd0ac49fd02bac5efb16b7f006950e7f15b98ff60699ea8dcd26a6ca"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c23-71f5-75f8-b2b1-d6bd65e2eb98/0.1.0.html",
+            "size": 26929,
+            "sha256": "5b33dc50bcb5248aa78c5363dc6a8d9bc04e92b54a3dd9a3d609cb4899561ebb"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "First release. Now playing beside the up-next queue, with select, play-next,\nshuffle and repeat. Remove and reorder report as unavailable: the player exposes\nno removal, so a move would duplicate the track."
         }
       ]
     }
