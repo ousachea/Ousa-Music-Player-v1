@@ -60,6 +60,10 @@ This is the style that benefits most from the sharper artwork lookup.
 
 | What you do | What happens |
 | --- | --- |
+| Preset button 1 | Previous track |
+| Preset button 2 | Play or pause |
+| Preset button 3 | Next track |
+| Mode, the button past the presets | Cycle the player style |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
 | Press it twice | Next track |

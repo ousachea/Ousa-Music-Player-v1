@@ -1,5 +1,9 @@
 # weather
 
+## 0.19.0
+
+Map the preset buttons and Mode.
+
 ## 0.18.5
 
 Call the artwork setting HD album art.

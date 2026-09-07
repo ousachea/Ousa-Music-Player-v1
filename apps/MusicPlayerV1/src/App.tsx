@@ -242,8 +242,14 @@ export default function App() {
       if (e.repeat) return;
       if (e.key === ' ' || e.key === 'Enter') press();
       else if (e.key === 'Escape') setPanel(open => !open);
-      else if (e.key === 'ArrowLeft') client.player.skipPrev({ allowSeeking: true });
-      else if (e.key === 'ArrowRight') client.player.skipNext();
+      else if (e.key === 'ArrowLeft' || e.key === '1') client.player.skipPrev({ allowSeeking: true });
+      else if (e.key === '2') toggle();
+      else if (e.key === 'ArrowRight' || e.key === '3') client.player.skipNext();
+      // the button past the four presets; the launcher still owns five fast presses of it
+      else if (e.key === 'm' || e.key === 'M') {
+        const order: Prefs['theme'][] = ['card', 'vinyl', 'poster'];
+        setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
+      }
     };
     window.addEventListener('wheel', onWheel, { passive: true });
     window.addEventListener('keydown', onKey);
@@ -251,7 +257,7 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
     };
-  }, [client, duration, flashHud, live, panel, prefs.seekSeconds, prefs.wheel, press, scrub, seek]);
+  }, [client, duration, flashHud, live, panel, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, toggle]);
 
   if (!track)
     return (
