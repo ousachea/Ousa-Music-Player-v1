@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.5.3
+
+Square border on all four corners.
+
 ## 0.5.2
 
 Square border again, cut only at the top right for the dial.
