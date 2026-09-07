@@ -184,21 +184,25 @@
   animation: drift var(--drift-duration, 31s) ease-in-out infinite;
 }
 
-/* a glow that breathes around the cover's edge; it sits outside the art so it never veils it */
+/* a glow around the cover's edge; it sits outside the art so it never veils it.
+   the envelope hits and decays like a beat rather than breathing evenly, and the
+   period comes from the tempo setting, not from the audio, which the app never sees. */
 @keyframes cover-pulse {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
+  0% {
+    opacity: 0.95;
+    transform: scale(1.016);
   }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.012);
+  22% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.26;
+    transform: scale(1);
   }
 }
 
 .cover-pulse {
-  animation: cover-pulse 3.4s ease-in-out infinite;
+  animation: cover-pulse var(--pulse-duration, 667ms) ease-out infinite;
 }
 
 .roll {

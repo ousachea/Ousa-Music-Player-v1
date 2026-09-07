@@ -26,6 +26,8 @@ const HINTS: Record<string, string> = {
   drift: 'How far and how fast the blurred backdrop pans. 0 holds it still.',
   clock: 'Shows the time from your phone, in its own timezone.',
   clockSize: 'Scales the clock relative to its normal size.',
+  pulse: 'A glow that beats around the cover art. Cover style only.',
+  pulseBpm: 'How fast the glow beats. It is not synced to the audio: the app never receives the sound, so pick a tempo that suits what you play.',
   accent: 'The progress bar, play button and header take this colour.',
 };
 

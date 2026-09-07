@@ -8,6 +8,8 @@ export type Prefs = {
   seekSeconds: number;
   seek: 'auto' | 'bar' | 'wave';
   accent: 'artwork' | 'mono';
+  pulse: boolean;
+  pulseBpm: number;
   backdrop: number;
   drift: number;
   motion: boolean;
@@ -19,18 +21,25 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', backdrop: 70, drift: 40, motion: true, remaining: true, clock: true, clockPos: 'right', clockSize: 100, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'auto', accent: 'artwork', pulse: true, pulseBpm: 90, backdrop: 70, drift: 40, motion: true, remaining: true, clock: true, clockPos: 'right', clockSize: 100, clockSeconds: true, clockFormat: 'auto' };
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
 
-function apply(prefs: Prefs, key: string, value: string | null): Prefs {
+// exported for the round trip test: every key has to land in its own field, and a stray
+// fall-through in this switch silently writes a different setting instead
+export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
   if (value === null) return { ...prefs, [key]: DEFAULTS[key as keyof Prefs] };
   switch (key) {
     case 'theme':
       return { ...prefs, theme: value === 'vinyl' || value === 'poster' ? value : 'card' };
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };
+    case 'pulseBpm': {
+      const bpm = Number(value);
+      if (!Number.isFinite(bpm)) return { ...prefs, pulseBpm: DEFAULTS.pulseBpm };
+      return { ...prefs, pulseBpm: Math.min(180, Math.max(40, bpm)) };
+    }
     case 'drift': {
       // this key used to be a boolean too, so an old stored value still has to mean something sensible
       if (value === 'true') return { ...prefs, drift: DEFAULTS.drift };
@@ -57,7 +66,6 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, seek: value === 'bar' || value === 'wave' ? value : 'auto' };
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
-    case 'motion':
     case 'clockSize': {
       const size = Number(value);
       if (!Number.isFinite(size)) return { ...prefs, clockSize: DEFAULTS.clockSize };
@@ -69,6 +77,8 @@ function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, clockFormat: value === 'h12' || value === 'h24' ? value : 'auto' };
     case 'clockSeconds':
     case 'clock':
+    case 'motion':
+    case 'pulse':
     case 'remaining':
       return { ...prefs, [key]: value !== 'false' };
     default:

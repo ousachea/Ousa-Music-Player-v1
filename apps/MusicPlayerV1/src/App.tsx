@@ -275,10 +275,13 @@ export default function App() {
             ) : (
               <div className="relative aspect-square h-full shrink-0">
                 <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />
-                {accentOn && prefs.motion && (
+                {accentOn && prefs.motion && prefs.pulse && (
                   <div
                     className="cover-pulse pointer-events-none absolute inset-0 rounded-2xl"
-                    style={{ boxShadow: `0 0 0 1.5px ${accentOn.soft}, 0 0 38px 5px ${accentOn.fill}` }}
+                    style={{
+                      boxShadow: `0 0 0 1.5px ${accentOn.soft}, 0 0 38px 5px ${accentOn.fill}`,
+                      ['--pulse-duration' as string]: `${Math.round(60000 / prefs.pulseBpm)}ms`,
+                    }}
                   />
                 )}
                 {artUrl ? (
@@ -390,6 +393,7 @@ const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: 
   backdrop: { min: 0, max: 100, step: 10, suffix: '%' },
   drift: { min: 0, max: 100, step: 10, suffix: '%' },
   clockSize: { min: 70, max: 200, step: 10, suffix: '%' },
+  pulseBpm: { min: 40, max: 180, step: 5, suffix: ' bpm' },
 };
 
 // grouped so a related pair reads together rather than as nine unrelated lines
@@ -399,6 +403,8 @@ const GROUPS: { title: string; rows: { key: keyof Prefs; label: string }[] }[] =
     rows: [
       { key: 'theme', label: 'Player style' },
       { key: 'accent', label: 'Accent colour' },
+      { key: 'pulse', label: 'Cover pulse' },
+      { key: 'pulseBpm', label: 'Pulse tempo' },
     ],
   },
   {
