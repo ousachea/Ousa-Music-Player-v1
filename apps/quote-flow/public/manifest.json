@@ -1,0 +1,50 @@
+{
+  "id": "01a07c31-5053-72cd-a790-a2be27c8bc79",
+  "name": "Quote Flow",
+  "version": "0.1.0",
+  "description": "A quote of the moment, rotating quietly on the dashboard.",
+  "settings": "settings.html",
+  "config": [
+    {
+      "type": "enum",
+      "data": {
+        "key": "categories",
+        "label": "Categories",
+        "choices": [
+          "all",
+          "inspiration",
+          "developer",
+          "funny",
+          "stoic",
+          "movies",
+          "custom"
+        ],
+        "default": "all"
+      }
+    },
+    {
+      "type": "number",
+      "data": {
+        "key": "interval",
+        "label": "Seconds between quotes",
+        "min": 5,
+        "max": 600,
+        "step": 5,
+        "default": 30
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "favouritesOnly",
+        "label": "Only show favourites",
+        "default": false
+      }
+    }
+  ],
+  "permissions": [],
+  "art": {
+    "heroPx": 248,
+    "thumbPx": 96
+  }
+}

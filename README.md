@@ -1,7 +1,7 @@
 # Ousa apps for the Car Thing
 
-Three apps for the [Spotify Car Thing](https://bridgething.com), published from one source: a music
-player, a queue controller, and a network monitor. Add the source once and all three are available.
+Four apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
+source once and all of them are available.
 
 ![Cover style](apps/MusicPlayerV1/screenshots/01-cover.png)
 
@@ -10,6 +10,7 @@ player, a queue controller, and a network monitor. Add the source once and all t
 | **Music Player** | Now playing, in three styles, coloured by the album art |
 | **Queue Manager** | The up-next queue, with select, bump and shuffle/repeat |
 | **Network Monitor** | Link status, latency and measured throughput |
+| **Quote Flow** | A quote of the moment, with favourites and your own lines |
 
 ## Put it on your Car Thing
 
@@ -144,6 +145,23 @@ unavailable rather than estimated.
 
 The app already routes everything through a provider in `src/net.ts`, so an extension-backed provider
 drops in beside the probe one without touching the dashboard.
+
+## Quote Flow
+
+A quote on the dashboard, changing on its own.
+
+![Quote Flow](apps/quote-flow/screenshots/01-quote.png)
+
+The quote is the whole screen: category top left, how often it turns top right, position and
+controls along the bottom. It advances on a timer you set, and the wheel or the arrows move through
+it by hand. The heart keeps one, and **Only show favourites** narrows the rotation to those.
+
+Categories are Inspiration, Developer, Funny, Stoic, Movies and Custom. **Your own quotes** are typed
+in the companion app, one per line with the author after a dash or a pipe, because that is the only
+place with a real keyboard. They arrive on the device as the Custom category.
+
+Favourites are kept in the app's own storage on the device, so they survive a restart. Narrowing to
+a set with nothing in it falls back to the wider one rather than leaving the screen blank.
 
 ## Working on it
 

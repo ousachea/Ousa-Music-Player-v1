@@ -1,0 +1,230 @@
+import { BridgethingClient } from '@bridgething/client';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+
+import { daemonUrl } from './daemon';
+import { BUILT_IN, CATEGORY_LABEL, parseCustom, pickDeck, type Category, type Quote } from './quotes';
+import { CUSTOM_DOC_KEY, loadCustom, loadFavourites, saveFavourites } from './store';
+
+const DEFAULT_INTERVAL_S = 30;
+const MIN_INTERVAL_S = 5;
+const DOTS = 5;
+
+const ALL_CATEGORIES: Category[] = ['inspiration', 'developer', 'funny', 'stoic', 'movies', 'custom'];
+
+function parseCategories(value: string | null): Category[] {
+  if (!value || value === 'all') return ALL_CATEGORIES;
+  const wanted = value
+    .split(',')
+    .map(s => s.trim().toLowerCase())
+    .filter((s): s is Category => (ALL_CATEGORIES as string[]).includes(s));
+  return wanted.length > 0 ? wanted : ALL_CATEGORIES;
+}
+
+export default function App() {
+  const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
+  const [custom, setCustom] = useState<Quote[]>([]);
+  const [favourites, setFavourites] = useState<Set<string>>(new Set());
+  const [categories, setCategories] = useState<Category[]>(ALL_CATEGORIES);
+  const [intervalS, setIntervalS] = useState(DEFAULT_INTERVAL_S);
+  const [favouritesOnly, setFavouritesOnly] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    loadFavourites(client).then(setFavourites);
+    loadCustom(client).then(raw => setCustom(parseCustom(raw)));
+    const off = client.doc.onChanged(msg => {
+      if (msg.key === CUSTOM_DOC_KEY) setCustom(parseCustom(msg.value));
+    });
+    return off;
+  }, [client]);
+
+  useEffect(() => {
+    const apply = (entries: { key: string; value: string }[]) => {
+      for (const e of entries) {
+        if (e.key === 'categories') setCategories(parseCategories(e.value));
+        if (e.key === 'interval') {
+          const n = Number(e.value);
+          if (Number.isFinite(n)) setIntervalS(Math.max(MIN_INTERVAL_S, n));
+        }
+        if (e.key === 'favouritesOnly') setFavouritesOnly(e.value !== 'false');
+      }
+    };
+    client.config.list().then(r => r.ok && apply(r.response.entries));
+    const off = client.config.onChanged(msg => msg.value !== null && apply([{ key: msg.key, value: msg.value }]));
+    return off;
+  }, [client]);
+
+  const deck = useMemo(
+    () => pickDeck([...BUILT_IN, ...custom], categories, favouritesOnly, favourites),
+    [custom, categories, favouritesOnly, favourites],
+  );
+
+  // the deck can shrink under a running index, so it wraps rather than pointing past the end
+  const safeIndex = deck.length > 0 ? ((index % deck.length) + deck.length) % deck.length : 0;
+  const quote = deck[safeIndex];
+
+  const step = useCallback((by: number) => setIndex(i => i + by), []);
+
+  useEffect(() => {
+    if (paused || deck.length < 2) return;
+    const id = setInterval(() => step(1), intervalS * 1000);
+    return () => clearInterval(id);
+  }, [paused, deck.length, intervalS, step]);
+
+  const toggleFavourite = useCallback(() => {
+    if (!quote) return;
+    setFavourites(prev => {
+      const next = new Set(prev);
+      if (next.has(quote.id)) next.delete(quote.id);
+      else next.add(quote.id);
+      saveFavourites(client, next);
+      return next;
+    });
+  }, [client, quote]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.repeat) return;
+      if (e.key === 'ArrowLeft' || e.key === '1') step(-1);
+      else if (e.key === ' ' || e.key === 'Enter' || e.key === '2') toggleFavourite();
+      else if (e.key === 'ArrowRight' || e.key === '3') step(1);
+      else if (e.key === '4') setPaused(p => !p);
+    };
+    const onWheel = (e: WheelEvent) => {
+      if (!e.deltaX) return;
+      step(e.deltaX > 0 ? 1 : -1);
+    };
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('wheel', onWheel, { passive: true });
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('wheel', onWheel);
+    };
+  }, [step, toggleFavourite]);
+
+  const favourited = quote ? favourites.has(quote.id) : false;
+
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-screen">
+      <div
+        className="wash pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          background:
+            'radial-gradient(60% 55% at 28% 30%, rgba(0,168,232,0.16), transparent 70%), radial-gradient(55% 50% at 78% 72%, rgba(255,176,102,0.12), transparent 70%)',
+        }}
+      />
+
+      <div className="relative flex h-full w-full flex-col px-12 py-6">
+        <div className="flex items-baseline justify-between font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
+          <span>{quote ? CATEGORY_LABEL[quote.category] : 'Quotes'}</span>
+          <span>{paused ? 'PAUSED' : `${intervalS}s`}</span>
+        </div>
+
+        <Stage quote={quote} />
+
+        <div className="flex items-center justify-between">
+          <Dots total={deck.length} index={safeIndex} />
+          <div className="flex items-center gap-3">
+            <Round label="previous" onClick={() => step(-1)}>
+              <Chevron className="h-5 w-5 rotate-180" />
+            </Round>
+            <button
+              aria-label={favourited ? 'unfavourite' : 'favourite'}
+              aria-pressed={favourited}
+              onClick={toggleFavourite}
+              className={`grid h-14 w-14 place-items-center rounded-full transition active:scale-90 ${
+                favourited ? 'bg-warn-soft text-warn' : 'text-near ring-1 ring-white/15'
+              }`}>
+              <Heart className="h-6 w-6" filled={favourited} />
+            </button>
+            <Round label="next" onClick={() => step(1)}>
+              <Chevron className="h-5 w-5" />
+            </Round>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** keyed on the quote so react remounts it, which is what replays the entrance */
+const Stage = memo(function Stage({ quote }: { quote: Quote | undefined }) {
+  if (!quote) {
+    return (
+      <div className="grid flex-1 place-items-center text-center">
+        <div>
+          <div className="text-title text-soft">No quotes to show</div>
+          <div className="mt-1 font-mono text-hint text-dim">every category is switched off in settings</div>
+        </div>
+      </div>
+    );
+  }
+  const long = quote.text.length > 150;
+  return (
+    <div key={quote.id} className="quote-in flex flex-1 flex-col justify-center py-4 text-center">
+      <blockquote
+        className={`mx-auto max-w-[660px] font-display font-medium tracking-display text-off-white ${
+          long ? 'text-[1.75rem] leading-[1.35]' : 'text-[2.375rem] leading-[1.28]'
+        }`}>
+        “{quote.text}”
+      </blockquote>
+      <div className="mt-5 font-mono text-row tracking-[0.12em] text-soft uppercase">— {quote.author}</div>
+    </div>
+  );
+});
+
+const Dots = memo(function Dots({ total, index }: { total: number; index: number }) {
+  if (total === 0) return <span />;
+  // a long deck cannot show a dot each, so the window slides and keeps the marker inside it
+  const shown = Math.min(DOTS, total);
+  const start = Math.max(0, Math.min(index - Math.floor(shown / 2), total - shown));
+  return (
+    <div className="flex items-center gap-2.5">
+      {Array.from({ length: shown }, (_, i) => {
+        const at = start + i;
+        return (
+          <span
+            key={at}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: at === index ? 9 : 6,
+              height: at === index ? 9 : 6,
+              backgroundColor: at === index ? 'var(--color-off-white)' : 'rgba(239,239,239,0.28)',
+            }}
+          />
+        );
+      })}
+      <span className="ml-2 font-mono text-hint tabular-nums text-dim">
+        {index + 1}/{total}
+      </span>
+    </div>
+  );
+});
+
+function Round({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      aria-label={label}
+      onClick={onClick}
+      className="grid h-14 w-14 place-items-center rounded-full text-near ring-1 ring-white/15 transition active:scale-90 active:bg-white/15">
+      {children}
+    </button>
+  );
+}
+
+function Chevron({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+function Heart({ className, filled }: { className?: string; filled?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+      <path d="M12 20.3 4.7 13a4.6 4.6 0 0 1 6.5-6.5l.8.8.8-.8A4.6 4.6 0 1 1 19.3 13Z" />
+    </svg>
+  );
+}
