@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T14:42:28.387Z",
+  "updated_at": "2026-09-07T14:45:09.370Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -901,6 +901,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.5.0",
+          "released_at": "2026-09-07T14:45:09.369Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c31-5053-72cd-a790-a2be27c8bc79/0.5.0.zip",
+            "size": 854931,
+            "sha256": "6ffe5caa8bcc2b897ed8ee4318facc2e0634edfcbcd36b76dac0a08d936cdc79"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c31-5053-72cd-a790-a2be27c8bc79/0.5.0.html",
+            "size": 28607,
+            "sha256": "d553101d44a532160f2633f1e414894a70dd9507260c27277e11aed9212a944d"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Shuffled rotation with no repeats, and a countdown border toggle."
+        },
         {
           "version": "0.4.0",
           "released_at": "2026-09-07T14:42:28.385Z",
