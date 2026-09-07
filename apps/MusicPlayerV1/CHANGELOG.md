@@ -1,5 +1,9 @@
 # weather
 
+## 0.18.2
+
+Re-encode the icon so it is 77KB instead of 474KB.
+
 ## 0.18.1
 
 Show the cover and its resolution in the settings panel.

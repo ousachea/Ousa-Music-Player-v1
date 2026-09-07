@@ -1,9 +1,9 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "Ousa Music player v1",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "Now playing from your phone, on the Car Thing.",
-  "icon": "icon.png",
+  "icon": "icon.jpg",
   "settings": "settings.html",
   "config": [
     {
