@@ -12,6 +12,7 @@ source once and all of them are available.
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
+| **Gold Tracker** | Live gold spot, Khmer weight conversion and a private purchase ledger |
 
 ## Put it on your Car Thing
 
@@ -212,6 +213,58 @@ show only your watchlist, and hide the tape or the wire. The watchlist lives in 
 on the device, so it survives a restart.
 
 Every symbol, price and headline in this app is invented. None of it is a quote for anything real.
+
+## Gold Tracker
+
+The live gold price, in the units gold is actually bought in here.
+
+![Gold Tracker spot](apps/gold-tracker/screenshots/01-spot.png)
+
+Spot comes from a real provider. The default is gold-api.com's XAU/USD feed, which needs no key; any
+endpoint answering with JSON that carries a numeric `price` in USD per troy ounce works, and the
+provider URL and optional API key are set in the companion app. Each request goes out over the
+phone's proxy and the webview's own connection at the same time, and whichever link is up answers
+first.
+
+**The ranges are only what this app has watched.** No free provider offers intraday history, so
+rather than print numbers it cannot stand behind, the 1H, 1D, 1W and 1M windows are built from the
+app's own observations and say how many there are. Leave it running and the windows fill in. The
+same goes for the chart: a short history is a short line.
+
+![Unit converter](apps/gold-tracker/screenshots/02-converter.png)
+
+The converter covers li, hun, chi, damlung, grams and troy ounces — 1 damlung = 10 chi = 100 hun =
+1000 li, and 1 troy ounce = 31.1034768 g. Everything is priced off the purity you select: 24K, 22K,
+18K, or a percentage of your own.
+
+![Purchases](apps/gold-tracker/screenshots/03-purchases.png)
+
+Purchases are a private ledger, valued against live spot at the selected purity, showing what each
+position cost against what it is worth now. Add one on the device with the steppers — it shows the
+premium or discount you are paying against today's spot as you go — and correct the date or the
+exact cost in the companion app, which is the only place with a keyboard. The ledger never leaves
+your device.
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Preset button 1 | Spot |
+| Preset button 2 | Unit converter |
+| Preset button 3 | Purchases |
+| Preset button 4 | Quick reference |
+| Mode, the button past the presets | Next view |
+| Turn the wheel | Change the window, the amount, or scroll the ledger |
+| Button under the wheel | Opens and closes data settings |
+
+### Settings
+
+On the device: refresh interval, valuation purity including a custom percentage, the default unit,
+and clearing the observation history. In the companion app: the provider URL, the API key, and the
+purchase ledger itself.
+
+Everything shown is a spot-metal estimate. Dealer premiums, workmanship and the buy/sell spread are
+not included.
 
 ## Working on it
 

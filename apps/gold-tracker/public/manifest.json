@@ -1,0 +1,84 @@
+{
+  "id": "01a07c7f-7529-7704-b7be-4ea1a6e66d1d",
+  "name": "Gold Tracker",
+  "version": "0.1.0",
+  "description": "Live gold spot, Khmer weight conversion and a private purchase ledger.",
+  "settings": "settings.html",
+  "config": [
+    {
+      "type": "string",
+      "data": {
+        "key": "endpoint",
+        "label": "Provider URL (JSON with a price field)",
+        "default": "https://api.gold-api.com/price/XAU"
+      }
+    },
+    {
+      "type": "secret",
+      "data": {
+        "key": "apiKey",
+        "label": "API key (only if your provider needs one)",
+        "default": ""
+      }
+    },
+    {
+      "type": "number",
+      "data": {
+        "key": "refresh",
+        "label": "Refresh every (seconds)",
+        "min": 15,
+        "max": 3600,
+        "step": 15,
+        "default": 60
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "purity",
+        "label": "Valuation purity",
+        "choices": [
+          "24k",
+          "22k",
+          "18k",
+          "custom"
+        ],
+        "default": "24k"
+      }
+    },
+    {
+      "type": "number",
+      "data": {
+        "key": "customPurity",
+        "label": "Custom purity (%)",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "default": 96
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "unit",
+        "label": "Default unit",
+        "choices": [
+          "li",
+          "hun",
+          "chi",
+          "damlung",
+          "gram",
+          "ozt"
+        ],
+        "default": "chi"
+      }
+    }
+  ],
+  "permissions": [
+    "net.proxy"
+  ],
+  "art": {
+    "heroPx": 248,
+    "thumbPx": 96
+  }
+}
