@@ -49,6 +49,35 @@ function parsePositions(raw: string | null): Position[] {
   }
 }
 
+/** the shape a spreadsheet exports: Weight,Unit,Paid,Date with an optional header row */
+function fromCsv(text: string): Position[] {
+  const out: Position[] = [];
+  const lines = text.trim().split(/\r?\n/);
+  for (const [i, line] of lines.entries()) {
+    if (!line.trim()) continue;
+    const cells = line.split(/[,\t;]/).map(c => c.trim().replace(/^"|"$/g, ''));
+    if (cells.length < 3) continue;
+    const [rawAmount, rawUnit, rawPaid, rawDate] = cells;
+    const amount = Number(rawAmount);
+    const unit = (rawUnit ?? '').toLowerCase();
+    const paid = Number((rawPaid ?? '').replace(/[$,]/g, ''));
+    if (!Number.isFinite(amount) || !Number.isFinite(paid) || !(unit in GRAMS)) continue;
+    const parsed = rawDate ? Date.parse(`${rawDate}T12:00:00`) : NaN;
+    out.push({
+      id: `csv-${i}-${Math.floor(Math.random() * 1e6).toString(36)}`,
+      amount,
+      unit,
+      paid,
+      at: Number.isFinite(parsed) ? parsed : Date.now(),
+    });
+  }
+  return out.sort((a, b) => a.at - b.at);
+}
+
+function toCsv(positions: Position[]) {
+  return ['Weight,Unit,Paid,Date', ...positions.map(p => `${p.amount},${p.unit},${p.paid.toFixed(2)},${dateValue(p.at)}`)].join('\n');
+}
+
 function dateValue(at: number) {
   const d = new Date(Number.isFinite(at) ? at : Date.now());
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -60,6 +89,7 @@ function Settings() {
   const [values, setValues] = useState<Record<string, string>>({});
   const [positions, setPositions] = useState<Position[]>([]);
   const [status, setStatus] = useState('');
+  const [csv, setCsv] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -203,6 +233,40 @@ function Settings() {
             <span>{Number((grams / GRAMS.chi!).toFixed(4))} chi</span>
             <span>${paid.toFixed(2)} invested</span>
           </div>
+
+          <details className="csv">
+            <summary>Import or export a CSV</summary>
+            <p className="sub">
+              One purchase per line as <code>Weight,Unit,Paid,Date</code>, with or without a header row.
+              Units are li, hun, chi, damlung, gram or ozt, and the date is YYYY-MM-DD. Importing replaces
+              the list below; nothing reaches the device until you save.
+            </p>
+            <textarea
+              rows={6}
+              value={csv}
+              placeholder={'Weight,Unit,Paid,Date\n1,chi,610.00,2024-01-01'}
+              onChange={e => setCsv(e.currentTarget.value)}
+            />
+            <div className="row">
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => {
+                  const parsed = fromCsv(csv);
+                  if (parsed.length === 0) {
+                    setStatus('no usable rows in that CSV');
+                    return;
+                  }
+                  setPositions(parsed);
+                  setStatus(`${parsed.length} positions read, save to send them to the device`);
+                }}>
+                Read the CSV
+              </button>
+              <button type="button" className="secondary" onClick={() => setCsv(toCsv(positions))}>
+                Export what is here
+              </button>
+            </div>
+          </details>
 
           <button
             type="button"

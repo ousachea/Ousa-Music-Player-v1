@@ -639,7 +639,9 @@ function Convert({
   );
 }
 
-const LEDGER_ROWS = 6;
+/** a short ledger gets room to breathe; a long one goes compact so the whole holding fits on screen */
+const ROOMY_ROWS = 6;
+const COMPACT_ROWS = 9;
 
 function Ledger({
   positions,
@@ -661,9 +663,11 @@ function Ledger({
   const value = grams * gramPrice;
   const gain = value - invested;
   const pct = invested > 0 ? (gain / invested) * 100 : 0;
-  const maxScroll = Math.max(0, positions.length - LEDGER_ROWS);
+  const compact = positions.length > ROOMY_ROWS;
+  const perPage = compact ? COMPACT_ROWS : ROOMY_ROWS;
+  const maxScroll = Math.max(0, positions.length - perPage);
   const top = Math.min(scroll, maxScroll);
-  const shown = positions.slice(top, top + LEDGER_ROWS);
+  const shown = positions.slice(top, top + perPage);
 
   return (
     <div className="flex h-full flex-col px-5 py-2.5">
@@ -680,13 +684,16 @@ function Ledger({
       </div>
 
       {positions.length > 0 && (
-        <div className="mt-2 flex items-center gap-2.5 font-mono text-eyebrow tracking-[0.18em] text-dim uppercase">
+        <div
+          className={`flex items-center gap-2.5 font-mono text-eyebrow tracking-[0.18em] text-dim uppercase ${
+            compact ? 'mt-1.5' : 'mt-2'
+          }`}>
           <span className="w-[26px] shrink-0" />
           <span className="w-[92px] shrink-0">Weight</span>
           <span className="min-w-0 flex-1">Bought</span>
-          <span className="w-[76px] shrink-0 text-right">Paid</span>
-          <span className="w-[80px] shrink-0 text-right">Now</span>
-          <span className="w-[92px] shrink-0 text-right">G / L</span>
+          <span className="w-[72px] shrink-0 text-right">Paid</span>
+          <span className="w-[84px] shrink-0 text-right">Now</span>
+          <span className="w-[116px] shrink-0 text-right">G / L</span>
           <span className="w-7 shrink-0" />
         </div>
       )}
@@ -696,18 +703,21 @@ function Ledger({
           <span>
             No purchases recorded yet.
             <br />
-            <span className="text-hint">Add one here, or enter the details in the companion app.</span>
+            <span className="text-hint">Add one here, or paste your CSV into the companion app.</span>
           </span>
         </div>
       ) : (
-        <div className="min-h-0 flex-1">
+        <div className="min-h-0 flex-1 overflow-hidden">
           {shown.map((p, i) => {
             const g = gramsIn(p);
             const current = g * gramPrice;
             const delta = current - p.paid;
             const up = delta >= 0;
+            const deltaPct = p.paid > 0 ? (delta / p.paid) * 100 : 0;
             return (
-              <div key={p.id} className="flex items-center gap-2.5 border-b border-rule py-[7px]">
+              <div
+                key={p.id}
+                className={`flex items-center gap-2.5 border-b border-rule ${compact ? 'py-1' : 'py-[7px]'}`}>
                 <span className="w-[26px] shrink-0 font-mono text-eyebrow text-dim tabular-nums">
                   {String(top + i + 1).padStart(2, '0')}
                 </span>
@@ -715,23 +725,26 @@ function Ledger({
                   <span className="block font-mono text-body">
                     {amountText(p.amount)} {UNIT_LABEL[p.unit]}
                   </span>
-                  <span className="block font-mono text-[9px] text-dim">{gramText(g)}</span>
+                  {!compact && <span className="block font-mono text-[9px] text-dim">{gramText(g)}</span>}
                 </span>
-                <span className="min-w-0 flex-1 font-mono text-eyebrow text-dim">
-                  {shortDate(p.at)} · {usd(p.paid / g)}/g cost
+                <span className="min-w-0 flex-1 truncate font-mono text-eyebrow text-dim">
+                  {shortDate(p.at)} · {usd(p.paid / g)}/g cost{compact ? ` · ${gramText(g)}` : ''}
                 </span>
-                <span className="w-[76px] shrink-0 text-right font-mono text-hint text-soft tabular-nums">
+                <span className="w-[72px] shrink-0 text-right font-mono text-hint text-soft tabular-nums">
                   {usd(p.paid)}
                 </span>
-                <span className="w-[80px] shrink-0 text-right font-mono text-body tabular-nums">{usd(current)}</span>
-                <span className={`w-[92px] shrink-0 text-right font-mono text-hint tabular-nums ${up ? 'text-ok' : 'text-err'}`}>
-                  {signedUsd(delta)}
-                  <span className="block text-[9px]">{signedPct(p.paid > 0 ? (delta / p.paid) * 100 : 0)}</span>
+                <span className="w-[84px] shrink-0 text-right font-mono text-body tabular-nums">{usd(current)}</span>
+                <span
+                  className={`w-[116px] shrink-0 text-right font-mono tabular-nums ${up ? 'text-ok' : 'text-err'} ${
+                    compact ? 'flex items-baseline justify-end gap-1.5 text-hint' : 'text-hint'
+                  }`}>
+                  <span>{signedUsd(delta)}</span>
+                  <span className={compact ? 'text-[9px]' : 'block text-[9px]'}>{signedPct(deltaPct)}</span>
                 </span>
                 <button
                   aria-label={`remove position ${top + i + 1}`}
                   onClick={() => onDrop(p.id)}
-                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-dim transition active:scale-90 active:bg-white/10">
+                  className="grid h-6 w-7 shrink-0 place-items-center rounded-full text-dim transition active:scale-90 active:bg-white/10">
                   ✕
                 </button>
               </div>
@@ -740,10 +753,10 @@ function Ledger({
         </div>
       )}
 
-      {positions.length > LEDGER_ROWS && (
+      {positions.length > perPage && (
         <div className="flex items-center justify-between font-mono text-eyebrow text-dim">
           <span>
-            {top + 1}–{Math.min(top + LEDGER_ROWS, positions.length)} of {positions.length}
+            {top + 1}–{Math.min(top + perPage, positions.length)} of {positions.length}
           </span>
           <span className="flex gap-1.5">
             <Step label="up" small onClick={() => onScroll(Math.max(0, top - 1))}>
