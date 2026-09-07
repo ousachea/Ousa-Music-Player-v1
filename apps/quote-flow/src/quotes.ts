@@ -437,6 +437,28 @@ export function parseCustom(raw: string | null): Quote[] {
   }
 }
 
+/** deterministic for a given seed, so a re-render keeps the order it already had */
+function mulberry32(seed: number) {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** every quote appears once before any appears twice; each pass through gets a fresh order */
+export function shuffled<T>(items: T[], seed: number): T[] {
+  const out = [...items];
+  const random = mulberry32(seed);
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 export function pickDeck(all: Quote[], categories: Category[], favouritesOnly: boolean, favourites: Set<string>) {
   const byCategory = all.filter(q => categories.includes(q.category));
   const deck = favouritesOnly ? byCategory.filter(q => favourites.has(q.id)) : byCategory;

@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.5.0
+
+Shuffled rotation with no repeats, and a countdown border toggle.
+
 ## 0.4.0
 
 Scatter the background blobs per quote and set them drifting.

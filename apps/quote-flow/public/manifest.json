@@ -1,7 +1,7 @@
 {
   "id": "01a07c31-5053-72cd-a790-a2be27c8bc79",
   "name": "Quote Flow",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A quote of the moment, rotating quietly on the dashboard.",
   "settings": "settings.html",
   "config": [
@@ -48,6 +48,14 @@
         "key": "favouritesOnly",
         "label": "Only show favourites",
         "default": false
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "countdown",
+        "label": "Show the countdown border",
+        "default": true
       }
     }
   ],

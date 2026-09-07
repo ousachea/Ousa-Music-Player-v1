@@ -1,8 +1,17 @@
 import { BridgethingClient } from '@bridgething/client';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { daemonUrl } from './daemon';
-import { ALL_CATEGORIES, BUILT_IN, CATEGORY_LABEL, parseCustom, pickDeck, type Category, type Quote } from './quotes';
+import {
+  ALL_CATEGORIES,
+  BUILT_IN,
+  CATEGORY_LABEL,
+  parseCustom,
+  pickDeck,
+  shuffled,
+  type Category,
+  type Quote,
+} from './quotes';
 import { CUSTOM_DOC_KEY, loadCustom, loadFavourites, saveFavourites } from './store';
 
 const DEFAULT_INTERVAL_S = 30;
@@ -63,6 +72,7 @@ export default function App() {
   const [categories, setCategories] = useState<Category[]>(ALL_CATEGORIES);
   const [intervalS, setIntervalS] = useState(DEFAULT_INTERVAL_S);
   const [favouritesOnly, setFavouritesOnly] = useState(false);
+  const [countdown, setCountdown] = useState(true);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [panel, setPanel] = useState(false);
@@ -98,6 +108,7 @@ export default function App() {
           if (Number.isFinite(n)) setIntervalS(Math.max(MIN_INTERVAL_S, n));
         }
         if (e.key === 'favouritesOnly') setFavouritesOnly(e.value !== 'false');
+        if (e.key === 'countdown') setCountdown(e.value !== 'false');
       }
     };
     client.config.list().then(r => r.ok && apply(r.response.entries));
@@ -127,6 +138,7 @@ export default function App() {
       if (Number.isFinite(n)) setIntervalS(Math.max(MIN_INTERVAL_S, n));
     }
     if (overrides.favouritesOnly !== undefined) setFavouritesOnly(overrides.favouritesOnly !== 'false');
+    if (overrides.countdown !== undefined) setCountdown(overrides.countdown !== 'false');
   }, [overrides]);
 
   const deck = useMemo(
@@ -134,9 +146,14 @@ export default function App() {
     [custom, categories, favouritesOnly, favourites],
   );
 
+  // a different order every run, so it does not open on the same quote each time
+  const seed = useRef(Math.floor(Math.random() * 2 ** 31)).current;
   // the deck can shrink under a running index, so it wraps rather than pointing past the end
   const safeIndex = deck.length > 0 ? ((index % deck.length) + deck.length) % deck.length : 0;
-  const quote = deck[safeIndex];
+  // a full pass shows every quote once; the next pass reshuffles rather than repeating the same order
+  const pass = deck.length > 0 ? Math.floor(index / deck.length) : 0;
+  const order = useMemo(() => shuffled(deck, seed + pass), [deck, seed, pass]);
+  const quote = order[safeIndex];
 
   // the stage needs to know which way we moved so the two quotes pass each other correctly
   const [direction, setDirection] = useState(1);
@@ -188,12 +205,14 @@ export default function App() {
   return (
     <div className="relative h-full w-full overflow-hidden bg-screen">
       <Wash quoteId={quote?.id ?? 'none'} />
-      <Countdown
-        quoteId={quote?.id ?? 'none'}
-        seconds={intervalS}
-        paused={paused || deck.length < 2 || panel}
-        colour={edgeFor(quote?.id ?? 'none')}
-      />
+      {countdown && (
+        <Countdown
+          quoteId={quote?.id ?? 'none'}
+          seconds={intervalS}
+          paused={paused || deck.length < 2 || panel}
+          colour={edgeFor(quote?.id ?? 'none')}
+        />
+      )}
 
       <div className="relative flex h-full w-full flex-col px-12 py-6">
         <div className="flex items-baseline justify-between font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
@@ -233,6 +252,8 @@ export default function App() {
           paused={paused}
           favouriteCount={favourites.size}
           deckSize={deck.length}
+          countdown={countdown}
+          onCountdown={next => setOverride('countdown', String(next))}
           onCategory={next => {
             if (next === 'favourites') {
               setOverride('favouritesOnly', 'true');
@@ -260,6 +281,8 @@ function Panel({
   paused,
   favouriteCount,
   deckSize,
+  countdown,
+  onCountdown,
   onCategory,
   onInterval,
   onFavouritesOnly,
@@ -271,6 +294,8 @@ function Panel({
   paused: boolean;
   favouriteCount: number;
   deckSize: number;
+  countdown: boolean;
+  onCountdown: (next: boolean) => void;
   onCategory: (next: string) => void;
   onInterval: (next: number) => void;
   onFavouritesOnly: (next: boolean) => void;
@@ -302,7 +327,7 @@ function Panel({
         })}
       </div>
 
-      <div className="mt-auto grid grid-cols-3 gap-3">
+      <div className="mt-auto grid grid-cols-4 gap-3">
         <div className="rounded-2xl bg-white/4 px-4 py-3">
           <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Every</div>
           <div className="mt-1 flex items-center gap-2">
@@ -332,6 +357,13 @@ function Panel({
           <div className={`mt-1 text-title ${paused ? 'text-experimental' : 'text-off-white'}`}>
             {paused ? 'Paused' : 'Running'} · {deckSize}
           </div>
+        </button>
+
+        <button
+          onClick={() => onCountdown(!countdown)}
+          className="rounded-2xl bg-white/4 px-4 py-3 text-left transition active:scale-[0.98]">
+          <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Countdown edge</div>
+          <div className={`mt-1 text-title ${countdown ? 'text-off-white' : 'text-dim'}`}>{countdown ? 'Shown' : 'Hidden'}</div>
         </button>
       </div>
 
