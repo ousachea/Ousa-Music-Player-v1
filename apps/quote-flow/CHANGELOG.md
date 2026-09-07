@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.5.2
+
+Square border again, cut only at the top right for the dial.
+
 ## 0.5.1
 
 Round the countdown border to match the screen.

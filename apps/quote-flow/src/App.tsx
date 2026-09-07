@@ -426,8 +426,21 @@ const Wash = memo(function Wash({ quoteId }: { quoteId: string }) {
   );
 });
 
-// the screen itself is rounded, so a square rule fights the bezel at every corner
-const SCREEN_RADIUS = 34;
+// the dial sits over the top right of the panel, so only that corner is cut away; the rest stays square
+const WHEEL_CUT = 56;
+const EDGE = 3;
+const RIGHT = 800 - EDGE;
+const BOTTOM = 480 - EDGE;
+
+// clockwise from the top left, arcing once around the dial
+const EDGE_PATH = [
+  `M ${EDGE} ${EDGE}`,
+  `H ${RIGHT - WHEEL_CUT}`,
+  `A ${WHEEL_CUT} ${WHEEL_CUT} 0 0 1 ${RIGHT} ${EDGE + WHEEL_CUT}`,
+  `V ${BOTTOM}`,
+  `H ${EDGE}`,
+  'Z',
+].join(' ');
 
 /** a rule around all four edges that empties as the interval runs down */
 const Countdown = memo(function Countdown({
@@ -443,27 +456,15 @@ const Countdown = memo(function Countdown({
 }) {
   return (
     <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 800 480" preserveAspectRatio="none">
-      <rect
-        x="3"
-        y="3"
-        width="794"
-        height="474"
-        rx={SCREEN_RADIUS}
-        fill="none"
-        stroke="rgba(239,239,239,0.07)"
-        strokeWidth="3"
-      />
-      <rect
+      <path d={EDGE_PATH} fill="none" stroke="rgba(239,239,239,0.07)" strokeWidth="3" />
+      <path
         key={`${quoteId}-${seconds}`}
         className="countdown"
-        x="3"
-        y="3"
-        width="794"
-        height="474"
-        rx={SCREEN_RADIUS}
+        d={EDGE_PATH}
         fill="none"
         stroke={colour}
         strokeWidth="3"
+        strokeLinejoin="miter"
         pathLength={1000}
         strokeDasharray={1000}
         style={{ ['--countdown-duration' as string]: `${seconds}s`, animationPlayState: paused ? 'paused' : 'running' }}
