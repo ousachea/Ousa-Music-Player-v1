@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.6.1
+
+Pagination across the full width, favourite at the top centre.
+
 ## 0.6.0
 
 Numbered pagination in place of the dots.

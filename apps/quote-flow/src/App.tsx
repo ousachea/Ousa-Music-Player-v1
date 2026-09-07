@@ -214,14 +214,8 @@ export default function App() {
       )}
 
       <div className="relative flex h-full w-full flex-col px-12 py-6">
-        <div className="flex items-baseline justify-between font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
-          <span>{quote ? CATEGORY_LABEL[quote.category] : 'Quotes'}</span>
-          <span>{paused ? 'PAUSED' : `${intervalS}s`}</span>
-        </div>
-
-        <Stage quote={quote} direction={direction} />
-
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
+          <span className="flex-1">{quote ? CATEGORY_LABEL[quote.category] : 'Quotes'}</span>
           <button
             aria-label={favourited ? 'unfavourite' : 'favourite'}
             aria-pressed={favourited}
@@ -231,16 +225,19 @@ export default function App() {
             }`}>
             <Heart className="h-5 w-5" filled={favourited} />
           </button>
-
-          <Pager
-            total={deck.length}
-            index={safeIndex}
-            colour={edgeFor(quote?.id ?? 'none')}
-            onPrev={() => step(-1)}
-            onNext={() => step(1)}
-            onPick={page => setIndex(pass * deck.length + page)}
-          />
+          <span className="flex-1 text-right">{paused ? 'PAUSED' : `${intervalS}s`}</span>
         </div>
+
+        <Stage quote={quote} direction={direction} />
+
+        <Pager
+          total={deck.length}
+          index={safeIndex}
+          colour={edgeFor(quote?.id ?? 'none')}
+          onPrev={() => step(-1)}
+          onNext={() => step(1)}
+          onPick={page => setIndex(pass * deck.length + page)}
+        />
       </div>
 
       {panel && (
@@ -538,7 +535,7 @@ const Pager = memo(function Pager({
 }) {
   if (total === 0) return <span />;
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex w-full items-center gap-2.5">
       <button
         aria-label="previous"
         onClick={onPrev}
@@ -546,7 +543,7 @@ const Pager = memo(function Pager({
         <Chevron className="h-5 w-5 rotate-180" />
       </button>
 
-      <div className="flex items-center gap-1 rounded-full bg-white/8 px-2 py-1.5">
+      <div className="flex flex-1 items-center justify-center gap-1 rounded-full bg-white/8 px-2 py-1.5">
         {pageList(total, index).map((page, i) =>
           page === 'gap' ? (
             <span key={`gap-${i}`} className="px-1.5 font-mono text-hint text-dim">
