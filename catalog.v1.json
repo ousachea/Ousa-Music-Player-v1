@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T13:55:56.048Z",
+  "updated_at": "2026-09-07T14:00:36.889Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -24,6 +24,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.20.0",
+          "released_at": "2026-09-07T14:00:36.886Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.20.0.zip",
+            "size": 929673,
+            "sha256": "8bfa67864f10fc14784404fd9e59c99042b5d349cdb847567f7b1d9b41d7477b"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.20.0.html",
+            "size": 29244,
+            "sha256": "3353d3e0c7b8f5792a11799ab85e9bca7ab2cf537a298170aa8836a61f97f791"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New defaults: full backdrop and drift, wave seek bar, clock left at 150%."
+        },
         {
           "version": "0.19.0",
           "released_at": "2026-09-07T13:48:15.764Z",
