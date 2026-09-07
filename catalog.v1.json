@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T00:19:24.081Z",
+  "updated_at": "2026-09-07T00:29:06.617Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -18,6 +18,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.17.1",
+          "released_at": "2026-09-07T00:29:06.617Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.17.1.zip",
+            "size": 1323126,
+            "sha256": "118ea3e93718be9465f924d0cddadf3f5f1cd48f79c27c83312a354c6fdf9381"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.17.1.html",
+            "size": 29022,
+            "sha256": "2172b721aeefc3efd27cab43fdccca3c7cde9a9963ca2522ee93cc752b3ffe0a"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Pulse tempo can be set to auto."
+        },
         {
           "version": "0.17.0",
           "released_at": "2026-09-07T00:19:24.080Z",
