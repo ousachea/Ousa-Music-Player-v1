@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.3.1
+
+Crossfade between quotes instead of a cut.
+
 ## 0.3.0
 
 Per-quote colour, a countdown border, and a favourites category.

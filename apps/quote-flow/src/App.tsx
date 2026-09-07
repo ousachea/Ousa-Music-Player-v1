@@ -127,7 +127,12 @@ export default function App() {
   const safeIndex = deck.length > 0 ? ((index % deck.length) + deck.length) % deck.length : 0;
   const quote = deck[safeIndex];
 
-  const step = useCallback((by: number) => setIndex(i => i + by), []);
+  // the stage needs to know which way we moved so the two quotes pass each other correctly
+  const [direction, setDirection] = useState(1);
+  const step = useCallback((by: number) => {
+    setDirection(by >= 0 ? 1 : -1);
+    setIndex(i => i + by);
+  }, []);
 
   useEffect(() => {
     if (paused || deck.length < 2) return;
@@ -185,7 +190,7 @@ export default function App() {
           <span>{paused ? 'PAUSED' : `${intervalS}s`}</span>
         </div>
 
-        <Stage quote={quote} />
+        <Stage quote={quote} direction={direction} />
 
         <div className="flex items-center justify-between">
           <Dots total={deck.length} index={safeIndex} />
@@ -398,20 +403,46 @@ const Countdown = memo(function Countdown({
 });
 
 /** keyed on the quote so react remounts it, which is what replays the entrance */
-const Stage = memo(function Stage({ quote }: { quote: Quote | undefined }) {
-  if (!quote) {
+const EXIT_MS = 260;
+
+const Stage = memo(function Stage({ quote, direction }: { quote: Quote | undefined; direction: number }) {
+  // the one being replaced is kept just long enough to animate out underneath the new one
+  const [pair, setPair] = useState<{ current?: Quote; leaving?: Quote }>({ current: quote });
+
+  useEffect(() => {
+    setPair(p => (p.current?.id === quote?.id ? p : { current: quote, leaving: p.current }));
+    const timer = setTimeout(() => setPair(p => ({ current: p.current })), EXIT_MS);
+    return () => clearTimeout(timer);
+  }, [quote?.id]);
+
+  if (!pair.current) {
     return (
       <div className="grid flex-1 place-items-center text-center">
         <div>
           <div className="text-title text-soft">No quotes to show</div>
-          <div className="mt-1 font-mono text-hint text-dim">every category is switched off in settings</div>
+          <div className="mt-1 font-mono text-hint text-dim">nothing matches the category you picked</div>
         </div>
       </div>
     );
   }
+
+  const enterFrom = direction >= 0 ? '16px' : '-16px';
+  const leaveTo = direction >= 0 ? '-16px' : '16px';
+
+  return (
+    <div className="relative flex-1">
+      {pair.leaving && (
+        <Body key={pair.leaving.id} quote={pair.leaving} className="quote-out" style={{ ['--leave-to' as string]: leaveTo }} />
+      )}
+      <Body key={pair.current.id} quote={pair.current} className="quote-in" style={{ ['--enter-from' as string]: enterFrom }} />
+    </div>
+  );
+});
+
+function Body({ quote, className, style }: { quote: Quote; className: string; style?: React.CSSProperties }) {
   const long = quote.text.length > 150;
   return (
-    <div key={quote.id} className="quote-in flex flex-1 flex-col justify-center py-4 text-center">
+    <div className={`absolute inset-0 flex flex-col justify-center py-4 text-center ${className}`} style={style}>
       <blockquote
         className={`mx-auto max-w-[660px] font-display font-medium tracking-display text-off-white ${
           long ? 'text-[1.75rem] leading-[1.35]' : 'text-[2.375rem] leading-[1.28]'
@@ -421,7 +452,7 @@ const Stage = memo(function Stage({ quote }: { quote: Quote | undefined }) {
       <div className="mt-5 font-mono text-row tracking-[0.12em] text-soft uppercase">— {quote.author}</div>
     </div>
   );
-});
+}
 
 const Dots = memo(function Dots({ total, index }: { total: number; index: number }) {
   if (total === 0) return <span />;
