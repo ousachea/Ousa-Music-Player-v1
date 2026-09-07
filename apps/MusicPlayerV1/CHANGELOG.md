@@ -1,5 +1,9 @@
 # weather
 
+## 0.18.4
+
+Rename the app to Music Player.
+
 ## 0.18.3
 
 Publish screenshots of each player style.

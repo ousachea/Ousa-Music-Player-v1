@@ -1,4 +1,4 @@
-# Ousa Music player v1
+# Music Player
 
 A now-playing player for the [Spotify Car Thing](https://bridgething.com), running on bridgething.
 It shows what your phone is playing, takes its colours from the album art, and gives you three
@@ -19,7 +19,7 @@ to your phone. Then:
    https://ousachea.github.io/Ousa-Music-Player-v1/catalog.v1.json
    ```
 
-4. **Ousa Music player v1** appears in the list. Install it.
+4. **Music Player** appears in the list. Install it.
 5. Open it from the device's launcher.
 
 Updates show up in the same place. The app can also tell you when it is behind: open its settings
