@@ -10,8 +10,77 @@
         "typescript": "^6.0.3",
       },
     },
-    "apps/weather": {
+    "apps/MusicPlayerV1": {
       "name": "weather",
+      "version": "0.20.1",
+      "dependencies": {
+        "@bridgething/client": "^0.12.1",
+        "preact": "^10.29.7",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+      },
+      "devDependencies": {
+        "@msgpack/msgpack": "^3.1.3",
+        "@preact/preset-vite": "^2.10.5",
+        "@tailwindcss/vite": "^4.3.3",
+        "@types/react": "^19.2.10",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.1.1",
+        "fflate": "^0.8.2",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^6.0.3",
+        "vite": "^8.2.2",
+        "vite-plugin-singlefile": "^2.3.3",
+      },
+    },
+    "apps/network-monitor": {
+      "name": "network-monitor",
+      "version": "0.1.0",
+      "dependencies": {
+        "@bridgething/client": "^0.12.1",
+        "preact": "^10.29.7",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+      },
+      "devDependencies": {
+        "@msgpack/msgpack": "^3.1.3",
+        "@preact/preset-vite": "^2.10.5",
+        "@tailwindcss/vite": "^4.3.3",
+        "@types/react": "^19.2.10",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.1.1",
+        "fflate": "^0.8.2",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^6.0.3",
+        "vite": "^8.2.2",
+        "vite-plugin-singlefile": "^2.3.3",
+      },
+    },
+    "apps/queue-manager": {
+      "name": "queue-manager",
+      "version": "0.1.0",
+      "dependencies": {
+        "@bridgething/client": "^0.12.1",
+        "preact": "^10.29.7",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+      },
+      "devDependencies": {
+        "@msgpack/msgpack": "^3.1.3",
+        "@preact/preset-vite": "^2.10.5",
+        "@tailwindcss/vite": "^4.3.3",
+        "@types/react": "^19.2.10",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.1.1",
+        "fflate": "^0.8.2",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^6.0.3",
+        "vite": "^8.2.2",
+        "vite-plugin-singlefile": "^2.3.3",
+      },
+    },
+    "apps/quote-flow": {
+      "name": "quote-flow",
       "version": "0.1.0",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
@@ -283,6 +352,8 @@
 
     "nanoid": ["nanoid@3.3.18", "", { "bin": { "nanoid": "bin/nanoid.cjs" } }, "sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w=="],
 
+    "network-monitor": ["network-monitor@workspace:apps/network-monitor"],
+
     "node-html-parser": ["node-html-parser@6.1.13", "", { "dependencies": { "css-select": "^5.1.0", "he": "1.2.0" } }, "sha512-qIsTMOY4C/dAa5Q5vsobRpOOvPfC4pB61UVW2uSwZNUp0QU/jCekTal1vMmbO0DgdHeLUJpv/ARmDqErVxA3Sg=="],
 
     "node-releases": ["node-releases@2.0.54", "", {}, "sha512-YHs7BmmcsdAI5Ozuf8JZo6PT0mv2GIWC9vMfvUC3dp65M8hn7Ux8CPL+2oBI7juNuj9d0ndhTcznq2ODBps9cQ=="],
@@ -298,6 +369,10 @@
     "preact": ["preact@10.29.8", "", { "peerDependencies": { "preact-render-to-string": ">=5" }, "optionalPeers": ["preact-render-to-string"] }, "sha512-ej2aVZ+vZ8WO7tvlQWRM9N63A0KzF9q4mWJfDUHgYaIofWY9hu74QdnQrjoPMmZi2/nZ5gN0bJCQF49xQqx09Q=="],
 
     "prettier": ["prettier@3.9.6", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g=="],
+
+    "queue-manager": ["queue-manager@workspace:apps/queue-manager"],
+
+    "quote-flow": ["quote-flow@workspace:apps/quote-flow"],
 
     "react": ["react@19.2.8", "", {}, "sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw=="],
 
@@ -337,7 +412,7 @@
 
     "vite-prerender-plugin": ["vite-prerender-plugin@0.5.13", "", { "dependencies": { "kolorist": "^1.8.0", "magic-string": "0.x >= 0.26.0", "node-html-parser": "^6.1.12", "simple-code-frame": "^1.3.0", "source-map": "^0.7.4", "stack-trace": "^1.0.0-pre2" }, "peerDependencies": { "vite": "5.x || 6.x || 7.x || 8.x" } }, "sha512-IKSpYkzDBsKAxa05naRbj7GvNVMSdww/Z/E89oO3xndz+gWnOBOKOAbEXv7qDhktY/j3vHgJmoV1pPzqU2tx9g=="],
 
-    "weather": ["weather@workspace:apps/weather"],
+    "weather": ["weather@workspace:apps/MusicPlayerV1"],
 
     "yallist": ["yallist@3.1.1", "", {}, "sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g=="],
 
