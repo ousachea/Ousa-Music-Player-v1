@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T15:28:05.077Z",
+  "updated_at": "2026-09-07T15:44:00.860Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -39,6 +39,43 @@
           "permissions": [],
           "min_libbridgething_version": "0.12.1",
           "changelog": "A fictional stock exchange for the dashboard: twelve invented companies, a live board with\nsparklines, a chart at four spans, a headline wire whose stories actually move the prices they are\nabout, and a ticker tape along the bottom. Prices are a pure function of the clock, so the market\nhas a history you can chart at any span and a reload never loses it. Settings on the device cover\npace, volatility, colours, chart span, the watchlist and holding the market still.\n\nNothing here is a real quote."
+        }
+      ]
+    },
+    {
+      "id": "01a07c7f-7529-7704-b7be-4ea1a6e66d1d",
+      "name": "Gold Tracker",
+      "description": "Live gold spot, Khmer weight conversion and a private purchase ledger.",
+      "author": "Ousa Chea",
+      "icon": null,
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/01-spot.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/02-converter.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/03-purchases.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/04-reference.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/05-settings.png"
+      ],
+      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-09-07T15:44:00.857Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.1.0.zip",
+            "size": 837430,
+            "sha256": "8333675e93d4210ccaf9c29c32afab26b351e8e008170bff0f29e3925fd098c2"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.1.0.html",
+            "size": 30758,
+            "sha256": "df067e61707becc8ffd8d7b2898f76a04f527c89bb12905bad322ed4a87d8539"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Live gold spot from a real provider, defaulting to gold-api.com's XAU/USD feed, with the request\nracing the phone's proxy against the webview's own so whichever link is up answers.\n\nFour screens: the spot price with a purity selector and the ranges the app has watched itself, a\nconverter for li, hun, chi, damlung, grams and troy ounces, a private purchase ledger valued against\nlive spot, and a quick reference table.\n\nRanges and the chart are built only from observations this app has actually made. No provider here\noffers free intraday history, so rather than showing numbers it cannot verify, a short history is a\nshort line."
         }
       ]
     },
