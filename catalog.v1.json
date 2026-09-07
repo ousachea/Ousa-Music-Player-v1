@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T15:10:16.471Z",
+  "updated_at": "2026-09-07T15:28:05.077Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -9,6 +9,39 @@
     "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.jpg"
   },
   "apps": [
+    {
+      "id": "01a07c6f-f65a-732a-ab3b-acae5a84b207",
+      "name": "Desk Exchange",
+      "description": "A fictional stock market for your desk. Invented tickers, invented headlines, nothing real.",
+      "author": "Ousa Chea",
+      "icon": null,
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c6f-f65a-732a-ab3b-acae5a84b207/01-board.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c6f-f65a-732a-ab3b-acae5a84b207/02-chart.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c6f-f65a-732a-ab3b-acae5a84b207/03-settings.png"
+      ],
+      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-09-07T15:28:05.075Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.0.zip",
+            "size": 832214,
+            "sha256": "de0012a6e220fe3f6738f4f7ec1930492da0942625097a0097e6609772f6e595"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.0.html",
+            "size": 27797,
+            "sha256": "d79981f52c531d00e9990148de4b9b16c1bf509aba3aa1194adad2f7d7335ce3"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A fictional stock exchange for the dashboard: twelve invented companies, a live board with\nsparklines, a chart at four spans, a headline wire whose stories actually move the prices they are\nabout, and a ticker tape along the bottom. Prices are a pure function of the clock, so the market\nhas a history you can chart at any span and a reload never loses it. Settings on the device cover\npace, volatility, colours, chart span, the watchlist and holding the market still.\n\nNothing here is a real quote."
+        }
+      ]
+    },
     {
       "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
       "name": "Music Player",
