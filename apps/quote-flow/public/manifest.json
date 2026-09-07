@@ -1,7 +1,7 @@
 {
   "id": "01a07c31-5053-72cd-a790-a2be27c8bc79",
   "name": "Quote Flow",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A quote of the moment, rotating quietly on the dashboard.",
   "settings": "settings.html",
   "config": [
@@ -17,6 +17,14 @@
           "funny",
           "stoic",
           "movies",
+          "knowledge",
+          "motivation",
+          "finance",
+          "relationship",
+          "design",
+          "human",
+          "captions",
+          "social",
           "custom"
         ],
         "default": "all"

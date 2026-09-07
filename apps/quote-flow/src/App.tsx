@@ -2,14 +2,13 @@ import { BridgethingClient } from '@bridgething/client';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { daemonUrl } from './daemon';
-import { BUILT_IN, CATEGORY_LABEL, parseCustom, pickDeck, type Category, type Quote } from './quotes';
+import { ALL_CATEGORIES, BUILT_IN, CATEGORY_LABEL, parseCustom, pickDeck, type Category, type Quote } from './quotes';
 import { CUSTOM_DOC_KEY, loadCustom, loadFavourites, saveFavourites } from './store';
 
 const DEFAULT_INTERVAL_S = 30;
 const MIN_INTERVAL_S = 5;
 const DOTS = 5;
 
-const ALL_CATEGORIES: Category[] = ['inspiration', 'developer', 'funny', 'stoic', 'movies', 'custom'];
 
 function parseCategories(value: string | null): Category[] {
   if (!value || value === 'all') return ALL_CATEGORIES;
@@ -29,6 +28,17 @@ export default function App() {
   const [favouritesOnly, setFavouritesOnly] = useState(false);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [panel, setPanel] = useState(false);
+  // config is read only here, so a change made on the device is kept as a doc override
+  const [overrides, setOverrides] = useState<Record<string, string>>({});
+
+  const setOverride = useCallback(
+    (key: string, value: string) => {
+      setOverrides(o => ({ ...o, [key]: value }));
+      client.doc.set({ key: `pref.${key}`, value }).catch(() => {});
+    },
+    [client],
+  );
 
   useEffect(() => {
     loadFavourites(client).then(setFavourites);
@@ -54,6 +64,28 @@ export default function App() {
     const off = client.config.onChanged(msg => msg.value !== null && apply([{ key: msg.key, value: msg.value }]));
     return off;
   }, [client]);
+
+  useEffect(() => {
+    client.doc.list().then(r => {
+      if (!r.ok) return;
+      setOverrides(
+        Object.fromEntries(
+          r.response.entries
+            .filter(e => e.key.startsWith('pref.') && e.value !== null)
+            .map(e => [e.key.slice(5), e.value as string]),
+        ),
+      );
+    });
+  }, [client]);
+
+  useEffect(() => {
+    if (overrides.categories) setCategories(parseCategories(overrides.categories));
+    if (overrides.interval) {
+      const n = Number(overrides.interval);
+      if (Number.isFinite(n)) setIntervalS(Math.max(MIN_INTERVAL_S, n));
+    }
+    if (overrides.favouritesOnly !== undefined) setFavouritesOnly(overrides.favouritesOnly !== 'false');
+  }, [overrides]);
 
   const deck = useMemo(
     () => pickDeck([...BUILT_IN, ...custom], categories, favouritesOnly, favourites),
@@ -90,6 +122,7 @@ export default function App() {
       else if (e.key === ' ' || e.key === 'Enter' || e.key === '2') toggleFavourite();
       else if (e.key === 'ArrowRight' || e.key === '3') step(1);
       else if (e.key === '4') setPaused(p => !p);
+      else if (e.key === 'Escape') setPanel(open => !open);
     };
     const onWheel = (e: WheelEvent) => {
       if (!e.deltaX) return;
@@ -144,7 +177,124 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      {panel && (
+        <Panel
+          categories={categories}
+          intervalS={intervalS}
+          favouritesOnly={favouritesOnly}
+          paused={paused}
+          favouriteCount={favourites.size}
+          deckSize={deck.length}
+          onCategory={next => setOverride('categories', next)}
+          onInterval={next => setOverride('interval', String(next))}
+          onFavouritesOnly={next => setOverride('favouritesOnly', String(next))}
+          onPaused={setPaused}
+        />
+      )}
     </div>
+  );
+}
+
+const PANEL_CATEGORIES: (Category | 'all')[] = ['all', ...ALL_CATEGORIES];
+
+function Panel({
+  categories,
+  intervalS,
+  favouritesOnly,
+  paused,
+  favouriteCount,
+  deckSize,
+  onCategory,
+  onInterval,
+  onFavouritesOnly,
+  onPaused,
+}: {
+  categories: Category[];
+  intervalS: number;
+  favouritesOnly: boolean;
+  paused: boolean;
+  favouriteCount: number;
+  deckSize: number;
+  onCategory: (next: string) => void;
+  onInterval: (next: number) => void;
+  onFavouritesOnly: (next: boolean) => void;
+  onPaused: (next: boolean) => void;
+}) {
+  const current = categories.length === ALL_CATEGORIES.length ? 'all' : (categories[0] ?? 'all');
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 px-8 py-5 backdrop-blur-sm">
+      <div className="flex items-baseline justify-between">
+        <span className="font-mono text-hint tracking-[0.22em] text-dim uppercase">Settings</span>
+        <span className="font-mono text-hint text-dim">the button under the wheel closes this</span>
+      </div>
+
+      <div className="mt-3 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Category</div>
+      <div className="mt-1 flex flex-wrap gap-1.5">
+        {PANEL_CATEGORIES.map(c => {
+          const on = c === current;
+          return (
+            <button
+              key={c}
+              aria-pressed={on}
+              onClick={() => onCategory(c)}
+              className={`rounded-full px-3 py-1.5 text-hint font-medium transition active:scale-95 ${
+                on ? 'bg-off-white text-screen' : 'bg-white/8 text-dim'
+              }`}>
+              {c === 'all' ? 'All' : CATEGORY_LABEL[c]}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-auto grid grid-cols-3 gap-3">
+        <div className="rounded-2xl bg-white/4 px-4 py-3">
+          <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Every</div>
+          <div className="mt-1 flex items-center gap-2">
+            <Step label="less" onClick={() => onInterval(Math.max(MIN_INTERVAL_S, intervalS - 5))}>
+              −
+            </Step>
+            <span className="w-14 text-center font-mono text-title tabular-nums text-off-white">{intervalS}s</span>
+            <Step label="more" onClick={() => onInterval(Math.min(600, intervalS + 5))}>
+              +
+            </Step>
+          </div>
+        </div>
+
+        <button
+          onClick={() => onFavouritesOnly(!favouritesOnly)}
+          className="rounded-2xl bg-white/4 px-4 py-3 text-left transition active:scale-[0.98]">
+          <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Favourites only</div>
+          <div className={`mt-1 text-title ${favouritesOnly ? 'text-warn' : 'text-dim'}`}>
+            {favouritesOnly ? 'On' : 'Off'} · {favouriteCount} saved
+          </div>
+        </button>
+
+        <button
+          onClick={() => onPaused(!paused)}
+          className="rounded-2xl bg-white/4 px-4 py-3 text-left transition active:scale-[0.98]">
+          <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Rotation</div>
+          <div className={`mt-1 text-title ${paused ? 'text-experimental' : 'text-off-white'}`}>
+            {paused ? 'Paused' : 'Running'} · {deckSize}
+          </div>
+        </button>
+      </div>
+
+      <p className="mt-3 font-mono text-hint text-dim">
+        Your own quotes are typed in the companion app, which is the only place with a keyboard.
+      </p>
+    </div>
+  );
+}
+
+function Step({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      aria-label={label}
+      onClick={onClick}
+      className="grid h-10 w-10 place-items-center rounded-full text-title text-near ring-1 ring-white/15 transition active:scale-90 active:bg-white/15">
+      {children}
+    </button>
   );
 }
 

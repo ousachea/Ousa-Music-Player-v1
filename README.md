@@ -156,9 +156,11 @@ The quote is the whole screen: category top left, how often it turns top right, 
 controls along the bottom. It advances on a timer you set, and the wheel or the arrows move through
 it by hand. The heart keeps one, and **Only show favourites** narrows the rotation to those.
 
-Categories are Inspiration, Developer, Funny, Stoic, Movies and Custom. **Your own quotes** are typed
-in the companion app, one per line with the author after a dash or a pipe, because that is the only
-place with a real keyboard. They arrive on the device as the Custom category.
+Press the button under the wheel for settings on the device: category, how often it turns, favourites
+only, and pause. Categories are Inspiration, Developer, Funny, Stoic, Movies, Knowledge, Motivation,
+Finance, Relationship, Design, Human nature, Captions, Social and Custom, and it ships with 364
+quotes across them. **Your own quotes** are typed in the companion app, one per line with the author
+after a dash or a pipe, because that is the only place with a real keyboard.
 
 Favourites are kept in the app's own storage on the device, so they survive a restart. Narrowing to
 a set with nothing in it falls back to the wider one rather than leaving the screen blank.
