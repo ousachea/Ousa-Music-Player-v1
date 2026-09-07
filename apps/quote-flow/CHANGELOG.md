@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.3.0
+
+Per-quote colour, a countdown border, and a favourites category.
+
 ## 0.2.0
 
 Settings on the device, and the full quote collection.

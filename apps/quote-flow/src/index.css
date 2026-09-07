@@ -93,6 +93,35 @@
   animation: wash 48s ease-in-out infinite;
 }
 
+/* the perimeter empties as the interval runs down. pathLength normalises the rect to 1000 units,
+   so the dash maths does not care about the actual screen size */
+@keyframes countdown {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 1000;
+  }
+}
+
+.countdown {
+  animation: countdown var(--countdown-duration, 30s) linear forwards;
+}
+
+/* a new quote's colour fades in over the one before it rather than cutting */
+@keyframes tint-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.tint-in {
+  animation: tint-in 900ms ease-out forwards;
+}
+
 @layer base {
   :root {
     color-scheme: dark;

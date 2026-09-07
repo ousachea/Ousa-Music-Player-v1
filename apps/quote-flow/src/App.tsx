@@ -9,6 +9,32 @@ const DEFAULT_INTERVAL_S = 30;
 const MIN_INTERVAL_S = 5;
 const DOTS = 5;
 
+/** a stable hue per quote: the same line always arrives in the same colour rather than re-rolling.
+    ids differ by one character, so the hash has to avalanche or neighbours come out the same shade. */
+function hueOf(id: string) {
+  let hash = 2166136261;
+  for (let i = 0; i < id.length; i++) {
+    hash ^= id.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  hash ^= hash >>> 15;
+  hash = Math.imul(hash, 2246822507);
+  hash ^= hash >>> 13;
+  return (hash >>> 0) % 360;
+}
+
+function washFor(id: string) {
+  const a = hueOf(id);
+  // the partner hue sits far enough round the wheel to read as a second colour, not a smudge
+  const b = (a + 70 + (hueOf(id + 'b') % 90)) % 360;
+  return {
+    background:
+      `radial-gradient(62% 58% at 26% 28%, hsl(${a} 70% 45% / 0.30), transparent 70%),` +
+      `radial-gradient(58% 52% at 78% 74%, hsl(${b} 65% 48% / 0.24), transparent 70%)`,
+    edge: `hsl(${a} 70% 62%)`,
+  };
+}
+
 
 function parseCategories(value: string | null): Category[] {
   if (!value || value === 'all') return ALL_CATEGORIES;
@@ -52,7 +78,10 @@ export default function App() {
   useEffect(() => {
     const apply = (entries: { key: string; value: string }[]) => {
       for (const e of entries) {
-        if (e.key === 'categories') setCategories(parseCategories(e.value));
+        if (e.key === 'categories') {
+          setCategories(parseCategories(e.value === 'favourites' ? 'all' : e.value));
+          if (e.value === 'favourites') setFavouritesOnly(true);
+        }
         if (e.key === 'interval') {
           const n = Number(e.value);
           if (Number.isFinite(n)) setIntervalS(Math.max(MIN_INTERVAL_S, n));
@@ -79,7 +108,9 @@ export default function App() {
   }, [client]);
 
   useEffect(() => {
-    if (overrides.categories) setCategories(parseCategories(overrides.categories));
+    if (overrides.categories) {
+      setCategories(parseCategories(overrides.categories === 'favourites' ? 'all' : overrides.categories));
+    }
     if (overrides.interval) {
       const n = Number(overrides.interval);
       if (Number.isFinite(n)) setIntervalS(Math.max(MIN_INTERVAL_S, n));
@@ -140,12 +171,12 @@ export default function App() {
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-screen">
-      <div
-        className="wash pointer-events-none absolute inset-0 opacity-70"
-        style={{
-          background:
-            'radial-gradient(60% 55% at 28% 30%, rgba(0,168,232,0.16), transparent 70%), radial-gradient(55% 50% at 78% 72%, rgba(255,176,102,0.12), transparent 70%)',
-        }}
+      <Wash quoteId={quote?.id ?? 'none'} />
+      <Countdown
+        quoteId={quote?.id ?? 'none'}
+        seconds={intervalS}
+        paused={paused || deck.length < 2 || panel}
+        colour={washFor(quote?.id ?? 'none').edge}
       />
 
       <div className="relative flex h-full w-full flex-col px-12 py-6">
@@ -186,7 +217,15 @@ export default function App() {
           paused={paused}
           favouriteCount={favourites.size}
           deckSize={deck.length}
-          onCategory={next => setOverride('categories', next)}
+          onCategory={next => {
+            if (next === 'favourites') {
+              setOverride('favouritesOnly', 'true');
+              setOverride('categories', 'all');
+            } else {
+              setOverride('favouritesOnly', 'false');
+              setOverride('categories', next);
+            }
+          }}
           onInterval={next => setOverride('interval', String(next))}
           onFavouritesOnly={next => setOverride('favouritesOnly', String(next))}
           onPaused={setPaused}
@@ -196,7 +235,7 @@ export default function App() {
   );
 }
 
-const PANEL_CATEGORIES: (Category | 'all')[] = ['all', ...ALL_CATEGORIES];
+const PANEL_CATEGORIES: (Category | 'all' | 'favourites')[] = ['all', 'favourites', ...ALL_CATEGORIES];
 
 function Panel({
   categories,
@@ -221,7 +260,7 @@ function Panel({
   onFavouritesOnly: (next: boolean) => void;
   onPaused: (next: boolean) => void;
 }) {
-  const current = categories.length === ALL_CATEGORIES.length ? 'all' : (categories[0] ?? 'all');
+  const current = favouritesOnly ? 'favourites' : categories.length === ALL_CATEGORIES.length ? 'all' : (categories[0] ?? 'all');
   return (
     <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 px-8 py-5 backdrop-blur-sm">
       <div className="flex items-baseline justify-between">
@@ -241,7 +280,7 @@ function Panel({
               className={`rounded-full px-3 py-1.5 text-hint font-medium transition active:scale-95 ${
                 on ? 'bg-off-white text-screen' : 'bg-white/8 text-dim'
               }`}>
-              {c === 'all' ? 'All' : CATEGORY_LABEL[c]}
+              {c === 'all' ? 'All' : c === 'favourites' ? `Favourites (${favouriteCount})` : CATEGORY_LABEL[c]}
             </button>
           );
         })}
@@ -297,6 +336,66 @@ function Step({ label, onClick, children }: { label: string; onClick: () => void
     </button>
   );
 }
+
+/** the outgoing colour stays underneath while the incoming one fades over it, so there is no cut */
+const Wash = memo(function Wash({ quoteId }: { quoteId: string }) {
+  const [layers, setLayers] = useState<{ id: string; background: string }[]>(() => [
+    { id: quoteId, background: washFor(quoteId).background },
+  ]);
+
+  useEffect(() => {
+    setLayers(current => {
+      if (current[current.length - 1]?.id === quoteId) return current;
+      // only the one being replaced is worth keeping; anything older is already covered
+      return [...current.slice(-1), { id: quoteId, background: washFor(quoteId).background }];
+    });
+  }, [quoteId]);
+
+  return (
+    <div className="pointer-events-none absolute inset-0">
+      {layers.map((layer, i) => (
+        <div
+          key={layer.id}
+          className={`wash absolute inset-0 ${i === layers.length - 1 && layers.length > 1 ? 'tint-in' : ''}`}
+          style={{ background: layer.background }}
+        />
+      ))}
+    </div>
+  );
+});
+
+/** a rule around all four edges that empties as the interval runs down */
+const Countdown = memo(function Countdown({
+  quoteId,
+  seconds,
+  paused,
+  colour,
+}: {
+  quoteId: string;
+  seconds: number;
+  paused: boolean;
+  colour: string;
+}) {
+  return (
+    <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 800 480" preserveAspectRatio="none">
+      <rect x="1.5" y="1.5" width="797" height="477" fill="none" stroke="rgba(239,239,239,0.07)" strokeWidth="3" />
+      <rect
+        key={`${quoteId}-${seconds}`}
+        className="countdown"
+        x="1.5"
+        y="1.5"
+        width="797"
+        height="477"
+        fill="none"
+        stroke={colour}
+        strokeWidth="3"
+        pathLength={1000}
+        strokeDasharray={1000}
+        style={{ ['--countdown-duration' as string]: `${seconds}s`, animationPlayState: paused ? 'paused' : 'running' }}
+      />
+    </svg>
+  );
+});
 
 /** keyed on the quote so react remounts it, which is what replays the entrance */
 const Stage = memo(function Stage({ quote }: { quote: Quote | undefined }) {
