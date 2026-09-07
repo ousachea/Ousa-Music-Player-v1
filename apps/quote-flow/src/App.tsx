@@ -16,7 +16,6 @@ import { CUSTOM_DOC_KEY, loadCustom, loadFavourites, saveFavourites } from './st
 
 const DEFAULT_INTERVAL_S = 30;
 const MIN_INTERVAL_S = 5;
-const DOTS = 5;
 
 /** a stable hue per quote: the same line always arrives in the same colour rather than re-rolling.
     ids differ by one character, so the hash has to avalanche or neighbours come out the same shade. */
@@ -222,25 +221,25 @@ export default function App() {
 
         <Stage quote={quote} direction={direction} />
 
-        <div className="flex items-center justify-between">
-          <Dots total={deck.length} index={safeIndex} />
-          <div className="flex items-center gap-3">
-            <Round label="previous" onClick={() => step(-1)}>
-              <Chevron className="h-5 w-5 rotate-180" />
-            </Round>
-            <button
-              aria-label={favourited ? 'unfavourite' : 'favourite'}
-              aria-pressed={favourited}
-              onClick={toggleFavourite}
-              className={`grid h-14 w-14 place-items-center rounded-full transition active:scale-90 ${
-                favourited ? 'bg-warn-soft text-warn' : 'text-near ring-1 ring-white/15'
-              }`}>
-              <Heart className="h-6 w-6" filled={favourited} />
-            </button>
-            <Round label="next" onClick={() => step(1)}>
-              <Chevron className="h-5 w-5" />
-            </Round>
-          </div>
+        <div className="flex items-center justify-between gap-4">
+          <button
+            aria-label={favourited ? 'unfavourite' : 'favourite'}
+            aria-pressed={favourited}
+            onClick={toggleFavourite}
+            className={`grid h-11 w-11 shrink-0 place-items-center rounded-full transition active:scale-90 ${
+              favourited ? 'bg-warn-soft text-warn' : 'text-near ring-1 ring-white/15'
+            }`}>
+            <Heart className="h-5 w-5" filled={favourited} />
+          </button>
+
+          <Pager
+            total={deck.length}
+            index={safeIndex}
+            colour={edgeFor(quote?.id ?? 'none')}
+            onPrev={() => step(-1)}
+            onNext={() => step(1)}
+            onPick={page => setIndex(pass * deck.length + page)}
+          />
         </div>
       </div>
 
@@ -510,44 +509,74 @@ function Body({ quote, className, style }: { quote: Quote; className: string; st
   );
 }
 
-const Dots = memo(function Dots({ total, index }: { total: number; index: number }) {
+/** first, last, and a window around the current one, with a gap marker where numbers are skipped */
+function pageList(total: number, index: number): (number | 'gap')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i);
+  const window = [index - 1, index, index + 1].filter(i => i > 0 && i < total - 1);
+  const out: (number | 'gap')[] = [0];
+  if ((window[0] ?? total) > 1) out.push('gap');
+  out.push(...window);
+  if ((window[window.length - 1] ?? -1) < total - 2) out.push('gap');
+  out.push(total - 1);
+  return out;
+}
+
+const Pager = memo(function Pager({
+  total,
+  index,
+  colour,
+  onPrev,
+  onNext,
+  onPick,
+}: {
+  total: number;
+  index: number;
+  colour: string;
+  onPrev: () => void;
+  onNext: () => void;
+  onPick: (page: number) => void;
+}) {
   if (total === 0) return <span />;
-  // a long deck cannot show a dot each, so the window slides and keeps the marker inside it
-  const shown = Math.min(DOTS, total);
-  const start = Math.max(0, Math.min(index - Math.floor(shown / 2), total - shown));
   return (
     <div className="flex items-center gap-2.5">
-      {Array.from({ length: shown }, (_, i) => {
-        const at = start + i;
-        return (
-          <span
-            key={at}
-            className="rounded-full transition-all duration-300"
-            style={{
-              width: at === index ? 9 : 6,
-              height: at === index ? 9 : 6,
-              backgroundColor: at === index ? 'var(--color-off-white)' : 'rgba(239,239,239,0.28)',
-            }}
-          />
-        );
-      })}
-      <span className="ml-2 font-mono text-hint tabular-nums text-dim">
-        {index + 1}/{total}
-      </span>
+      <button
+        aria-label="previous"
+        onClick={onPrev}
+        className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/8 text-near transition active:scale-90 active:bg-white/16">
+        <Chevron className="h-5 w-5 rotate-180" />
+      </button>
+
+      <div className="flex items-center gap-1 rounded-full bg-white/8 px-2 py-1.5">
+        {pageList(total, index).map((page, i) =>
+          page === 'gap' ? (
+            <span key={`gap-${i}`} className="px-1.5 font-mono text-hint text-dim">
+              ...
+            </span>
+          ) : (
+            <button
+              key={page}
+              aria-current={page === index ? 'true' : undefined}
+              onClick={() => onPick(page)}
+              style={page === index ? { backgroundColor: colour, color: '#0a0c0e' } : undefined}
+              className={`min-w-9 rounded-full px-2.5 py-1.5 font-mono text-row tabular-nums transition active:scale-90 ${
+                page === index ? 'font-semibold' : 'text-soft'
+              }`}>
+              {page + 1}
+            </button>
+          ),
+        )}
+      </div>
+
+      <button
+        aria-label="next"
+        onClick={onNext}
+        style={{ backgroundColor: colour, color: '#0a0c0e' }}
+        className="grid h-11 w-11 shrink-0 place-items-center rounded-full transition active:scale-90">
+        <Chevron className="h-5 w-5" />
+      </button>
     </div>
   );
 });
-
-function Round({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      aria-label={label}
-      onClick={onClick}
-      className="grid h-14 w-14 place-items-center rounded-full text-near ring-1 ring-white/15 transition active:scale-90 active:bg-white/15">
-      {children}
-    </button>
-  );
-}
 
 function Chevron({ className }: { className?: string }) {
   return (

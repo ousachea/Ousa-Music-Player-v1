@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.6.0
+
+Numbered pagination in place of the dots.
+
 ## 0.5.3
 
 Square border on all four corners.
