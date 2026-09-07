@@ -1,5 +1,9 @@
 # weather
 
+## 0.18.1
+
+Show the cover and its resolution in the settings panel.
+
 ## 0.18.0
 
 Sharper artwork, and settings filtered by player style.

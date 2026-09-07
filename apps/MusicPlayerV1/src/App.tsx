@@ -393,7 +393,7 @@ export default function App() {
         <BackGlyph className="h-3.5 w-3.5" />
         Press the button under the wheel for settings
       </div>
-      {panel && <Panel client={client} prefs={prefs} setPref={setPref} accent={accentOn} />}
+      {panel && <Panel client={client} prefs={prefs} setPref={setPref} accent={accentOn} artUrl={artUrl} />}
     </div>
   );
 }
@@ -468,12 +468,16 @@ function Panel({
   prefs,
   setPref,
   accent,
+  artUrl,
 }: {
   client: BridgethingClient;
   prefs: Prefs;
   setPref: (key: keyof Prefs, value: string) => void;
   accent: Accent | null;
+  artUrl: string | null;
 }) {
+  // the pixel size is what tells you whether the sharper lookup actually landed
+  const [artPx, setArtPx] = useState<string | null>(null);
   const tint = accent?.fill ?? '#efefef';
   const ink = accent?.ink ?? '#060809';
   const { state: update, check } = useUpdateCheck(client);
@@ -568,6 +572,24 @@ function Panel({
           the button under the wheel closes this
         </span>
       </div>
+
+      {artUrl && (
+        <div className="mt-3 flex shrink-0 items-center gap-4">
+          <img
+            src={artUrl}
+            alt=""
+            onLoad={e => setArtPx(`${e.currentTarget.naturalWidth} x ${e.currentTarget.naturalHeight}`)}
+            className="h-20 w-20 rounded-xl object-cover ring-1 ring-white/12"
+          />
+          <div className="min-w-0">
+            <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Cover</div>
+            <div className="font-mono text-row tabular-nums" style={{ color: tint }}>
+              {artPx ?? '...'}
+            </div>
+            <div className="text-hint text-dim">{prefs.hdArt ? 'sharper lookup on' : 'straight from the device'}</div>
+          </div>
+        </div>
+      )}
 
       <div
         ref={list}
