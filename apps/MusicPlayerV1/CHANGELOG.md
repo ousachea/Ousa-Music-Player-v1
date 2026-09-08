@@ -12,6 +12,11 @@ the HD lookup is on, on one line.
 style*, instead of being scattered through the groups and quietly vanishing when you switch. Poster,
 which has no settings of its own, simply has no such group.
 
+The clock's **Position** is hidden in the CD style, which pins its clock to the corner of the tray
+and so has no position to offer. It stays in the Clock group for the three styles that honour it,
+rather than moving in with the style's own settings, because it is a clock setting that one style
+happens not to use.
+
 A rail down the left edge shows how far the list runs and where you are in it, which the wheel
 could not tell you before.
 

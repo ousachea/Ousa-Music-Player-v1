@@ -650,7 +650,8 @@ const GROUPS: { title: string; rows: Row[] }[] = [
     title: 'Clock',
     rows: [
       { key: 'clock', label: 'Show clock' },
-      { key: 'clockPos', label: 'Position' },
+      // CD pins its clock to the corner of the tray, so there is no position to choose there
+      { key: 'clockPos', label: 'Position', only: ['widget', 'vinyl', 'poster'] },
       { key: 'clockSize', label: 'Size' },
       { key: 'clockFormat', label: 'Format' },
       { key: 'clockSeconds', label: 'Seconds' },
