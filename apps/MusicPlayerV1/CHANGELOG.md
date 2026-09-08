@@ -4,11 +4,13 @@
 
 A fourth player style, **Widget**, after the phone lock screen: rounded artwork, the track under it,
 a progress bar with the elapsed time on one side and the remaining on the other, the transport, and
-a volume slider of its own. The slider drags against the daemon's volume, and the slot a phone gives
-the output picker toggles mute instead, because the device has nowhere else to send audio.
+a volume slider of its own, which drags against the daemon's volume rather than only reporting it.
+The output picker a phone puts beside the transport is dropped: the device has nowhere else to send
+audio, so the row is the three transport glyphs and nothing more.
 
 The arrangement never changes; only the frame around it does. Portrait, at 90 or 270, fills the
-screen with it. Landscape floats it as a narrow card over the blurred artwork, sized so the cover
+screen with it, and the volume slider takes the bottom edge so the slack the stack leaves lands
+above it rather than under it. Landscape floats it as a narrow card over the blurred artwork, sized so the cover
 lands square and uncropped, because stacking the six rows is the whole look and a full width version
 of it would only be the Cover style again.
 

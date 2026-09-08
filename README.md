@@ -75,11 +75,11 @@ This is the style that benefits most from the sharper artwork lookup.
 
 The phone lock screen, near enough. Rounded artwork, the track under it, then a progress bar with
 the elapsed time on one side and the time remaining on the other, the transport, and a volume slider
-of its own. Dragging that slider sets the volume on the device, and the slot a phone gives the output
-picker toggles mute here, because a Car Thing has nowhere else to send audio.
+of its own. Dragging that slider sets the volume on the device. The output picker a phone puts beside
+the transport is not here, because a Car Thing has nowhere else to send audio.
 
 The arrangement never changes; only the frame around it does. Turned to 90 or 270 it fills the
-screen. Left in landscape it floats as a narrow card over the blurred artwork, sized so the cover
+screen, with the volume slider on the bottom edge. Left in landscape it floats as a narrow card over the blurred artwork, sized so the cover
 lands square and uncropped, because stacking the six rows is the whole look and a full width version
 of it would only be the Cover style again.
 

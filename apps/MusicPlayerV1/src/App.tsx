@@ -302,7 +302,6 @@ export default function App() {
             onNext={() => client.player.skipNext()}
             onSeek={ratio => seek(ratio * duration)}
             onVolume={level => client.audio.setVolume({ level })}
-            onMute={() => client.audio.muteToggle()}
           />
         </>
       ) : prefs.theme === 'poster' ? (
@@ -1085,7 +1084,6 @@ function Widget({
   onNext,
   onSeek,
   onVolume,
-  onMute,
 }: {
   artUrl: string | null;
   context: string;
@@ -1110,7 +1108,6 @@ function Widget({
   onNext: () => void;
   onSeek: (ratio: number) => void;
   onVolume: (level: number) => void;
-  onMute: () => void;
 }) {
   const tint = accent?.fill ?? '#efefef';
   const tint2 = accent?.fill2 ?? '#efefef';
@@ -1190,13 +1187,9 @@ function Widget({
         <Ghost label="next" onClick={onNext}>
           <Skip className={small ? 'h-6 w-6' : 'h-8 w-8'} />
         </Ghost>
-        {/* the device has no output picker, so the slot that holds one on a phone toggles mute */}
-        <Ghost label={volume?.muted ? 'unmute' : 'mute'} onClick={onMute}>
-          <Speaker className={small ? 'h-5 w-5' : 'h-7 w-7'} muted={volume?.muted === true} />
-        </Ghost>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2.5">
+      <div className={`flex shrink-0 items-center gap-2.5 ${upright ? 'mt-auto' : ''}`}>
         <Speaker className="h-3.5 w-3.5 shrink-0 text-dim" />
         <div className="min-w-0 flex-1">
           <VolumeBar level={level} rotate={rotate} tint={tint} onPick={onVolume} />
