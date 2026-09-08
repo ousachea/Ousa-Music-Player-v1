@@ -331,3 +331,24 @@ img {
 .preset-settle {
   animation: preset-settle 300ms cubic-bezier(0.2, 0.7, 0.3, 1);
 }
+
+/* a new track means a new record on the platter or a new disc in the tray, so it arrives rather
+   than simply being there: it drops in a little, from slightly small and turned back, and settles.
+   the spin lives on a child, because two animations on one element would fight over transform. */
+@keyframes disc-swap {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -7%, 0) scale(0.88) rotate(-14deg);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+}
+
+.disc-swap {
+  animation: disc-swap 520ms cubic-bezier(0.22, 0.68, 0.3, 1);
+}

@@ -51,7 +51,8 @@ Switch between them in the settings, under **Player style**.
 
 ![Vinyl style](apps/MusicPlayerV1/screenshots/02-vinyl.jpg)
 
-The sleeve tucked behind a record that carries the artwork as its label. The platter turns while the
+A new track brings a new record: the turntable drops in and settles, and the disc does the same in
+the CD style. The sleeve tucked behind a record that carries the artwork as its label. The platter turns while the
 track plays and holds its angle when you pause; the tonearm rests on the outer grooves and lifts off
 when the music stops.
 

@@ -977,7 +977,10 @@ function Turntable({
   upright: boolean;
 }) {
   return (
-    <div className={`relative aspect-square shrink-0 ${upright ? 'h-[52%] self-center' : 'h-full'}`}>
+    <div
+      className={`relative aspect-square shrink-0 ${spin ? 'disc-swap' : ''} ${
+        upright ? 'h-[52%] self-center' : 'h-full'
+      }`}>
       <div className="absolute bottom-3 left-6 right-6 h-8 rounded-full bg-black/75 blur-2xl" />
 
       <div className="absolute left-0 top-[3%] h-[62%] w-[62%] -rotate-6 overflow-hidden rounded shadow-2xl ring-1 ring-white/10">
@@ -1083,8 +1086,9 @@ function CdDeck({
           ? `linear-gradient(155deg, color-mix(in oklab, ${accent.fill} 16%, #0b0c0e), #0b0c0e 70%)`
           : '#141517',
       }}>
+      <div className={`relative aspect-square w-[88%] ${motion ? 'disc-swap' : ''}`}>
       <div
-        className="animate-platter relative aspect-square w-[88%] overflow-hidden rounded-full shadow-[0_18px_40px_rgba(0,0,0,0.55)]"
+        className="animate-platter absolute inset-0 overflow-hidden rounded-full shadow-[0_18px_40px_rgba(0,0,0,0.55)]"
         style={{ animationPlayState: playing && motion ? 'running' : 'paused' }}>
         {artUrl ? (
           <img src={artUrl} alt="" className="h-full w-full object-cover" />
@@ -1111,6 +1115,7 @@ function CdDeck({
             <div className="aspect-square w-[46%] rounded-full bg-[#0b0c0e] shadow-[inset_0_0_14px_rgba(0,0,0,0.8)] ring-1 ring-white/15" />
           </div>
         </div>
+      </div>
       </div>
 
       {/* the disc is round inside a rounded square, so the corner is free; the clock lives there */}

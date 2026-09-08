@@ -2,6 +2,10 @@
 
 ## 0.26.1
 
+A new track puts a new record on the platter and a new disc in the tray: in Vinyl and CD the disc
+drops in from slightly small and turned back, and settles. It arrives when you switch into the style
+too, and it follows the Animations setting.
+
 Turning the screen settles the preset markers into their new edge instead of stretching them into
 it. The bump runs along a different axis in each orientation, and animating that swap pulled it out
 of shape on the way; it now eases in once, quickly, and the bump's own fade is left alone.
