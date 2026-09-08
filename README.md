@@ -143,23 +143,25 @@ needs, so the transport always keeps its margin from the bottom edge. The rotati
 Press the button under the wheel to open them on the device. The list only shows what the style you
 picked can actually use, so switching to Poster hides the backdrop and pulse rows it does not draw.
 
-- **Player** — style, accent colour, sharper artwork, the cover pulse with its tempo, and whether
-  the Classic style's art runs to the edge of the screen
-- **Controls** — what the wheel does, how far each click seeks, whether the seek bar is a line or a
-  wave, whether it carries a dot at the playhead, and whether the transport buttons are drawn at all.
-  With them off, a bump appears against the edge at each of the four presets' own positions, with
-  the glyph for what that button does beside it, so the markers sit on the physical buttons
-  whichever way the screen is turned, and square to it, since they describe the hardware rather than
-  the layout. The glyph beside each bump shows itself on every new track and then fades. The room
-  that frees up goes to the track: the title and artist wrap onto as many rows as they need rather
-  than scrolling past on one line. The two seek settings default to Auto, which gives Classic
-  and Poster the wave, Vinyl a line, and drops the dot on Cover only. Cover always draws a line,
-  whatever the seek bar is set to
+- **Player** — style, accent colour, HD album art, the art pulse with its tempo, and whether the
+  Classic style's art runs to the edge of the screen
+- **Controls** — what the wheel does, how far each click seeks, the seek bar and its playhead dot,
+  and whether the on-screen transport buttons are drawn at all
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts
 - **Display** — animations, floating notes, screen rotation, and whether the time counts down or
   shows the track length
 - **Clock** — position, size, 12 or 24 hour, and seconds
 - **About** — check whether a newer version has been published
+
+Both seek settings sit on **Auto**, which gives Classic and Poster the wave and Vinyl a line, and
+draws the playhead dot everywhere except Cover. Cover always draws a line whatever you pick.
+
+**With the on-screen buttons off**, a bump appears against the edge at each of the four presets' own
+positions, with the glyph for what that button does beside it. The bumps follow the screen rotation
+so they stay on the physical buttons, and the glyphs stay square to the device rather than lying
+over with the layout, because they describe hardware. Each glyph shows itself on every new track and
+then fades, leaving the bumps. The room the buttons give up goes to the track, whose title and
+artist wrap onto as many rows as they need instead of scrolling past on one line.
 
 Everything is also editable from the companion app, which has room for longer explanations. Whichever
 one you changed last wins.
