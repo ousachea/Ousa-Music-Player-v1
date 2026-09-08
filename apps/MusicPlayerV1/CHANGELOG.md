@@ -2,6 +2,9 @@
 
 ## 0.27.1
 
+The style you are in is named in a small tag along the bottom of the screen, low enough to sit under
+the settings hint and quiet enough to ignore.
+
 Turned, with the on-screen buttons off, the Vinyl style gives the record the space they leave. The
 clock stops reserving a row height it does not need and the record grows from 52 to 56 percent of
 the screen, which is as large as it goes before it is wider than the column it sits in. With the

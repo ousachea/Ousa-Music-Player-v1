@@ -547,6 +547,13 @@ export default function App() {
       </div>
 
       {prefs.notes && prefs.motion && <Notes accent={accentOn} playing={playing} />}
+
+      {/* which style is on, small enough to ignore and low enough to clear the settings hint */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-1 z-[2] flex justify-center">
+        <span className="font-mono text-[0.5625rem] tracking-[0.28em] text-dim uppercase opacity-60">
+          {ENUMS.theme.labels[ENUMS.theme.values.indexOf(prefs.theme)]}
+        </span>
+      </div>
       {!prefs.transport && <PresetHint playing={playing} rotate={prefs.rotate} accent={accentOn} cue={track.persistentId ?? track.title ?? ''} />}
 
       <VolumeHud show={hud && !ownsVolume} volume={volume} accent={accentOn} />

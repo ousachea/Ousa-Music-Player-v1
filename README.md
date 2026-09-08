@@ -45,7 +45,8 @@ album art. They pause with the music, and **Display → Floating notes** turns t
 
 ### The four player styles
 
-Switch between them in the settings, under **Player style**.
+Switch between them in the settings, under **Player style**. A small tag along the bottom of the
+screen names the one you are in.
 
 ### Vinyl
 
