@@ -268,7 +268,7 @@ export default function App() {
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
       else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        const order: Prefs['theme'][] = ['card', 'vinyl', 'poster', 'widget'];
+        const order: Prefs['theme'][] = ['card', 'vinyl', 'cd', 'poster', 'widget'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
@@ -368,6 +368,8 @@ export default function App() {
             }`}>
             {prefs.theme === 'vinyl' ? (
               <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} upright={upright} />
+            ) : prefs.theme === 'cd' ? (
+              <CompactDisc artUrl={artUrl} playing={playing} spin={prefs.motion} upright={upright} />
             ) : (
               <div className={`relative aspect-square ${upright ? 'w-full min-h-0 shrink' : 'h-full shrink-0'}`}>
                 {!edge && <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />}
@@ -511,7 +513,7 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 }
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
-  theme: { values: ['card', 'vinyl', 'poster', 'widget'], labels: ['Classic', 'Vinyl', 'Poster', 'Cover'] },
+  theme: { values: ['card', 'vinyl', 'cd', 'poster', 'widget'], labels: ['Classic', 'Vinyl', 'CD', 'Poster', 'Cover'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
@@ -556,8 +558,8 @@ const GROUPS: { title: string; rows: Row[] }[] = [
   {
     title: 'Backdrop',
     rows: [
-      { key: 'backdrop', label: 'Intensity', only: ['card', 'vinyl', 'widget'] },
-      { key: 'drift', label: 'Drift', only: ['card', 'vinyl', 'widget'] },
+      { key: 'backdrop', label: 'Intensity', only: ['card', 'vinyl', 'cd', 'widget'] },
+      { key: 'drift', label: 'Drift', only: ['card', 'vinyl', 'cd', 'widget'] },
     ],
   },
   {
@@ -566,7 +568,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
       { key: 'motion', label: 'Animations' },
       { key: 'notes', label: 'Floating notes' },
       { key: 'rotate', label: 'Screen rotation' },
-      { key: 'remaining', label: 'Show time remaining', only: ['card', 'vinyl', 'widget'] },
+      { key: 'remaining', label: 'Show time remaining', only: ['card', 'vinyl', 'cd', 'widget'] },
     ],
   },
   {
@@ -935,6 +937,58 @@ function Turntable({
       </div>
 
       <Tonearm playing={playing} />
+    </div>
+  );
+}
+
+// the art printed across the whole disc, with the clamping hub punched through the middle of it.
+// the hub does not turn with the art: it is concentric, so spinning it would only cost a repaint
+function CompactDisc({
+  artUrl,
+  playing,
+  spin,
+  upright,
+}: {
+  artUrl: string | null;
+  playing: boolean;
+  spin: boolean;
+  upright: boolean;
+}) {
+  return (
+    <div className={`relative aspect-square shrink-0 ${upright ? 'h-[52%] self-center' : 'h-full'}`}>
+      <div className="absolute inset-x-8 bottom-2 h-8 rounded-full bg-black/70 blur-2xl" />
+
+      <div
+        className="absolute inset-0 animate-platter overflow-hidden rounded-full shadow-2xl"
+        style={{ animationPlayState: playing && spin ? 'running' : 'paused' }}>
+        {artUrl ? (
+          <img src={artUrl} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full bg-white/8" />
+        )}
+        {/* the sheen a pressed disc throws; it rides with the art, which is what makes the spin read */}
+        <div
+          className="absolute inset-0 rounded-full mix-blend-screen opacity-35"
+          style={{
+            background:
+              'conic-gradient(from 200deg, rgba(255,255,255,0) 0deg, rgba(120,220,255,0.5) 26deg, rgba(255,180,240,0.42) 52deg, rgba(255,255,255,0) 96deg, rgba(255,255,255,0) 190deg, rgba(180,255,210,0.4) 224deg, rgba(255,235,160,0.36) 250deg, rgba(255,255,255,0) 300deg)',
+          }}
+        />
+        <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/40" />
+      </div>
+
+      {/* hub: the silver clamping band, the clear inner ring, then the hole */}
+      <div className="pointer-events-none absolute inset-0 grid place-items-center">
+        <div
+          className="grid aspect-square w-[31%] place-items-center rounded-full ring-1 ring-black/35"
+          style={{ background: 'linear-gradient(150deg, #e8ebef 0%, #b9bfc7 42%, #d7dbe0 68%, #a9b0b9 100%)' }}>
+          <div
+            className="grid aspect-square w-[68%] place-items-center rounded-full ring-1 ring-black/20"
+            style={{ background: 'linear-gradient(150deg, #f3f5f7 0%, #cfd4da 55%, #eef1f4 100%)' }}>
+            <div className="aspect-square w-[52%] rounded-full bg-screen shadow-inner ring-1 ring-black/45" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

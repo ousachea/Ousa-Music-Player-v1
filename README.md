@@ -7,7 +7,7 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **Music Player** | Now playing, in four styles, coloured by the album art |
+| **Music Player** | Now playing, in five styles, coloured by the album art |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -42,7 +42,7 @@ settings on the device and press **Check** under *Software update*.
 Music notes drift up over whichever style you pick, each one tinted a little differently from the
 album art. They pause with the music, and **Display → Floating notes** turns them off.
 
-### The four player styles
+### The five player styles
 
 Switch between them in the settings, under **Player style**.
 
@@ -67,6 +67,16 @@ padding on the right.
 The sleeve tucked behind a record that carries the artwork as its label. The platter turns while the
 track plays and holds its angle when you pause; the tonearm rests on the outer grooves and lifts off
 when the music stops.
+
+### CD
+
+![CD style](apps/MusicPlayerV1/screenshots/05-cd.jpg)
+
+The album printed across a compact disc, with the silver clamping hub punched through the middle of
+it and the hole showing the screen behind. The disc turns while the track plays and holds its angle
+when you pause, and a sheen rides around with the art, which is what makes the turn read on a
+picture that is nearly symmetrical. Turned to 90 or 270 the disc is sized by height so it stays
+round.
 
 ### Poster
 
@@ -102,7 +112,7 @@ of it would only be the Classic style again.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Classic, Vinyl, Poster, Cover |
+| Mode, the button past the presets | Cycle the player style: Classic, Vinyl, CD, Poster, Cover |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -122,7 +132,7 @@ needs, so the transport always keeps its margin from the bottom edge. The rotati
 
 ### Settings
 
-![Settings](apps/MusicPlayerV1/screenshots/05-settings.jpg)
+![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
 Press the button under the wheel to open them on the device. The list only shows what the style you
 picked can actually use, so switching to Poster hides the backdrop and pulse rows it does not draw.

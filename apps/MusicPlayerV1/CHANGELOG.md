@@ -1,5 +1,15 @@
 # weather
 
+## 0.24.0
+
+A fifth player style, **CD**. The album is printed across the whole face of a compact disc, with the
+silver clamping hub punched through the middle of it and the hole showing the screen behind. The
+disc turns while the track plays and holds its angle when you pause, and a sheen rides around with
+the art, which is what makes the turn read on a picture that is nearly symmetrical.
+
+Turned to 90 or 270 the disc is sized by height rather than width, so it stays round instead of
+being squashed into a portrait column. Mode, and the 5 key, cycle five styles now.
+
 ## 0.23.0
 
 **Floating notes** is a new setting, on by default. Music notes drift up the screen while a track
