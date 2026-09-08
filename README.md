@@ -408,12 +408,27 @@ not included.
 ## Working on it
 
 ```sh
-bun run dev                                  # run against a connected Car Thing
+bun run dev <slug>                           # run one app against a connected Car Thing
 bun run --cwd apps/MusicPlayerV1 push        # build and install onto the device
 bun run --cwd apps/MusicPlayerV1 typecheck   # types for src, settings and extension
 bun run check                                # the whole gate: typecheck, build, bundle, catalog
 bun run bump MusicPlayerV1 patch -m "note"   # move the version and open a changelog entry
 ```
+
+Each app has a port of its own, so they can all run at once and a bookmark keeps working:
+
+| App | Dev server |
+| --- | --- |
+| Music Player | http://localhost:5173 |
+| Clock | http://localhost:5174 |
+| Desk Exchange | http://localhost:5175 |
+| Gold Tracker | http://localhost:5176 |
+| Network Monitor | http://localhost:5177 |
+| Quote Flow | http://localhost:5178 |
+
+Nothing links one to another: each is its own page, so switching between them means changing the
+address. On the device that job belongs to the launcher, which five fast presses of Mode returns you
+to. If a port is already taken vite quietly takes the next free one and says so on startup.
 
 Pushing to main publishes the catalog. A published version never changes, so shipping anything means
 bumping first — `check` refuses a change to an app that has not been bumped.

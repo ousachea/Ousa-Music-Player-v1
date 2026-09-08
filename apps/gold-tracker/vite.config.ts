@@ -11,6 +11,9 @@ export default defineConfig(async () => ({
   },
   server: {
     host: true,
+    // one port per app, so they can run side by side and a bookmark keeps working. vite
+    // takes the next free one if this is busy, and says which on startup
+    port: 5176,
     proxy: await daemonProxy(),
   },
 }));
