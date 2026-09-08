@@ -28,7 +28,8 @@ bottom.
 Clear is the tape itself, stood on end and seen through its own shell: two spools of brown tape
 filling the face with the wind drawn as the turns it actually has, hubs in the album's colour
 wearing the crown of teeth a spindle grips, the guide assembly and its pressure pad showing through
-the plastic down one side, COMPACT CASSETTE moulded into it, and a white label strip down the other
+the plastic down one side, the cover sitting behind the square window between the spools where the
+tape path graduations otherwise are, COMPACT CASSETTE moulded into it, and a white label strip down the other
 edge carrying the track read bottom to top with TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO
 and the time. It stands taller than it is wide, so in landscape the transport keys take a column
 beside it rather than a row beneath, and previous and next turn a quarter with the bar so they point

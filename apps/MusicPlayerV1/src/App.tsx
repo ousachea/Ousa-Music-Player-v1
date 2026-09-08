@@ -3137,7 +3137,7 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
 
 // the clear tape: a shell you can see into, stood on end. the spools are the whole face of it, the
 // mechanism shows through the plastic on the left, and the track is printed down the label strip
-function ClearTape({ title, artist, album, playing, motion, progress, elapsed, duration, remaining, showTransport, quarter, skin }: Face) {
+function ClearTape({ title, artist, album, playing, motion, progress, elapsed, duration, remaining, artUrl, showTransport, quarter, skin }: Face) {
   const done = Math.min(1, Math.max(0, progress));
   const upper = 268 - 132 * done;
   const lower = 136 + 132 * done;
@@ -3202,6 +3202,9 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
             <stop offset="0.7" stopColor="#7c5a41" />
             <stop offset="1" stopColor="#5b4130" />
           </radialGradient>
+          <clipPath id="clear-art">
+            <rect x="255" y="428" width="150" height="144" rx="6" />
+          </clipPath>
           <linearGradient id="clear-plastic" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stopColor="rgba(255,255,255,0.30)" />
             <stop offset="0.5" stopColor="rgba(255,255,255,0.05)" />
@@ -3215,12 +3218,23 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
         {spool(288, upper)}
         {spool(712, lower)}
 
-        {/* the tape path, and the window the head reads through */}
-        <rect x="255" y="428" width="150" height="144" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.28)" strokeWidth="2" />
-        {[450, 478, 506, 534, 562].map(y => (
-          <rect key={y} x="315" y={y} width="30" height="4" rx="2" fill="rgba(255,255,255,0.5)" />
-        ))}
-        <circle cx="330" cy="500" r="9" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
+        {/* the tape path, and the window the head reads through, with the cover behind the plastic */}
+        <rect x="255" y="428" width="150" height="144" rx="6" fill="rgba(255,255,255,0.06)" />
+        {artUrl && (
+          <g clipPath="url(#clear-art)">
+            <image href={artUrl} x="255" y="428" width="150" height="144" preserveAspectRatio="xMidYMid slice" />
+            <rect x="255" y="428" width="150" height="144" fill="rgba(10,12,15,0.12)" />
+          </g>
+        )}
+        <rect x="255" y="428" width="150" height="144" rx="6" fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="2" />
+        {!artUrl && (
+          <>
+            {[450, 478, 506, 534, 562].map(y => (
+              <rect key={y} x="315" y={y} width="30" height="4" rx="2" fill="rgba(255,255,255,0.5)" />
+            ))}
+            <circle cx="330" cy="500" r="9" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
+          </>
+        )}
 
         {/* the guide assembly down the left, and the pressure pad in the middle of it */}
         <rect x="34" y="150" width="150" height="700" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.22)" strokeWidth="2" />
