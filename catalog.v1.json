@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T07:53:06.363Z",
+  "updated_at": "2026-09-08T08:05:34.073Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -223,6 +223,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.26.0",
+          "released_at": "2026-09-08T08:05:34.071Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.26.0.zip",
+            "size": 947309,
+            "sha256": "29b976da9daf49453b0dcdd7695e4925f529bd1ef7347b8bf9a5cc73d251cc1a"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.26.0.html",
+            "size": 30541,
+            "sha256": "5b26c99458b25176ef7dae69e8c203079fc14954823378cec5638129530e90fd"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The preset markers are longer again, another third, and the bump now thins and dims as the glyph\nbeside it fades. Once the glyph has gone the bump is the whole marker, so it stops being as loud as\nit was while it had a label to introduce.\n\nTracks marked explicit now carry an **E** beside the artist. The phone sends no such flag, so it\ncomes from the same search that fetches the artwork, asked about the track rather than the album: an\nexplicit album can hold clean tracks and marking those would be worse than marking none. It needs\n**HD album art** switched on, since it is the same lookup and the same permission, and a track the\nsearch cannot confidently match is left unmarked rather than guessed at."
+        },
         {
           "version": "0.25.4",
           "released_at": "2026-09-08T07:53:06.361Z",
