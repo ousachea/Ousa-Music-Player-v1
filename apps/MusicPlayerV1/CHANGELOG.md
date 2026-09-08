@@ -2,6 +2,10 @@
 
 ## 0.30.1
 
+Clicking a lyric after reading ahead with the wheel lands on the line you clicked. It was seeking
+correctly and then parking the view however many lines the wheel had moved past it, so the line that
+lit up was not the one under your finger and it was not in the middle either.
+
 The app is called Music Player everywhere now. Its page title, its package and the heading on this
 file all still said **weather**, which is the app the scaffold was copied from.
 

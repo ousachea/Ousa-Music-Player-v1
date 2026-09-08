@@ -431,7 +431,13 @@ export default function App() {
           onToggle={toggle}
           onPrev={() => goPrev(true)}
           onNext={() => goNext()}
-          onSeekMs={ms => seek(ms)}
+          onSeekMs={ms => {
+            // the column parks at the sung line plus however far the wheel has read ahead. seeking
+            // to a line makes it the sung one, so the offset has to go or the view lands past it
+            setBrowse(0);
+            if (browseTimer.current) clearTimeout(browseTimer.current);
+            seek(ms);
+          }}
         />
       ) : prefs.theme === 'cd' ? (
         <>
