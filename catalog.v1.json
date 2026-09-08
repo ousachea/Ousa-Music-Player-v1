@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T09:40:17.103Z",
+  "updated_at": "2026-09-08T09:51:33.246Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -223,6 +223,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.27.3",
+          "released_at": "2026-09-08T09:51:33.244Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.27.3.zip",
+            "size": 949870,
+            "sha256": "1ba471b51af748e54f73053402e4f706c5c263362573f438498b74be67152c91"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.27.3.html",
+            "size": 30541,
+            "sha256": "5b26c99458b25176ef7dae69e8c203079fc14954823378cec5638129530e90fd"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The CD style's transport bar sits on a dark ground of its own rather than straight on the blurred\nartwork. It takes the same wash of the album's colour the tray does, over a lighter base, so it\nbelongs to the style without sinking to the tray's depth."
+        },
         {
           "version": "0.27.2",
           "released_at": "2026-09-08T09:40:17.098Z",
