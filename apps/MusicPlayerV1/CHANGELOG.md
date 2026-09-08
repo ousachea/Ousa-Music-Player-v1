@@ -5,8 +5,9 @@
 Two settings for the Cover style.
 
 **Panel behind the track** puts the track and the controls on a tinted panel of their own instead of
-straight over the blurred artwork, which is the phone lock screen look. It takes the album's colour
-the way the rest of the style does. Off by default, since the style has been drawing without one.
+straight over the blurred artwork, which is the phone lock screen look. It fills the height it is
+given rather than shrinking to its contents, sits an even margin from the edges, and takes the
+album's colour the way the rest of the style does. It draws in both orientations. Off by default, since the style has been drawing without one.
 
 **Volume slider** turns Cover's slider off. The wheel still sets the volume, and with no slider on
 screen the reading the other styles throw over the middle comes back, since there is nothing left to

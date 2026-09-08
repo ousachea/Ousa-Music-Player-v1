@@ -1671,7 +1671,7 @@ function Widget({
   const wrap = (inner: ReactNode) =>
     panel ? (
       <div
-        className="rounded-2xl px-4 py-3 ring-1 ring-white/10 backdrop-blur-md"
+        className="flex min-h-0 flex-1 flex-col rounded-2xl px-5 py-4 ring-1 ring-white/10 backdrop-blur-md"
         style={{
           background: accent
             ? `linear-gradient(155deg, color-mix(in oklab, ${accent.fill} 18%, rgba(10,12,14,0.72)), rgba(10,12,14,0.72) 78%)`
@@ -1704,7 +1704,9 @@ function Widget({
     return (
       <div className={`relative flex h-full w-full flex-col ${edge ? 'p-0' : 'p-7'}`}>
         {cover}
-        <div className={`flex min-h-0 flex-1 flex-col justify-between gap-4 ${edge ? 'p-7' : 'pt-4'}`}>{rest}</div>
+        <div className={`flex min-h-0 flex-1 flex-col ${edge ? 'p-7' : 'pt-4'}`}>
+          {wrap(<div className="flex min-h-0 flex-1 flex-col justify-between gap-4">{rest}</div>)}
+        </div>
       </div>
     );
 
