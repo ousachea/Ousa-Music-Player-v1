@@ -454,6 +454,8 @@ export default function App() {
         </>
       )}
 
+      {prefs.notes && prefs.motion && <Notes accent={accentOn} playing={playing} />}
+
       <VolumeHud show={hud} volume={volume} accent={accentOn} />
       <div
         className={`pointer-events-none absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded-full bg-black/78 px-4 py-2.5 text-hint text-near ring-1 ring-white/12 backdrop-blur-md transition-opacity duration-500 ${
@@ -556,6 +558,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
     title: 'Display',
     rows: [
       { key: 'motion', label: 'Animations' },
+      { key: 'notes', label: 'Floating notes' },
       { key: 'rotate', label: 'Screen rotation' },
       { key: 'remaining', label: 'Show time remaining', only: ['card', 'vinyl', 'widget'] },
     ],
@@ -1599,6 +1602,66 @@ function Ghost({
         {children}
       </span>
     </button>
+  );
+}
+
+// a bubble machine for music notes. every note is one element with two css animations on it, a rise
+// and a sway at a different period, so nothing here costs a frame of javascript. the seeded values
+// are generated once and never change, or a re-render would restart every note mid-flight.
+const NOTE_GLYPHS = ['\u266a', '\u266b', '\u266c', '\u2669'];
+
+const NOTES = Array.from({ length: 14 }, (_, i) => {
+  // a fixed spread rather than Math.random at render: same layout every mount, no clustering
+  const t = (i * 0.6180339887) % 1;
+  return {
+    left: 4 + t * 92,
+    glyph: NOTE_GLYPHS[i % NOTE_GLYPHS.length],
+    size: 15 + ((i * 7) % 5) * 5,
+    life: 8.5 + ((i * 5) % 7) * 0.9,
+    delay: (i * 11) % 9,
+    sway: 10 + ((i * 3) % 5) * 6,
+    tilt: 8 + ((i * 5) % 4) * 5,
+    period: 2.1 + ((i * 4) % 5) * 0.45,
+    peak: 0.34 + ((i * 3) % 4) * 0.08,
+    mix: ((i * 2) % 5) / 4,
+  };
+});
+
+function Notes({ accent, playing }: { accent: Accent | null; playing: boolean }) {
+  const from = accent?.fill ?? '#efefef';
+  const to = accent?.fill2 ?? accent?.soft ?? '#cfd6de';
+  return (
+    <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
+      {NOTES.map((n, i) => (
+        <span
+          key={i}
+          className="note-rise absolute block will-change-transform"
+          style={{
+            left: `${n.left}%`,
+            bottom: '-12%',
+            ['--note-life' as string]: `${n.life}s`,
+            ['--note-delay' as string]: `${n.delay}s`,
+            ['--note-peak' as string]: `${n.peak}`,
+            animationPlayState: playing ? 'running' : 'paused',
+          }}>
+          <span
+            className="note-sway block will-change-transform"
+            style={{
+              ['--note-sway' as string]: `${n.sway}px`,
+              ['--note-tilt' as string]: `${n.tilt}deg`,
+              ['--note-period' as string]: `${n.period}s`,
+              ['--note-delay' as string]: `${n.delay}s`,
+              animationPlayState: playing ? 'running' : 'paused',
+              fontSize: `${n.size}px`,
+              lineHeight: 1,
+              // each note lands somewhere between the two accent tones, so no two are the same shade
+              color: `color-mix(in oklab, ${from} ${Math.round(n.mix * 100)}%, ${to})`,
+            }}>
+            {n.glyph}
+          </span>
+        </span>
+      ))}
+    </div>
   );
 }
 

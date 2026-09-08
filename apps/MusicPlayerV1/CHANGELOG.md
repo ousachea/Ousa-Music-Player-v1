@@ -2,6 +2,12 @@
 
 ## 0.23.0
 
+**Floating notes** is a new setting, on by default. Music notes drift up the screen while a track
+plays, each tinted somewhere between the two colours pulled from the album art, so no two are the
+same shade. They are drawn over whichever style you are using rather than belonging to any one of
+them, they hold still when the music is paused, and they follow the Animations setting: with that
+off, nothing floats.
+
 **Dot at the playhead** is a new setting. Off, the seek bar loses the marker that rides it: the
 round handle on the line, the tick on the wave, and the halo that pulses under the handle while a
 track plays. The bar still scrubs by dragging, whether or not the dot is drawn.

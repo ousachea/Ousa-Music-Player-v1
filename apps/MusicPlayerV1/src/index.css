@@ -235,3 +235,40 @@
     overscroll-behavior: none;
   }
 }
+
+/* notes rise like a bubble machine: one loop carries the whole life of a note, so a note is a
+   single element with no javascript behind it. the sway is a second animation on the child, at a
+   different period from the rise, which is what stops the column looking like a conveyor. */
+@keyframes note-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.6);
+  }
+  12% {
+    opacity: var(--note-peak, 0.55);
+  }
+  78% {
+    opacity: var(--note-peak, 0.55);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -118vh, 0) scale(1);
+  }
+}
+
+@keyframes note-sway {
+  0% {
+    transform: translateX(calc(var(--note-sway, 14px) * -1)) rotate(calc(var(--note-tilt, 12deg) * -1));
+  }
+  100% {
+    transform: translateX(var(--note-sway, 14px)) rotate(var(--note-tilt, 12deg));
+  }
+}
+
+.note-rise {
+  animation: note-rise var(--note-life, 9s) linear var(--note-delay, 0s) infinite;
+}
+
+.note-sway {
+  animation: note-sway var(--note-period, 2.6s) ease-in-out var(--note-delay, 0s) infinite alternate;
+}

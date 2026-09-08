@@ -36,6 +36,7 @@ const HINTS: Record<string, string> = {
   pulse: 'A glow that beats around the album art. Classic style only.',
   pulseBpm: 'How fast the glow beats, in BPM. 0 means auto, which is simply a steady 90: the app never receives the audio, so it cannot know the song\u2019s own tempo.',
   accent: 'The progress bar, play button and header take this colour.',
+  notes: 'Music notes drifting up the screen while a track plays, each tinted a little differently from the album art. Drawn over whichever player style you are using. It follows Animations: with those off, nothing floats.',
 };
 
 function defaultFor(field: ConfigField): string {

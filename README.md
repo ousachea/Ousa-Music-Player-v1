@@ -39,6 +39,9 @@ settings on the device and press **Check** under *Software update*.
 
 ## Music Player
 
+Music notes drift up over whichever style you pick, each one tinted a little differently from the
+album art. They pause with the music, and **Display → Floating notes** turns them off.
+
 ### The four player styles
 
 Switch between them in the settings, under **Player style**.
@@ -129,7 +132,8 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
   Poster the wave, Vinyl a line, and drops the dot on Cover only. Cover always draws a line, whatever
   the seek bar is set to
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts
-- **Display** — animations, screen rotation, and whether the time counts down or shows the track length
+- **Display** — animations, floating notes, screen rotation, and whether the time counts down or
+  shows the track length
 - **Clock** — position, size, 12 or 24 hour, and seconds
 - **About** — check whether a newer version has been published
 

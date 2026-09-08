@@ -163,6 +163,14 @@
     {
       "type": "boolean",
       "data": {
+        "key": "notes",
+        "label": "Floating music notes",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
         "key": "remaining",
         "label": "Show time remaining instead of track length",
         "default": true
