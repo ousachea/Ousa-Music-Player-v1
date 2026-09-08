@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T07:03:13.674Z",
+  "updated_at": "2026-09-08T07:10:34.142Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -210,7 +210,7 @@
     {
       "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
       "name": "Music Player",
-      "description": "Now playing from your phone, on the Car Thing.",
+      "description": "Now playing from your phone, in five styles coloured by the album art, and turnable to any mounting.",
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.jpg",
       "screenshots": [
@@ -224,6 +224,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.25.2",
+          "released_at": "2026-09-08T07:10:34.140Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.25.2.zip",
+            "size": 945147,
+            "sha256": "f4f40660a3053250056bfb8c74ec3124d01b3a2377e6548c11ef70474ac49a32"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.25.2.html",
+            "size": 30644,
+            "sha256": "ed1d242abf129b58aa730c174ff5e47bcd9a0870695c8446a2aedb469a74590f"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The store description is rewritten. It still said only that this shows what is playing on your\nphone, which was true when there was one player style and no way to turn the screen."
+        },
         {
           "version": "0.25.1",
           "released_at": "2026-09-08T07:03:13.672Z",
