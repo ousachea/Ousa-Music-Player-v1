@@ -29,6 +29,10 @@ with the title and artist keeping the room to its left. It fades into the paper 
 edge rather than sitting in a frame, so it reads as printed on the label instead of stuck to it. On
 the printed design the cover is the label itself, so nothing there depends on it.
 
+A new track brings a new tape. One of eight printed patterns is chosen by hashing the track, so the
+same song always comes back on the same tape and the next one arrives on another: faint under the
+writing and around the window on the written label, machined into the metal on the printed shell.
+
 The colours come off the cover more directly. The shell, the label, the plate around the window, the
 tape on the spools, the writing on the label and the keys are all built from the cover's own hue and
 saturation rather than mixed into a cream, so a warm album gives a warm tape and a cold one gives a

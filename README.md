@@ -94,6 +94,11 @@ machined edge and a narrow specular streak, anodised in the cover's hue so faint
 does most of the work. It is bolted together with socket caps rather than the slotted screws holding
 the written shell shut.
 
+A new track is a new tape, not the same one relabelled: one of eight printed patterns is picked from
+the track itself, so the same song always comes back on the same tape while the next one arrives on
+another. On the written label it prints faintly under the writing and around the window; on the
+printed shell it is machined into the metal.
+
 The transport is a tape deck's: light plastic caps with black glyphs, bevelled at the top and shaded
 at the bottom, sunk in a dark strip that they press into. A fourth key sits with them and switches
 between the two designs, and **Tape design** does the same from the settings.

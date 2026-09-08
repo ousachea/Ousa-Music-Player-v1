@@ -2803,6 +2803,35 @@ function tapeSkin(accent: Accent | null) {
 
 const alpha = (colour: string, pct: number) => `color-mix(in oklab, ${colour} ${pct}%, transparent)`;
 
+// every tape was printed with something; a new track gets a new one, so it reads as a different tape
+// rather than the same one relabelled
+const PATTERNS: ((c: string) => { backgroundImage: string; backgroundSize?: string })[] = [
+  c => ({ backgroundImage: `repeating-linear-gradient(45deg, ${c} 0 5px, transparent 5px 13px)` }),
+  c => ({ backgroundImage: `radial-gradient(${c} 1.6px, transparent 1.8px)`, backgroundSize: '13px 13px' }),
+  c => ({ backgroundImage: `repeating-conic-gradient(${c} 0% 25%, transparent 0% 50%)`, backgroundSize: '16px 16px' }),
+  c => ({
+    backgroundImage: `repeating-linear-gradient(0deg, ${c} 0 1px, transparent 1px 11px), repeating-linear-gradient(90deg, ${c} 0 1px, transparent 1px 11px)`,
+  }),
+  c => ({
+    backgroundImage: `repeating-linear-gradient(135deg, ${c} 0 2px, transparent 2px 9px), repeating-linear-gradient(45deg, ${c} 0 2px, transparent 2px 9px)`,
+  }),
+  c => ({
+    backgroundImage: `radial-gradient(circle at 50% 130%, transparent 7px, ${c} 7px 8.5px, transparent 9px)`,
+    backgroundSize: '16px 11px',
+  }),
+  c => ({ backgroundImage: `repeating-linear-gradient(90deg, ${c} 0 3px, transparent 3px 11px)` }),
+  c => ({
+    backgroundImage: `radial-gradient(circle at 50% 50%, transparent 4px, ${c} 4px 5px, transparent 5.5px)`,
+    backgroundSize: '18px 18px',
+  }),
+];
+
+function Pattern({ seed, colour, opacity }: { seed: string; colour: string; opacity: number }) {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  return <div className="pointer-events-none absolute inset-0" style={{ ...PATTERNS[hash % PATTERNS.length](colour), opacity }} />;
+}
+
 type Face = {
   title: string;
   artist: string;
@@ -2887,6 +2916,7 @@ function WrittenTape({ title, artist, album, playing, motion, progress, elapsed,
   const right = 24 + 16 * done;
   const spin = { animationDuration: '2.6s', animationPlayState: playing && motion ? 'running' : 'paused' };
   const inkAt = (pct: number) => alpha(skin.ink, pct);
+  const seed = `${title}|${album ?? ''}`;
 
   return (
     <div
@@ -2906,6 +2936,7 @@ function WrittenTape({ title, artist, album, playing, motion, progress, elapsed,
         <div
           className="relative flex min-h-0 flex-[42] flex-col overflow-hidden px-[3.5%] pt-[2.5%]"
           style={{ paddingRight: artUrl ? '29%' : undefined }}>
+          <Pattern seed={seed} colour={skin.ink} opacity={0.055} />
           {artUrl && (
             <>
               <img
@@ -2949,6 +2980,7 @@ function WrittenTape({ title, artist, album, playing, motion, progress, elapsed,
 
         {/* the window: spools carry the progress */}
         <div className="relative min-h-0 flex-[48]" style={{ backgroundColor: skin.plate }}>
+          <Pattern seed={seed} colour={skin.ink} opacity={0.055} />
           <svg viewBox="0 0 360 100" className="absolute inset-0 h-full w-full">
             <Shading id="cass" />
             <rect x="10" y="4" width="340" height="92" rx="10" fill={skin.well} />
@@ -3003,6 +3035,7 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
         ].join(','),
       }}>
       <Screws hex />
+      <Pattern seed={`${title}|${album ?? ''}`} colour="#ffffff" opacity={0.055} />
 
       {/* the cover is the label, edge to edge, with the window cut through it */}
       <div
