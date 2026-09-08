@@ -7,7 +7,7 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **Music Player** | Now playing, in four styles, coloured by the album art |
+| **Music Player** | Now playing, in four styles, coloured by the album art, on a screen that turns |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -125,10 +125,23 @@ around it, at a tempo you set.
 A press waits a moment to see whether another one follows, so play/pause from the wheel is very
 slightly delayed. The on-screen button is instant.
 
-Preset 4 turns the whole screen, for a device that is not sitting the way it was designed to. The
-screen itself never changes shape, so at 90 and 270 the player is laid out portrait instead: the
-cover above the track rather than beside it, and the cover crops by as much as the track below it
-needs, so the transport always keeps its margin from the bottom edge. The rotation is remembered.
+### Screen orientation
+
+Preset 4 turns the screen a quarter at a time, 0 to 90 to 180 to 270 and round again, for a device
+that is not sitting the way it was designed to. It is also a setting, under **Display → Screen
+rotation**, and whichever way you set it the choice is remembered.
+
+The screen itself never changes shape. A quarter turn hands the player a 480 by 800 box rather than
+800 by 480, and each style lays itself out for that rather than being squashed into it: the artwork
+goes above the track instead of beside it, Cover puts the elapsed and remaining times either side of
+the progress bar because the column is too tall to stack them under it, and the record and the disc
+are sized by height so they stay round.
+
+What is fixed to the hardware turns back. The preset markers move to whichever screen edge the
+buttons are actually on, and their glyphs stay square to the device rather than lying over with the
+layout, because they describe buttons rather than content. A swipe is read along the axis you
+actually swiped, and dragging the progress bar reads along the axis the bar lies on for you, not the
+one it lies on in the layout.
 
 ### Settings
 
