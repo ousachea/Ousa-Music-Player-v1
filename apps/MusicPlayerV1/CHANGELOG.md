@@ -1,5 +1,12 @@
 # weather
 
+## 0.21.1
+
+The transport keeps a clear margin from the bottom of the screen at 90 and 270. It had none: the
+portrait column asked for more height than the screen has, so the buttons were pushed past the
+padding and sat four pixels off the edge. The cover now gives way instead, cropping by however much
+the track below it needs, and the record in the Vinyl style is sized by height so it stays circular.
+
 ## 0.21.0
 
 Preset 4 turns the screen a quarter at a time: 0, 90, 180, 270 and round again. At 90 and 270 the

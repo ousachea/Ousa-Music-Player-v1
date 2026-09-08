@@ -304,12 +304,17 @@ export default function App() {
 
           <div
             className={`relative flex h-full w-full items-stretch gap-7 ${upright ? 'flex-col' : ''} ${
-              edge ? (upright ? 'px-0 pt-0 pb-7' : 'py-0 pr-7 pl-0') : 'p-7'
+              upright
+                ? // portrait drops the transport to the bottom edge, which needs more room than the sides
+                  `pb-12 ${edge ? 'px-0 pt-0' : 'px-7 pt-7'}`
+                : edge
+                  ? 'py-0 pr-7 pl-0'
+                  : 'p-7'
             }`}>
             {prefs.theme === 'vinyl' ? (
               <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} upright={upright} />
             ) : (
-              <div className={`relative aspect-square shrink-0 ${upright ? 'w-full' : 'h-full'}`}>
+              <div className={`relative aspect-square ${upright ? 'w-full min-h-0 shrink' : 'h-full shrink-0'}`}>
                 {!edge && <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />}
                 {accentOn && prefs.motion && prefs.pulse && (
                   <div
@@ -833,7 +838,7 @@ function Turntable({
   upright: boolean;
 }) {
   return (
-    <div className={`relative aspect-square shrink-0 ${upright ? 'w-full' : 'h-full'}`}>
+    <div className={`relative aspect-square shrink-0 ${upright ? 'h-[52%] self-center' : 'h-full'}`}>
       <div className="absolute bottom-3 left-6 right-6 h-8 rounded-full bg-black/75 blur-2xl" />
 
       <div className="absolute left-0 top-[3%] h-[62%] w-[62%] -rotate-6 overflow-hidden rounded shadow-2xl ring-1 ring-white/10">

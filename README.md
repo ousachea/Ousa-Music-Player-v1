@@ -92,7 +92,8 @@ slightly delayed. The on-screen button is instant.
 
 Preset 4 turns the whole screen, for a device that is not sitting the way it was designed to. The
 screen itself never changes shape, so at 90 and 270 the player is laid out portrait instead: the
-cover above the track rather than beside it. The rotation is remembered.
+cover above the track rather than beside it, and the cover crops by as much as the track below it
+needs, so the transport always keeps its margin from the bottom edge. The rotation is remembered.
 
 ### Settings
 
