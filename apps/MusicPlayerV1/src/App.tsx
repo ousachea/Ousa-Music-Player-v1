@@ -3271,17 +3271,22 @@ function Cassette({
     skin,
   };
 
-  // deck keys: light plastic caps in a recessed strip, the way a tape deck wears its transport
-  const key = (label: string, onClick: () => void, children: ReactNode, wide?: boolean) => (
+  // deck keys: light plastic caps in a recessed strip, the way a tape deck wears its transport. a
+  // latching key stays down while it is doing its job, which is what play does on a deck
+  const key = (label: string, onClick: () => void, children: ReactNode, wide?: boolean, held?: boolean) => (
     <button
       aria-label={label}
       onClick={onClick}
       style={{
-        background: `linear-gradient(180deg, color-mix(in oklab, ${skin.tint} 6%, #f9f9f7), color-mix(in oklab, ${skin.tint} 8%, #e3e3e0) 48%, color-mix(in oklab, ${skin.tint} 10%, #bebeba))`,
+        background: held
+          ? `linear-gradient(180deg, color-mix(in oklab, ${skin.tint} 10%, #a4a4a0), color-mix(in oklab, ${skin.tint} 10%, #c0c0bc) 55%, color-mix(in oklab, ${skin.tint} 10%, #d2d2ce))`
+          : `linear-gradient(180deg, color-mix(in oklab, ${skin.tint} 6%, #f9f9f7), color-mix(in oklab, ${skin.tint} 8%, #e3e3e0) 48%, color-mix(in oklab, ${skin.tint} 10%, #bebeba))`,
       }}
-      className={`grid h-full place-items-center rounded-[3px] text-[#191715] ring-1 ring-black/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(0,0,0,0.2),0_2px_0_rgba(0,0,0,0.6),0_4px_5px_-2px_rgba(0,0,0,0.55)] transition active:translate-y-[2px] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.45)] ${
-        wide ? 'w-[4.6rem]' : 'w-16'
-      }`}>
+      className={`grid h-full place-items-center rounded-[3px] text-[#191715] ring-1 ring-black/40 transition active:translate-y-[2px] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.45)] ${
+        held
+          ? 'translate-y-[2px] shadow-[inset_0_3px_6px_rgba(0,0,0,0.55),inset_0_-1px_0_rgba(255,255,255,0.5)]'
+          : 'shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(0,0,0,0.2),0_2px_0_rgba(0,0,0,0.6),0_4px_5px_-2px_rgba(0,0,0,0.55)]'
+      } ${wide ? 'w-[4.6rem]' : 'w-16'}`}>
       {children}
     </button>
   );
@@ -3294,7 +3299,13 @@ function Cassette({
         <div className="flex h-11 shrink-0 items-stretch gap-[3px] rounded-[6px] bg-black/55 p-[3px] shadow-[inset_0_2px_7px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/8">
           {key('tape design', onTape, <TapeGlyph className="h-4 w-4" />)}
           {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
-          {key(playing ? 'pause' : 'play', onToggle, playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />, true)}
+          {key(
+            playing ? 'pause' : 'play',
+            onToggle,
+            playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />,
+            true,
+            playing,
+          )}
           {key('next', onNext, <Skip className="h-4 w-4" />)}
         </div>
       )}

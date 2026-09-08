@@ -100,7 +100,9 @@ another. On the written label it prints faintly under the writing and around the
 printed shell it is machined into the metal.
 
 The transport is a tape deck's: light plastic caps with black glyphs, bevelled at the top and shaded
-at the bottom, sunk in a dark strip that they press into. A fourth key sits with them and switches
+at the bottom, sunk in a dark strip that they press into. The play key latches: while the track is
+playing it stays down, its shading inverted the way a depressed key catches the light, and it comes
+back up when you pause. A fourth key sits with them and switches
 between the two designs, and **Tape design** does the same from the settings.
 
 The spools are the progress bar in both: the left one starts full and empties as the song plays
