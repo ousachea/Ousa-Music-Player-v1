@@ -7,7 +7,7 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **Music Player** | Now playing, in four styles, coloured by the album art, on a screen that turns |
+| **Music Player** | Now playing, in five styles, coloured by the album art, on a screen that turns |
 | **Clock** | A clock in four faces, with a timer, a stopwatch and an alarm |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -44,7 +44,7 @@ settings on the device and press **Check** under *Software update*.
 Music notes drift up over whichever style you pick, each one tinted a little differently from the
 album art. They pause with the music, and **Display → Floating notes** turns them off.
 
-### The four player styles
+### The five player styles
 
 Switch between them in the settings, under **Player style**. A small tag along the bottom of the
 screen names the one you are in.
@@ -121,7 +121,7 @@ around it, at a tempo you set.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Poster |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Poster, Lyrics |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -134,6 +134,18 @@ around it, at a tempo you set.
 
 A press waits a moment to see whether another one follows, so play/pause from the wheel is very
 slightly delayed. The on-screen button is instant.
+
+### Lyrics
+
+![Lyrics style](apps/MusicPlayerV1/screenshots/05-lyrics.jpg)
+
+The words, with the line being sung held on the middle of the screen and lit in the album's colour.
+The rest fade away above and below it, and the top and bottom of the screen fade out so a line
+leaves rather than stopping at an edge. The column is what moves, not the lines.
+
+What you get depends on what the phone has. Timed lyrics get the moving column. Lyrics without
+timings are laid out as a page, which the wheel scrolls. A track with neither says so under its
+title rather than leaving the screen blank.
 
 ### Screen orientation
 
@@ -155,7 +167,7 @@ one it lies on in the layout.
 
 ### Settings
 
-![Settings](apps/MusicPlayerV1/screenshots/05-settings.jpg)
+![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
 Press the button under the wheel to open them on the device. The style picker sits at the top,
 outside the list, because it decides what the rest of the list holds, and everything that only

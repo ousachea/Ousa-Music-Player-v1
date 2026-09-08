@@ -3,7 +3,7 @@ import type { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Prefs = {
-  theme: 'widget' | 'vinyl' | 'cd' | 'poster';
+  theme: 'widget' | 'vinyl' | 'cd' | 'poster' | 'lyrics';
   rotate: 0 | 90 | 180 | 270;
   coverEdge: boolean;
   coverPanel: boolean;
@@ -48,7 +48,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'theme':
       return {
         ...prefs,
-        theme: value === 'vinyl' || value === 'cd' || value === 'poster' ? value : 'widget',
+        theme: value === 'vinyl' || value === 'cd' || value === 'poster' || value === 'lyrics' ? value : 'widget',
       };
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };

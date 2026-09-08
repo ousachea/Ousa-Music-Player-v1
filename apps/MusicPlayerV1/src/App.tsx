@@ -12,6 +12,7 @@ import {
 
 import { accentFrom, type Accent } from './artwork-color';
 import { explicitFor, hdArtwork } from './hd-art';
+import { activeIndex, useLyrics } from './lyrics';
 import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
@@ -93,6 +94,7 @@ export default function App() {
   const [foundArtist, setFoundArtist] = useState<string | null>(null);
   const [explicit, setExplicit] = useState(false);
   const artistName = track?.artist ?? foundArtist;
+  const lyrics = useLyrics(client, prefs.theme === 'lyrics' ? (track?.persistentId ?? track?.title ?? null) : null);
   const playback = state?.playback ?? null;
   const artworkId = track?.artworkId ?? null;
   const playing = playback?.state === 'playing';
@@ -309,7 +311,7 @@ export default function App() {
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
       else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'poster'];
+        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'poster', 'lyrics'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
@@ -384,7 +386,17 @@ export default function App() {
                 ? 'skip-prev'
                 : 'skip-next'
         }`}>
-      {prefs.theme === 'cd' ? (
+      {prefs.theme === 'lyrics' ? (
+        <Lyrics
+          lyrics={lyrics}
+          elapsed={elapsed}
+          title={track.title ?? 'unknown'}
+          artist={artistName ?? '—'}
+          accent={accentOn}
+          motion={prefs.motion}
+          upright={upright}
+        />
+      ) : prefs.theme === 'cd' ? (
         <>
           <CdDeck
             artUrl={artUrl}
@@ -642,7 +654,7 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 }
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
-  theme: { values: ['widget', 'vinyl', 'cd', 'poster'], labels: ['Cover', 'Vinyl', 'CD', 'Poster'] },
+  theme: { values: ['widget', 'vinyl', 'cd', 'poster', 'lyrics'], labels: ['Cover', 'Vinyl', 'CD', 'Poster', 'Lyrics'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
@@ -670,8 +682,8 @@ const STYLE_ROWS: Row[] = [
   { key: 'coverVolume', label: 'Volume slider', only: ['widget'] },
   { key: 'pulse', label: 'Art pulse', only: ['widget'] },
   { key: 'pulseBpm', label: 'Pulse tempo', only: ['widget'] },
-  { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd'] },
-  { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd'] },
+  { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd', 'lyrics'] },
+  { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd', 'lyrics'] },
   { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd'] },
 ];
 
@@ -2324,6 +2336,87 @@ function Tick({ className }: { className?: string }) {
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="m5 12.5 5 5L19 7" />
     </svg>
+  );
+}
+
+// the words, with the line being sung held on the middle of the screen and the rest falling away
+// above and below it. the column moves rather than the lines, which is one transform for the lot
+const LYRIC_LINE_PX = 58;
+
+function Lyrics({
+  lyrics,
+  elapsed,
+  title,
+  artist,
+  accent,
+  motion,
+  upright,
+}: {
+  lyrics: ReturnType<typeof useLyrics>;
+  elapsed: number;
+  title: string;
+  artist: string;
+  accent: Accent | null;
+  motion: boolean;
+  upright: boolean;
+}) {
+  const tint = accent?.fill ?? '#efefef';
+
+  if (lyrics.state === 'timed') {
+    const at = activeIndex(lyrics.lines, elapsed);
+    return (
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className={`absolute inset-x-0 top-1/2 ${motion ? 'lyric-scroll' : ''}`}
+          style={{ transform: `translate3d(0, ${-(at + 0.5) * LYRIC_LINE_PX}px, 0)` }}>
+          {lyrics.lines.map((line, i) => {
+            const away = Math.abs(i - at);
+            return (
+              <div
+                key={i}
+                className={`flex items-center justify-center px-12 text-center ${motion ? 'lyric-line' : ''}`}
+                style={{
+                  height: LYRIC_LINE_PX,
+                  color: i === at ? tint : '#efefef',
+                  opacity: i === at ? 1 : Math.max(0.12, 0.5 - away * 0.11),
+                  transform: `scale(${i === at ? 1 : 0.9})`,
+                }}>
+                <span
+                  className={`truncate font-display leading-tight font-semibold tracking-display ${
+                    upright ? 'text-[1.5rem]' : 'text-[1.75rem]'
+                  }`}>
+                  {line.text || '\u00b7 \u00b7 \u00b7'}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        {/* the ends fade rather than being cut, so lines leave the screen instead of stopping at it */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-screen to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-screen to-transparent" />
+      </div>
+    );
+  }
+
+  if (lyrics.state === 'plain')
+    return (
+      <div className="absolute inset-0 overflow-y-auto overscroll-contain px-12 py-16 [scrollbar-width:none]">
+        <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft">
+          {lyrics.text}
+        </div>
+      </div>
+    );
+
+  return (
+    <div className="absolute inset-0 grid place-items-center px-16 text-center">
+      <div className="flex flex-col items-center gap-3">
+        <Roll text={title} wrap lines={2} className="font-display text-[2rem] leading-tight font-semibold text-off-white" />
+        <div className="text-title text-soft">{artist}</div>
+        <div className="mt-2 text-hint text-dim">
+          {lyrics.state === 'loading' ? 'looking for the words' : 'no lyrics for this track'}
+        </div>
+      </div>
+    </div>
   );
 }
 

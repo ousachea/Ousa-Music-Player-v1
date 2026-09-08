@@ -1,5 +1,16 @@
 # weather
 
+## 0.30.0
+
+A fifth player style, **Lyrics**. The words to whatever is playing, with the line being sung held in
+the middle of the screen, lit in the album's colour, and the rest falling away above and below it.
+The column slides rather than the lines moving, and the top and bottom fade out so a line leaves the
+screen rather than stopping at it.
+
+The phone decides what there is to show. Timed lyrics get the moving column; lyrics with no timings
+are laid out as a page you can scroll with the wheel; a track with neither says so under its title
+rather than showing an empty screen.
+
 ## 0.29.0
 
 A note now offers to hide the on-screen buttons, since the four presets already do previous, play
