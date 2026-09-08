@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T10:27:27.193Z",
+  "updated_at": "2026-09-08T14:09:13.860Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -254,11 +254,31 @@
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/02-vinyl.jpg",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-cd.jpg",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/04-poster.jpg",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/05-settings.jpg"
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/05-lyrics.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/06-settings.jpg"
       ],
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.30.0",
+          "released_at": "2026-09-08T14:09:13.857Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.30.0.zip",
+            "size": 959953,
+            "sha256": "ce060423616f0f4d10d116b9b705a169cd3ffdd9a24e096246c6a4b569749825"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.30.0.html",
+            "size": 31660,
+            "sha256": "08748450ac0aa6d4fced5c26fcb6e4f38deeadee76a1878a704f26b9cc0cc386"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A fifth player style, **Lyrics**. The words to whatever is playing, with the line being sung held in\nthe middle of the screen, lit in the album's colour, and the rest falling away above and below it.\nThe column slides rather than the lines moving, and the top and bottom fade out so a line leaves the\nscreen rather than stopping at it.\n\nThe artwork and the track sit in a corner of your choosing, under **Lyrics → Track corner**: top or\nbottom, left or right. On the right the artwork leads and the track reads back towards it, so the\npair stays anchored to its own corner. Play and pause take the other end of that same edge, drawn\nthe way Poster draws it: only the rounded square turns, and the glyph stays upright on top of it.\nPrevious and next take the far ends of the other edge, so the four sit one to a corner. All of it\ngoes away with the on-screen buttons.\n\n**Backdrop blur** is a new setting, beside intensity and drift. Lower it to read the cover through\nthe words, raise it for a wash of colour, take it to zero to leave the artwork sharp behind them. It\napplies wherever the backdrop draws, and its default is the blur the backdrop always had.\n\n**Touching a line plays from it.** Every line knows the moment it belongs to, which is exactly what\na seek needs, so the words double as the scrubber.\n\n**The wheel reads ahead** rather than scrubbing: it moves the words a line a click while the song\ncarries on, and the view goes back to the line being sung five seconds after you stop. It does this\nin Lyrics whatever the wheel is set to elsewhere.\n\nA button on the left of the screen puts the words away and brings them back, and **Lyrics → Show the\nwords** does the same from the settings. It only appears when there are words to hide.\n\nWith the words off, or with a track that has none, the style shows what is playing rather than an\nempty screen: artwork, title and artist down the middle, with the transport under them.\n\nThe phone decides what there is to show. Timed lyrics get the moving column; lyrics with no timings\nare laid out as a page you can scroll with the wheel; a track with neither says so under its title\nrather than showing an empty screen."
+        },
         {
           "version": "0.28.0",
           "released_at": "2026-09-08T10:10:42.419Z",
