@@ -2787,6 +2787,11 @@ function tapeSkin(accent: Accent | null) {
     tapeIn: `hsl(${base.h} ${Math.min(36, sat)}% 16%)`,
     tapeOut: `hsl(${base.h} ${Math.min(30, sat)}% 32%)`,
     label: `hsl(${base.h} ${Math.min(88, sat + 24)}% 41%)`,
+    metal: [
+      `hsl(${base.h} ${Math.min(20, sat)}% 24%)`,
+      `hsl(${base.h} ${Math.min(22, sat)}% 13%)`,
+      `hsl(${base.h} ${Math.min(18, sat)}% 7%)`,
+    ],
     labelInk: `hsl(${base.h} ${Math.min(30, sat)}% 96%)`,
     labelDeep: `hsl(${base.h} ${Math.min(80, sat + 10)}% 22%)`,
     stripes: [-56, -28, 0, 28, 56].map(
@@ -2989,36 +2994,46 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
       }`}
       style={{
         height: quarter ? undefined : showTransport ? '84%' : '97%',
-        background: 'linear-gradient(160deg, #423b35, #262120 52%, #171412)',
+        background: `linear-gradient(160deg, ${skin.metal[0]}, ${skin.metal[1]} 52%, ${skin.metal[2]})`,
       }}>
       <Screws />
 
       {/* the cover is the label, edge to edge, with the window cut through it */}
       <div
-        className="absolute inset-x-[2.6%] top-[3.4%] h-[55%] overflow-hidden rounded-[3px] shadow-[0_3px_8px_rgba(0,0,0,0.6)]"
-        style={{ backgroundColor: skin.label }}>
-        {artUrl && <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-        <div className="absolute inset-0 shadow-[inset_0_0_26px_rgba(0,0,0,0.45)]" />
+        className="absolute inset-x-[3.4%] top-[4.2%] h-[54%] rotate-[-0.4deg] rounded-[4px] p-[0.7%] shadow-[0_5px_12px_-3px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.14)]"
+        style={{ backgroundColor: '#efe8dd' }}>
+        <div className="relative h-full w-full overflow-hidden rounded-[2px]" style={{ backgroundColor: skin.label }}>
+          {artUrl && <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+          <div className="absolute inset-0 shadow-[inset_0_0_26px_rgba(0,0,0,0.4)]" />
+          {/* the sheen of a printed sticker, which is what tells it apart from print on the plastic */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(112deg, rgba(255,255,255,0.20) 0 10%, rgba(255,255,255,0.05) 22%, rgba(255,255,255,0) 38%)',
+            }}
+          />
 
-        <div className="absolute bottom-[7%] left-1/2 h-[54%] w-[54%] -translate-x-1/2">
-          <svg viewBox="0 0 300 96" className="absolute inset-0 h-full w-full">
-            <Shading id="print" />
-            <rect x="2" y="2" width="296" height="92" rx="6" fill="#100d0c" />
-            <rect x="70" y="41" width="160" height="14" fill="#3b3330" />
-            <Reel cx={70} cy={48} r={left} hubR={17} motion={motion} spin={spin} hub={skin.label} spoke={skin.labelDeep} pin={skin.labelDeep} tape="url(#print-tape)" />
-            <Reel cx={230} cy={48} r={right} hubR={17} motion={motion} spin={spin} hub={skin.label} spoke={skin.labelDeep} pin={skin.labelDeep} tape="url(#print-tape)" />
-            {/* the counter: ticks printed on the window, and the tape read against them */}
-            <rect x="112" y="30" width="76" height="36" rx="2" fill="rgba(232,226,214,0.92)" />
-            {Array.from({ length: 11 }, (_, i) => (
-              <rect key={i} x={114 + i * 7.2} y="33" width="1" height={i % 5 === 0 ? 7 : 4} fill="rgba(0,0,0,0.55)" />
-            ))}
-            <rect x="114" y="44" width="72" height="18" fill="#4a423e" />
-            <rect x={113 + 74 * done} y="31" width="2" height="34" fill={skin.label} />
-            <rect x="112" y="30" width="76" height="36" rx="2" fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" />
-            <rect x="2" y="2" width="296" height="92" rx="6" fill="url(#print-shade)" />
-            <rect x="2" y="2" width="296" height="92" rx="6" fill="url(#print-gloss)" />
-            <rect x="2" y="2" width="296" height="92" rx="6" fill="none" stroke="rgba(0,0,0,0.7)" strokeWidth="2" />
-          </svg>
+          <div className="absolute bottom-[7%] left-1/2 h-[54%] w-[54%] -translate-x-1/2">
+            <svg viewBox="0 0 300 96" className="absolute inset-0 h-full w-full">
+              <Shading id="print" />
+              <rect x="2" y="2" width="296" height="92" rx="6" fill="#100d0c" />
+              <rect x="70" y="41" width="160" height="14" fill="#3b3330" />
+              <Reel cx={70} cy={48} r={left} hubR={17} motion={motion} spin={spin} hub={skin.label} spoke={skin.labelDeep} pin={skin.labelDeep} tape="url(#print-tape)" />
+              <Reel cx={230} cy={48} r={right} hubR={17} motion={motion} spin={spin} hub={skin.label} spoke={skin.labelDeep} pin={skin.labelDeep} tape="url(#print-tape)" />
+              {/* the counter: ticks printed on the window, and the tape read against them */}
+              <rect x="112" y="30" width="76" height="36" rx="2" fill="rgba(232,226,214,0.92)" />
+              {Array.from({ length: 11 }, (_, i) => (
+                <rect key={i} x={114 + i * 7.2} y="33" width="1" height={i % 5 === 0 ? 7 : 4} fill="rgba(0,0,0,0.55)" />
+              ))}
+              <rect x="114" y="44" width="72" height="18" fill="#4a423e" />
+              <rect x={113 + 74 * done} y="31" width="2" height="34" fill={skin.label} />
+              <rect x="112" y="30" width="76" height="36" rx="2" fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" />
+              <rect x="2" y="2" width="296" height="92" rx="6" fill="url(#print-shade)" />
+              <rect x="2" y="2" width="296" height="92" rx="6" fill="url(#print-gloss)" />
+              <rect x="2" y="2" width="296" height="92" rx="6" fill="none" stroke="rgba(0,0,0,0.7)" strokeWidth="2" />
+            </svg>
+          </div>
         </div>
       </div>
 

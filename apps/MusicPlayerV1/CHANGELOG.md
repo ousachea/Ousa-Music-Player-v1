@@ -15,11 +15,13 @@ the cover's own hue rather than mixing two of them, since a cover with one hue w
 five bands of the same colour.
 
 A second cassette, **Printed**, and a key beside the transport to switch between the two. Where the
-written tape is a blank label somebody filled in, the printed one is a pressed release: the cover
-itself is the label, running the whole width of the shell with the window die-cut through it and a
-tape counter reading across that window, a line riding the ticks at the playhead. The track is
-stamped on the moulded half below rather than over the picture, in bold caps with SIDE A and the
-artist under it, the album and the time under that, and the spindle holes along the very bottom.
+written tape is a blank label somebody filled in, the printed one is a pressed release: the cover is
+the label, printed as a sticker with a paper edge, a sheen across it and half a degree of tilt, and
+pressed onto a shell of dark plastic mixed from the cover's own hue. The window is die-cut through
+it, with a tape counter reading across that window and a line riding the ticks at the playhead. The
+track is stamped on the moulded half below rather than over the picture, in bold caps with SIDE A
+and the artist under it, the album and the time under that, and the spindle holes along the very
+bottom.
 
 **Artwork on the label**, on by default, prints the cover square on the right of the written label
 with the title and artist keeping the room to its left. It fades into the paper along its inside
