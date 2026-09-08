@@ -4,7 +4,8 @@
 
 **Classic and Cover are one style now, called Cover.** They were two takes on the same idea, art
 beside the track, and Cover had grown the better one. It keeps its own layout and gains what Classic
-owned: **Art to the edge** and **Art pulse**. Anything set to Classic moves to Cover on its own,
+owned: **Art to the edge** and **Art pulse**. With the art to the edge, the track and the controls
+hold an even margin of their own on every side rather than giving it up along with the artwork. Anything set to Classic moves to Cover on its own,
 since the two are no longer distinguishable. Four styles remain: Cover, Vinyl, CD and Poster.
 
 Skipping a track slides the new one in from the side it came from, in every style. The animation

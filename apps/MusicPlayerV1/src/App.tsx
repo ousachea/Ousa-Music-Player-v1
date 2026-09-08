@@ -1537,9 +1537,8 @@ function Widget({
     </div>
   );
 
-  const stack = (
+  const rest = (
     <>
-      {cover}
       {clockRow}
       {titles}
       {/* the times sit either side of the bar upright, where the column is too tall to stack them */}
@@ -1557,8 +1556,9 @@ function Widget({
 
   if (upright)
     return (
-      <div className={`relative flex h-full w-full flex-col justify-between gap-4 ${edge ? 'px-0 pt-0 pb-7' : 'p-7'}`}>
-        {stack}
+      <div className={`relative flex h-full w-full flex-col ${edge ? 'p-0' : 'p-7'}`}>
+        {cover}
+        <div className={`flex min-h-0 flex-1 flex-col justify-between gap-4 ${edge ? 'p-7' : 'pt-4'}`}>{rest}</div>
       </div>
     );
 
@@ -1566,9 +1566,9 @@ function Widget({
     // one surface: no panel of its own, so the blurred artwork behind runs the whole screen and the
     // content sits straight on it. inset-0 also keeps the box definite, which the cover's aspect
     // ratio needs or a content-sized track grows to fit it
-    <div className={`absolute inset-0 flex items-stretch gap-7 overflow-hidden ${edge ? 'py-0 pr-7 pl-0' : 'p-7'}`}>
+    <div className={`absolute inset-0 flex items-stretch overflow-hidden ${edge ? 'gap-0 p-0' : 'gap-7 p-7'}`}>
       {cover}
-      <div className="flex min-w-0 flex-1 flex-col gap-5">
+      <div className={`flex min-w-0 flex-1 flex-col gap-5 ${edge ? 'p-7' : ''}`}>
         {/* the track takes the space above; the controls hold the bottom edge whatever is left */}
         <div className="flex min-h-0 flex-1 flex-col justify-between gap-4 py-1">
           {clockRow}

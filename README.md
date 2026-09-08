@@ -94,8 +94,9 @@ same rows stack into a column and fill the screen, with the times either side of
 column is too tall to put them under it.
 
 **Art to the edge** drops the padding around the art, along with its rounded corners, ring and
-shadow, so it runs flush to the edges of the screen. **Art pulse** beats a glow around it, at a
-tempo you set.
+shadow, so it runs flush to the edges of the screen. The track and the controls keep an even margin
+of their own, the same on every side, rather than losing it with the art. **Art pulse** beats a glow
+around it, at a tempo you set.
 
 ### Controls
 
