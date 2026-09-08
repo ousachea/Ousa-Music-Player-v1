@@ -142,8 +142,9 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
   the Classic style's art runs to the edge of the screen
 - **Controls** — what the wheel does, how far each click seeks, whether the seek bar is a line or a
   wave, whether it carries a dot at the playhead, and whether the transport buttons are drawn at all.
-  With them off a small legend says which preset does what instead, each entry marked with a bump on
-  the side the physical button sits on. The two seek settings default to Auto, which gives Classic
+  With them off, a bump appears against the edge at each preset's own position, with the glyph for
+  what that button does beside it, so the markers sit on the physical buttons whichever way the
+  screen is turned. The two seek settings default to Auto, which gives Classic
   and Poster the wave, Vinyl a line, and drops the dot on Cover only. Cover always draws a line,
   whatever the seek bar is set to
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts

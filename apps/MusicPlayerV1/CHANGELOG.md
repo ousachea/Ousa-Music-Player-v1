@@ -4,10 +4,10 @@
 
 **On-screen buttons** is a new setting. The presets already do previous, play and next, so the
 buttons drawn on screen are optional; turning them off gives every style back that room. A small
-legend takes their place saying which preset does what. Each entry carries a bump on the side the
-button is actually on, so it reads as a map of the edge rather than a list, and both the bump and
-the order follow the rotation: along the top at 0, down a side at 90 and 270, and right to left
-along the bottom once the device is turned over.
+marker takes their place at each preset's own position: a bump against the edge the button is on,
+with the glyph for what it does just inside it. It is not a list in the middle of the layout, it is
+laid over the player against the real edge, so whichever way the screen is turned the bumps stay on
+the physical buttons.
 
 A swipe across the screen skips a track. Left for the next one, right for the previous, the way it
 works on a phone, and it follows the rotation so the gesture is the one the viewer makes rather than

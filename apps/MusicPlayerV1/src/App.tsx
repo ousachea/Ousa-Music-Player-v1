@@ -484,9 +484,7 @@ export default function App() {
                 </div>
               </div>
 
-              {!prefs.transport ? (
-                <KeyHint playing={playing} rotate={prefs.rotate} />
-              ) : (
+              {prefs.transport && (
               <div className="flex shrink-0 items-center justify-center gap-12">
                 <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
                   <Skip className="h-10 w-10 -scale-x-100" />
@@ -507,6 +505,7 @@ export default function App() {
       )}
 
       {prefs.notes && prefs.motion && <Notes accent={accentOn} playing={playing} />}
+      {!prefs.transport && <PresetHint playing={playing} rotate={prefs.rotate} />}
 
       <VolumeHud show={hud} volume={volume} accent={accentOn} />
       <div
@@ -1198,12 +1197,7 @@ function Poster({
         )}
       </div>
 
-      {/* the buttons are gone, so the legend takes the corner the play button had */}
-      {!showTransport && (
-        <div className="absolute right-8 top-1/2 -translate-y-1/2">
-          <KeyHint playing={playing} rotate={rotate} />
-        </div>
-      )}
+
     </div>
   );
 }
@@ -1335,9 +1329,7 @@ function Widget({
     </div>
   );
 
-  const transport = !showTransport ? (
-    <KeyHint playing={playing} rotate={rotate} size={small ? 'small' : 'full'} />
-  ) : (
+  const transport = !showTransport ? null : (
     <div className={`flex shrink-0 items-center justify-center ${small ? 'gap-12' : 'gap-10'}`}>
       <Ghost label="previous" onClick={onPrev}>
         <Skip className={small ? 'h-9 w-9 -scale-x-100' : 'h-8 w-8 -scale-x-100'} />
@@ -1790,49 +1782,58 @@ function Notes({ accent, playing }: { accent: Accent | null; playing: boolean })
   );
 }
 
-// with the on-screen buttons off, the presets are the only way to work the player, so the row they
-// vacate says which one does what rather than leaving the user to guess
-function KeyHint({
-  playing,
-  rotate,
-  size = 'full',
-}: {
-  playing: boolean;
-  rotate: Prefs['rotate'];
-  size?: 'full' | 'small';
-}) {
-  const small = size === 'small';
-  // turned upside down, the presets run right to left along what is now the bottom edge, so a
-  // legend that still read 1 2 3 from the left would point at the wrong buttons
-  const flipped = rotate === 180;
-  const cap = `grid shrink-0 place-items-center rounded-md bg-white/10 font-mono text-dim ${
-    small ? 'h-5 w-5 text-[0.625rem]' : 'h-6 w-6 text-hint'
-  }`;
-  const glyph = small ? 'h-3.5 w-3.5' : 'h-4 w-4';
-  const keys = [
-    { n: '1', icon: <Skip className={`${glyph} -scale-x-100`} /> },
-    { n: '2', icon: playing ? <Pause className={glyph} /> : <Play className={glyph} /> },
-    { n: '3', icon: <Skip className={glyph} /> },
+// with the on-screen buttons off, the presets are the only way to work the player, so a marker sits
+// against the edge at each button's own position rather than floating in the middle of the layout.
+//
+// the presets run across the top of the device, evenly spread. the stage turns the whole ui to suit
+// how the device is mounted, so that edge lands somewhere different in layout space each time, and
+// the run of buttons can end up mirrored along it. rotate(90) maps layout +x to screen down, so the
+// screen's top edge is the layout's left, and screen-left is the layout's bottom: hence the flips.
+const PRESET_AT = [20, 40, 60];
+
+const PRESET_EDGE: Record<number, { edge: 'top' | 'bottom' | 'left' | 'right'; mirror: boolean }> = {
+  0: { edge: 'top', mirror: false },
+  90: { edge: 'left', mirror: true },
+  180: { edge: 'bottom', mirror: true },
+  270: { edge: 'right', mirror: false },
+};
+
+function PresetHint({ playing, rotate }: { playing: boolean; rotate: Prefs['rotate'] }) {
+  const { edge, mirror } = PRESET_EDGE[rotate];
+  const vertical = edge === 'left' || edge === 'right';
+  const icons = [
+    <Skip key="p" className="h-4 w-4 -scale-x-100" />,
+    playing ? <Pause key="t" className="h-4 w-4" /> : <Play key="t" className="h-4 w-4" />,
+    <Skip key="n" className="h-4 w-4" />,
   ];
-  // the presets sit along one edge of the device, and which edge that is for the viewer depends on
-  // how the screen is turned: a quarter turn puts the row of them down one side instead of the top
-  const side = { 0: 'top', 90: 'left', 180: 'bottom', 270: 'right' }[rotate];
-  const stack =
-    side === 'top' ? 'flex-col' : side === 'bottom' ? 'flex-col-reverse' : side === 'left' ? 'flex-row' : 'flex-row-reverse';
-  const nub =
-    side === 'top' || side === 'bottom' ? `${small ? 'w-3.5' : 'w-4'} h-[3px]` : `w-[3px] ${small ? 'h-3.5' : 'h-4'}`;
   return (
-    <div className={`flex shrink-0 items-center justify-center text-dim ${small ? 'gap-4' : 'gap-6'}`}>
-      {(flipped ? [...keys].reverse() : keys).map(k => (
-        <span key={k.n} className={`flex items-center gap-1.5 ${stack}`}>
-          {/* the bump points at the edge the button is actually on, so the legend is a map */}
-          <span className={`shrink-0 rounded-full bg-white/30 ${nub}`} />
-          <span className="flex items-center gap-2">
-            <span className={cap}>{k.n}</span>
-            {k.icon}
-          </span>
-        </span>
-      ))}
+    <div className="pointer-events-none absolute inset-0 z-[2] text-dim">
+      {PRESET_AT.map((at, i) => {
+        const along = `${mirror ? 100 - at : at}%`;
+        return (
+          <div
+            key={i}
+            className={`absolute flex items-center gap-1.5 ${
+              vertical ? '-translate-y-1/2 flex-row' : '-translate-x-1/2 flex-col'
+            } ${edge === 'bottom' ? 'flex-col-reverse' : ''} ${edge === 'right' ? 'flex-row-reverse' : ''}`}
+            style={{
+              [vertical ? 'top' : 'left']: along,
+              [edge]: 0,
+            }}>
+            <span
+              className={`shrink-0 bg-off-white/70 ${
+                vertical ? 'h-7 w-[3px] rounded-r-full' : 'h-[3px] w-8 rounded-b-full'
+              } ${edge === 'bottom' ? 'rounded-t-full rounded-b-none' : ''} ${
+                edge === 'right' ? 'rounded-l-full rounded-r-none' : ''
+              }`}
+            />
+            {/* the glyph sits on its own ground, or it disappears into whatever artwork is behind */}
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-black/55 text-near backdrop-blur-sm">
+              {icons[i]}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
