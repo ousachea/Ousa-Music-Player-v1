@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-07T16:08:20.982Z",
+  "updated_at": "2026-09-08T04:01:04.319Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -187,6 +187,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.22.0",
+          "released_at": "2026-09-08T04:01:04.316Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.22.0.zip",
+            "size": 934913,
+            "sha256": "5b0ded09f57258d4310c6adf1ecc81739b69c192aeea323a475847957607d8f7"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.22.0.html",
+            "size": 29828,
+            "sha256": "d13e9c5fc6ee1509917ff9de70f7c3f85a03919625b21abace9176977ba006f0"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A fourth player style, **Widget**, after the phone lock screen: rounded artwork, the track under it,\na progress bar with the elapsed time on one side and the remaining on the other, the transport, and\na volume slider of its own, which drags against the daemon's volume rather than only reporting it.\nThe output picker a phone puts beside the transport is dropped: the device has nowhere else to send\naudio, so the row is the three transport glyphs and nothing more.\n\nThe Widget's landscape layout is the wide one from the reference instead of a narrow portrait card:\nthe cover on the left at full height, the clock, track and progress bar spaced down the same height\nto the right of it, and the transport and volume slider on the bottom edge. Upright is unchanged.\n\nIt draws as a single surface. There is no panel of its own behind the content, so the blurred\nartwork runs the whole screen and the album's colour carries under the track and the controls rather\nthan stopping at a card edge.\n\nIts volume slider works. A muted device reported level 0 through the reading the slider drew from,\nso the control looked dead however far you dragged it; it now draws the level the device actually\nholds, says whether it is muted on the speaker beside it, and unmutes on a drag, because reaching\nfor the slider means you want sound.\n\nThe artist line no longer sits empty on tracks the phone sends no artist for. The artwork lookup\nanswers with the name, so it stands in when the phone gives nothing. That lookup also used to refuse\nto run at all without an artist, which left those same tracks on the device's 512px cover; it\nsearches on the album alone now. Both need HD album art switched on, and matching an album by name\nalone can pick the wrong record.\n\nCover and Widget both share their height out between the rows now, at every rotation, rather than\nletting the track block swallow the slack and leaving the transport crowded against the bottom. The\nWidget card narrowed to make room for that, since the cover has to give up height for the rows to\nhave any to share and cropping it instead was not worth it.\n\nThe arrangement never changes; only the frame around it does. Portrait, at 90 or 270, fills the\nscreen with it, and the volume slider takes the bottom edge so the slack the stack leaves lands\nabove it rather than under it. Landscape floats it as a narrow card over the blurred artwork, sized so the cover\nlands square and uncropped, because stacking the six rows is the whole look and a full width version\nof it would only be the Cover style again."
+        },
         {
           "version": "0.20.2",
           "released_at": "2026-09-07T14:11:19.989Z",
@@ -1017,37 +1036,6 @@
           ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "First release. Link status, latency, measured download and a 60 second graph.\nUpload and local IP report as unavailable: they need interface counters that the\ndaemon does not expose."
-        }
-      ]
-    },
-    {
-      "id": "01a07c23-71f5-75f8-b2b1-d6bd65e2eb98",
-      "name": "Queue Manager",
-      "description": "See and steer the up-next queue from the Car Thing.",
-      "author": "Ousa Chea",
-      "icon": null,
-      "screenshots": [
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c23-71f5-75f8-b2b1-d6bd65e2eb98/01-queue.png"
-      ],
-      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
-      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
-      "versions": [
-        {
-          "version": "0.1.0",
-          "released_at": "2026-09-07T13:55:56.047Z",
-          "download": {
-            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c23-71f5-75f8-b2b1-d6bd65e2eb98/0.1.0.zip",
-            "size": 819767,
-            "sha256": "12def859cd0ac49fd02bac5efb16b7f006950e7f15b98ff60699ea8dcd26a6ca"
-          },
-          "settings": {
-            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c23-71f5-75f8-b2b1-d6bd65e2eb98/0.1.0.html",
-            "size": 26929,
-            "sha256": "5b33dc50bcb5248aa78c5363dc6a8d9bc04e92b54a3dd9a3d609cb4899561ebb"
-          },
-          "permissions": [],
-          "min_libbridgething_version": "0.12.1",
-          "changelog": "First release. Now playing beside the up-next queue, with select, play-next,\nshuffle and repeat. Remove and reorder report as unavailable: the player exposes\nno removal, so a move would duplicate the track."
         }
       ]
     },
