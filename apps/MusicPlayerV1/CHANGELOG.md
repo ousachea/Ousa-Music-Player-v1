@@ -2,6 +2,10 @@
 
 ## 0.26.0
 
+The preset markers are longer again, another third, and the bump now thins and dims as the glyph
+beside it fades. Once the glyph has gone the bump is the whole marker, so it stops being as loud as
+it was while it had a label to introduce.
+
 Tracks marked explicit now carry an **E** beside the artist. The phone sends no such flag, so it
 comes from the same search that fetches the artwork, asked about the track rather than the album: an
 explicit album can hold clean tracks and marking those would be worse than marking none. It needs

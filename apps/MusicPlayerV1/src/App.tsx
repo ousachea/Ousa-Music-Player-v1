@@ -2069,9 +2069,15 @@ function PresetHint({
               [edge]: 0,
             }}>
             {/* the bump takes the album's colour, so the marker belongs to the player it sits over */}
+            {/* once the glyphs have gone the bump is the whole marker, so it thins out and dims
+                rather than staying as loud as it was while it had a label to introduce */}
             <span
-              className={`shrink-0 opacity-80 ${
-                vertical ? 'h-[42px] w-[2px] rounded-r-full' : 'h-[2px] w-[47px] rounded-b-full'
+              className={`shrink-0 transition-[opacity,width,height] duration-700 ${
+                showIcons ? 'opacity-80' : 'opacity-40'
+              } ${
+                vertical
+                  ? `h-[61px] rounded-r-full ${showIcons ? 'w-[2px]' : 'w-px'}`
+                  : `w-[61px] rounded-b-full ${showIcons ? 'h-[2px]' : 'h-px'}`
               } ${edge === 'bottom' ? 'rounded-t-full rounded-b-none' : ''} ${
                 edge === 'right' ? 'rounded-l-full rounded-r-none' : ''
               }`}
