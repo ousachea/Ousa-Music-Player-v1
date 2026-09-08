@@ -20,7 +20,7 @@ const CHOICE_LABELS: Record<string, string> = {
 const HINTS: Record<string, string> = {
   wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',
   seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
-  theme: 'Cover shows the album art square. Vinyl puts it on a spinning record. Poster fills the screen with it.',
+  theme: 'Cover shows the album art square. Vinyl puts it on a spinning record. Poster fills the screen with it. Widget is the phone lock screen layout, with the times either side of the bar and a volume slider of its own.',
   rotate: 'Turns the whole screen, for a device mounted on its side or upside down. Preset button 4 also steps through it. At 90 and 270 the player is a tall column with a bar down each side, because the screen itself never changes shape.',
   coverEdge: 'Drops the padding around the album art so it runs to the top, bottom and left edges with square corners. Cover style only.',
   seek: 'Auto gives Poster the wave and the other styles a line. Pick one to use it everywhere.',

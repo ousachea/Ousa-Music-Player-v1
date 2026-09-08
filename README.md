@@ -7,7 +7,7 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **Music Player** | Now playing, in three styles, coloured by the album art |
+| **Music Player** | Now playing, in four styles, coloured by the album art |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -38,7 +38,7 @@ settings on the device and press **Check** under *Software update*.
 
 ## Music Player
 
-### The three player styles
+### The four player styles
 
 Switch between them in the settings, under **Player style**.
 
@@ -71,6 +71,16 @@ The artwork fills the whole screen with the track laid over it. The progress lin
 for the part you have played and a flat line for the rest, and the wave travels while the music runs.
 This is the style that benefits most from the sharper artwork lookup.
 
+### Widget
+
+The phone lock screen, near enough. Rounded artwork, the track under it, then a progress bar with
+the elapsed time on one side and the time remaining on the other, the transport, and a volume slider
+of its own. Dragging that slider sets the volume on the device, and the slot a phone gives the output
+picker toggles mute here, because a Car Thing has nowhere else to send audio.
+
+Turned to 90 or 270 this is the layout it was drawn for, art above the stack. Left in landscape the
+art moves beside the stack instead, which is the only way six rows fit a 480 tall screen.
+
 ### Controls
 
 | What you do | What happens |
@@ -79,7 +89,7 @@ This is the style that benefits most from the sharper artwork lookup.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, Poster, Widget |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
 | Press it twice | Next track |

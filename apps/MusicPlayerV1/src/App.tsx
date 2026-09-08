@@ -247,7 +247,7 @@ export default function App() {
       else if (e.key === '4') setPref('rotate', String((prefs.rotate + 90) % 360));
       // the button past the four presets; the launcher still owns five fast presses of it
       else if (e.key === 'm' || e.key === 'M') {
-        const order: Prefs['theme'][] = ['card', 'vinyl', 'poster'];
+        const order: Prefs['theme'][] = ['card', 'vinyl', 'poster', 'widget'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
@@ -275,7 +275,37 @@ export default function App() {
   return (
     <Stage rotate={prefs.rotate}>
     <div className="relative h-full w-full overflow-hidden bg-screen">
-      {prefs.theme === 'poster' ? (
+      {prefs.theme === 'widget' ? (
+        <>
+          <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />
+          <Widget
+            artUrl={artUrl}
+            context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
+            title={track.title ?? 'unknown'}
+            artist={track.artist ?? '—'}
+            accent={accentOn}
+            playing={playing}
+            motion={prefs.motion}
+            seekStyle={seekStyle}
+            rotate={prefs.rotate}
+            upright={upright}
+            progress={progress}
+            elapsed={elapsed}
+            duration={duration}
+            remaining={prefs.remaining}
+            volume={volume}
+            wallClock={wallClock}
+            clockPos={prefs.clockPos}
+            clockSize={prefs.clockSize}
+            onToggle={toggle}
+            onPrev={() => client.player.skipPrev({ allowSeeking: true })}
+            onNext={() => client.player.skipNext()}
+            onSeek={ratio => seek(ratio * duration)}
+            onVolume={level => client.audio.setVolume({ level })}
+            onMute={() => client.audio.muteToggle()}
+          />
+        </>
+      ) : prefs.theme === 'poster' ? (
         <Poster
           artUrl={artUrl}
           context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
@@ -452,7 +482,7 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 }
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
-  theme: { values: ['card', 'vinyl', 'poster'], labels: ['Cover', 'Vinyl', 'Poster'] },
+  theme: { values: ['card', 'vinyl', 'poster', 'widget'], labels: ['Cover', 'Vinyl', 'Poster', 'Widget'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   clockPos: { values: ['left', 'center', 'right'], labels: ['Left', 'Centre', 'Right'] },
@@ -495,8 +525,8 @@ const GROUPS: { title: string; rows: Row[] }[] = [
   {
     title: 'Backdrop',
     rows: [
-      { key: 'backdrop', label: 'Intensity', only: ['card', 'vinyl'] },
-      { key: 'drift', label: 'Drift', only: ['card', 'vinyl'] },
+      { key: 'backdrop', label: 'Intensity', only: ['card', 'vinyl', 'widget'] },
+      { key: 'drift', label: 'Drift', only: ['card', 'vinyl', 'widget'] },
     ],
   },
   {
@@ -504,7 +534,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
     rows: [
       { key: 'motion', label: 'Animations' },
       { key: 'rotate', label: 'Screen rotation' },
-      { key: 'remaining', label: 'Show time remaining', only: ['card', 'vinyl'] },
+      { key: 'remaining', label: 'Show time remaining', only: ['card', 'vinyl', 'widget'] },
     ],
   },
   {
@@ -1027,6 +1057,172 @@ const WAVE_LENGTH = 26;
 
 // played is drawn as a wave and the rest as a flat line, which is what separates this style from a plain bar.
 // it runs a wavelength past each end so the travelling animation always has crests to pull into view.
+// the phone lock screen layout: art above, then the track, a bar with the times either side, the
+// transport, and a volume slider of its own. landscape sets the art beside the stack instead of
+// above it, which is the only way a 480 tall screen fits all six rows
+function Widget({
+  artUrl,
+  context,
+  title,
+  artist,
+  accent,
+  playing,
+  motion,
+  seekStyle,
+  rotate,
+  upright,
+  progress,
+  elapsed,
+  duration,
+  remaining,
+  volume,
+  wallClock,
+  clockPos,
+  clockSize,
+  onToggle,
+  onPrev,
+  onNext,
+  onSeek,
+  onVolume,
+  onMute,
+}: {
+  artUrl: string | null;
+  context: string;
+  title: string;
+  artist: string;
+  accent: Accent | null;
+  playing: boolean;
+  motion: boolean;
+  seekStyle: 'bar' | 'wave';
+  rotate: Prefs['rotate'];
+  upright: boolean;
+  progress: number;
+  elapsed: number;
+  duration: number;
+  remaining: boolean;
+  volume: Volume | null;
+  wallClock: ClockParts | null;
+  clockPos: 'left' | 'center' | 'right';
+  clockSize: number;
+  onToggle: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onSeek: (ratio: number) => void;
+  onVolume: (level: number) => void;
+  onMute: () => void;
+}) {
+  const tint = accent?.fill ?? '#efefef';
+  const tint2 = accent?.fill2 ?? '#efefef';
+  const level = volume ? (volume.muted ? 0 : volume.level) : 0;
+
+  return (
+    <div className={`relative flex h-full w-full items-stretch gap-8 p-7 ${upright ? 'flex-col' : ''}`}>
+      <div
+        className={`relative aspect-square overflow-hidden rounded-[22px] bg-white/6 shadow-2xl ring-1 ring-white/10 ${
+          upright ? 'w-full min-h-0 shrink self-center' : 'h-full shrink-0'
+        }`}>
+        {artUrl ? (
+          <img src={artUrl} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="grid h-full w-full place-items-center">
+            <Disc className="h-16 w-16 text-off-white/25" />
+          </div>
+        )}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-4">
+        {wallClock && (
+          <div className={`flex ${JUSTIFY[clockPos]}`}>
+            <ClockView parts={wallClock} size={(11 * clockSize) / 100} className="text-dim" color={accent?.soft} />
+          </div>
+        )}
+
+        <div className="min-w-0">
+          <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>
+          <Roll
+            text={title}
+            className="font-display text-[1.875rem] leading-[1.2] font-semibold tracking-display text-off-white"
+          />
+          <Roll text={artist} className="mt-0.5 text-title text-soft" />
+        </div>
+
+        {/* the times sit either side of the bar here rather than under it, which is the whole look */}
+        <div className="flex items-center gap-3 font-mono text-hint tabular-nums text-dim">
+          <span className="w-11 shrink-0">{clock(elapsed)}</span>
+          <div className="min-w-0 flex-1">
+            <Seek
+              style={seekStyle}
+              rotate={rotate}
+              progress={progress}
+              playing={playing && motion}
+              tint={tint}
+              tint2={tint2}
+              onSeek={onSeek}
+            />
+          </div>
+          <span className="w-11 shrink-0 text-right">
+            {duration ? (remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-center gap-10">
+          <Ghost label="previous" onClick={onPrev}>
+            <Skip className="h-8 w-8 -scale-x-100" />
+          </Ghost>
+          <Ghost label={playing ? 'pause' : 'play'} tint={accent?.fill} onClick={onToggle}>
+            <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+              {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
+            </span>
+          </Ghost>
+          <Ghost label="next" onClick={onNext}>
+            <Skip className="h-8 w-8" />
+          </Ghost>
+          {/* the device has no output picker, so the slot that holds one on a phone toggles mute */}
+          <Ghost label={volume?.muted ? 'unmute' : 'mute'} onClick={onMute}>
+            <Speaker className="h-7 w-7" muted={volume?.muted === true} />
+          </Ghost>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Speaker className="h-4 w-4 shrink-0 text-dim" />
+          <div className="min-w-0 flex-1">
+            <VolumeBar level={level} rotate={rotate} tint={tint} onPick={onVolume} />
+          </div>
+          <Speaker className="h-5 w-5 shrink-0 text-dim" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// the same drag as the seek rail, against the daemon's volume rather than the track position
+function VolumeBar({
+  level,
+  rotate,
+  tint,
+  onPick,
+}: {
+  level: number;
+  rotate: Prefs['rotate'];
+  tint: string;
+  onPick: (level: number) => void;
+}) {
+  const pick = (e: PointerEvent<HTMLDivElement>) => onPick(alongBar(e, rotate));
+  return (
+    <div
+      className="group -my-3 flex h-6 w-full cursor-pointer items-center py-3"
+      onPointerDown={pick}
+      onPointerMove={e => e.buttons === 1 && pick(e)}>
+      <div className="relative h-[5px] w-full rounded-full bg-white/18">
+        <div
+          className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-150"
+          style={{ width: `${Math.round(Math.min(1, Math.max(0, level)) * 100)}%`, backgroundColor: tint }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function wavePath(from: number, to: number, mid: number) {
   if (to <= from) return '';
   let d = '';

@@ -1,5 +1,15 @@
 # weather
 
+## 0.22.0
+
+A fourth player style, **Widget**, after the phone lock screen: rounded artwork, the track under it,
+a progress bar with the elapsed time on one side and the remaining on the other, the transport, and
+a volume slider of its own. The slider drags against the daemon's volume, and the slot a phone gives
+the output picker toggles mute instead, because the device has nowhere else to send audio.
+
+Portrait, at 90 or 270, is the layout the style was drawn for. Landscape sets the artwork beside the
+stack rather than above it, which is the only way six rows fit a 480 tall screen.
+
 ## 0.21.2
 
 The transport is bare glyphs. The ringed circles around previous and next and the filled disc behind
