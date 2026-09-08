@@ -1,0 +1,81 @@
+{
+  "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
+  "name": "Clock",
+  "version": "0.1.0",
+  "description": "A clock in four faces, with a timer, a stopwatch and an alarm.",
+  "icon": "icon.png",
+  "settings": "settings.html",
+  "config": [
+    {
+      "type": "enum",
+      "data": {
+        "key": "style",
+        "label": "Clock face",
+        "choices": [
+          "digital",
+          "analogue",
+          "flip",
+          "minimal"
+        ],
+        "default": "digital"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "format",
+        "label": "Hour format",
+        "choices": [
+          "auto",
+          "h12",
+          "h24"
+        ],
+        "default": "auto"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "tint",
+        "label": "Colour",
+        "choices": [
+          "white",
+          "amber",
+          "cyan",
+          "green",
+          "magenta"
+        ],
+        "default": "white"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "seconds",
+        "label": "Show seconds",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "date",
+        "label": "Show the date",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "chime",
+        "label": "Sound when the timer or alarm rings",
+        "default": true
+      }
+    }
+  ],
+  "permissions": [],
+  "art": {
+    "heroPx": 248,
+    "thumbPx": 96
+  }
+}

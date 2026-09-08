@@ -1,6 +1,6 @@
 # Ousa apps for the Car Thing
 
-Five apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
+Six apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
 source once and all of them are available.
 
 ![Cover style](apps/MusicPlayerV1/screenshots/01-cover.jpg)
@@ -8,6 +8,7 @@ source once and all of them are available.
 | App | What it does |
 | --- | --- |
 | **Music Player** | Now playing, in four styles, coloured by the album art, on a screen that turns |
+| **Clock** | A clock in four faces, with a timer, a stopwatch and an alarm |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -185,6 +186,31 @@ artist wrap onto as many rows as they need instead of scrolling past on one line
 
 Everything is also editable from the companion app, which has room for longer explanations. Whichever
 one you changed last wins.
+
+## Clock
+
+A clock, and the three things that usually sit beside one.
+
+![Digital face](apps/clock/screenshots/01-digital.jpg)
+
+Four faces: **Digital**, **Analogue**, **Flip** and **Minimal**. Mode cycles them, the wheel does the
+same, and the colour, the hour format, the seconds and the date are settings.
+
+![Analogue face](apps/clock/screenshots/02-analogue.jpg)
+
+The presets are the four screens. **1** is the clock. **2** is a timer you dial with the wheel, a
+minute a click, which counts down and rings at zero. **3** is a stopwatch running to hundredths,
+with laps. **4** is an alarm: set the hour with the buttons and the minutes with the wheel, switch it
+on, and it rings at that time. The alarm outlives a restart.
+
+![Stopwatch](apps/clock/screenshots/05-stopwatch.jpg)
+
+When something rings it takes the screen and repeats a tone until you touch it or press anything,
+and gives up after a minute either way. The tone can be switched off.
+
+The time itself comes from the daemon, which carries the phone's wall clock, timezone and locale.
+The kiosk's own clock is not set from anything, so the face says it is waiting rather than showing a
+time it cannot stand behind.
 
 ## Network Monitor
 
