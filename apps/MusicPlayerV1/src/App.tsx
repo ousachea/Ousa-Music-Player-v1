@@ -1237,12 +1237,15 @@ function Widget({
     // ratio needs or a content-sized track grows to fit it
     <div className="absolute inset-0 flex items-stretch gap-7 overflow-hidden p-7">
       {cover}
-      <div className="flex min-w-0 flex-1 flex-col justify-center gap-5">
-        {clockRow}
-        {titles}
-        <div className="shrink-0">
-          {bar}
-          <div className="mt-2">{times}</div>
+      <div className="flex min-w-0 flex-1 flex-col gap-5">
+        {/* the track takes the space above; the controls hold the bottom edge whatever is left */}
+        <div className="flex min-h-0 flex-1 flex-col justify-center gap-4">
+          {clockRow}
+          {titles}
+          <div className="shrink-0">
+            {bar}
+            <div className="mt-2">{times}</div>
+          </div>
         </div>
         {transport}
         {volumeRow}

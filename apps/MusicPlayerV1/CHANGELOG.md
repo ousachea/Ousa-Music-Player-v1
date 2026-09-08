@@ -9,8 +9,8 @@ The output picker a phone puts beside the transport is dropped: the device has n
 audio, so the row is the three transport glyphs and nothing more.
 
 The Widget's landscape layout is the wide one from the reference instead of a narrow portrait card:
-the cover on the left at full height, and the track, the bar with its times beneath, the transport
-and the volume slider stacked to the right of it. Upright is unchanged.
+the cover on the left at full height, the track and its bar centred in the space to the right, and
+the transport and volume slider on the bottom edge. Upright is unchanged.
 
 It draws as a single surface. There is no panel of its own behind the content, so the blurred
 artwork runs the whole screen and the album's colour carries under the track and the controls rather
