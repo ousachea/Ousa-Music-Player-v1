@@ -145,8 +145,11 @@ leaves rather than stopping at an edge. The column is what moves, not the lines.
 
 The artwork and the track sit in whichever corner you pick, under **Track corner**. On the right the
 artwork leads and the track reads back towards it. Play and pause take the other end of that same
-edge, previous and next sit at the middle of the sides, and all of them go away when the on-screen
-buttons do.
+edge, drawn as Poster draws it, and previous and next sit together along the bottom. All of them go
+away when the on-screen buttons do.
+
+Touching a line plays from it: each one knows the moment it belongs to, so the words are also the
+scrubber.
 
 What you get depends on what the phone has. Timed lyrics get the moving column. Lyrics without
 timings are laid out as a page, which the wheel scrolls. A track with neither says so under its

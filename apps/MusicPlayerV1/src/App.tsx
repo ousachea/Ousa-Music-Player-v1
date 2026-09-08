@@ -402,6 +402,7 @@ export default function App() {
           onToggle={toggle}
           onPrev={() => goPrev(true)}
           onNext={() => goNext()}
+          onSeekMs={ms => seek(ms)}
         />
       ) : prefs.theme === 'cd' ? (
         <>
@@ -2367,6 +2368,7 @@ function Lyrics({
   onToggle,
   onPrev,
   onNext,
+  onSeekMs,
 }: {
   lyrics: ReturnType<typeof useLyrics>;
   elapsed: number;
@@ -2382,6 +2384,7 @@ function Lyrics({
   onToggle: () => void;
   onPrev: () => void;
   onNext: () => void;
+  onSeekMs: (ms: number) => void;
 }) {
   const tint = accent?.fill ?? '#efefef';
   const right = corner === 'tr' || corner === 'br';
@@ -2410,25 +2413,32 @@ function Lyrics({
 
       {showTransport && (
         <>
+          {/* the same pair Poster draws: a filled square for play, bare glyphs for the skips */}
           <button
             aria-label={playing ? 'pause' : 'play'}
             onClick={onToggle}
-            className={`absolute z-[3] grid h-14 w-14 place-items-center rounded-full bg-black/40 text-near ring-1 ring-white/12 backdrop-blur-md transition active:scale-90 ${other}`}
-            style={{ color: tint }}>
-            {playing ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7" />}
+            className={`absolute z-[3] grid h-20 w-20 place-items-center rounded-[26px] bg-off-white text-screen shadow-2xl transition-[transform,background-color,color] duration-300 ease-spring active:scale-90 ${other}`}
+            style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}>
+            <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+              {playing ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+            </span>
           </button>
-          <button
-            aria-label="previous"
-            onClick={onPrev}
-            className="absolute top-1/2 left-4 z-[3] grid h-14 w-14 -translate-y-1/2 place-items-center rounded-full bg-black/35 text-near ring-1 ring-white/10 backdrop-blur-md transition active:scale-90">
-            <Skip className="h-6 w-6 -scale-x-100" />
-          </button>
-          <button
-            aria-label="next"
-            onClick={onNext}
-            className="absolute top-1/2 right-4 z-[3] grid h-14 w-14 -translate-y-1/2 place-items-center rounded-full bg-black/35 text-near ring-1 ring-white/10 backdrop-blur-md transition active:scale-90">
-            <Skip className="h-6 w-6" />
-          </button>
+          <div className="absolute inset-x-0 bottom-6 z-[3] flex items-center justify-center gap-20">
+            <button
+              aria-label="previous"
+              onClick={onPrev}
+              style={{ color: tint }}
+              className="-m-3 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
+              <Skip className="h-9 w-9 -scale-x-100" />
+            </button>
+            <button
+              aria-label="next"
+              onClick={onNext}
+              style={{ color: tint }}
+              className="-m-3 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
+              <Skip className="h-9 w-9" />
+            </button>
+          </div>
         </>
       )}
     </>
@@ -2444,9 +2454,13 @@ function Lyrics({
           {lyrics.lines.map((line, i) => {
             const away = Math.abs(i - at);
             return (
-              <div
+              <button
                 key={i}
-                className={`flex items-center justify-center px-24 text-center ${motion ? 'lyric-line' : ''}`}
+                onClick={() => onSeekMs(line.startMs)}
+                aria-label={`play from ${line.text}`}
+                className={`flex w-full cursor-pointer items-center justify-center px-20 text-center ${
+                  motion ? 'lyric-line' : ''
+                }`}
                 style={{
                   height: LYRIC_LINE_PX,
                   color: i === at ? tint : '#efefef',
@@ -2459,7 +2473,7 @@ function Lyrics({
                   }`}>
                   {line.text || '\u00b7 \u00b7 \u00b7'}
                 </span>
-              </div>
+              </button>
             );
           })}
         </div>

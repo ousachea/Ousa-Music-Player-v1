@@ -9,9 +9,12 @@ screen rather than stopping at it.
 
 The artwork and the track sit in a corner of your choosing, under **Lyrics → Track corner**: top or
 bottom, left or right. On the right the artwork leads and the track reads back towards it, so the
-pair stays anchored to its own corner. Play and pause take the other end of that same edge, and
-previous and next sit at the middle of the left and right sides, all of which go away with the
-on-screen buttons.
+pair stays anchored to its own corner. Play and pause take the other end of that same edge, drawn
+the way Poster draws it, and previous and next sit together along the bottom as bare glyphs. All of
+it goes away with the on-screen buttons.
+
+**Touching a line plays from it.** Every line knows the moment it belongs to, which is exactly what
+a seek needs, so the words double as somewhere to scrub.
 
 The phone decides what there is to show. Timed lyrics get the moving column; lyrics with no timings
 are laid out as a page you can scroll with the wheel; a track with neither says so under its title
