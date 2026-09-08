@@ -7,6 +7,12 @@ rather than scrolling it past on one line. Its block is placed against the left 
 it grows downward without moving anything around it, and it wraps whether or not the on-screen
 buttons are showing.
 
+The preset markers are quieter. The bump is a third longer and a third thinner, so it reads as a
+line against the edge rather than a tab, and the glyph beside it shows itself on every new track and
+then fades, leaving the bumps to mark where the buttons are. The glyphs also stay square to the
+device: they describe hardware, so they turn back against the rotation instead of lying over with
+the rest of the layout.
+
 Poster's play button turns while a track plays and holds where it is when you pause. Only its shape
 turns: the glyph sits on a layer above and stays upright, so it is the rounded square that rotates
 and the pause bars never tip over.

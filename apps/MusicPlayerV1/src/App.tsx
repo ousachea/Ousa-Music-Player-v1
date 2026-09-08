@@ -531,7 +531,7 @@ export default function App() {
       )}
 
       {prefs.notes && prefs.motion && <Notes accent={accentOn} playing={playing} />}
-      {!prefs.transport && <PresetHint playing={playing} rotate={prefs.rotate} accent={accentOn} />}
+      {!prefs.transport && <PresetHint playing={playing} rotate={prefs.rotate} accent={accentOn} cue={track.persistentId ?? track.title ?? ''} />}
 
       <VolumeHud show={hud} volume={volume} accent={accentOn} />
       <div
@@ -1965,6 +1965,8 @@ function Notes({ accent, playing }: { accent: Accent | null; playing: boolean })
 // the fourth sits just inside the screen's right edge; the settings button past it is over the dial,
 // off the glass entirely, so there is nowhere on screen to point at it
 const PRESET_AT = [12.5, 37.5, 62.5, 87.5];
+// how long the glyphs stay up after a track changes before they fade back to just the bumps
+const PRESET_ICON_MS = 4200;
 
 const PRESET_EDGE: Record<number, { edge: 'top' | 'bottom' | 'left' | 'right'; mirror: boolean }> = {
   0: { edge: 'top', mirror: false },
@@ -1977,11 +1979,21 @@ function PresetHint({
   playing,
   rotate,
   accent,
+  cue,
 }: {
   playing: boolean;
   rotate: Prefs['rotate'];
   accent: Accent | null;
+  cue: string;
 }) {
+  // the glyphs are there to teach the mapping, not to sit on the artwork forever. they show
+  // themselves on every new track and then fade, leaving the bumps to mark where the buttons are
+  const [showIcons, setShowIcons] = useState(true);
+  useEffect(() => {
+    setShowIcons(true);
+    const t = setTimeout(() => setShowIcons(false), PRESET_ICON_MS);
+    return () => clearTimeout(t);
+  }, [cue]);
   const { edge, mirror } = PRESET_EDGE[rotate];
   const vertical = edge === 'left' || edge === 'right';
   // one soft band along the whole edge rather than a chip behind each glyph: four dark discs read as
@@ -2016,13 +2028,19 @@ function PresetHint({
             {/* the bump takes the album's colour, so the marker belongs to the player it sits over */}
             <span
               className={`shrink-0 opacity-80 ${
-                vertical ? 'h-8 w-[3px] rounded-r-full' : 'h-[3px] w-9 rounded-b-full'
+                vertical ? 'h-[42px] w-[2px] rounded-r-full' : 'h-[2px] w-[47px] rounded-b-full'
               } ${edge === 'bottom' ? 'rounded-t-full rounded-b-none' : ''} ${
                 edge === 'right' ? 'rounded-l-full rounded-r-none' : ''
               }`}
               style={{ backgroundColor: accent?.soft ?? 'rgba(239,239,239,0.7)' }}
             />
-            <span className="text-off-white/65">{icons[i]}</span>
+            {/* the stage turns the interface; these describe hardware, so they turn back and stay
+                square to the device however the player around them is laid out */}
+            <span
+              className={`text-off-white/65 transition-opacity duration-700 ${showIcons ? 'opacity-100' : 'opacity-0'}`}
+              style={{ transform: `rotate(${-rotate}deg)` }}>
+              {icons[i]}
+            </span>
           </div>
         );
       })}
