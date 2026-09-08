@@ -1,5 +1,15 @@
 # weather
 
+## 0.25.1
+
+Poster wraps a long title onto as many rows as it needs, up to three, with two for the artist,
+rather than scrolling it past on one line. Its block is placed against the left edge and centred, so
+it grows downward without moving anything around it, and it wraps whether or not the on-screen
+buttons are showing.
+
+Poster's play button turns while a track plays, slowly, and holds where it is when you pause, the
+way the record and the disc do.
+
 ## 0.25.0
 
 **CD** is redrawn after a reference. The album is printed across the disc with the clamping ring and

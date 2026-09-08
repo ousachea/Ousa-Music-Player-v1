@@ -1297,9 +1297,13 @@ function Poster({
           aria-label={playing ? 'pause' : 'play'}
           onClick={onToggle}
           style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}
-          className="absolute right-7 top-1/2 grid h-24 w-24 -translate-y-1/2 place-items-center rounded-[30px] bg-off-white text-screen shadow-2xl transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
-          <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-            {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
+          className="absolute right-7 top-1/2 grid h-24 w-24 -translate-y-1/2 place-items-center rounded-[30px] bg-off-white text-screen shadow-2xl">
+          <span
+            className={`grid h-full w-full place-items-center rounded-[30px] ${motion ? 'animate-platter' : ''}`}
+            style={{ animationDuration: '9s', animationPlayState: playing && motion ? 'running' : 'paused' }}>
+            <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+              {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
+            </span>
           </span>
         </button>
       )}
@@ -1310,10 +1314,11 @@ function Poster({
         </div>
         <Roll
           text={title}
-          wrap={!showTransport}
+          wrap
+          lines={3}
           className="font-display text-[2.375rem] leading-[1.15] font-semibold tracking-display text-off-white"
         />
-        <Roll text={artist} wrap={!showTransport} lines={2} className="mt-1 text-title text-off-white/70" />
+        <Roll text={artist} wrap lines={2} className="mt-1 text-title text-off-white/70" />
         <div className="mt-2.5 font-mono text-hint tabular-nums text-off-white/60">
           {clock(elapsed)} / {duration ? clock(duration) : '--:--'}
         </div>

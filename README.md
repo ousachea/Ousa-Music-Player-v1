@@ -85,7 +85,9 @@ whole thing stacks the way a phone would.
 
 ![Poster style](apps/MusicPlayerV1/screenshots/03-poster.jpg)
 
-The artwork fills the whole screen with the track laid over it. The progress line is drawn as a wave
+The artwork fills the whole screen with the track laid over it, and a long title wraps onto as many
+rows as it needs rather than scrolling past. The play button turns slowly while the track plays and
+holds where it is when you pause. The progress line is drawn as a wave
 for the part you have played and a flat line for the rest, and the wave travels while the music runs.
 This is the style that benefits most from the sharper artwork lookup.
 
