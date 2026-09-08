@@ -425,6 +425,8 @@ export default function App() {
           duration={duration}
           remaining={prefs.remaining}
           artUrl={prefs.tapeArt ? artUrl : null}
+          tape={prefs.tape}
+          onTape={() => setPref('tape', prefs.tape === 'printed' ? 'written' : 'printed')}
           showTransport={prefs.transport}
           quarter={prefs.rotate === 90 || prefs.rotate === 270}
           onToggle={toggle}
@@ -721,6 +723,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
     values: ['widget', 'vinyl', 'cd', 'cassette', 'poster', 'lyrics'],
     labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Poster', 'Lyrics'],
   },
+  tape: { values: ['written', 'printed'], labels: ['Written', 'Printed'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
@@ -747,6 +750,7 @@ type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
 const STYLE_ROWS: Row[] = [
   { key: 'lyricsInfo', label: 'Track corner', only: ['lyrics'] },
   { key: 'words', label: 'Show the words', only: ['lyrics'] },
+  { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
   { key: 'coverPanel', label: 'Panel behind the track', only: ['widget'] },
@@ -2729,10 +2733,423 @@ function Words({ className, off }: { className?: string; off?: boolean }) {
 
 // a tape in a deck. the reels turn while it plays and the spools change size as it winds across,
 // which is the honest way for a cassette to show progress
-// the accent arrives as css, and the cassette needs the hue itself to fan a stripe band around it
+// the accent arrives as css, and the tape needs the hue itself to strike its own palette from
 function readHsl(css: string | undefined) {
   const m = css && /hsl\(\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%/.exec(css);
   return m ? { h: Number(m[1]), s: Number(m[2]), l: Number(m[3]) } : null;
+}
+
+type Skin = ReturnType<typeof tapeSkin>;
+
+// every colour on the tape is struck from the cover's own hue, so a warm album gives a warm tape
+function tapeSkin(accent: Accent | null) {
+  const base = readHsl(accent?.fill) ?? { h: 28, s: 52, l: 62 };
+  const second = readHsl(accent?.fill2) ?? base;
+  const sat = Math.min(76, Math.max(46, base.s));
+  return {
+    tint: accent?.fill ?? '#e7d9c9',
+    paper: `hsl(${base.h} ${Math.min(34, sat)}% 95%)`,
+    plate: `hsl(${base.h} ${Math.min(30, sat)}% 85%)`,
+    shell: [
+      `hsl(${base.h} ${Math.min(42, sat)}% 90%)`,
+      `hsl(${second.h} ${Math.min(38, second.s)}% 79%)`,
+      `hsl(${base.h} ${Math.min(40, sat)}% 66%)`,
+    ],
+    ink: `hsl(${base.h} ${Math.min(46, sat)}% 17%)`,
+    well: `hsl(${base.h} ${Math.min(32, sat)}% 11%)`,
+    tapeIn: `hsl(${base.h} ${Math.min(36, sat)}% 16%)`,
+    tapeOut: `hsl(${base.h} ${Math.min(30, sat)}% 32%)`,
+    label: `hsl(${base.h} ${Math.min(88, sat + 24)}% 41%)`,
+    labelInk: `hsl(${base.h} ${Math.min(30, sat)}% 96%)`,
+    labelDeep: `hsl(${base.h} ${Math.min(80, sat + 10)}% 22%)`,
+    stripes: [-56, -28, 0, 28, 56].map(
+      (d, i) => `hsl(${(base.h + d + 360) % 360} ${sat}% ${[71, 64, 59, 64, 71][i]}%)`,
+    ),
+  };
+}
+
+const alpha = (colour: string, pct: number) => `color-mix(in oklab, ${colour} ${pct}%, transparent)`;
+
+type Face = {
+  title: string;
+  artist: string;
+  album: string | null;
+  playing: boolean;
+  motion: boolean;
+  progress: number;
+  elapsed: number;
+  duration: number;
+  remaining: boolean;
+  artUrl: string | null;
+  showTransport: boolean;
+  quarter: boolean;
+  skin: Skin;
+};
+
+function Reel({
+  cx,
+  cy,
+  r,
+  hubR,
+  motion,
+  spin,
+  hub,
+  spoke,
+  pin,
+  tape,
+}: {
+  cx: number;
+  cy: number;
+  r: number;
+  hubR: number;
+  motion: boolean;
+  spin: { animationDuration: string; animationPlayState: string };
+  hub: string;
+  spoke: string;
+  pin: string;
+  tape: string;
+}) {
+  return (
+    <g>
+      <circle cx={cx} cy={cy + r * 0.06} r={r} fill="rgba(0,0,0,0.5)" />
+      <circle cx={cx} cy={cy} r={r} fill={tape} />
+      {[0.86, 0.68, 0.5].map(f => (
+        <circle key={f} cx={cx} cy={cy} r={r * f} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+      ))}
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="0.8" />
+      <g className={motion ? 'animate-platter' : ''} style={{ ...spin, transformOrigin: `${cx}px ${cy}px` }}>
+        {Array.from({ length: 6 }, (_, i) => (
+          <rect
+            key={i}
+            x={cx - hubR * 0.155}
+            y={cy - hubR * 1.62}
+            width={hubR * 0.31}
+            height={hubR * 0.7}
+            rx={hubR * 0.08}
+            fill={spoke}
+            transform={`rotate(${i * 60} ${cx} ${cy})`}
+          />
+        ))}
+        <circle cx={cx} cy={cy} r={hubR} fill={hub} stroke="rgba(0,0,0,0.35)" strokeWidth="1" />
+        <circle cx={cx} cy={cy} r={hubR * 0.35} fill={pin} />
+        <circle
+          cx={cx}
+          cy={cy - hubR * 0.27}
+          r={hubR}
+          fill="none"
+          stroke="rgba(255,255,255,0.45)"
+          strokeWidth={hubR * 0.11}
+          strokeDasharray={`${hubR * 0.7} ${hubR * 2.3}`}
+        />
+      </g>
+    </g>
+  );
+}
+
+// the written tape: a blank label somebody filled in, with the band of colour every one of them wore
+function WrittenTape({ title, artist, album, playing, motion, progress, elapsed, duration, remaining, artUrl, showTransport, quarter, skin }: Face) {
+  const done = Math.min(1, Math.max(0, progress));
+  // a spool never empties completely: the hub is still there under the last of the tape
+  const left = 40 - 16 * done;
+  const right = 24 + 16 * done;
+  const spin = { animationDuration: '2.6s', animationPlayState: playing && motion ? 'running' : 'paused' };
+  const inkAt = (pct: number) => alpha(skin.ink, pct);
+
+  return (
+    <div
+      className={`relative aspect-[100/62] max-h-full max-w-full rounded-[16px] p-[2.2%] shadow-[0_24px_48px_-18px_rgba(0,0,0,0.9),0_8px_16px_-8px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.6),inset_0_-3px_8px_rgba(0,0,0,0.28)] ring-1 ring-black/45 ${
+        quarter ? 'h-auto w-[84%]' : 'h-auto w-auto'
+      }`}
+      style={{
+        height: quarter ? undefined : showTransport ? '84%' : '97%',
+        background: `linear-gradient(150deg, ${skin.shell[0]}, ${skin.shell[1]} 58%, ${skin.shell[2]})`,
+      }}>
+      <Screws light />
+
+      <div
+        className="relative flex h-full w-full flex-col overflow-hidden rounded-[10px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),inset_0_2px_5px_rgba(0,0,0,0.18)]"
+        style={{ backgroundColor: skin.paper }}>
+        {/* the written label */}
+        <div
+          className="relative flex min-h-0 flex-[42] flex-col overflow-hidden px-[3.5%] pt-[2.5%]"
+          style={{ paddingRight: artUrl ? '29%' : undefined }}>
+          {artUrl && (
+            <>
+              <img
+                src={artUrl}
+                alt=""
+                className="absolute inset-y-0 right-0 aspect-square h-full object-cover"
+                style={{ maskImage: 'linear-gradient(to right, transparent, #000 22%)' }}
+              />
+              <div
+                className="absolute inset-y-0 right-0 aspect-square h-full"
+                style={{ boxShadow: 'inset 5px 0 10px -7px rgba(0,0,0,0.5)' }}
+              />
+            </>
+          )}
+          <div
+            className="relative flex shrink-0 items-baseline justify-between font-mono text-[0.5rem] tracking-[0.22em] uppercase"
+            style={{ color: inkAt(52) }}>
+            <span>side a &middot; {playing ? 'play' : 'pause'}</span>
+            <span>type ii &middot; stereo</span>
+          </div>
+          <div className="relative flex min-h-0 flex-1 items-center">
+            {/* a -webkit-box flex item sizes to max-content and runs off the label, so it is held to the width */}
+            <span
+              className="line-clamp-2 w-full min-w-0 pr-[0.12em] font-display leading-[1.12] font-semibold italic [text-shadow:0_1px_0_rgba(255,255,255,0.55)]"
+              style={{ color: skin.ink, fontSize: title.length > 58 ? '0.95rem' : title.length > 34 ? '1.15rem' : '1.5rem' }}>
+              {title}
+            </span>
+          </div>
+          <div className="relative shrink-0 border-b" style={{ borderColor: inkAt(35) }} />
+          <div className="relative shrink-0 truncate pt-[1.5%] pb-[1.5%] text-right text-hint" style={{ color: inkAt(62) }}>
+            {artist}
+          </div>
+        </div>
+
+        {/* the stripes a tape always wore */}
+        <div className="flex h-[10%] shrink-0 flex-col shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
+          {skin.stripes.map((c, i) => (
+            <div key={i} className="flex-1" style={{ backgroundColor: c }} />
+          ))}
+        </div>
+
+        {/* the window: spools carry the progress */}
+        <div className="relative min-h-0 flex-[48]" style={{ backgroundColor: skin.plate }}>
+          <svg viewBox="0 0 360 100" className="absolute inset-0 h-full w-full">
+            <Shading id="cass" />
+            <rect x="10" y="4" width="340" height="92" rx="10" fill={skin.well} />
+            <rect x="105" y="43" width="150" height="14" fill={skin.tapeOut} />
+            <Reel cx={105} cy={50} r={left} hubR={13} motion={motion} spin={spin} hub="url(#cass-hub)" spoke="url(#cass-hub)" pin="#6a5a53" tape="url(#cass-tape)" />
+            <Reel cx={255} cy={50} r={right} hubR={13} motion={motion} spin={spin} hub="url(#cass-hub)" spoke="url(#cass-hub)" pin="#6a5a53" tape="url(#cass-tape)" />
+            <rect x="10" y="4" width="340" height="92" rx="10" fill="url(#cass-shade)" />
+            <rect x="10" y="4" width="340" height="92" rx="10" fill="url(#cass-gloss)" />
+            <rect x="10" y="4" width="340" height="92" rx="10" fill="none" stroke="rgba(0,0,0,0.55)" strokeWidth="2" />
+            <rect x="11.5" y="5.5" width="337" height="89" rx="9" fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth="1" />
+          </svg>
+        </div>
+
+        <div
+          className="flex shrink-0 items-center justify-between gap-3 px-[3.5%] py-[1.4%] font-mono text-hint tabular-nums"
+          style={{ color: inkAt(66) }}>
+          <span className="min-w-0 truncate uppercase">{album ?? 'tape'}</span>
+          <span>
+            {clock(elapsed)}
+            {duration ? ` / ${remaining ? `-${clock(duration - elapsed)}` : clock(duration)}` : ''}
+          </span>
+        </div>
+
+        <Grain />
+      </div>
+
+      <Gloss />
+    </div>
+  );
+}
+
+// the printed tape: a release somebody pressed, the whole label printed in the album's colour
+function PrintedTape({ title, artist, album, playing, motion, progress, elapsed, duration, remaining, artUrl, showTransport, quarter, skin }: Face) {
+  const done = Math.min(1, Math.max(0, progress));
+  const left = 36 - 14 * done;
+  const right = 22 + 14 * done;
+  const spin = { animationDuration: '2.6s', animationPlayState: playing && motion ? 'running' : 'paused' };
+  const side = alpha(skin.labelInk, 78);
+
+  return (
+    <div
+      className={`relative aspect-[100/62] max-h-full max-w-full rounded-[14px] shadow-[0_24px_48px_-18px_rgba(0,0,0,0.95),0_8px_16px_-8px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.16),inset_0_-3px_8px_rgba(0,0,0,0.5)] ring-1 ring-black/70 ${
+        quarter ? 'h-auto w-[84%]' : 'h-auto w-auto'
+      }`}
+      style={{
+        height: quarter ? undefined : showTransport ? '84%' : '97%',
+        background: 'linear-gradient(160deg, #423b35, #262120 52%, #171412)',
+      }}>
+      <Screws />
+
+      {/* the printed label, edge to edge the way a pressed tape wears it */}
+      <div
+        className="absolute inset-x-[2.6%] top-[3.4%] h-[64%] overflow-hidden rounded-[3px] shadow-[0_3px_8px_rgba(0,0,0,0.55)]"
+        style={{ backgroundColor: skin.label }}>
+        {artUrl && (
+          <>
+            <img
+              src={artUrl}
+              alt=""
+              className="absolute inset-y-0 right-0 w-[22%] object-cover"
+              style={{ maskImage: 'linear-gradient(to right, transparent, #000 30%)' }}
+            />
+            <div
+              className="absolute inset-y-0 right-0 w-[22%]"
+              style={{ background: `linear-gradient(to top, ${alpha(skin.label, 45)}, transparent 40%)` }}
+            />
+          </>
+        )}
+
+        <div
+          className="relative flex h-full flex-col justify-between px-[2.6%] py-[2.2%]"
+          style={{ color: skin.labelInk, paddingRight: artUrl ? '25%' : undefined }}>
+          {/* a turned label has no room for the flanking columns, so the artist goes under the title */}
+          <div className="flex items-start justify-between gap-2">
+            {!quarter && (
+              <span
+                className="line-clamp-3 w-[24%] shrink-0 text-right font-mono text-[0.44rem] leading-[1.7] tracking-[0.1em] uppercase"
+                style={{ color: side }}>
+                {artist}
+              </span>
+            )}
+            <span className="min-w-0 flex-1 text-center">
+              <span
+                className={`block font-display leading-[0.95] font-bold uppercase [text-shadow:0_1px_0_rgba(0,0,0,0.18)] ${
+                  quarter ? 'line-clamp-3' : 'line-clamp-2'
+                }`}
+                style={{
+                  fontSize: quarter
+                    ? title.length > 26
+                      ? '0.8rem'
+                      : '1rem'
+                    : title.length > 26
+                      ? '1.05rem'
+                      : title.length > 16
+                        ? '1.4rem'
+                        : '1.75rem',
+                }}>
+                {title}
+              </span>
+              <span
+                className="mt-[3px] block font-display leading-none font-bold uppercase"
+                style={{ color: side, fontSize: quarter ? '0.62rem' : '0.8rem' }}>
+                side a
+              </span>
+              {quarter && (
+                <span className="mt-[3px] block truncate font-mono text-[0.44rem] tracking-[0.1em] uppercase" style={{ color: side }}>
+                  {artist}
+                </span>
+              )}
+            </span>
+            {!quarter && (
+              <span
+                className="line-clamp-3 w-[24%] shrink-0 font-mono text-[0.44rem] leading-[1.7] tracking-[0.1em] uppercase"
+                style={{ color: side }}>
+                {album ?? ''}
+              </span>
+            )}
+          </div>
+
+          <div className="text-center font-mono text-[0.4rem] leading-[1.6] tracking-[0.12em] uppercase" style={{ color: alpha(skin.labelInk, 62) }}>
+            {playing ? 'playing' : 'paused'} &middot; {clock(elapsed)}
+            {duration ? ` / ${remaining ? `-${clock(duration - elapsed)}` : clock(duration)}` : ''} &middot; type ii high bias &middot; dolby b nr
+          </div>
+        </div>
+
+        {/* the window is cut through the print, with the counter reading across the middle */}
+        <div className="absolute top-[33%] left-1/2 h-[50%] w-[54%] -translate-x-1/2">
+          <svg viewBox="0 0 300 96" className="absolute inset-0 h-full w-full">
+            <Shading id="print" />
+            <rect x="2" y="2" width="296" height="92" rx="6" fill="#100d0c" />
+            <rect x="70" y="41" width="160" height="14" fill="#3b3330" />
+            <Reel cx={70} cy={48} r={left} hubR={17} motion={motion} spin={spin} hub={skin.label} spoke={skin.labelDeep} pin={skin.labelDeep} tape="url(#print-tape)" />
+            <Reel cx={230} cy={48} r={right} hubR={17} motion={motion} spin={spin} hub={skin.label} spoke={skin.labelDeep} pin={skin.labelDeep} tape="url(#print-tape)" />
+            {/* the counter: ticks printed on the window, and the tape read against them */}
+            <rect x="112" y="30" width="76" height="36" rx="2" fill="rgba(232,226,214,0.92)" />
+            {Array.from({ length: 11 }, (_, i) => (
+              <rect key={i} x={114 + i * 7.2} y="33" width="1" height={i % 5 === 0 ? 7 : 4} fill="rgba(0,0,0,0.55)" />
+            ))}
+            <rect x="114" y="44" width="72" height="18" fill="#4a423e" />
+            <rect x={113 + 74 * done} y="31" width="2" height="34" fill={skin.label} />
+            <rect x="112" y="30" width="76" height="36" rx="2" fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" />
+            <rect x="2" y="2" width="296" height="92" rx="6" fill="url(#print-shade)" />
+            <rect x="2" y="2" width="296" height="92" rx="6" fill="url(#print-gloss)" />
+            <rect x="2" y="2" width="296" height="92" rx="6" fill="none" stroke="rgba(0,0,0,0.7)" strokeWidth="2" />
+          </svg>
+        </div>
+      </div>
+
+      {/* the moulded half below the print: the holes a deck's spindles and pinch rollers reach through */}
+      <div className="absolute inset-x-[2.6%] bottom-[4%] flex h-[24%] items-center justify-center gap-[6%]">
+        {[0.5, 1, 0.62, 0.62, 1, 0.5].map((f, i) => (
+          <span
+            key={i}
+            className="rounded-full bg-black/55 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.06)]"
+            style={{ width: `${f * 5}%`, height: `${f * 34}%` }}
+          />
+        ))}
+      </div>
+      <span
+        className="absolute right-[5%] bottom-[5%] font-display text-[1.4rem] leading-none font-bold text-white/8"
+        style={{ textShadow: '0 1px 0 rgba(255,255,255,0.06)' }}>
+        A
+      </span>
+
+      <Gloss dark />
+    </div>
+  );
+}
+
+function Screws({ light }: { light?: boolean }) {
+  return (
+    <>
+      {['left-[1.6%] top-[2.4%]', 'right-[1.6%] top-[2.4%]', 'left-[1.6%] bottom-[2.4%]', 'right-[1.6%] bottom-[2.4%]'].map(at => (
+        <span
+          key={at}
+          className={`absolute z-[1] h-2.5 w-2.5 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_1px_2px_rgba(0,0,0,0.5)] ${at}`}
+          style={{
+            background: light
+              ? 'radial-gradient(circle at 32% 30%, #d8cec3, #8d8177 70%, #6d6259)'
+              : 'radial-gradient(circle at 32% 30%, #6f6862, #3b3532 70%, #232019)',
+          }}>
+          <span className="absolute top-1/2 left-1/2 h-[1px] w-[7px] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-black/50" />
+        </span>
+      ))}
+    </>
+  );
+}
+
+// moulded plastic catches the light across one corner
+function Gloss({ dark }: { dark?: boolean }) {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 rounded-[16px]"
+      style={{
+        background: dark
+          ? 'linear-gradient(118deg, rgba(255,255,255,0.16) 0 12%, rgba(255,255,255,0.04) 22%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.16) 82%, rgba(0,0,0,0.3) 100%)'
+          : 'linear-gradient(118deg, rgba(255,255,255,0.42) 0 14%, rgba(255,255,255,0.10) 24%, rgba(255,255,255,0) 42%, rgba(0,0,0,0.10) 82%, rgba(0,0,0,0.22) 100%)',
+      }}
+    />
+  );
+}
+
+// the label is a printed one, and printed card holds a line texture
+function Grain() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 opacity-[0.045]"
+      style={{ backgroundImage: 'repeating-linear-gradient(0deg, #000 0 1px, transparent 1px 3px)' }}
+    />
+  );
+}
+
+function Shading({ id }: { id: string }) {
+  return (
+    <defs>
+      <radialGradient id={`${id}-tape`} cx="50%" cy="50%" r="50%">
+        <stop offset="0.2" stopColor="#1a1513" />
+        <stop offset="1" stopColor="#37302c" />
+      </radialGradient>
+      <linearGradient id={`${id}-hub`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#fdf8f2" />
+        <stop offset="1" stopColor="#bfae9f" />
+      </linearGradient>
+      <linearGradient id={`${id}-shade`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="rgba(0,0,0,0.55)" />
+        <stop offset="0.4" stopColor="rgba(0,0,0,0)" />
+      </linearGradient>
+      <linearGradient id={`${id}-gloss`} x1="0" y1="0" x2="0.7" y2="1">
+        <stop offset="0" stopColor="rgba(255,255,255,0.16)" />
+        <stop offset="0.45" stopColor="rgba(255,255,255,0.03)" />
+        <stop offset="0.46" stopColor="rgba(255,255,255,0)" />
+      </linearGradient>
+    </defs>
+  );
 }
 
 function Cassette({
@@ -2747,8 +3164,10 @@ function Cassette({
   duration,
   remaining,
   artUrl,
+  tape,
   showTransport,
   quarter,
+  onTape,
   onToggle,
   onPrev,
   onNext,
@@ -2764,73 +3183,37 @@ function Cassette({
   duration: number;
   remaining: boolean;
   artUrl: string | null;
+  tape: Prefs['tape'];
   showTransport: boolean;
   quarter: boolean;
+  onTape: () => void;
   onToggle: () => void;
   onPrev: () => void;
   onNext: () => void;
 }) {
-  const tint = accent?.fill ?? '#e7d9c9';
-  // a cover with one hue would give five identical bands, so the band fans out around that hue instead
-  const base = readHsl(accent?.fill) ?? { h: 28, s: 52, l: 62 };
-  const sat = Math.min(76, Math.max(46, base.s));
-  const stripes = [-56, -28, 0, 28, 56].map(
-    (d, i) => `hsl(${(base.h + d + 360) % 360} ${sat}% ${[71, 64, 59, 64, 71][i]}%)`,
-  );
-  const base2 = readHsl(accent?.fill2) ?? base;
-  const paper = `hsl(${base.h} ${Math.min(34, sat)}% 95%)`;
-  const plate = `hsl(${base.h} ${Math.min(30, sat)}% 85%)`;
-  const shell = [
-    `hsl(${base.h} ${Math.min(42, sat)}% 90%)`,
-    `hsl(${base2.h} ${Math.min(38, base2.s)}% 79%)`,
-    `hsl(${base.h} ${Math.min(40, sat)}% 66%)`,
-  ];
-  const ink = `hsl(${base.h} ${Math.min(46, sat)}% 17%)`;
-  const inkAt = (pct: number) => `color-mix(in oklab, ${ink} ${pct}%, transparent)`;
-  const well = `hsl(${base.h} ${Math.min(32, sat)}% 11%)`;
-  const tapeIn = `hsl(${base.h} ${Math.min(36, sat)}% 16%)`;
-  const tapeOut = `hsl(${base.h} ${Math.min(30, sat)}% 32%)`;
-
-  const done = Math.min(1, Math.max(0, progress));
-  // a spool never empties completely: the hub is still there under the last of the tape
-  const left = 40 - 16 * done;
-  const right = 24 + 16 * done;
-  const spin = { animationDuration: '2.6s', animationPlayState: playing && motion ? 'running' : 'paused' };
-
-  const reel = (cx: number, r: number) => (
-    <g>
-      <circle cx={cx} cy="52.5" r={r} fill="rgba(0,0,0,0.5)" />
-      <circle cx={cx} cy="50" r={r} fill="url(#cass-tape)" />
-      {[0.86, 0.68, 0.5].map(f => (
-        <circle key={f} cx={cx} cy="50" r={r * f} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-      ))}
-      <circle cx={cx} cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="0.8" />
-      <g className={motion ? 'animate-platter' : ''} style={{ ...spin, transformOrigin: `${cx}px 50px` }}>
-        {Array.from({ length: 6 }, (_, i) => (
-          <rect
-            key={i}
-            x={cx - 2}
-            y={29}
-            width="4"
-            height="9"
-            rx="1"
-            fill="url(#cass-hub)"
-            transform={`rotate(${i * 60} ${cx} 50)`}
-          />
-        ))}
-        <circle cx={cx} cy="50" r="13" fill="url(#cass-hub)" stroke="rgba(0,0,0,0.35)" strokeWidth="1" />
-        <circle cx={cx} cy="50" r="4.5" fill="#6a5a53" />
-        <circle cx={cx} cy="46.5" r="13" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.4" strokeDasharray="9 30" />
-      </g>
-    </g>
-  );
+  const skin = tapeSkin(accent);
+  const face: Face = {
+    title,
+    artist,
+    album,
+    playing,
+    motion,
+    progress,
+    elapsed,
+    duration,
+    remaining,
+    artUrl,
+    showTransport,
+    quarter,
+    skin,
+  };
 
   const key = (label: string, onClick: () => void, children: ReactNode, wide?: boolean) => (
     <button
       aria-label={label}
       onClick={onClick}
       style={{
-        background: `linear-gradient(180deg, color-mix(in oklab, ${tint} 48%, transparent), color-mix(in oklab, ${tint} 16%, transparent))`,
+        background: `linear-gradient(180deg, ${alpha(skin.tint, 48)}, ${alpha(skin.tint, 16)})`,
       }}
       className={`grid h-full place-items-center rounded-[7px] text-near ring-1 ring-white/14 shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_3px_0_rgba(0,0,0,0.5)] transition active:translate-y-[3px] active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] ${
         wide ? 'w-16' : 'w-13'
@@ -2841,161 +3224,35 @@ function Cassette({
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-5">
-      {/* the shell, screwed into a deck */}
-      <div
-        className={`relative aspect-[100/62] max-h-full max-w-full rounded-[16px] p-[2.2%] shadow-[0_24px_48px_-18px_rgba(0,0,0,0.9),0_8px_16px_-8px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.6),inset_0_-3px_8px_rgba(0,0,0,0.28)] ring-1 ring-black/45 ${
-          quarter ? 'h-auto w-full' : 'h-auto w-auto'
-        }`}
-        style={{
-          height: quarter ? undefined : showTransport ? '84%' : '97%',
-          background: `linear-gradient(150deg, ${shell[0]}, ${shell[1]} 58%, ${shell[2]})`,
-        }}>
-        {['left-[1.6%] top-[2.4%]', 'right-[1.6%] top-[2.4%]', 'left-[1.6%] bottom-[2.4%]', 'right-[1.6%] bottom-[2.4%]'].map(
-          at => (
-            <span
-              key={at}
-              className={`absolute z-[1] h-2.5 w-2.5 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.6),0_1px_2px_rgba(0,0,0,0.4)] ${at}`}
-              style={{ background: 'radial-gradient(circle at 32% 30%, #d8cec3, #8d8177 70%, #6d6259)' }}>
-              <span className="absolute top-1/2 left-1/2 h-[1px] w-[7px] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-black/45" />
-            </span>
-          ),
-        )}
-
-        <div
-          className="relative flex h-full w-full flex-col overflow-hidden rounded-[10px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),inset_0_2px_5px_rgba(0,0,0,0.18)]"
-          style={{ backgroundColor: paper }}>
-          {/* the written label */}
-          <div
-            className="relative flex min-h-0 flex-[42] flex-col overflow-hidden px-[3.5%] pt-[2.5%]"
-            style={{ paddingRight: artUrl ? '29%' : undefined }}>
-            {artUrl && (
-              <>
-                <img
-                  src={artUrl}
-                  alt=""
-                  className="absolute inset-y-0 right-0 aspect-square h-full object-cover"
-                  style={{ maskImage: 'linear-gradient(to right, transparent, #000 22%)' }}
-                />
-                <div
-                  className="absolute inset-y-0 right-0 aspect-square h-full"
-                  style={{ boxShadow: 'inset 5px 0 10px -7px rgba(0,0,0,0.5)' }}
-                />
-              </>
-            )}
-            <div
-              className="relative flex shrink-0 items-baseline justify-between font-mono text-[0.5rem] tracking-[0.22em] uppercase"
-              style={{ color: inkAt(52) }}>
-              <span>side a &middot; {playing ? 'play' : 'pause'}</span>
-              <span>type ii &middot; stereo</span>
-            </div>
-            <div className="relative flex min-h-0 flex-1 items-center">
-              {/* a -webkit-box flex item sizes to max-content and runs off the label, so it is held to the width */}
-              <span
-                className="line-clamp-2 w-full min-w-0 pr-[0.12em] font-display leading-[1.12] font-semibold italic [text-shadow:0_1px_0_rgba(255,255,255,0.55)]"
-                style={{ color: ink, fontSize: title.length > 58 ? '0.95rem' : title.length > 34 ? '1.15rem' : '1.5rem' }}>
-                {title}
-              </span>
-            </div>
-            <div className="relative shrink-0 border-b" style={{ borderColor: inkAt(35) }} />
-            <div className="relative shrink-0 truncate pt-[1.5%] pb-[1.5%] text-right text-hint" style={{ color: inkAt(62) }}>
-              {artist}
-            </div>
-          </div>
-
-          {/* the stripes a tape always wore */}
-          <div className="flex h-[10%] shrink-0 flex-col shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
-            {stripes.map((c, i) => (
-              <div key={i} className="flex-1" style={{ backgroundColor: c }} />
-            ))}
-          </div>
-
-          {/* the window: spools carry the progress */}
-          <div
-            className="relative min-h-0 flex-[48]"
-            style={{ backgroundColor: plate }}>
-            <svg viewBox="0 0 360 100" className="absolute inset-0 h-full w-full">
-              <defs>
-                <radialGradient id="cass-tape" cx="50%" cy="50%" r="50%">
-                  <stop offset="0.2" stopColor={tapeIn} />
-                  <stop offset="1" stopColor={tapeOut} />
-                </radialGradient>
-                <linearGradient id="cass-hub" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stopColor="#fdf8f2" />
-                  <stop offset="1" stopColor="#bfae9f" />
-                </linearGradient>
-                <linearGradient id="cass-shade" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stopColor="rgba(0,0,0,0.55)" />
-                  <stop offset="0.4" stopColor="rgba(0,0,0,0)" />
-                </linearGradient>
-                <linearGradient id="cass-gloss" x1="0" y1="0" x2="0.7" y2="1">
-                  <stop offset="0" stopColor="rgba(255,255,255,0.16)" />
-                  <stop offset="0.45" stopColor="rgba(255,255,255,0.03)" />
-                  <stop offset="0.46" stopColor="rgba(255,255,255,0)" />
-                </linearGradient>
-              </defs>
-              <rect x="10" y="4" width="340" height="92" rx="10" fill={well} />
-              <rect x="105" y="43" width="150" height="14" fill={tapeOut} />
-              {reel(105, left)}
-              {reel(255, right)}
-              <rect x="10" y="4" width="340" height="92" rx="10" fill="url(#cass-shade)" />
-              <rect x="10" y="4" width="340" height="92" rx="10" fill="url(#cass-gloss)" />
-              <rect
-                x="10"
-                y="4"
-                width="340"
-                height="92"
-                rx="10"
-                fill="none"
-                stroke="rgba(0,0,0,0.55)"
-                strokeWidth="2"
-              />
-              <rect
-                x="11.5"
-                y="5.5"
-                width="337"
-                height="89"
-                rx="9"
-                fill="none"
-                stroke="rgba(255,255,255,0.16)"
-                strokeWidth="1"
-              />
-            </svg>
-          </div>
-
-          <div
-            className="flex shrink-0 items-center justify-between gap-3 px-[3.5%] py-[1.4%] font-mono text-hint tabular-nums"
-            style={{ color: inkAt(66) }}>
-            <span className="min-w-0 truncate uppercase">{album ?? 'tape'}</span>
-            <span>
-              {clock(elapsed)}
-              {duration ? ` / ${remaining ? `-${clock(duration - elapsed)}` : clock(duration)}` : ''}
-            </span>
-          </div>
-
-          {/* moulded plastic catches the light across one corner, and the label is a printed one */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.045]"
-            style={{ backgroundImage: 'repeating-linear-gradient(0deg, #000 0 1px, transparent 1px 3px)' }}
-          />
-        </div>
-
-        <div
-          className="pointer-events-none absolute inset-0 rounded-[16px]"
-          style={{
-            background:
-              'linear-gradient(118deg, rgba(255,255,255,0.42) 0 14%, rgba(255,255,255,0.10) 24%, rgba(255,255,255,0) 42%, rgba(0,0,0,0.10) 82%, rgba(0,0,0,0.22) 100%)',
-          }}
-        />
-      </div>
+      {tape === 'printed' ? <PrintedTape {...face} /> : <WrittenTape {...face} />}
 
       {showTransport && (
-        <div className="flex h-11 shrink-0 items-stretch gap-1.5 rounded-xl bg-black/30 p-1.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.55),0_1px_0_rgba(255,255,255,0.10)] ring-1 ring-white/10">
-          {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
-          {key(playing ? 'pause' : 'play', onToggle, playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />, true)}
-          {key('next', onNext, <Skip className="h-4 w-4" />)}
-        </div>
+        <>
+          <button
+            aria-label="tape design"
+            onClick={onTape}
+            className="absolute top-1/2 left-2 z-[3] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-black/35 text-off-white/60 ring-1 ring-white/12 backdrop-blur-sm transition active:scale-90">
+            <TapeGlyph className="h-5 w-5" />
+          </button>
+          <div className="flex h-11 shrink-0 items-stretch gap-1.5 rounded-xl bg-black/30 p-1.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.55),0_1px_0_rgba(255,255,255,0.10)] ring-1 ring-white/10">
+            {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
+            {key(playing ? 'pause' : 'play', onToggle, playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />, true)}
+            {key('next', onNext, <Skip className="h-4 w-4" />)}
+          </div>
+        </>
       )}
     </div>
+  );
+}
+
+function TapeGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7">
+      <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
+      <circle cx="9" cy="12" r="2.4" />
+      <circle cx="15" cy="12" r="2.4" />
+      <path d="M9 14.4h6" strokeWidth="2.2" />
+    </svg>
   );
 }
 

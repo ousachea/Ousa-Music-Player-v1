@@ -78,22 +78,34 @@ whole thing stacks the way a phone would.
 
 ### Cassette
 
-A tape sitting in a deck. The cream label carries the title written across it, the rainbow band every
-tape wore runs under it, and a window below that shows the two spools.
+A tape sitting in a deck, in two designs. **Written** is a blank label somebody filled in: the title
+across the cream card, the rainbow band every tape wore under it, and a window below that showing
+the two spools. **Printed** is a pressed release: the label printed edge to edge in the album's
+colour with the title in bold caps over it, SIDE A under that, the artist and album in small type
+either side, and a tape counter reading across the window, all set into a dark moulded shell with
+the spindle holes along the bottom.
 
-The spools are the progress bar: the left one starts full and empties as the song plays while the
-right one fills, and both turn while the music runs and hold where they are when you pause. The label
-reads PLAY or PAUSE and STEREO along the top, the artist under the ruled line, and the album with the
-elapsed and remaining times along the bottom edge.
+A button on the left of the screen switches between the two, and **Tape design** does the same from
+the settings.
+
+The spools are the progress bar in both: the left one starts full and empties as the song plays
+while the right one fills, and both turn while the music runs and hold where they are when you
+pause. On the printed tape the counter marks the same thing again, a line riding the ticks. The
+written label reads PLAY or PAUSE and STEREO along the top, the artist under the ruled line, and the
+album with the elapsed and remaining times along the bottom edge; the printed one puts the time in
+the credits under the window.
 
 The whole tape is painted from the cover, so a new track repaints the plastic. The shell, the label,
 the plate around the window, the tape wound on the spools, the writing and the keys are all mixed
 from the album's own hue rather than from a cream that has been tinted, and the rainbow band fans out
 around that hue, two bands to each side of it, rather than five bands of the one colour.
 
-**Artwork on the label** prints the cover square on the right of the label, faded into the paper
-along its inside edge, with the title and artist keeping the room to its left. Turn it off for a
-label that is only written on.
+**Artwork on the label** prints the cover on the right of the label, faded into the paper along its
+inside edge, with the writing keeping the room to its left, where the printed design would carry a
+photograph of the artist. Turn it off for a label with nothing but type on it.
+
+Turned a quarter the printed label drops the columns either side of the title and puts the artist
+under it, because a label that narrow has no room for three columns.
 
 It is moulded rather than drawn flat: light rakes across the shell in one diagonal, the screws are
 turned and slotted, the window is sunk into the label with a shadow down its inside, and the tape on
@@ -220,8 +232,8 @@ applies to the style you are in is gathered under that style's name. Poster has 
 has no settings of its own. A rail down the left edge shows where you are in the list.
 
 - **Player** — style, accent colour, HD album art, the art pulse with its tempo, whether the
-  Classic style's art runs to the edge of the screen, and whether the cassette label carries the
-  cover
+  Classic style's art runs to the edge of the screen, and which cassette design is on, with or
+  without the cover on its label
 - **Controls** — what the wheel does, how far each click seeks, the seek bar and its playhead dot,
   and whether the on-screen transport buttons are drawn at all
 - **Backdrop** — how strongly the blurred art tints the screen, how far out of focus it is, and how

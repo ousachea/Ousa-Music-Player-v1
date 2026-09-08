@@ -83,6 +83,18 @@
       }
     },
     {
+      "type": "enum",
+      "data": {
+        "key": "tape",
+        "label": "Cassette tape design",
+        "choices": [
+          "written",
+          "printed"
+        ],
+        "default": "written"
+      }
+    },
+    {
       "type": "boolean",
       "data": {
         "key": "tapeArt",
