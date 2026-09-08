@@ -1232,21 +1232,20 @@ function Widget({
   if (upright) return <div className="relative flex h-full w-full flex-col justify-between gap-4 p-7">{stack}</div>;
 
   return (
-    // inset-0 is what makes the box definite: a grid track sized to content grows to fit the cover's
-    // aspect ratio, and the card's percentages then resolve against that instead of the screen
-    <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-      <div className="flex h-[93%] w-[95%] min-w-0 items-stretch gap-6 rounded-[30px] bg-black/45 p-5 backdrop-blur-2xl">
-        {cover}
-        <div className="flex min-w-0 flex-1 flex-col justify-center gap-5">
-          {clockRow}
-          {titles}
-          <div className="shrink-0">
-            {bar}
-            <div className="mt-2">{times}</div>
-          </div>
-          {transport}
-          {volumeRow}
+    // one surface: no panel of its own, so the blurred artwork behind runs the whole screen and the
+    // content sits straight on it. inset-0 also keeps the box definite, which the cover's aspect
+    // ratio needs or a content-sized track grows to fit it
+    <div className="absolute inset-0 flex items-stretch gap-7 overflow-hidden p-7">
+      {cover}
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-5">
+        {clockRow}
+        {titles}
+        <div className="shrink-0">
+          {bar}
+          <div className="mt-2">{times}</div>
         </div>
+        {transport}
+        {volumeRow}
       </div>
     </div>
   );

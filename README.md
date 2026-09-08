@@ -80,10 +80,11 @@ remaining times, the transport, and a volume slider of its own. Dragging that sl
 on the device, and unmutes it first if it was muted. The output picker a phone puts beside the
 transport is not here, because a Car Thing has nowhere else to send audio.
 
-Landscape is a wide card: the cover at full height on the left, and the track, the bar with its
-times beneath it, the transport and the volume slider stacked to the right. Turned to 90 or 270 the
-same rows stack into a column and fill the screen, with the times either side of the bar because the
-column is too tall to put them under it. Left in landscape it floats as a narrow card over the blurred artwork, sized so the cover
+Landscape sets the cover at full height on the left, with the track, the bar and its times, the
+transport and the volume slider stacked to the right. There is no panel behind any of it: the
+blurred artwork runs the whole screen, so the album's colour carries under the controls instead of
+stopping at an edge. Turned to 90 or 270 the same rows stack into a column and fill the screen, with
+the times either side of the bar because the column is too tall to put them under it. Left in landscape it floats as a narrow card over the blurred artwork, sized so the cover
 lands square and uncropped, because stacking the six rows is the whole look and a full width version
 of it would only be the Cover style again.
 
