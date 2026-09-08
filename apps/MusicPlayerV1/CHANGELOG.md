@@ -25,15 +25,14 @@ track is stamped on the moulded half below rather than over the picture, in bold
 and the artist under it, the album and the time under that, and the spindle holes along the very
 bottom.
 
-Clear is the tape itself, stood on end and seen through its own shell: two spools of brown tape
-filling the face with the wind drawn as the turns it actually has, hubs in the album's colour
-wearing the crown of teeth a spindle grips, the guide assembly and its pressure pad showing through
-the plastic down one side, the cover sitting behind the square window between the spools where the
-tape path graduations otherwise are, COMPACT CASSETTE moulded into it, and a white label strip down the other
-edge carrying the track read bottom to top with TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO
-and the time. It stands taller than it is wide, so in landscape the transport keys take a column
-beside it rather than a row beneath, and previous and next turn a quarter with the bar so they point
-along it. Play, pause and the design key stay square, because they point at nothing.
+Clear is the tape itself, seen through its own shell: two spools of brown tape filling the face with
+the wind drawn as the turns it actually has, hubs in the album's colour wearing the crown of teeth a
+spindle grips, the guide assembly and its pressure pad showing through the plastic along the bottom,
+the cover sitting behind the square window between the spools where the tape path graduations
+otherwise are, COMPACT CASSETTE moulded into it, and a white label strip across the top carrying the
+track, TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO and the time. It is drawn standing and
+turned onto its side, so the mechanism keeps the proportions a tape actually has while the shell
+lies the way the other two do.
 
 **Artwork on the label**, on by default, prints the cover square on the right of the written label
 with the title and artist keeping the room to its left. It fades into the paper along its inside

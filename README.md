@@ -94,13 +94,12 @@ machined edge and a narrow specular streak, anodised in the cover's hue so faint
 does most of the work. It is bolted together with socket caps rather than the slotted screws holding
 the written shell shut.
 
-**Clear** is the tape itself, stood on end and seen through its own shell: two spools of brown tape
-filling the face, hubs in the album's colour with the crown of teeth a spindle grips, the guide
-assembly and its pressure pad showing through the plastic down one side, the cover behind the square
-window between the spools, COMPACT CASSETTE moulded into it, and a white label strip down the other edge carrying the track read bottom to top, with
-TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO and the time. It is the one design that stands
-taller than it is wide, so in landscape the transport keys move to a column beside it rather than a
-row beneath, with previous and next turned a quarter to point up and down the bar they sit in.
+**Clear** is the tape itself, lying the way the other two do but seen through its own shell: two
+spools of brown tape filling the face, hubs in the album's colour with the crown of teeth a spindle
+grips, the guide assembly and its pressure pad showing through the plastic along the bottom, the
+cover behind the square window between the spools, COMPACT CASSETTE moulded into it, and a white
+label strip across the top carrying the track, TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO and
+the time.
 
 A new track is a new tape, not the same one relabelled: one of eight patterns is picked from the
 track itself, so the same song always comes back on the same tape while the next one arrives on

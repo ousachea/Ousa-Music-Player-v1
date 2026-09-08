@@ -3185,17 +3185,18 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
 
   return (
     <div
-      className={`relative aspect-[653/1000] max-h-full max-w-full rounded-[10px] shadow-[0_24px_50px_-16px_rgba(0,0,0,0.9)] ring-1 ring-white/25 ${
-        quarter ? 'h-[76%] w-auto' : 'h-[97%] w-auto'
+      className={`relative aspect-[1000/653] max-h-full max-w-full rounded-[10px] shadow-[0_24px_50px_-16px_rgba(0,0,0,0.9)] ring-1 ring-white/25 ${
+        quarter ? 'h-auto w-[84%]' : 'h-auto w-auto'
       }`}
       style={{
+        height: quarter ? undefined : showTransport ? '84%' : '97%',
         background:
           'linear-gradient(148deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 34%, rgba(255,255,255,0.02) 62%, rgba(255,255,255,0.14))',
         backdropFilter: 'blur(1px)',
       }}>
       <Pattern seed={seed} colour="#ffffff" opacity={0.03} />
 
-      <svg viewBox="0 0 653 1000" className="absolute inset-0 h-full w-full">
+      <svg viewBox="0 0 1000 653" className="absolute inset-0 h-full w-full">
         <defs>
           <radialGradient id="clear-wind" cx="50%" cy="50%" r="50%">
             <stop offset="0.1" stopColor="#59402f" />
@@ -3212,6 +3213,8 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
           </linearGradient>
         </defs>
 
+        {/* drawn as a tape stands and turned onto its side, so the mechanism keeps its proportions */}
+        <g transform="translate(0,653) rotate(-90)">
         {/* the inside of the shell, seen through the plastic */}
         <rect x="18" y="16" width="617" height="968" rx="14" fill="rgba(8,9,11,0.55)" />
 
@@ -3246,7 +3249,7 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
         <circle cx="150" cy="500" r="22" fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.4)" strokeWidth="3" />
 
         {/* the spindle holes at the corners of a shell, and the ones a deck's posts drop into */}
-        {[[86, 96], [86, 904], [566, 96], [566, 904]].map(([cx, cy]) => (
+        {[[150, 96], [150, 904], [500, 96], [500, 904]].map(([cx, cy]) => (
           <g key={`${cx}-${cy}`}>
             <circle cx={cx} cy={cy} r="30" fill="#4a4038" stroke="rgba(255,255,255,0.35)" strokeWidth="2" />
             <circle cx={cx} cy={cy} r="12" fill="#201914" />
@@ -3257,41 +3260,32 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
         <rect x="18" y="16" width="617" height="968" rx="14" fill="url(#clear-plastic)" />
         <rect x="18" y="16" width="617" height="968" rx="14" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="3" />
         <rect x="30" y="28" width="593" height="944" rx="10" fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="2" />
+        </g>
       </svg>
 
       {/* COMPACT CASSETTE, moulded into the plastic rather than printed on it */}
-      <span
-        className="pointer-events-none absolute top-1/2 left-[25%] -translate-y-1/2 font-mono text-[0.5rem] leading-[1.2] tracking-[0.3em] text-white/20 uppercase"
-        style={{ writingMode: 'vertical-rl' }}>
+      <span className="pointer-events-none absolute bottom-[25%] left-[20%] font-mono text-[0.5rem] tracking-[0.3em] text-white/22 uppercase">
         compact cassette
       </span>
 
-      {/* the label strip: the track printed down it the way a tape says what it is */}
+      {/* the label strip: the track printed across it the way a tape says what it is */}
       <div
-        className="absolute top-[3.5%] right-[4.5%] bottom-[3.5%] flex w-[19%] flex-row-reverse justify-between gap-[6%] bg-[#f4f2ee] px-[3%] py-[4%] shadow-[0_1px_5px_rgba(0,0,0,0.55)]"
-        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 2.5%)' }}>
-        <div className="flex h-full min-w-0 flex-col justify-between">
-          <span
-            className="max-h-[64%] overflow-hidden font-display text-[1.05rem] leading-none font-bold tracking-[0.05em] whitespace-nowrap text-[#15171a] uppercase"
-            style={VERTICAL}>
+        className="absolute top-[4%] right-[3.4%] left-[3.4%] flex h-[19%] items-stretch justify-between gap-3 bg-[#f4f2ee] px-[1.6%] py-[0.6%] shadow-[0_1px_5px_rgba(0,0,0,0.55)]"
+        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 1.6% 100%, 0 72%)' }}>
+        <div className="flex min-w-0 flex-col justify-center">
+          <span className="truncate font-display text-[1.05rem] leading-none font-bold tracking-[0.04em] text-[#15171a] uppercase">
             {title}
           </span>
-          <span
-            className="max-h-[32%] overflow-hidden font-mono text-[0.5rem] leading-none tracking-[0.12em] whitespace-nowrap text-[#15171a]/80 uppercase"
-            style={VERTICAL}>
+          <span className="mt-[4px] truncate font-mono text-[0.5rem] leading-none tracking-[0.12em] text-[#15171a]/80 uppercase">
             {artist}
           </span>
         </div>
 
-        <div className="flex h-full min-w-0 flex-col justify-between">
-          <span
-            className="max-h-[60%] overflow-hidden font-mono text-[0.5rem] leading-none font-bold tracking-[0.1em] whitespace-nowrap text-[#15171a] uppercase"
-            style={VERTICAL}>
+        <div className="flex shrink-0 flex-col items-end justify-center text-right">
+          <span className="font-mono text-[0.5rem] leading-none font-bold tracking-[0.1em] text-[#15171a] uppercase">
             tape type: <span style={{ color: skin.label }}>high bias / chrome</span>
           </span>
-          <span
-            className="overflow-hidden font-mono text-[0.45rem] leading-none tracking-[0.1em] whitespace-nowrap text-[#15171a]/70 uppercase tabular-nums"
-            style={VERTICAL}>
+          <span className="mt-[4px] font-mono text-[0.45rem] leading-none tracking-[0.1em] text-[#15171a]/70 uppercase tabular-nums">
             stereo &middot; {clock(elapsed)}
             {duration ? ` / ${remaining ? `-${clock(duration - elapsed)}` : clock(duration)}` : ''}
           </span>
@@ -3305,9 +3299,6 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
 }
 
 const TAPES: Prefs['tape'][] = ['written', 'printed', 'clear'];
-
-// a tape label reads bottom to top, which is vertical text turned the other way up
-const VERTICAL = { writingMode: 'vertical-rl', transform: 'rotate(180deg)' } as const;
 
 const HEX = 'polygon(50% 0%, 96% 25%, 96% 75%, 50% 100%, 4% 75%, 4% 25%)';
 
@@ -3434,7 +3425,6 @@ function Cassette({
   onNext: () => void;
 }) {
   const skin = tapeSkin(accent);
-  const upright = tape === 'clear' && !quarter;
   const face: Face = {
     title,
     artist,
@@ -3462,30 +3452,23 @@ function Cassette({
           ? `linear-gradient(180deg, color-mix(in oklab, ${skin.tint} 10%, #a4a4a0), color-mix(in oklab, ${skin.tint} 10%, #c0c0bc) 55%, color-mix(in oklab, ${skin.tint} 10%, #d2d2ce))`
           : `linear-gradient(180deg, color-mix(in oklab, ${skin.tint} 6%, #f9f9f7), color-mix(in oklab, ${skin.tint} 8%, #e3e3e0) 48%, color-mix(in oklab, ${skin.tint} 10%, #bebeba))`,
       }}
-      className={`grid place-items-center rounded-[3px] text-[#191715] ring-1 ring-black/40 transition active:translate-y-[2px] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.45)] ${
+      className={`grid h-full place-items-center rounded-[3px] text-[#191715] ring-1 ring-black/40 transition active:translate-y-[2px] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.45)] ${
         held
           ? 'translate-y-[2px] shadow-[inset_0_3px_6px_rgba(0,0,0,0.55),inset_0_-1px_0_rgba(255,255,255,0.5)]'
           : 'shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(0,0,0,0.2),0_2px_0_rgba(0,0,0,0.6),0_4px_5px_-2px_rgba(0,0,0,0.55)]'
-      } ${upright ? `w-full ${wide ? 'h-[4.2rem]' : 'h-14'}` : `h-full ${wide ? 'w-[4.6rem]' : 'w-16'}`}`}>
+      } h-full ${wide ? 'w-[4.6rem]' : 'w-16'}`}>
       {children}
     </button>
   );
 
   return (
-    <div
-      className={`absolute inset-0 flex items-center justify-center gap-4 p-5 ${
-        upright ? 'flex-row' : 'flex-col'
-      }`}>
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-5">
       {tape === 'clear' ? <ClearTape {...face} /> : tape === 'printed' ? <PrintedTape {...face} /> : <WrittenTape {...face} />}
 
       {showTransport && (
-        <div
-          className={`flex shrink-0 items-stretch gap-[3px] rounded-[6px] bg-black/55 p-[3px] shadow-[inset_0_2px_7px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/8 ${
-            upright ? 'w-11 flex-col' : 'h-11'
-          }`}>
+        <div className="flex h-11 shrink-0 items-stretch gap-[3px] rounded-[6px] bg-black/55 p-[3px] shadow-[inset_0_2px_7px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/8">
           {key('tape design', onTape, <TapeGlyph className="h-4 w-4" />)}
-          {/* a column of keys runs the tape up and down, so the arrows point along the bar they sit in */}
-          {key('previous', onPrev, <Skip className={`h-4 w-4 -scale-x-100 ${upright ? 'rotate-90' : ''}`} />)}
+          {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
           {key(
             playing ? 'pause' : 'play',
             onToggle,
@@ -3493,7 +3476,7 @@ function Cassette({
             true,
             playing,
           )}
-          {key('next', onNext, <Skip className={`h-4 w-4 ${upright ? 'rotate-90' : ''}`} />)}
+          {key('next', onNext, <Skip className="h-4 w-4" />)}
         </div>
       )}
     </div>
