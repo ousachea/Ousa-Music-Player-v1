@@ -2,14 +2,15 @@
 
 ## 0.25.0
 
-**CD** is redrawn after a reference: the disc sits in a dark tray, plain mirrored chrome rather than
-the artwork, because that is what a pressed disc looks like from the top. It runs past two edges of
-the tray so it reads as a disc lying in one rather than a coaster. The track is lettered low across
-it over a scrim, and the album art is a small print in the corner, the way a case carries it.
+**CD** is redrawn after a reference. The album is printed across the disc with the clamping ring and
+the hole punched through the middle of it, and a sheen sweeps over the print the way it does on a
+pressed disc. The disc sits centred in a tray that takes a dark wash of the album's own colour
+rather than a flat grey.
 
-Its transport is one outlined block split into three cells rather than three separate glyphs, and
-the progress bar sits directly above it. Landscape puts the tray on the left with the bar and
-buttons stacked at the bottom right; turned, the whole thing stacks the way the reference does.
+The track sits beside the disc rather than over it, so nothing is read against the artwork. Its
+transport is one outlined block split into three cells rather than three separate glyphs, with the
+progress bar directly above it. Landscape puts the tray on the left and the track, bar and buttons
+down the right; turned, the whole thing stacks.
 
 ## 0.24.0
 

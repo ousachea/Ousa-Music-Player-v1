@@ -1067,46 +1067,59 @@ function CdDeck({
 
   const tray = (
     <div
-      className={`relative shrink-0 overflow-hidden rounded-[28px] bg-[#161719] shadow-2xl ring-1 ring-white/8 ${
+      className={`relative grid shrink-0 place-items-center overflow-hidden rounded-[28px] shadow-2xl ring-1 ring-white/8 ${
         upright ? 'aspect-square w-full' : 'aspect-square h-full'
-      }`}>
-      {/* the disc runs past the tray on two sides, which is what stops it reading as a coaster */}
+      }`}
+      style={{
+        // the tray takes a dark wash of the album's own colour rather than a flat grey
+        background: accent
+          ? `linear-gradient(155deg, color-mix(in oklab, ${accent.fill} 16%, #0b0c0e), #0b0c0e 70%)`
+          : '#141517',
+      }}>
       <div
-        className="animate-platter absolute left-[6%] top-[4%] h-[104%] w-[104%] rounded-full"
-        style={{
-          animationPlayState: playing && motion ? 'running' : 'paused',
-          background:
-            'conic-gradient(from 208deg, #eff1f3 0deg, #a6acb4 38deg, #f5f7f9 76deg, #8c929a 116deg, #eaecef 154deg, #959ba3 196deg, #f3f5f7 236deg, #8f959d 278deg, #e3e6e9 318deg, #eff1f3 360deg)',
-          boxShadow: 'inset 0 0 60px rgba(0,0,0,0.28)',
-        }}>
-        <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/25" />
-        <div className="absolute left-1/2 top-1/2 aspect-square w-[27%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1b1c1f] shadow-[inset_0_0_18px_rgba(0,0,0,0.7)] ring-1 ring-white/12" />
-      </div>
-
-      {/* the track sits over the disc, low and left, with a scrim so it holds against the chrome */}
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent pt-10" />
-      <div className="absolute bottom-4 left-5 right-[26%] min-w-0">
-        <Roll
-          text={title}
-          wrap={!showTransport}
-          lines={2}
-          className={`font-display font-semibold leading-[1.15] tracking-display text-off-white ${
-            upright ? 'text-[1.5rem]' : 'text-[1.375rem]'
-          }`}
-        />
-        <div className="truncate text-hint text-off-white/60">{context}</div>
-        <Roll text={artist} className="text-body text-off-white/80" />
-      </div>
-
-      <div className="absolute bottom-4 right-4 aspect-square w-[22%] overflow-hidden rounded-lg shadow-lg ring-1 ring-white/20">
+        className="animate-platter relative aspect-square w-[88%] overflow-hidden rounded-full shadow-[0_18px_40px_rgba(0,0,0,0.55)]"
+        style={{ animationPlayState: playing && motion ? 'running' : 'paused' }}>
         {artUrl ? (
           <img src={artUrl} alt="" className="h-full w-full object-cover" />
         ) : (
           <div className="grid h-full w-full place-items-center bg-white/8">
-            <Disc className="h-5 w-5 text-off-white/30" />
+            <Disc className="h-12 w-12 text-off-white/30" />
           </div>
         )}
+        {/* a pressed disc throws a radial sheen over whatever is printed on it */}
+        <div
+          className="absolute inset-0 rounded-full mix-blend-screen opacity-30"
+          style={{
+            background:
+              'conic-gradient(from 208deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.55) 34deg, rgba(255,255,255,0) 74deg, rgba(255,255,255,0) 150deg, rgba(255,255,255,0.4) 188deg, rgba(255,255,255,0) 228deg, rgba(255,255,255,0) 300deg, rgba(255,255,255,0.32) 332deg, rgba(255,255,255,0) 360deg)',
+          }}
+        />
+        <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/35" />
+
+        {/* the clamping ring and the hole punched through the middle of the print */}
+        <div className="absolute inset-0 grid place-items-center">
+          <div
+            className="grid aspect-square w-[30%] place-items-center rounded-full ring-1 ring-black/30"
+            style={{ background: 'linear-gradient(150deg, #e9ecf0 0%, #b7bdc5 44%, #d8dce1 70%, #a7aeb7 100%)' }}>
+            <div className="aspect-square w-[46%] rounded-full bg-[#0b0c0e] shadow-[inset_0_0_14px_rgba(0,0,0,0.8)] ring-1 ring-white/15" />
+          </div>
+        </div>
       </div>
+    </div>
+  );
+
+  const titles = (
+    <div className="min-w-0 shrink-0">
+      <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>
+      <Roll
+        text={title}
+        wrap={!showTransport}
+        lines={2}
+        className={`font-display font-semibold leading-[1.2] tracking-display text-off-white ${
+          upright ? 'text-[1.75rem]' : 'text-[1.625rem]'
+        }`}
+      />
+      <Roll text={artist} wrap={!showTransport} lines={2} className="mt-1 text-title text-soft" />
     </div>
   );
 
@@ -1151,21 +1164,25 @@ function CdDeck({
 
   if (upright)
     return (
-      <div className="relative flex h-full w-full flex-col justify-between gap-5 p-6">
+      <div className="relative flex h-full w-full flex-col justify-between gap-4 p-6">
         {clockRow}
         {tray}
-        {bar}
-        {keys}
+        {titles}
+        <div className="flex flex-col gap-4">
+          {bar}
+          {keys}
+        </div>
       </div>
     );
 
   return (
     <div className="absolute inset-0 flex items-stretch gap-7 p-6">
       {tray}
-      <div className="flex min-w-0 flex-1 flex-col gap-5">
+      <div className="flex min-w-0 flex-1 flex-col gap-4">
         {clockRow}
+        {titles}
         {/* the bar belongs directly above the buttons, not spread away from them */}
-        <div className="mt-auto flex flex-col gap-5">
+        <div className="mt-auto flex flex-col gap-4">
           {bar}
           {keys}
         </div>

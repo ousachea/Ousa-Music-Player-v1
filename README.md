@@ -72,14 +72,13 @@ when the music stops.
 
 ![CD style](apps/MusicPlayerV1/screenshots/05-cd.jpg)
 
-A disc lying in a dark tray. It is plain mirrored chrome rather than the artwork, which is what a
-pressed disc looks like from the top, and it runs past two edges of the tray so it reads as a disc
-sitting in one. The track is lettered low across it and the album art is a small print in the
-corner, the way a case carries it. The disc turns while the track plays and holds its angle when you
-pause.
+The album printed across a disc, with the clamping ring and the hole punched through the middle of
+it and a sheen sweeping over the print. The disc sits centred in a tray washed with a dark version
+of the album's own colour, and it turns while the track plays, holding its angle when you pause.
 
+The track sits beside the disc rather than over it, so nothing has to be read against the artwork.
 The transport here is one outlined block split into three, with the progress bar directly above it.
-Landscape sets the tray on the left and stacks the bar and buttons at the bottom right; turned, the
+Landscape sets the tray on the left and runs the track, bar and buttons down the right; turned, the
 whole thing stacks the way a phone would.
 
 ### Poster
