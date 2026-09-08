@@ -68,6 +68,8 @@ export default function App() {
   const accentOn = prefs.accent === 'artwork' ? accent : null;
   const seekStyle = prefs.seek === 'auto' ? (prefs.theme === 'poster' ? 'wave' : 'bar') : prefs.seek;
   const track = state?.track ?? null;
+  const [foundArtist, setFoundArtist] = useState<string | null>(null);
+  const artistName = track?.artist ?? foundArtist;
   const playback = state?.playback ?? null;
   const artworkId = track?.artworkId ?? null;
   const playing = playback?.state === 'playing';
@@ -101,14 +103,16 @@ export default function App() {
 
   // the daemon's 512 shows immediately; the sharper copy replaces it when it arrives
   useEffect(() => {
-    if (!prefs.hdArt || !track?.artist || !track?.album) return;
+    if (!prefs.hdArt || !track?.album) return;
     let stale = false;
-    hdArtwork(client, { artist: track.artist, album: track.album, title: track.title ?? null })
-      .then(async url => {
-        if (stale || !url) return;
-        setArtUrl(url);
+    setFoundArtist(null);
+    hdArtwork(client, { artist: track.artist ?? null, album: track.album, title: track.title ?? null })
+      .then(async found => {
+        if (stale || !found) return;
+        setArtUrl(found.url);
+        if (found.artist) setFoundArtist(found.artist);
         // the sharper source also gives the palette more to work with
-        const blob = await fetch(url).then(r => r.blob());
+        const blob = await fetch(found.url).then(r => r.blob());
         if (!stale) setAccent(await accentFrom(blob));
       })
       .catch(() => {});
@@ -282,7 +286,7 @@ export default function App() {
             artUrl={artUrl}
             context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
             title={track.title ?? 'unknown'}
-            artist={track.artist ?? '—'}
+            artist={artistName ?? '—'}
             accent={accentOn}
             playing={playing}
             motion={prefs.motion}
@@ -301,7 +305,11 @@ export default function App() {
             onPrev={() => client.player.skipPrev({ allowSeeking: true })}
             onNext={() => client.player.skipNext()}
             onSeek={ratio => seek(ratio * duration)}
-            onVolume={level => client.audio.setVolume({ level })}
+            onVolume={level => {
+              // reaching for the slider means you want sound, so a muted device comes back first
+              if (volume?.muted) client.audio.muteToggle();
+              client.audio.setVolume({ level });
+            }}
           />
         </>
       ) : prefs.theme === 'poster' ? (
@@ -309,7 +317,7 @@ export default function App() {
           artUrl={artUrl}
           context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
           title={track.title ?? 'unknown'}
-          artist={track.artist ?? '—'}
+          artist={artistName ?? '—'}
           accent={accentOn}
           playing={playing}
           motion={prefs.motion}
@@ -395,7 +403,7 @@ export default function App() {
                   text={track.title ?? 'unknown'}
                   className="font-display text-[2.125rem] leading-[1.2] font-semibold tracking-display text-off-white"
                 />
-                <Roll text={track.artist ?? '—'} className="mt-2 text-title text-soft" />
+                <Roll text={artistName ?? '—'} className="mt-2 text-title text-soft" />
               </div>
 
               <div className="shrink-0">
@@ -1111,100 +1119,134 @@ function Widget({
 }) {
   const tint = accent?.fill ?? '#efefef';
   const tint2 = accent?.fill2 ?? '#efefef';
-  const level = volume ? (volume.muted ? 0 : volume.level) : 0;
+  const level = volume?.level ?? 0;
   // the card is 280px wide against a 480px tall screen, so every row it holds has to come down a size
   const small = !upright;
 
-  const stack = (
-    <>
-      <div
-        className={`relative aspect-square w-full min-h-0 shrink overflow-hidden bg-white/6 shadow-2xl ring-1 ring-white/10 ${
-          small ? 'rounded-2xl' : 'rounded-[22px]'
-        }`}>
-        {artUrl ? (
-          <img src={artUrl} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <div className="grid h-full w-full place-items-center">
-            <Disc className={`text-off-white/25 ${small ? 'h-10 w-10' : 'h-16 w-16'}`} />
-          </div>
-        )}
-      </div>
-
-      {wallClock && (
-        <div className={`flex shrink-0 ${JUSTIFY[clockPos]}`}>
-          <ClockView
-            parts={wallClock}
-            size={((small ? 9 : 11) * clockSize) / 100}
-            className="text-dim"
-            color={accent?.soft}
-          />
+  const cover = (
+    <div
+      className={`relative aspect-square overflow-hidden bg-white/6 shadow-2xl ring-1 ring-white/10 ${
+        small ? 'h-full shrink-0 rounded-2xl' : 'w-full min-h-0 shrink rounded-[22px]'
+      }`}>
+      {artUrl ? (
+        <img src={artUrl} alt="" className="h-full w-full object-cover" />
+      ) : (
+        <div className="grid h-full w-full place-items-center">
+          <Disc className={`text-off-white/25 ${small ? 'h-12 w-12' : 'h-16 w-16'}`} />
         </div>
       )}
+    </div>
+  );
 
-      <div className="min-w-0 shrink-0">
-        <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>
-        <Roll
-          text={title}
-          className={`font-display leading-[1.2] font-semibold tracking-display text-off-white ${
-            small ? 'text-[1.375rem]' : 'text-[1.875rem]'
-          }`}
-        />
-        <Roll text={artist} className={`mt-0.5 text-soft ${small ? 'text-row-lg' : 'text-title'}`} />
+  const clockRow = wallClock ? (
+    <div className={`flex shrink-0 ${JUSTIFY[clockPos]}`}>
+      <ClockView
+        parts={wallClock}
+        size={((small ? 10 : 11) * clockSize) / 100}
+        className="text-dim"
+        color={accent?.soft}
+      />
+    </div>
+  ) : null;
+
+  const titles = (
+    <div className="min-w-0 shrink-0">
+      {!small && <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>}
+      <Roll
+        text={title}
+        className={`font-display leading-[1.2] font-semibold tracking-display text-off-white ${
+          small ? 'text-[1.75rem]' : 'text-[1.875rem]'
+        }`}
+      />
+      <Roll text={artist} className={`mt-0.5 text-soft ${small ? 'text-title' : 'text-title'}`} />
+    </div>
+  );
+
+  const bar = (
+    <Seek
+      style={seekStyle}
+      rotate={rotate}
+      progress={progress}
+      playing={playing && motion}
+      tint={tint}
+      tint2={tint2}
+      onSeek={onSeek}
+    />
+  );
+
+  const times = (
+    <div className="flex justify-between font-mono text-hint tabular-nums text-dim">
+      <span>{clock(elapsed)}</span>
+      <span>{duration ? (remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}</span>
+    </div>
+  );
+
+  const transport = (
+    <div className={`flex shrink-0 items-center justify-center ${small ? 'gap-12' : 'gap-10'}`}>
+      <Ghost label="previous" onClick={onPrev}>
+        <Skip className={small ? 'h-9 w-9 -scale-x-100' : 'h-8 w-8 -scale-x-100'} />
+      </Ghost>
+      <Ghost label={playing ? 'pause' : 'play'} tint={accent?.fill} onClick={onToggle}>
+        <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+          {playing ? (
+            <Pause className={small ? 'h-10 w-10' : 'h-9 w-9'} />
+          ) : (
+            <Play className={small ? 'h-10 w-10' : 'h-9 w-9'} />
+          )}
+        </span>
+      </Ghost>
+      <Ghost label="next" onClick={onNext}>
+        <Skip className={small ? 'h-9 w-9' : 'h-8 w-8'} />
+      </Ghost>
+    </div>
+  );
+
+  const volumeRow = (
+    <div className="flex shrink-0 items-center gap-2.5">
+      <Speaker className="h-4 w-4 shrink-0 text-dim" muted={volume?.muted === true} />
+      <div className="min-w-0 flex-1">
+        <VolumeBar level={level} rotate={rotate} tint={tint} onPick={onVolume} />
       </div>
+      <Speaker className="h-5 w-5 shrink-0 text-dim" />
+    </div>
+  );
 
-      {/* the times sit either side of the bar rather than under it, which is the whole look */}
+  const stack = (
+    <>
+      {cover}
+      {clockRow}
+      {titles}
+      {/* the times sit either side of the bar upright, where the column is too tall to stack them */}
       <div className="flex shrink-0 items-center gap-2.5 font-mono text-hint tabular-nums text-dim">
-        <span className={`shrink-0 ${small ? 'w-9' : 'w-11'}`}>{clock(elapsed)}</span>
-        <div className="min-w-0 flex-1">
-          <Seek
-            style={seekStyle}
-            rotate={rotate}
-            progress={progress}
-            playing={playing && motion}
-            tint={tint}
-            tint2={tint2}
-            onSeek={onSeek}
-          />
-        </div>
-        <span className={`shrink-0 text-right ${small ? 'w-9' : 'w-11'}`}>
+        <span className="w-11 shrink-0">{clock(elapsed)}</span>
+        <div className="min-w-0 flex-1">{bar}</div>
+        <span className="w-11 shrink-0 text-right">
           {duration ? (remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}
         </span>
       </div>
-
-      <div className={`flex shrink-0 items-center justify-center ${small ? 'gap-6' : 'gap-10'}`}>
-        <Ghost label="previous" onClick={onPrev}>
-          <Skip className={`-scale-x-100 ${small ? 'h-6 w-6' : 'h-8 w-8'}`} />
-        </Ghost>
-        <Ghost label={playing ? 'pause' : 'play'} tint={accent?.fill} onClick={onToggle}>
-          <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-            {playing ? (
-              <Pause className={small ? 'h-7 w-7' : 'h-9 w-9'} />
-            ) : (
-              <Play className={small ? 'h-7 w-7' : 'h-9 w-9'} />
-            )}
-          </span>
-        </Ghost>
-        <Ghost label="next" onClick={onNext}>
-          <Skip className={small ? 'h-6 w-6' : 'h-8 w-8'} />
-        </Ghost>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-2.5">
-        <Speaker className="h-3.5 w-3.5 shrink-0 text-dim" />
-        <div className="min-w-0 flex-1">
-          <VolumeBar level={level} rotate={rotate} tint={tint} onPick={onVolume} />
-        </div>
-        <Speaker className="h-[18px] w-[18px] shrink-0 text-dim" />
-      </div>
+      {transport}
+      {volumeRow}
     </>
   );
 
   if (upright) return <div className="relative flex h-full w-full flex-col justify-between gap-4 p-7">{stack}</div>;
 
   return (
-    <div className="relative grid h-full w-full place-items-center">
-      <div className="flex h-full w-[210px] flex-col justify-between gap-2 rounded-[26px] bg-black/45 p-4 ring-1 ring-white/10 backdrop-blur-2xl">
-        {stack}
+    // inset-0 is what makes the box definite: a grid track sized to content grows to fit the cover's
+    // aspect ratio, and the card's percentages then resolve against that instead of the screen
+    <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+      <div className="flex h-[93%] w-[95%] min-w-0 items-stretch gap-6 rounded-[30px] bg-black/45 p-5 ring-1 ring-white/10 backdrop-blur-2xl">
+        {cover}
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-5">
+          {clockRow}
+          {titles}
+          <div className="shrink-0">
+            {bar}
+            <div className="mt-2">{times}</div>
+          </div>
+          {transport}
+          {volumeRow}
+        </div>
       </div>
     </div>
   );

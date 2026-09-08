@@ -33,7 +33,8 @@ Updates show up in the same place. Music Player can also tell you when it is beh
 settings on the device and press **Check** under *Software update*.
 
 > Music Player and Network Monitor each ask for `net.proxy`. Music Player uses it to fetch a sharper
-> copy of the album art than the device receives on its own, which you can turn off in its settings;
+> copy of the album art than the device receives on its own, and to fill in the artist on tracks the
+> phone sends none for, both of which you can turn off in its settings;
 > Network Monitor uses it to time the requests it measures with.
 
 ## Music Player
@@ -74,13 +75,15 @@ This is the style that benefits most from the sharper artwork lookup.
 
 ### Widget
 
-The phone lock screen, near enough. Rounded artwork, the track under it, then a progress bar with
-the elapsed time on one side and the time remaining on the other, the transport, and a volume slider
-of its own. Dragging that slider sets the volume on the device. The output picker a phone puts beside
-the transport is not here, because a Car Thing has nowhere else to send audio.
+The phone lock screen, near enough. Rounded artwork, the track, a progress bar with the elapsed and
+remaining times, the transport, and a volume slider of its own. Dragging that slider sets the volume
+on the device, and unmutes it first if it was muted. The output picker a phone puts beside the
+transport is not here, because a Car Thing has nowhere else to send audio.
 
-The arrangement never changes; only the frame around it does. Turned to 90 or 270 it fills the
-screen, with the volume slider on the bottom edge. Left in landscape it floats as a narrow card over the blurred artwork, sized so the cover
+Landscape is a wide card: the cover at full height on the left, and the track, the bar with its
+times beneath it, the transport and the volume slider stacked to the right. Turned to 90 or 270 the
+same rows stack into a column and fill the screen, with the times either side of the bar because the
+column is too tall to put them under it. Left in landscape it floats as a narrow card over the blurred artwork, sized so the cover
 lands square and uncropped, because stacking the six rows is the whole look and a full width version
 of it would only be the Cover style again.
 

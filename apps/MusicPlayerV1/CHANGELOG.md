@@ -8,6 +8,21 @@ a volume slider of its own, which drags against the daemon's volume rather than 
 The output picker a phone puts beside the transport is dropped: the device has nowhere else to send
 audio, so the row is the three transport glyphs and nothing more.
 
+The Widget's landscape frame is the wide card from the reference instead of a narrow portrait one:
+the cover on the left at full height, and the track, the bar with its times beneath, the transport
+and the volume slider stacked to the right of it. Upright is unchanged.
+
+Its volume slider works. A muted device reported level 0 through the reading the slider drew from,
+so the control looked dead however far you dragged it; it now draws the level the device actually
+holds, says whether it is muted on the speaker beside it, and unmutes on a drag, because reaching
+for the slider means you want sound.
+
+The artist line no longer sits empty on tracks the phone sends no artist for. The artwork lookup
+answers with the name, so it stands in when the phone gives nothing. That lookup also used to refuse
+to run at all without an artist, which left those same tracks on the device's 512px cover; it
+searches on the album alone now. Both need HD album art switched on, and matching an album by name
+alone can pick the wrong record.
+
 Cover and Widget both share their height out between the rows now, at every rotation, rather than
 letting the track block swallow the slack and leaving the transport crowded against the bottom. The
 Widget card narrowed to make room for that, since the cover has to give up height for the rows to
