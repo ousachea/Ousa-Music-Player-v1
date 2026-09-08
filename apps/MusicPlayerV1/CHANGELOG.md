@@ -9,6 +9,11 @@ and hold where they are when you pause. The shell takes its tint from the album'
 chunky keys under it work the transport. Turned a quarter the tape is sized by width rather than
 height so it keeps its shape.
 
+The whole tape is painted from the cover. The shell, the label, the plate the window sits in, the
+tape on the spools and the keys all take the album's colour, and the rainbow band fans out around
+the cover's own hue rather than mixing two of them, since a cover with one hue would otherwise give
+five bands of the same colour.
+
 Mode, and `5` on a keyboard, cycles through it: Cover, Vinyl, CD, Cassette, Poster, Lyrics.
 
 ## 0.30.2

@@ -84,10 +84,14 @@ tape wore runs under it, and a window below that shows the two spools.
 The spools are the progress bar: the left one starts full and empties as the song plays while the
 right one fills, and both turn while the music runs and hold where they are when you pause. The label
 reads PLAY or PAUSE and STEREO along the top, the artist under the ruled line, and the album with the
-elapsed and remaining times along the bottom edge. The shell takes its tint from the album's own
-colour, so a new track repaints the plastic.
+elapsed and remaining times along the bottom edge.
 
-Three chunky keys sit under the tape and press in when you touch them. With the on-screen buttons off
+The whole tape is painted from the cover, so a new track repaints the plastic: the shell, the label,
+the plate around the window, the tape on the spools and the keys all take the album's colour, and the
+rainbow band fans out around the cover's own hue, two bands to each side of it, rather than five
+bands of the one colour.
+
+Three small keys sit under the tape and press in when you touch them. With the on-screen buttons off
 the tape takes the whole screen instead. Turned a quarter the tape is sized by the width it has
 rather than the height, so it keeps its shape rather than stretching into the taller box.
 

@@ -2727,6 +2727,12 @@ function Words({ className, off }: { className?: string; off?: boolean }) {
 
 // a tape in a deck. the reels turn while it plays and the spools change size as it winds across,
 // which is the honest way for a cassette to show progress
+// the accent arrives as css, and the cassette needs the hue itself to fan a stripe band around it
+function readHsl(css: string | undefined) {
+  const m = css && /hsl\(\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%/.exec(css);
+  return m ? { h: Number(m[1]), s: Number(m[2]), l: Number(m[3]) } : null;
+}
+
 function Cassette({
   title,
   artist,
@@ -2761,6 +2767,12 @@ function Cassette({
   onNext: () => void;
 }) {
   const tint = accent?.fill ?? '#e7d9c9';
+  const tint2 = accent?.fill2 ?? '#cbb9a4';
+  // a cover with one hue would give five identical bands, so the band fans out around that hue instead
+  const base = readHsl(accent?.fill) ?? { h: 28, s: 52, l: 62 };
+  const stripes = [-56, -28, 0, 28, 56].map(
+    (d, i) => `hsl(${(base.h + d + 360) % 360} ${Math.min(76, Math.max(46, base.s))}% ${[71, 64, 59, 64, 71][i]}%)`,
+  );
   const done = Math.min(1, Math.max(0, progress));
   // a spool never empties completely: the hub is still there under the last of the tape
   const left = 40 - 16 * done;
@@ -2769,7 +2781,7 @@ function Cassette({
 
   const reel = (cx: number, r: number) => (
     <g>
-      <circle cx={cx} cy="50" r={r} fill="#5b4b45" />
+      <circle cx={cx} cy="50" r={r} fill={`color-mix(in oklab, ${tint} 30%, #4b3f39)`} />
       <circle cx={cx} cy="50" r={r} fill="none" stroke="rgba(0,0,0,0.45)" strokeWidth="1" />
       <g className={motion ? 'animate-platter' : ''} style={{ ...spin, transformOrigin: `${cx}px 50px` }}>
         {Array.from({ length: 6 }, (_, i) => (
@@ -2794,8 +2806,9 @@ function Cassette({
     <button
       aria-label={label}
       onClick={onClick}
-      className={`grid h-full place-items-center rounded-lg bg-white/8 text-near ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_2px_0_rgba(0,0,0,0.35)] transition active:translate-y-[2px] active:shadow-none ${
-        wide ? 'w-24' : 'w-20'
+      style={{ backgroundColor: `color-mix(in oklab, ${tint} 26%, transparent)` }}
+      className={`grid h-full place-items-center rounded-[9px] text-near ring-1 ring-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_2px_0_rgba(0,0,0,0.35)] transition active:translate-y-[2px] active:shadow-none ${
+        wide ? 'w-16' : 'w-13'
       }`}>
       {children}
     </button>
@@ -2810,7 +2823,7 @@ function Cassette({
         }`}
         style={{
           height: quarter ? undefined : showTransport ? '72%' : '90%',
-          background: `linear-gradient(150deg, color-mix(in oklab, ${tint} 30%, #f7f1e9), #e2d7cb 58%, color-mix(in oklab, ${tint} 20%, #c9bdb1))`,
+          background: `linear-gradient(150deg, color-mix(in oklab, ${tint} 26%, #f7f1e9), color-mix(in oklab, ${tint2} 22%, #e2d7cb) 58%, color-mix(in oklab, ${tint} 26%, #c9bdb1))`,
         }}>
         {['left-[1.6%] top-[2.4%]', 'right-[1.6%] top-[2.4%]', 'left-[1.6%] bottom-[2.4%]', 'right-[1.6%] bottom-[2.4%]'].map(
           at => (
@@ -2818,7 +2831,9 @@ function Cassette({
           ),
         )}
 
-        <div className="flex h-full w-full flex-col overflow-hidden rounded-[10px] bg-[#fbf6ee] ring-1 ring-black/10">
+        <div
+          className="flex h-full w-full flex-col overflow-hidden rounded-[10px] ring-1 ring-black/10"
+          style={{ backgroundColor: `color-mix(in oklab, ${tint} 5%, #fbf6ee)` }}>
           {/* the written label */}
           <div className="flex min-h-0 flex-[42] flex-col px-[3.5%] pt-[2.5%]">
             <div className="flex shrink-0 items-baseline justify-between font-mono text-[0.5rem] tracking-[0.22em] text-black/40 uppercase">
@@ -2832,23 +2847,23 @@ function Cassette({
                 {title}
               </span>
             </div>
-            <div className="shrink-0 border-b border-black/20" />
+            <div className="shrink-0 border-b" style={{ borderColor: `color-mix(in oklab, ${tint} 45%, rgba(0,0,0,0.35))` }} />
             <div className="shrink-0 truncate pt-[1.5%] pb-[1.5%] text-right text-hint text-black/45">{artist}</div>
           </div>
 
           {/* the stripes a tape always wore */}
           <div className="flex h-[10%] shrink-0 flex-col">
-            {['#7fb2e8', '#79c9a0', '#f2d979', '#efab6a', '#e5808a'].map(c => (
-              <div key={c} className="flex-1" style={{ backgroundColor: c }} />
+            {stripes.map((c, i) => (
+              <div key={i} className="flex-1" style={{ backgroundColor: c }} />
             ))}
           </div>
 
           {/* the window: spools carry the progress */}
-          <div className="relative min-h-0 flex-[48] bg-[#e6dbcf]">
+          <div className="relative min-h-0 flex-[48]" style={{ backgroundColor: `color-mix(in oklab, ${tint} 13%, #e9dfd4)` }}>
             <svg viewBox="0 0 360 100" className="absolute inset-0 h-full w-full">
-              <rect x="10" y="4" width="340" height="92" rx="10" fill="#2e2724" />
+              <rect x="10" y="4" width="340" height="92" rx="10" fill={`color-mix(in oklab, ${tint} 16%, #2a2320)`} />
               <rect x="10" y="4" width="340" height="92" rx="10" fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="2" />
-              <rect x="105" y="43" width="150" height="14" fill="#4a3f39" />
+              <rect x="105" y="43" width="150" height="14" fill={`color-mix(in oklab, ${tint} 22%, #493d37)`} />
               {reel(105, left)}
               {reel(255, right)}
             </svg>
@@ -2865,10 +2880,10 @@ function Cassette({
       </div>
 
       {showTransport && (
-        <div className="flex h-16 shrink-0 items-stretch gap-2">
-          {key('previous', onPrev, <Skip className="h-5 w-5 -scale-x-100" />)}
-          {key(playing ? 'pause' : 'play', onToggle, playing ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />, true)}
-          {key('next', onNext, <Skip className="h-5 w-5" />)}
+        <div className="flex h-11 shrink-0 items-stretch gap-2">
+          {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
+          {key(playing ? 'pause' : 'play', onToggle, playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />, true)}
+          {key('next', onNext, <Skip className="h-4 w-4" />)}
         </div>
       )}
     </div>
