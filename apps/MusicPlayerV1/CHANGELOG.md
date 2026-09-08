@@ -4,8 +4,10 @@
 
 **On-screen buttons** is a new setting. The presets already do previous, play and next, so the
 buttons drawn on screen are optional; turning them off gives every style back that room. A small
-marker takes their place at each preset's own position: a bump against the edge the button is on,
-with the glyph for what it does just inside it. It is not a list in the middle of the layout, it is
+marker takes their place at each preset's own position, taken off the device diagram: four of them,
+evenly spread across the width of the screen with a matching margin at each end, each a bump against
+the edge the button is on with the glyph for what it does just inside. The fourth is marked too,
+since it turns the screen. It is not a list in the middle of the layout, it is
 laid over the player against the real edge, so whichever way the screen is turned the bumps stay on
 the physical buttons.
 

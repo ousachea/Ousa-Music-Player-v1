@@ -1789,7 +1789,10 @@ function Notes({ accent, playing }: { accent: Accent | null; playing: boolean })
 // how the device is mounted, so that edge lands somewhere different in layout space each time, and
 // the run of buttons can end up mirrored along it. rotate(90) maps layout +x to screen down, so the
 // screen's top edge is the layout's left, and screen-left is the layout's bottom: hence the flips.
-const PRESET_AT = [20, 40, 60];
+// four presets, evenly spread across the width of the screen with a matching margin at each end.
+// the fourth sits just inside the screen's right edge; the settings button past it is over the dial,
+// off the glass entirely, so there is nowhere on screen to point at it
+const PRESET_AT = [12.5, 37.5, 62.5, 87.5];
 
 const PRESET_EDGE: Record<number, { edge: 'top' | 'bottom' | 'left' | 'right'; mirror: boolean }> = {
   0: { edge: 'top', mirror: false },
@@ -1805,6 +1808,7 @@ function PresetHint({ playing, rotate }: { playing: boolean; rotate: Prefs['rota
     <Skip key="p" className="h-4 w-4 -scale-x-100" />,
     playing ? <Pause key="t" className="h-4 w-4" /> : <Play key="t" className="h-4 w-4" />,
     <Skip key="n" className="h-4 w-4" />,
+    <Turn key="r" className="h-4 w-4" />,
   ];
   return (
     <div className="pointer-events-none absolute inset-0 z-[2] text-dim">
@@ -1921,6 +1925,16 @@ function Skip({ className }: { className?: string }) {
     <svg viewBox="0 0 24 24" className={className} fill="currentColor">
       <path d="M1.6 5.6v12.8a0.9 0.9 0 0 0 1.38.76l9.6-6.4a0.9 0.9 0 0 0 0-1.52l-9.6-6.4a0.9 0.9 0 0 0-1.38.76Z" />
       <path d="M11.4 5.6v12.8a0.9 0.9 0 0 0 1.38.76l9.6-6.4a0.9 0.9 0 0 0 0-1.52l-9.6-6.4a0.9 0.9 0 0 0-1.38.76Z" />
+    </svg>
+  );
+}
+
+// preset 4 turns the screen, so the marker over it says so
+function Turn({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M20 12a8 8 0 1 1-2.6-5.9" />
+      <path d="M20 4v4.6h-4.6" strokeLinejoin="round" />
     </svg>
   );
 }
