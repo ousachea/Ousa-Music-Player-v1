@@ -7,8 +7,9 @@ sits on the one element all five share, so it is the same movement whichever pla
 and because that element is inside the turned stage the slide follows the direction you actually
 swiped however the screen is mounted.
 
-Turned, the CD style puts the clock beside the track rather than on a row of its own above the tray,
-where the width was going spare.
+The CD style keeps its clock in the bottom left corner of the tray, in both orientations. The disc
+is round inside a rounded square, so that corner is space nothing else was using. Clock position has
+no effect in this style as a result; size still does.
 
 With the on-screen buttons off, Poster gives the track the full width of the screen instead of the
 half it was holding. That half existed only to keep the title clear of the play button, and with the

@@ -371,7 +371,6 @@ export default function App() {
             duration={duration}
             remaining={prefs.remaining}
             wallClock={wallClock}
-            clockPos={prefs.clockPos}
             clockSize={prefs.clockSize}
             onToggle={toggle}
             onPrev={() => goPrev(true)}
@@ -1054,7 +1053,6 @@ function CdDeck({
   duration,
   remaining,
   wallClock,
-  clockPos,
   clockSize,
   onToggle,
   onPrev,
@@ -1076,7 +1074,6 @@ function CdDeck({
   duration: number;
   remaining: boolean;
   wallClock: ClockParts | null;
-  clockPos: 'left' | 'center' | 'right';
   clockSize: number;
   onToggle: () => void;
   onPrev: () => void;
@@ -1125,6 +1122,18 @@ function CdDeck({
           </div>
         </div>
       </div>
+
+      {/* the disc is round inside a rounded square, so the corner is free; the clock lives there */}
+      {wallClock && (
+        <div className="absolute bottom-4 left-5">
+          <ClockView
+            parts={wallClock}
+            size={(10 * clockSize) / 100}
+            className="text-off-white/55"
+            color={accent?.soft}
+          />
+        </div>
+      )}
     </div>
   );
 
@@ -1176,29 +1185,11 @@ function CdDeck({
     </div>
   ) : null;
 
-  const clockRow = wallClock ? (
-    <div className={`flex shrink-0 ${JUSTIFY[clockPos]}`}>
-      <ClockView parts={wallClock} size={(10 * clockSize) / 100} className="text-dim" color={accent?.soft} />
-    </div>
-  ) : null;
-
   if (upright)
     return (
       <div className="relative flex h-full w-full flex-col justify-between gap-4 p-6">
         {tray}
-        {/* portrait has width to spare beside the track, so the clock sits there rather than
-            taking a row of its own above the tray */}
-        <div className="flex items-start gap-4">
-          <div className="min-w-0 flex-1">{titles}</div>
-          {wallClock && (
-            <ClockView
-              parts={wallClock}
-              size={(10 * clockSize) / 100}
-              className="shrink-0 text-dim"
-              color={accent?.soft}
-            />
-          )}
-        </div>
+        {titles}
         <div className="flex flex-col gap-4">
           {bar}
           {keys}
@@ -1210,7 +1201,6 @@ function CdDeck({
     <div className="absolute inset-0 flex items-stretch gap-7 p-6">
       {tray}
       <div className="flex min-w-0 flex-1 flex-col gap-4">
-        {clockRow}
         {titles}
         {/* the bar belongs directly above the buttons, not spread away from them */}
         <div className="mt-auto flex flex-col gap-4">
