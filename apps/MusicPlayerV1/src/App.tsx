@@ -466,13 +466,22 @@ export default function App() {
                   ? 'py-0 pr-7 pl-0'
                   : 'p-7'
             }`}>
-            <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} upright={upright} />
+            <Turntable
+              artUrl={artUrl}
+              playing={playing}
+              spin={prefs.motion}
+              upright={upright}
+              roomy={!prefs.transport}
+            />
 
             <div
               className={`flex min-w-0 flex-1 flex-col justify-between gap-2 ${upright ? 'w-full' : 'h-full'} ${
                 edge ? (upright ? 'px-7' : 'py-7') : ''
               }`}>
-              <div className={`flex items-center ${upright ? '' : 'min-h-5'} ${JUSTIFY[prefs.clockPos]}`}>
+              <div
+                className={`flex items-center ${upright && !prefs.transport ? '' : 'min-h-5'} ${
+                  JUSTIFY[prefs.clockPos]
+                }`}>
                 <ClockView
                   parts={wallClock}
                   size={(11 * prefs.clockSize) / 100}
@@ -1009,16 +1018,19 @@ function Turntable({
   playing,
   spin,
   upright,
+  roomy,
 }: {
   artUrl: string | null;
   playing: boolean;
   spin: boolean;
   upright: boolean;
+  // with the transport hidden there is a row's worth of height going spare, and the record takes it
+  roomy: boolean;
 }) {
   return (
     <div
       className={`relative aspect-square shrink-0 ${spin ? 'disc-swap' : ''} ${
-        upright ? 'h-[56%] self-center' : 'h-full'
+        upright ? `self-center ${roomy ? 'h-[56%]' : 'h-[52%]'}` : 'h-full'
       }`}>
       <div className="absolute bottom-3 left-6 right-6 h-8 rounded-full bg-black/75 blur-2xl" />
 
