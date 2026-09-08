@@ -1158,7 +1158,7 @@ function Widget({
           small ? 'text-[1.75rem]' : 'text-[1.875rem]'
         }`}
       />
-      <Roll text={artist} className={`mt-0.5 text-soft ${small ? 'text-title' : 'text-title'}`} />
+      <Roll text={artist} className={`mt-1.5 text-soft ${small ? 'text-title' : 'text-title'}`} />
     </div>
   );
 
@@ -1239,7 +1239,7 @@ function Widget({
       {cover}
       <div className="flex min-w-0 flex-1 flex-col gap-5">
         {/* the track takes the space above; the controls hold the bottom edge whatever is left */}
-        <div className="flex min-h-0 flex-1 flex-col justify-center gap-4">
+        <div className="flex min-h-0 flex-1 flex-col justify-between gap-4 py-1">
           {clockRow}
           {titles}
           <div className="shrink-0">
