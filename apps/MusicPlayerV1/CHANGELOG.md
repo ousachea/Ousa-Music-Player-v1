@@ -2,6 +2,16 @@
 
 ## 0.24.0
 
+**On-screen buttons** is a new setting. The presets already do previous, play and next, so the
+buttons drawn on screen are optional; turning them off gives every style back that room. A small
+legend takes their place saying which preset does what, and upside down at 180 it lists them in
+reverse, because that is the order they physically sit in once the device is turned over.
+
+A swipe across the screen skips a track. Left for the next one, right for the previous, the way it
+works on a phone, and it follows the rotation so the gesture is the one the viewer makes rather than
+the one the layout sees. Short drags are ignored, and so are ones that wander too far off the line,
+so scrubbing the bar and pressing buttons still work.
+
 A fifth player style, **CD**. The album is printed across the whole face of a compact disc, with the
 silver clamping hub punched through the middle of it and the hole showing the screen behind. The
 disc turns while the track plays and holds its angle when you pause, and a sheen rides around with

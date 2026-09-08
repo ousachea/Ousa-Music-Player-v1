@@ -272,3 +272,10 @@
 .note-sway {
   animation: note-sway var(--note-period, 2.6s) ease-in-out var(--note-delay, 0s) infinite alternate;
 }
+
+/* a press and drag starting on artwork would otherwise begin a native image drag, and chromium
+   swallows the pointerup that ends it, so the swipe gesture never sees the release */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}

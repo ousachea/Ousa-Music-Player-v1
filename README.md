@@ -121,6 +121,7 @@ of it would only be the Classic style again.
 | Button under the wheel | Opens and closes settings |
 | Tap the play button | Play or pause |
 | Drag the progress bar | Seek |
+| Swipe across the screen | Next track, or previous if you swipe the other way |
 
 A press waits a moment to see whether another one follows, so play/pause from the wheel is very
 slightly delayed. The on-screen button is instant.
@@ -140,7 +141,8 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
 - **Player** — style, accent colour, sharper artwork, the cover pulse with its tempo, and whether
   the Classic style's art runs to the edge of the screen
 - **Controls** — what the wheel does, how far each click seeks, whether the seek bar is a line or a
-  wave, and whether it carries a dot at the playhead. Both default to Auto, which gives Classic and
+  wave, whether it carries a dot at the playhead, and whether the transport buttons are drawn at all.
+  With them off a small legend says which preset does what instead. Both default to Auto, which gives Classic and
   Poster the wave, Vinyl a line, and drops the dot on Cover only. Cover always draws a line, whatever
   the seek bar is set to
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts

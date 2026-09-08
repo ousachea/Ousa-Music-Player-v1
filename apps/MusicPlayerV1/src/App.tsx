@@ -29,6 +29,9 @@ const MULTI_CLICK_MS = 300;
 const HINT_KEY = 'hint.settingsSeen';
 const HINT_MS = 7000;
 const WHEEL_SCROLL_PX = 26;
+// a swipe has to travel this far, and stay flat enough, to count as one rather than a stray drag
+const SWIPE_MIN_PX = 70;
+const SWIPE_MAX_DRIFT = 0.7;
 
 type Volume = { level: number; muted: boolean };
 
@@ -83,6 +86,8 @@ export default function App() {
           : 'bar'
         : prefs.seek;
   const seekDot = prefs.seekDot === 'auto' ? prefs.theme !== 'widget' : prefs.seekDot === 'on';
+  // a quarter turn lays the player out portrait, where a square cover cannot sit beside the track
+  const upright = prefs.rotate === 90 || prefs.rotate === 270;
   const track = state?.track ?? null;
   const [foundArtist, setFoundArtist] = useState<string | null>(null);
   const artistName = track?.artist ?? foundArtist;
@@ -217,6 +222,7 @@ export default function App() {
 
   // the daemon owns the step size and the clamping, and its level cannot be read back, so nudge rather than compute one
   const detents = useRef(0);
+  const swipeFrom = useRef<{ x: number; y: number } | null>(null);
 
   // one press plays or pauses, two skip forward, three skip back
   const clicks = useRef(0);
@@ -272,13 +278,47 @@ export default function App() {
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
+    // a flick across the screen skips a track. the seek bar and the buttons take their own pointer
+    // events first, so a swipe only ever starts on the artwork or the empty parts of the layout
+    // the origin lives in a ref because this effect re-registers on every progress tick, and a
+    // local would be wiped between the press and the release
+    const onDown = (e: globalThis.PointerEvent) => {
+      if (panel) return;
+      swipeFrom.current = { x: e.clientX, y: e.clientY };
+    };
+    const onUp = (e: globalThis.PointerEvent) => {
+      const from = swipeFrom.current;
+      if (!from) return;
+      const dx = e.clientX - from.x;
+      const dy = e.clientY - from.y;
+      swipeFrom.current = null;
+      // upright the screen is turned, so the swipe the viewer makes arrives on the other axis
+      const along = upright ? dy : dx;
+      const across = upright ? dx : dy;
+      if (Math.abs(along) < SWIPE_MIN_PX) return;
+      if (Math.abs(across) > Math.abs(along) * SWIPE_MAX_DRIFT) return;
+      // swiping the artwork away to the left brings the next track in behind it, as on a phone
+      const back = prefs.rotate === 180 || prefs.rotate === 270 ? along < 0 : along > 0;
+      if (back) client.player.skipPrev({ allowSeeking: true });
+      else client.player.skipNext();
+    };
+
     window.addEventListener('wheel', onWheel, { passive: true });
     window.addEventListener('keydown', onKey);
+    const onCancel = () => {
+      swipeFrom.current = null;
+    };
+    window.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onCancel);
     return () => {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
+      window.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onCancel);
     };
-  }, [client, duration, flashHud, live, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, toggle]);
+  }, [client, duration, flashHud, live, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, toggle, upright]);
 
   if (!track)
     return (
@@ -290,8 +330,6 @@ export default function App() {
 
   // the cover only runs to the edge in the style that draws a cover at all
   const edge = prefs.theme === 'card' && prefs.coverEdge;
-  // a quarter turn lays the player out portrait, where a square cover cannot sit beside the track
-  const upright = prefs.rotate === 90 || prefs.rotate === 270;
 
   return (
     <Stage rotate={prefs.rotate}>
@@ -310,6 +348,7 @@ export default function App() {
             seekStyle={seekStyle}
             rotate={prefs.rotate}
             dot={seekDot}
+            showTransport={prefs.transport}
             upright={upright}
             progress={progress}
             elapsed={elapsed}
@@ -341,6 +380,7 @@ export default function App() {
           motion={prefs.motion}
           seekStyle={seekStyle}
           dot={seekDot}
+          showTransport={prefs.transport}
           progress={progress}
           elapsed={elapsed}
           duration={duration}
@@ -444,6 +484,9 @@ export default function App() {
                 </div>
               </div>
 
+              {!prefs.transport ? (
+                <KeyHint playing={playing} rotate={prefs.rotate} />
+              ) : (
               <div className="flex shrink-0 items-center justify-center gap-12">
                 <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
                   <Skip className="h-10 w-10 -scale-x-100" />
@@ -457,6 +500,7 @@ export default function App() {
                   <Skip className="h-10 w-10" />
                 </Ghost>
               </div>
+              )}
             </div>
           </div>
         </>
@@ -553,6 +597,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
       { key: 'seekSeconds', label: 'Seek step' },
       { key: 'seek', label: 'Seek bar' },
       { key: 'seekDot', label: 'Dot at the playhead' },
+      { key: 'transport', label: 'On-screen buttons' },
     ],
   },
   {
@@ -1041,6 +1086,7 @@ function Poster({
   motion,
   seekStyle,
   dot,
+  showTransport,
   wallClock,
   clockPos,
   clockSize,
@@ -1062,6 +1108,7 @@ function Poster({
   motion: boolean;
   seekStyle: 'bar' | 'wave';
   dot: boolean;
+  showTransport: boolean;
   wallClock: ClockParts | null;
   clockPos: 'left' | 'center' | 'right';
   clockSize: number;
@@ -1092,15 +1139,17 @@ function Poster({
         <ClockView parts={wallClock} size={(12 * clockSize) / 100} className="text-off-white/75" color={tint} />
       </div>
 
-      <button
-        aria-label={playing ? 'pause' : 'play'}
-        onClick={onToggle}
-        style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}
-        className="absolute right-7 top-1/2 grid h-24 w-24 -translate-y-1/2 place-items-center rounded-[30px] bg-off-white text-screen shadow-2xl transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
-        <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-          {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
-        </span>
-      </button>
+      {showTransport && (
+        <button
+          aria-label={playing ? 'pause' : 'play'}
+          onClick={onToggle}
+          style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}
+          className="absolute right-7 top-1/2 grid h-24 w-24 -translate-y-1/2 place-items-center rounded-[30px] bg-off-white text-screen shadow-2xl transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
+          <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+            {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
+          </span>
+        </button>
+      )}
 
       <div className="absolute left-8 top-1/2 w-[52%] -translate-y-1/2">
         <div className="mb-2 truncate font-mono text-eyebrow tracking-[0.22em] text-off-white/65 uppercase">
@@ -1117,13 +1166,15 @@ function Poster({
       </div>
 
       <div className="absolute inset-x-8 bottom-7 flex items-center gap-6">
-        <button
-          aria-label="previous"
-          onClick={onPrev}
-          style={{ color: tint }}
-          className="-m-3 shrink-0 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
-          <Skip className="h-9 w-9 -scale-x-100" />
-        </button>
+        {showTransport && (
+          <button
+            aria-label="previous"
+            onClick={onPrev}
+            style={{ color: tint }}
+            className="-m-3 shrink-0 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
+            <Skip className="h-9 w-9 -scale-x-100" />
+          </button>
+        )}
 
         <Seek
           style={seekStyle}
@@ -1136,14 +1187,23 @@ function Poster({
           onSeek={onSeek}
         />
 
-        <button
-          aria-label="next"
-          onClick={onNext}
-          style={{ color: tint }}
-          className="-m-3 shrink-0 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
-          <Skip className="h-9 w-9" />
-        </button>
+        {showTransport && (
+          <button
+            aria-label="next"
+            onClick={onNext}
+            style={{ color: tint }}
+            className="-m-3 shrink-0 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
+            <Skip className="h-9 w-9" />
+          </button>
+        )}
       </div>
+
+      {/* the buttons are gone, so the legend takes the corner the play button had */}
+      {!showTransport && (
+        <div className="absolute right-8 top-1/2 -translate-y-1/2">
+          <KeyHint playing={playing} rotate={rotate} />
+        </div>
+      )}
     </div>
   );
 }
@@ -1167,6 +1227,7 @@ function Widget({
   motion,
   seekStyle,
   dot,
+  showTransport,
   rotate,
   upright,
   progress,
@@ -1192,6 +1253,7 @@ function Widget({
   motion: boolean;
   seekStyle: 'bar' | 'wave';
   dot: boolean;
+  showTransport: boolean;
   rotate: Prefs['rotate'];
   upright: boolean;
   progress: number;
@@ -1273,7 +1335,9 @@ function Widget({
     </div>
   );
 
-  const transport = (
+  const transport = !showTransport ? (
+    <KeyHint playing={playing} rotate={rotate} size={small ? 'small' : 'full'} />
+  ) : (
     <div className={`flex shrink-0 items-center justify-center ${small ? 'gap-12' : 'gap-10'}`}>
       <Ghost label="previous" onClick={onPrev}>
         <Skip className={small ? 'h-9 w-9 -scale-x-100' : 'h-8 w-8 -scale-x-100'} />
@@ -1720,6 +1784,42 @@ function Notes({ accent, playing }: { accent: Accent | null; playing: boolean })
             }}>
             {n.glyph}
           </span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// with the on-screen buttons off, the presets are the only way to work the player, so the row they
+// vacate says which one does what rather than leaving the user to guess
+function KeyHint({
+  playing,
+  rotate,
+  size = 'full',
+}: {
+  playing: boolean;
+  rotate: Prefs['rotate'];
+  size?: 'full' | 'small';
+}) {
+  const small = size === 'small';
+  // turned upside down, the presets run right to left along what is now the bottom edge, so a
+  // legend that still read 1 2 3 from the left would point at the wrong buttons
+  const flipped = rotate === 180;
+  const cap = `grid shrink-0 place-items-center rounded-md bg-white/10 font-mono text-dim ${
+    small ? 'h-5 w-5 text-[0.625rem]' : 'h-6 w-6 text-hint'
+  }`;
+  const glyph = small ? 'h-3.5 w-3.5' : 'h-4 w-4';
+  const keys = [
+    { n: '1', icon: <Skip className={`${glyph} -scale-x-100`} /> },
+    { n: '2', icon: playing ? <Pause className={glyph} /> : <Play className={glyph} /> },
+    { n: '3', icon: <Skip className={glyph} /> },
+  ];
+  return (
+    <div className={`flex shrink-0 items-center justify-center text-dim ${small ? 'gap-4' : 'gap-6'}`}>
+      {(flipped ? [...keys].reverse() : keys).map(k => (
+        <span key={k.n} className="flex items-center gap-2">
+          <span className={cap}>{k.n}</span>
+          {k.icon}
         </span>
       ))}
     </div>

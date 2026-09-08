@@ -95,6 +95,14 @@
     {
       "type": "boolean",
       "data": {
+        "key": "transport",
+        "label": "On-screen transport buttons",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
         "key": "hdArt",
         "label": "HD album art",
         "default": true
