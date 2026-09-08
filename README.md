@@ -48,6 +48,11 @@ album art. They pause with the music, and **Display → Floating notes** turns t
 Switch between them in the settings, under **Player style**. A small tag along the bottom of the
 screen names the one you are in.
 
+When the track changes the blurred background dissolves from one cover to the next rather than
+cutting between them. Vinyl and CD mark the change by swapping the record or the disc, which turns
+in from a little smaller and settles; Cover and Poster slide the new track in from the side it came
+from, which is the side you swiped.
+
 ### Vinyl
 
 ![Vinyl style](apps/MusicPlayerV1/screenshots/02-vinyl.jpg)
