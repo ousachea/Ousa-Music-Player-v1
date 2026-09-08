@@ -1,5 +1,20 @@
 # weather
 
+## 0.27.0
+
+The settings on the device are reorganised around the style you are in.
+
+**The style picker sits above the list** rather than scrolling inside it, since it decides what the
+rest of the list holds. The album art block beside it is smaller and carries its size and whether
+the HD lookup is on, on one line.
+
+**Everything that depends on the style is gathered under that style's name**, marked *only in this
+style*, instead of being scattered through the groups and quietly vanishing when you switch. Poster,
+which has no settings of its own, simply has no such group.
+
+A rail down the right edge shows how far the list runs and where you are in it, which the wheel
+could not tell you before.
+
 ## 0.26.1
 
 In landscape the CD style centres the track in the space above the controls rather than starting it

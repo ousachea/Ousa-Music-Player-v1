@@ -610,16 +610,22 @@ const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: 
 // grouped so a related pair reads together rather than as nine unrelated lines
 type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
 
+// rows that only some styles can use, kept together under the name of the style you are in
+const STYLE_ROWS: Row[] = [
+  { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
+  { key: 'pulse', label: 'Art pulse', only: ['widget'] },
+  { key: 'pulseBpm', label: 'Pulse tempo', only: ['widget'] },
+  { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd'] },
+  { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd'] },
+  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd'] },
+];
+
 const GROUPS: { title: string; rows: Row[] }[] = [
   {
     title: 'Player',
     rows: [
-      { key: 'theme', label: 'Player style' },
-      { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
       { key: 'accent', label: 'Accent colour' },
       { key: 'hdArt', label: 'HD album art' },
-      { key: 'pulse', label: 'Art pulse', only: ['widget'] },
-      { key: 'pulseBpm', label: 'Pulse tempo', only: ['widget'] },
     ],
   },
   {
@@ -633,19 +639,11 @@ const GROUPS: { title: string; rows: Row[] }[] = [
     ],
   },
   {
-    title: 'Backdrop',
-    rows: [
-      { key: 'backdrop', label: 'Intensity', only: ['widget', 'vinyl', 'cd'] },
-      { key: 'drift', label: 'Drift', only: ['widget', 'vinyl', 'cd'] },
-    ],
-  },
-  {
     title: 'Display',
     rows: [
       { key: 'motion', label: 'Animations' },
       { key: 'notes', label: 'Floating notes' },
       { key: 'rotate', label: 'Screen rotation' },
-      { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd'] },
     ],
   },
   {
@@ -676,6 +674,18 @@ function Panel({
   // the pixel size is what tells you whether the sharper lookup actually landed
   const [artPx, setArtPx] = useState<string | null>(null);
   const upright = prefs.rotate === 90 || prefs.rotate === 270;
+  const styleName = ENUMS.theme.labels[ENUMS.theme.values.indexOf(prefs.theme)] ?? 'Player';
+  // the wheel scrolls this list and there is no scrollbar, so a rail has to say how far it runs
+  const [scroll, setScroll] = useState({ shown: 1, at: 0 });
+  const onScroll = useCallback(() => {
+    const el = list.current;
+    if (!el || el.scrollHeight <= el.clientHeight) return setScroll({ shown: 1, at: 0 });
+    setScroll({
+      shown: el.clientHeight / el.scrollHeight,
+      at: el.scrollTop / (el.scrollHeight - el.clientHeight),
+    });
+  }, []);
+  useEffect(onScroll, [onScroll, prefs.theme]);
   const tint = accent?.fill ?? '#efefef';
   const ink = accent?.ink ?? '#060809';
   const { state: update, check } = useUpdateCheck(client);
@@ -777,32 +787,45 @@ function Panel({
         </span>
       </div>
 
-      {artUrl && (
-        <div className="mt-3 flex shrink-0 items-center gap-4">
+      {/* the style picker decides what the rest of the list holds, so it sits above it rather than
+          scrolling away inside it */}
+      <div className="mt-3 flex shrink-0 items-center gap-4">
+        {artUrl && (
           <img
             src={artUrl}
             alt=""
             onLoad={e => setArtPx(`${e.currentTarget.naturalWidth} x ${e.currentTarget.naturalHeight}`)}
-            className="h-20 w-20 rounded-xl object-cover ring-1 ring-white/12"
+            className="h-14 w-14 shrink-0 rounded-xl object-cover ring-1 ring-white/12"
           />
-          <div className="min-w-0">
-            <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Album art</div>
-            <div className="font-mono text-row tabular-nums" style={{ color: tint }}>
-              {artPx ?? '...'}
-            </div>
-            <div className="text-hint text-dim">{prefs.hdArt ? 'HD lookup on' : 'device copy only'}</div>
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="mb-1.5 flex items-baseline gap-2">
+            <span className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Player style</span>
+            {artPx && (
+              <span className="truncate text-hint text-dim">
+                art {artPx}
+                {prefs.hdArt ? ', HD' : ''}
+              </span>
+            )}
           </div>
+          {control('theme')}
         </div>
-      )}
+      </div>
 
+      <div className="relative mt-3 flex min-h-0 flex-1">
       <div
         ref={list}
-        className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-width:none]">
-        {GROUPS.map(group => ({ ...group, rows: group.rows.filter(r => !r.only || r.only.includes(prefs.theme)) }))
+        onScroll={onScroll}
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pr-4 [scrollbar-width:none]">
+        {[{ title: styleName, rows: STYLE_ROWS, own: true }, ...GROUPS.map(g => ({ ...g, own: false }))]
+          .map(group => ({ ...group, rows: group.rows.filter(r => !r.only || r.only.includes(prefs.theme)) }))
           .filter(group => group.rows.length > 0)
           .map((group, gi) => (
             <section key={group.title} className={gi === 0 ? '' : 'mt-6'}>
-              <h2 className="mb-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{group.title}</h2>
+              <h2 className="mb-1 flex items-baseline gap-2 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
+                {group.title}
+                {group.own && <span className="tracking-normal normal-case opacity-60">only in this style</span>}
+              </h2>
               <div className="rounded-2xl bg-white/4">
                 {group.rows.map((row, ri) => (
                   <div
@@ -834,6 +857,21 @@ function Panel({
             </button>
           </div>
         </section>
+      </div>
+
+      {scroll.shown < 1 && (
+        <div className="absolute top-0 right-0 bottom-0 w-[3px] rounded-full bg-white/8">
+          <div
+            className="absolute w-full rounded-full transition-[top] duration-100"
+            style={{
+              height: `${Math.max(12, scroll.shown * 100)}%`,
+              top: `${scroll.at * (100 - Math.max(12, scroll.shown * 100))}%`,
+              backgroundColor: tint,
+              opacity: 0.55,
+            }}
+          />
+        </div>
+      )}
       </div>
 
       <p className="mt-2 text-hint text-dim">Changing a setting in the companion app overrides it here.</p>
