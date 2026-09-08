@@ -148,8 +148,12 @@ artwork leads and the track reads back towards it. Play and pause take the other
 edge, drawn as Poster draws it, and previous and next sit together along the bottom. All of them go
 away when the on-screen buttons do.
 
-Touching a line plays from it: each one knows the moment it belongs to, so the words are also the
-scrubber.
+Touching a line plays from it, and the wheel walks the lines a click at a time, playing from
+wherever it lands. Each line knows the moment it belongs to, so the words are also the scrubber, and
+the wheel does this here whatever it is set to elsewhere.
+
+A track with no lyrics shows the artwork, title and artist down the middle instead, with the
+transport under them.
 
 What you get depends on what the phone has. Timed lyrics get the moving column. Lyrics without
 timings are laid out as a page, which the wheel scrolls. A track with neither says so under its

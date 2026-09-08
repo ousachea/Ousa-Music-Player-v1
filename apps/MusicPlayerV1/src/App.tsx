@@ -288,6 +288,20 @@ export default function App() {
       detents.current -= steps * WHEEL_PER_STEP;
       const count = Math.min(Math.abs(steps), MAX_STEPS_PER_EVENT);
 
+      // in Lyrics the wheel belongs to the words: a detent is a line, and landing on one plays from
+      // it. that is worth more than volume here, so it takes the wheel whatever the setting says
+      if (prefs.theme === 'lyrics' && lyrics.state === 'timed') {
+        const from = activeIndex(lyrics.lines, scrub ?? live);
+        const to = Math.min(lyrics.lines.length - 1, Math.max(0, from + Math.sign(steps) * count));
+        if (to !== from || from < 0) seek(lyrics.lines[Math.max(0, to)].startMs);
+        return;
+      }
+      if (prefs.theme === 'lyrics' && lyrics.state === 'plain') {
+        const page = document.querySelector<HTMLElement>('[data-lyric-page]');
+        if (page) page.scrollTop += e.deltaX * WHEEL_SCROLL_PX;
+        return;
+      }
+
       if (prefs.wheel === 'seek') {
         if (!duration) return;
         seek((scrub ?? live) + Math.sign(steps) * count * prefs.seekSeconds * 1000);
@@ -355,7 +369,7 @@ export default function App() {
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
     };
-  }, [client, duration, flashHud, live, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, toggle, upright]);
+  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, toggle, upright]);
 
   if (!track)
     return (
@@ -2507,7 +2521,9 @@ function Lyrics({
   if (lyrics.state === 'plain')
     return (
       <div className="absolute inset-0">
-        <div className="absolute inset-0 overflow-y-auto overscroll-contain px-24 py-24 [scrollbar-width:none]">
+        <div
+          data-lyric-page
+          className="absolute inset-0 overflow-y-auto overscroll-contain px-24 py-24 [scrollbar-width:none]">
           <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft">
             {lyrics.text}
           </div>
@@ -2516,16 +2532,58 @@ function Lyrics({
       </div>
     );
 
+  // with no words to follow there is nothing for the corners to keep clear of, so the track comes
+  // to the middle and brings the transport with it
   return (
     <div className="absolute inset-0 grid place-items-center px-16 text-center">
-      <div className="flex flex-col items-center gap-3">
-        <Roll text={title} wrap lines={2} className="font-display text-[2rem] leading-tight font-semibold text-off-white" />
-        <div className="text-title text-soft">{artist}</div>
-        <div className="mt-2 text-hint text-dim">
+      <div className="flex flex-col items-center gap-4">
+        {artUrl ? (
+          <img src={artUrl} alt="" className="h-36 w-36 rounded-2xl object-cover shadow-2xl ring-1 ring-white/12" />
+        ) : (
+          <div className="grid h-36 w-36 place-items-center rounded-2xl bg-white/6 ring-1 ring-white/12">
+            <Disc className="h-12 w-12 text-off-white/25" />
+          </div>
+        )}
+        <div className="flex flex-col items-center gap-1">
+          <Roll
+            text={title}
+            wrap
+            lines={2}
+            className="font-display text-[1.875rem] leading-tight font-semibold tracking-display text-off-white"
+          />
+          <div className="text-title text-soft">{artist}</div>
+        </div>
+        <div className="text-hint text-dim">
           {lyrics.state === 'loading' ? 'looking for the words' : 'no lyrics for this track'}
         </div>
+        {showTransport && (
+          <div className="mt-1 flex items-center gap-10">
+            <button
+              aria-label="previous"
+              onClick={onPrev}
+              style={{ color: tint }}
+              className="-m-3 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90">
+              <Skip className="h-8 w-8 -scale-x-100" />
+            </button>
+            <button
+              aria-label={playing ? 'pause' : 'play'}
+              onClick={onToggle}
+              className="grid h-16 w-16 place-items-center rounded-[22px] bg-off-white text-screen shadow-2xl transition-[transform,background-color,color] duration-300 ease-spring active:scale-90"
+              style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}>
+              <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+                {playing ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7" />}
+              </span>
+            </button>
+            <button
+              aria-label="next"
+              onClick={onNext}
+              style={{ color: tint }}
+              className="-m-3 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90">
+              <Skip className="h-8 w-8" />
+            </button>
+          </div>
+        )}
       </div>
-      {chrome}
     </div>
   );
 }
