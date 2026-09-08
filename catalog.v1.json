@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T07:10:34.142Z",
+  "updated_at": "2026-09-08T07:43:25.687Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -214,16 +214,34 @@
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.jpg",
       "screenshots": [
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/01-classic.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/01-cover.jpg",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/02-vinyl.jpg",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-poster.jpg",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/04-cover.jpg",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/05-cd.jpg",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/06-settings.jpg"
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-cd.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/04-poster.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/05-settings.jpg"
       ],
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.25.3",
+          "released_at": "2026-09-08T07:43:25.685Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.25.3.zip",
+            "size": 945613,
+            "sha256": "f1c5484e5da0a517af6ea5fd892279f710d3b52d100e9ba029e17419103a4796"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.25.3.html",
+            "size": 30541,
+            "sha256": "5b26c99458b25176ef7dae69e8c203079fc14954823378cec5638129530e90fd"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Classic and Cover are one style now, called Cover.** They were two takes on the same idea, art\nbeside the track, and Cover had grown the better one. It keeps its own layout and gains what Classic\nowned: **Art to the edge** and **Art pulse**. With the art to the edge, the track and the controls\nhold an even margin of their own on every side rather than giving it up along with the artwork. Anything set to Classic moves to Cover on its own,\nsince the two are no longer distinguishable. Four styles remain: Cover, Vinyl, CD and Poster.\n\nSkipping a track slides the new one in from the side it came from, in every style. The animation\nsits on the one element all five share, so it is the same movement whichever player you are using,\nand because that element is inside the turned stage the slide follows the direction you actually\nswiped however the screen is mounted.\n\nThe CD style keeps its clock in the bottom left corner of the tray, in both orientations. The disc\nis round inside a rounded square, so that corner is space nothing else was using. Clock position has\nno effect in this style as a result; size still does.\n\nWith the on-screen buttons off, Poster gives the track the full width of the screen instead of the\nhalf it was holding. That half existed only to keep the title clear of the play button, and with the\nbutton gone the block is inset the same on both sides."
+        },
         {
           "version": "0.25.2",
           "released_at": "2026-09-08T07:10:34.140Z",
