@@ -25,8 +25,11 @@ a seek needs, so the words double as the scrubber.
 carries on, and the view goes back to the line being sung five seconds after you stop. It does this
 in Lyrics whatever the wheel is set to elsewhere.
 
-A track with no lyrics at all now shows what is playing rather than only saying there is nothing:
-artwork, title and artist down the middle, with the transport under them.
+A button on the left of the screen puts the words away and brings them back, and **Lyrics → Show the
+words** does the same from the settings. It only appears when there are words to hide.
+
+With the words off, or with a track that has none, the style shows what is playing rather than an
+empty screen: artwork, title and artist down the middle, with the transport under them.
 
 The phone decides what there is to show. Timed lyrics get the moving column; lyrics with no timings
 are laid out as a page you can scroll with the wheel; a track with neither says so under its title

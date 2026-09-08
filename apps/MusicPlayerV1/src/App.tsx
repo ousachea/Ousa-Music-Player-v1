@@ -423,6 +423,8 @@ export default function App() {
           motion={prefs.motion}
           upright={upright}
           offset={browse}
+          words={prefs.words}
+          onWords={() => setPref('words', prefs.words ? 'false' : 'true')}
           corner={prefs.lyricsInfo}
           playing={playing}
           showTransport={prefs.transport}
@@ -715,6 +717,7 @@ type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
 // rows that only some styles can use, kept together under the name of the style you are in
 const STYLE_ROWS: Row[] = [
   { key: 'lyricsInfo', label: 'Track corner', only: ['lyrics'] },
+  { key: 'words', label: 'Show the words', only: ['lyrics'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
   { key: 'coverPanel', label: 'Panel behind the track', only: ['widget'] },
   { key: 'coverVolume', label: 'Volume slider', only: ['widget'] },
@@ -2409,6 +2412,8 @@ function Lyrics({
   motion,
   upright,
   offset,
+  words,
+  onWords,
   corner,
   playing,
   showTransport,
@@ -2426,6 +2431,8 @@ function Lyrics({
   motion: boolean;
   upright: boolean;
   offset: number;
+  words: boolean;
+  onWords: () => void;
   corner: Prefs['lyricsInfo'];
   playing: boolean;
   showTransport: boolean;
@@ -2435,6 +2442,8 @@ function Lyrics({
   onSeekMs: (ms: number) => void;
 }) {
   const tint = accent?.fill ?? '#efefef';
+  // there is only something to hide when the phone actually gave us words
+  const has = lyrics.state === 'timed' || lyrics.state === 'plain';
   const right = corner === 'tr' || corner === 'br';
   const bottom = corner === 'bl' || corner === 'br';
   const edge = `${bottom ? 'bottom-5' : 'top-5'} ${right ? 'right-6' : 'left-6'}`;
@@ -2458,6 +2467,18 @@ function Lyrics({
           <div className="truncate text-hint text-soft">{artist}</div>
         </div>
       </div>
+
+      {has && (
+        <button
+          aria-label={words ? 'hide the words' : 'show the words'}
+          onClick={onWords}
+          style={{ color: words ? tint : undefined }}
+          className={`absolute top-1/2 left-6 z-[3] -m-3 -translate-y-1/2 p-3 transition-[transform,color,opacity] duration-300 ease-spring active:scale-90 ${
+            words ? '' : 'text-off-white/50'
+          }`}>
+          <Words className="h-7 w-7" off={!words} />
+        </button>
+      )}
 
       {showTransport && (
         <>
@@ -2504,7 +2525,7 @@ function Lyrics({
     </>
   );
 
-  if (lyrics.state === 'timed') {
+  if (words && lyrics.state === 'timed') {
     const at = activeIndex(lyrics.lines, elapsed);
     // the line the column is parked on, which is the sung one unless the wheel has moved away
     const shown = Math.min(lyrics.lines.length - 1, Math.max(0, at + offset));
@@ -2547,7 +2568,7 @@ function Lyrics({
     );
   }
 
-  if (lyrics.state === 'plain')
+  if (words && lyrics.state === 'plain')
     return (
       <div className="absolute inset-0">
         <div
@@ -2561,7 +2582,7 @@ function Lyrics({
       </div>
     );
 
-  // with no words to follow there is nothing for the corners to keep clear of, so the track comes
+  // with no words on screen there is nothing for the corners to keep clear of, so the track comes
   // to the middle and brings the transport with it
   return (
     <div className="absolute inset-0 grid place-items-center px-16 text-center">
@@ -2583,7 +2604,11 @@ function Lyrics({
           <div className="text-title text-soft">{artist}</div>
         </div>
         <div className="text-hint text-dim">
-          {lyrics.state === 'loading' ? 'looking for the words' : 'no lyrics for this track'}
+          {lyrics.state === 'loading'
+            ? 'looking for the words'
+            : has
+              ? 'words hidden'
+              : 'no lyrics for this track'}
         </div>
         {showTransport && (
           <div className="mt-1 flex items-center gap-10">
@@ -2613,7 +2638,25 @@ function Lyrics({
           </div>
         )}
       </div>
+      {has && (
+        <button
+          aria-label="show the words"
+          onClick={onWords}
+          className="absolute top-1/2 left-6 z-[3] -m-3 -translate-y-1/2 p-3 text-off-white/50 transition-[transform,color] duration-300 ease-spring active:scale-90">
+          <Words className="h-7 w-7" off />
+        </button>
+      )}
     </div>
+  );
+}
+
+// lines of text, struck through when the words are off
+function Words({ className, off }: { className?: string; off?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M4 6h16M4 11h11M4 16h14M4 21h8" />
+      {off && <path d="M3 21 21 3" strokeWidth="2.2" />}
+    </svg>
   );
 }
 

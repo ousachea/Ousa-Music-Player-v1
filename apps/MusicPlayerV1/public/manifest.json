@@ -52,6 +52,14 @@
     {
       "type": "boolean",
       "data": {
+        "key": "words",
+        "label": "Show the words in Lyrics",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
         "key": "coverEdge",
         "label": "Album art runs to the screen edge",
         "default": false

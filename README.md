@@ -153,8 +153,9 @@ Touching a line plays from it: each line knows the moment it belongs to, so the 
 scrubber. The wheel reads rather than scrubs, moving the words a line a click while the song carries
 on, and the view returns to the line being sung a few seconds after you stop.
 
-A track with no lyrics shows the artwork, title and artist down the middle instead, with the
-transport under them.
+A button on the left puts the words away and brings them back, and **Show the words** does the same
+from the settings. With them off, or on a track that has none, the style shows the artwork, title
+and artist down the middle instead, with the transport under them.
 
 What you get depends on what the phone has. Timed lyrics get the moving column. Lyrics without
 timings are laid out as a page, which the wheel scrolls. A track with neither says so under its
