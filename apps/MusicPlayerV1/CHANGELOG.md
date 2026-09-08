@@ -1,5 +1,16 @@
 # Music Player
 
+## 0.31.0
+
+A sixth player style: **Cassette**. A tape in a deck, with the title written across a cream label,
+the rainbow band every tape wore, and a window showing the two spools. The spools are the progress
+bar. The left one empties as the song plays while the right one fills, and both turn with the music
+and hold where they are when you pause. The shell takes its tint from the album's colour, and three
+chunky keys under it work the transport. Turned a quarter the tape is sized by width rather than
+height so it keeps its shape.
+
+Mode, and `5` on a keyboard, cycles through it: Cover, Vinyl, CD, Cassette, Poster, Lyrics.
+
 ## 0.30.2
 
 The corner opposite the track now shows how far through the song is, a ring with the elapsed time

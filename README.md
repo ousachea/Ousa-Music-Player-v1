@@ -7,7 +7,7 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **Music Player** | Now playing, in five styles, coloured by the album art, on a screen that turns |
+| **Music Player** | Now playing, in six styles, coloured by the album art, on a screen that turns |
 | **Clock** | A clock in eight faces, seven timers, a stopwatch and an alarm |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -44,14 +44,14 @@ settings on the device and press **Check** under *Software update*.
 Music notes drift up over whichever style you pick, each one tinted a little differently from the
 album art. They pause with the music, and **Display → Floating notes** turns them off.
 
-### The five player styles
+### The six player styles
 
 Switch between them in the settings, under **Player style**. A small tag along the bottom of the
 screen names the one you are in.
 
 When the track changes the blurred background dissolves from one cover to the next rather than
 cutting between them. Vinyl and CD mark the change by swapping the record or the disc, which turns
-in from a little smaller and settles; Cover and Poster slide the new track in from the side it came
+in from a little smaller and settles; Cover, Cassette and Poster slide the new track in from the side it came
 from, which is the side you swiped.
 
 ### Vinyl
@@ -75,6 +75,21 @@ The track sits beside the disc rather than over it, so nothing has to be read ag
 The transport here is one outlined block split into three, with the progress bar directly above it.
 Landscape sets the tray on the left and runs the track, bar and buttons down the right; turned, the
 whole thing stacks the way a phone would.
+
+### Cassette
+
+A tape sitting in a deck. The cream label carries the title written across it, the rainbow band every
+tape wore runs under it, and a window below that shows the two spools.
+
+The spools are the progress bar: the left one starts full and empties as the song plays while the
+right one fills, and both turn while the music runs and hold where they are when you pause. The label
+reads PLAY or PAUSE and STEREO along the top, the artist under the ruled line, and the album with the
+elapsed and remaining times along the bottom edge. The shell takes its tint from the album's own
+colour, so a new track repaints the plastic.
+
+Three chunky keys sit under the tape and press in when you touch them. With the on-screen buttons off
+the tape takes the whole screen instead. Turned a quarter the tape is sized by the width it has
+rather than the height, so it keeps its shape rather than stretching into the taller box.
 
 ### Poster
 
@@ -149,7 +164,7 @@ title rather than leaving the screen blank.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Poster, Lyrics |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Poster, Lyrics |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -187,8 +202,8 @@ one it lies on in the layout.
 
 Press the button under the wheel to open them on the device. The style picker sits at the top,
 outside the list, because it decides what the rest of the list holds, and everything that only
-applies to the style you are in is gathered under that style's name. Poster has no such group: it
-has no settings of its own. A rail down the left edge shows where you are in the list.
+applies to the style you are in is gathered under that style's name. Poster and Cassette have no
+such group: they have no settings of their own. A rail down the left edge shows where you are in the list.
 
 - **Player** — style, accent colour, HD album art, the art pulse with its tempo, and whether the
   Classic style's art runs to the edge of the screen

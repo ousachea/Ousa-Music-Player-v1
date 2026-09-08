@@ -425,6 +425,7 @@ export default function App() {
           duration={duration}
           remaining={prefs.remaining}
           showTransport={prefs.transport}
+          quarter={prefs.rotate === 90 || prefs.rotate === 270}
           onToggle={toggle}
           onPrev={() => goPrev(true)}
           onNext={() => goNext()}
@@ -2738,6 +2739,7 @@ function Cassette({
   duration,
   remaining,
   showTransport,
+  quarter,
   onToggle,
   onPrev,
   onNext,
@@ -2753,6 +2755,7 @@ function Cassette({
   duration: number;
   remaining: boolean;
   showTransport: boolean;
+  quarter: boolean;
   onToggle: () => void;
   onPrev: () => void;
   onNext: () => void;
@@ -2760,8 +2763,8 @@ function Cassette({
   const tint = accent?.fill ?? '#e7d9c9';
   const done = Math.min(1, Math.max(0, progress));
   // a spool never empties completely: the hub is still there under the last of the tape
-  const left = 34 - 14 * done;
-  const right = 20 + 14 * done;
+  const left = 40 - 16 * done;
+  const right = 24 + 16 * done;
   const spin = { animationDuration: '2.6s', animationPlayState: playing && motion ? 'running' : 'paused' };
 
   const reel = (cx: number, r: number) => (
@@ -2772,17 +2775,17 @@ function Cassette({
         {Array.from({ length: 6 }, (_, i) => (
           <rect
             key={i}
-            x={cx - 1.8}
-            y={31}
-            width="3.6"
-            height="8"
+            x={cx - 2}
+            y={29}
+            width="4"
+            height="9"
             rx="1"
             fill="#e7ddd2"
             transform={`rotate(${i * 60} ${cx} 50)`}
           />
         ))}
-        <circle cx={cx} cy="50" r="11" fill="#efe6dd" stroke="#b09e91" strokeWidth="1.2" />
-        <circle cx={cx} cy="50" r="4" fill="#7c6a63" />
+        <circle cx={cx} cy="50" r="13" fill="#efe6dd" stroke="#b09e91" strokeWidth="1.2" />
+        <circle cx={cx} cy="50" r="4.5" fill="#7c6a63" />
       </g>
     </g>
   );
@@ -2802,9 +2805,11 @@ function Cassette({
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-5">
       {/* the shell, screwed into a deck */}
       <div
-        className="relative aspect-[100/62] max-h-full w-auto max-w-full rounded-[16px] p-[2.2%] shadow-2xl ring-1 ring-black/40"
+        className={`relative aspect-[100/62] max-h-full max-w-full rounded-[16px] p-[2.2%] shadow-2xl ring-1 ring-black/40 ${
+          quarter ? 'h-auto w-full' : 'h-auto w-auto'
+        }`}
         style={{
-          height: showTransport ? '72%' : '90%',
+          height: quarter ? undefined : showTransport ? '72%' : '90%',
           background: `linear-gradient(150deg, color-mix(in oklab, ${tint} 30%, #f7f1e9), #e2d7cb 58%, color-mix(in oklab, ${tint} 20%, #c9bdb1))`,
         }}>
         {['left-[1.6%] top-[2.4%]', 'right-[1.6%] top-[2.4%]', 'left-[1.6%] bottom-[2.4%]', 'right-[1.6%] bottom-[2.4%]'].map(
@@ -2815,7 +2820,7 @@ function Cassette({
 
         <div className="flex h-full w-full flex-col overflow-hidden rounded-[10px] bg-[#fbf6ee] ring-1 ring-black/10">
           {/* the written label */}
-          <div className="flex min-h-0 flex-[46] flex-col px-[3.5%] pt-[2.5%]">
+          <div className="flex min-h-0 flex-[42] flex-col px-[3.5%] pt-[2.5%]">
             <div className="flex shrink-0 items-baseline justify-between font-mono text-[0.5rem] tracking-[0.22em] text-black/40 uppercase">
               <span>{playing ? 'play' : 'pause'}</span>
               <span>stereo</span>
@@ -2839,13 +2844,13 @@ function Cassette({
           </div>
 
           {/* the window: spools carry the progress */}
-          <div className="relative min-h-0 flex-[44] bg-[#e6dbcf]">
+          <div className="relative min-h-0 flex-[48] bg-[#e6dbcf]">
             <svg viewBox="0 0 360 100" className="absolute inset-0 h-full w-full">
-              <rect x="14" y="7" width="332" height="86" rx="10" fill="#2e2724" />
-              <rect x="14" y="7" width="332" height="86" rx="10" fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="2" />
-              <rect x="110" y="46" width="140" height="8" fill="#463b36" />
-              {reel(110, left)}
-              {reel(250, right)}
+              <rect x="10" y="4" width="340" height="92" rx="10" fill="#2e2724" />
+              <rect x="10" y="4" width="340" height="92" rx="10" fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="2" />
+              <rect x="105" y="43" width="150" height="14" fill="#4a3f39" />
+              {reel(105, left)}
+              {reel(255, right)}
             </svg>
           </div>
 
