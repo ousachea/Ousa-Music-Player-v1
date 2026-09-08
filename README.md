@@ -113,28 +113,6 @@ shadow, so it runs flush to the edges of the screen. The track and the controls 
 of their own, the same on every side, rather than losing it with the art. **Art pulse** beats a glow
 around it, at a tempo you set.
 
-### Controls
-
-| What you do | What happens |
-| --- | --- |
-| Preset button 1 | Previous track |
-| Preset button 2 | Play or pause |
-| Preset button 3 | Next track |
-| Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Poster, Lyrics |
-| `5` on a keyboard | The same, for working against the dev server |
-| Turn the wheel | Volume, or scrub the track — your choice in settings |
-| Press the wheel once | Play or pause |
-| Press it twice | Next track |
-| Press it three times | Previous track |
-| Button under the wheel | Opens and closes settings |
-| Tap the play button | Play or pause |
-| Drag the progress bar | Seek |
-| Swipe across the screen | Next track, or previous if you swipe the other way |
-
-A press waits a moment to see whether another one follows, so play/pause from the wheel is very
-slightly delayed. The on-screen button is instant.
-
 ### Lyrics
 
 ![Lyrics style](apps/MusicPlayerV1/screenshots/05-lyrics.jpg)
@@ -160,6 +138,28 @@ and artist down the middle instead, with the transport under them.
 What you get depends on what the phone has. Timed lyrics get the moving column. Lyrics without
 timings are laid out as a page, which the wheel scrolls. A track with neither says so under its
 title rather than leaving the screen blank.
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Preset button 1 | Previous track |
+| Preset button 2 | Play or pause |
+| Preset button 3 | Next track |
+| Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Poster, Lyrics |
+| `5` on a keyboard | The same, for working against the dev server |
+| Turn the wheel | Volume, or scrub the track — your choice in settings |
+| Press the wheel once | Play or pause |
+| Press it twice | Next track |
+| Press it three times | Previous track |
+| Button under the wheel | Opens and closes settings |
+| Tap the play button | Play or pause |
+| Drag the progress bar | Seek |
+| Swipe across the screen | Next track, or previous if you swipe the other way |
+
+A press waits a moment to see whether another one follows, so play/pause from the wheel is very
+slightly delayed. The on-screen button is instant.
 
 ### Screen orientation
 
