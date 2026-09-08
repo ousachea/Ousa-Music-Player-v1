@@ -2974,13 +2974,13 @@ function WrittenTape({ title, artist, album, playing, motion, progress, elapsed,
   );
 }
 
-// the printed tape: a release somebody pressed, the whole label printed in the album's colour
-function PrintedTape({ title, artist, album, playing, motion, progress, elapsed, duration, remaining, showTransport, quarter, skin }: Face) {
+// the printed tape: a release somebody pressed, the cover die-cut into the shell and the track
+// printed on the plastic under it
+function PrintedTape({ title, artist, album, playing, motion, progress, elapsed, duration, remaining, artUrl, showTransport, quarter, skin }: Face) {
   const done = Math.min(1, Math.max(0, progress));
   const left = 36 - 14 * done;
   const right = 22 + 14 * done;
   const spin = { animationDuration: '2.6s', animationPlayState: playing && motion ? 'running' : 'paused' };
-  const side = alpha(skin.labelInk, 78);
 
   return (
     <div
@@ -2993,68 +2993,14 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
       }}>
       <Screws />
 
-      {/* the printed label, edge to edge the way a pressed tape wears it */}
+      {/* the cover is the label, edge to edge, with the window cut through it */}
       <div
-        className="absolute inset-x-[2.6%] top-[3.4%] h-[64%] overflow-hidden rounded-[3px] shadow-[0_3px_8px_rgba(0,0,0,0.55)]"
+        className="absolute inset-x-[2.6%] top-[3.4%] h-[55%] overflow-hidden rounded-[3px] shadow-[0_3px_8px_rgba(0,0,0,0.6)]"
         style={{ backgroundColor: skin.label }}>
-        <div
-          className="relative flex h-full flex-col justify-between px-[2.6%] py-[2.2%]"
-          style={{ color: skin.labelInk }}>
-          {/* a turned label has no room for the flanking columns, so the artist goes under the title */}
-          <div className="flex items-start justify-between gap-2">
-            {!quarter && (
-              <span
-                className="line-clamp-3 w-[24%] shrink-0 text-right font-mono text-[0.44rem] leading-[1.7] tracking-[0.1em] uppercase"
-                style={{ color: side }}>
-                {artist}
-              </span>
-            )}
-            <span className="min-w-0 flex-1 text-center">
-              <span
-                className={`block font-display leading-[0.95] font-bold uppercase [text-shadow:0_1px_0_rgba(0,0,0,0.18)] ${
-                  quarter ? 'line-clamp-3' : 'line-clamp-2'
-                }`}
-                style={{
-                  fontSize: quarter
-                    ? title.length > 26
-                      ? '0.8rem'
-                      : '1rem'
-                    : title.length > 26
-                      ? '1.05rem'
-                      : title.length > 16
-                        ? '1.4rem'
-                        : '1.75rem',
-                }}>
-                {title}
-              </span>
-              <span
-                className="mt-[3px] block font-display leading-none font-bold uppercase"
-                style={{ color: side, fontSize: quarter ? '0.62rem' : '0.8rem' }}>
-                side a
-              </span>
-              {quarter && (
-                <span className="mt-[3px] block truncate font-mono text-[0.44rem] tracking-[0.1em] uppercase" style={{ color: side }}>
-                  {artist}
-                </span>
-              )}
-            </span>
-            {!quarter && (
-              <span
-                className="line-clamp-3 w-[24%] shrink-0 font-mono text-[0.44rem] leading-[1.7] tracking-[0.1em] uppercase"
-                style={{ color: side }}>
-                {album ?? ''}
-              </span>
-            )}
-          </div>
+        {artUrl && <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+        <div className="absolute inset-0 shadow-[inset_0_0_26px_rgba(0,0,0,0.45)]" />
 
-          <div className="text-center font-mono text-[0.4rem] leading-[1.6] tracking-[0.12em] uppercase" style={{ color: alpha(skin.labelInk, 62) }}>
-            {playing ? 'playing' : 'paused'} &middot; {clock(elapsed)}
-            {duration ? ` / ${remaining ? `-${clock(duration - elapsed)}` : clock(duration)}` : ''} &middot; type ii high bias &middot; dolby b nr
-          </div>
-        </div>
-
-        {/* the window is cut through the print, with the counter reading across the middle */}
-        <div className="absolute top-[33%] left-1/2 h-[50%] w-[54%] -translate-x-1/2">
+        <div className="absolute bottom-[7%] left-1/2 h-[54%] w-[54%] -translate-x-1/2">
           <svg viewBox="0 0 300 96" className="absolute inset-0 h-full w-full">
             <Shading id="print" />
             <rect x="2" y="2" width="296" height="92" rx="6" fill="#100d0c" />
@@ -3076,18 +3022,51 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
         </div>
       </div>
 
-      {/* the moulded half below the print: the holes a deck's spindles and pinch rollers reach through */}
-      <div className="absolute inset-x-[2.6%] bottom-[4%] flex h-[24%] items-center justify-center gap-[6%]">
-        {[0.5, 1, 0.62, 0.62, 1, 0.5].map((f, i) => (
-          <span
-            key={i}
-            className="rounded-full bg-black/55 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.06)]"
-            style={{ width: `${f * 5}%`, height: `${f * 34}%` }}
-          />
-        ))}
+      {/* the track printed on the moulded half, the way a shell is stamped rather than labelled */}
+      <div className="absolute inset-x-[5%] top-[60%] bottom-[3.5%] flex flex-col items-center justify-center text-center">
+        <span
+          className={`block font-display leading-[0.98] font-bold uppercase [text-shadow:0_1px_0_rgba(0,0,0,0.5)] ${
+            quarter ? 'line-clamp-3' : 'line-clamp-2'
+          }`}
+          style={{
+            color: skin.labelInk,
+            fontSize: quarter
+              ? title.length > 26
+                ? '0.8rem'
+                : '1rem'
+              : title.length > 26
+                ? '1.05rem'
+                : title.length > 16
+                  ? '1.4rem'
+                  : '1.75rem',
+          }}>
+          {title}
+        </span>
+        <span
+          className="mt-[3%] block max-w-full truncate font-mono text-[0.5rem] tracking-[0.16em] uppercase"
+          style={{ color: skin.label }}>
+          side a &middot; {artist}
+        </span>
+        <span
+          className="mt-[1.5%] block max-w-full truncate font-mono text-[0.42rem] tracking-[0.12em] uppercase"
+          style={{ color: alpha(skin.labelInk, 42) }}>
+          {album ? `${album} · ` : ''}
+          {clock(elapsed)}
+          {duration ? ` / ${remaining ? `-${clock(duration - elapsed)}` : clock(duration)}` : ''} &middot; type ii high bias
+        </span>
+        {/* the holes a deck's spindles and pinch rollers reach through, along the very bottom */}
+        <div className="mt-[3%] flex w-[70%] items-center justify-center gap-[7%]">
+          {[0.5, 1, 0.62, 0.62, 1, 0.5].map((f, i) => (
+            <span
+              key={i}
+              className="rounded-full bg-black/55 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.06)]"
+              style={{ width: `${f * 5}%`, aspectRatio: '1' }}
+            />
+          ))}
+        </div>
       </div>
       <span
-        className="absolute right-[5%] bottom-[5%] font-display text-[1.4rem] leading-none font-bold text-white/8"
+        className="absolute right-[4%] bottom-[3%] font-display text-[1.1rem] leading-none font-bold text-white/8"
         style={{ textShadow: '0 1px 0 rgba(255,255,255,0.06)' }}>
         A
       </span>

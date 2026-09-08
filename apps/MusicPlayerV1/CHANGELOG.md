@@ -14,18 +14,17 @@ tape on the spools and the keys all take the album's colour, and the rainbow ban
 the cover's own hue rather than mixing two of them, since a cover with one hue would otherwise give
 five bands of the same colour.
 
-A second cassette, **Printed**, and a key beside the transport to switch between the two.
-Where the written tape is a blank label somebody filled in, the printed one is a pressed release: the
-label printed edge to edge in the album's colour, the title in bold caps with SIDE A under it, the
-artist and album in small type either side, a tape counter reading across the window with a line
-riding the ticks, and the whole thing set into a dark moulded shell with the spindle holes along the
-bottom. It carries no cover art: a pressed label is type across a colour, and the title reads better
-across the whole width than beside a photograph. Turned a quarter it drops the flanking columns and puts the artist under the title, since a
-label that narrow has no room for three.
+A second cassette, **Printed**, and a key beside the transport to switch between the two. Where the
+written tape is a blank label somebody filled in, the printed one is a pressed release: the cover
+itself is the label, running the whole width of the shell with the window die-cut through it and a
+tape counter reading across that window, a line riding the ticks at the playhead. The track is
+stamped on the moulded half below rather than over the picture, in bold caps with SIDE A and the
+artist under it, the album and the time under that, and the spindle holes along the very bottom.
 
-**Artwork on the label**, on by default, prints the cover square on the right of the label with the
-title and artist keeping the room to its left. It fades into the paper along its inside edge rather
-than sitting in a frame, so it reads as printed on the label instead of stuck to it.
+**Artwork on the label**, on by default, prints the cover square on the right of the written label
+with the title and artist keeping the room to its left. It fades into the paper along its inside
+edge rather than sitting in a frame, so it reads as printed on the label instead of stuck to it. On
+the printed design the cover is the label itself, so nothing there depends on it.
 
 The colours come off the cover more directly. The shell, the label, the plate around the window, the
 tape on the spools, the writing on the label and the keys are all built from the cover's own hue and

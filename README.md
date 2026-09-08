@@ -85,10 +85,10 @@ whole thing stacks the way a phone would.
 
 A tape sitting in a deck, in two designs. **Written** is a blank label somebody filled in: the title
 across the cream card, the rainbow band every tape wore under it, and a window below that showing
-the two spools. **Printed** is a pressed release: the label printed edge to edge in the album's
-colour with the title in bold caps over it, SIDE A under that, the artist and album in small type
-either side, and a tape counter reading across the window, all set into a dark moulded shell with
-the spindle holes along the bottom.
+the two spools. **Printed** is a pressed release: the cover itself is the label, running the whole
+width of the shell with the window die-cut through it, and the track is stamped on the moulded half
+below in bold caps, with SIDE A and the artist under it, the album and the time under that, and the
+spindle holes along the very bottom.
 
 A fourth key sits with the transport, in the same deck bar and the same chunky plastic, and switches
 between the two. **Tape design** does the same from the settings.
@@ -107,11 +107,10 @@ around that hue, two bands to each side of it, rather than five bands of the one
 
 **Artwork on the label** prints the cover on the right of the written label, faded into the paper
 along its inside edge, with the writing keeping the room to its left. Turn it off for a label with
-nothing but handwriting on it. The printed label carries no cover: it is type across a colour, the
-way a pressed tape is.
+nothing but handwriting on it. On the printed design the cover is the label itself, so nothing there
+depends on this.
 
-Turned a quarter the printed label drops the columns either side of the title and puts the artist
-under it, because a label that narrow has no room for three columns.
+Turned a quarter the printed title takes a third line rather than a smaller shell.
 
 It is moulded rather than drawn flat: light rakes across the shell in one diagonal, the screws are
 turned and slotted, the window is sunk into the label with a shadow down its inside, and the tape on
