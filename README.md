@@ -88,8 +88,10 @@ across the cream card, the rainbow band every tape wore under it, and a window b
 the two spools. **Printed** is a pressed release: the cover itself is the label, printed as a
 sticker with a paper edge and pressed on a hair crooked, with the window die-cut through it, and the
 track is stamped on the moulded half below in bold caps, with SIDE A and the artist under it, the
-album and the time under that, and the spindle holes along the very bottom. Its shell is dark
-plastic mixed from the cover as well, so a warm album gives a warm tape here too.
+album and the time under that, and the spindle holes along the very bottom. Its shell is brushed
+metal rather than plastic: a fine grain across it, the sheen rolled metal carries in bands, a bright
+machined edge and a narrow specular streak, anodised in the cover's hue so faintly that the light
+does most of the work.
 
 A fourth key sits with the transport, in the same deck bar and the same chunky plastic, and switches
 between the two. **Tape design** does the same from the settings.

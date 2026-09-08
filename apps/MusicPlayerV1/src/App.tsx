@@ -2787,10 +2787,11 @@ function tapeSkin(accent: Accent | null) {
     tapeIn: `hsl(${base.h} ${Math.min(36, sat)}% 16%)`,
     tapeOut: `hsl(${base.h} ${Math.min(30, sat)}% 32%)`,
     label: `hsl(${base.h} ${Math.min(88, sat + 24)}% 41%)`,
+    // anodised rather than painted: the hue is barely in it, and the light does the rest
     metal: [
-      `hsl(${base.h} ${Math.min(20, sat)}% 24%)`,
-      `hsl(${base.h} ${Math.min(22, sat)}% 13%)`,
-      `hsl(${base.h} ${Math.min(18, sat)}% 7%)`,
+      `hsl(${base.h} ${Math.min(14, sat)}% 38%)`,
+      `hsl(${base.h} ${Math.min(16, sat)}% 23%)`,
+      `hsl(${base.h} ${Math.min(12, sat)}% 13%)`,
     ],
     labelInk: `hsl(${base.h} ${Math.min(30, sat)}% 96%)`,
     labelDeep: `hsl(${base.h} ${Math.min(80, sat + 10)}% 22%)`,
@@ -2989,12 +2990,17 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
 
   return (
     <div
-      className={`relative aspect-[100/62] max-h-full max-w-full rounded-[14px] shadow-[0_24px_48px_-18px_rgba(0,0,0,0.95),0_8px_16px_-8px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.16),inset_0_-3px_8px_rgba(0,0,0,0.5)] ring-1 ring-black/70 ${
+      className={`relative aspect-[100/62] max-h-full max-w-full rounded-[14px] shadow-[0_24px_48px_-18px_rgba(0,0,0,0.95),0_8px_16px_-8px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.45),inset_0_-1px_0_rgba(0,0,0,0.8),inset_0_-4px_10px_rgba(0,0,0,0.5)] ring-1 ring-white/12 ${
         quarter ? 'h-auto w-[84%]' : 'h-auto w-auto'
       }`}
       style={{
         height: quarter ? undefined : showTransport ? '84%' : '97%',
-        background: `linear-gradient(160deg, ${skin.metal[0]}, ${skin.metal[1]} 52%, ${skin.metal[2]})`,
+        // brushed grain, then the sheen rolled metal carries in bands, then the anodised colour itself
+        backgroundImage: [
+          'repeating-linear-gradient(92deg, rgba(255,255,255,0.055) 0 1px, rgba(0,0,0,0.07) 1px 2px, rgba(255,255,255,0) 2px 5px)',
+          'linear-gradient(174deg, rgba(255,255,255,0.22) 0 5%, rgba(255,255,255,0.03) 14%, rgba(0,0,0,0.26) 46%, rgba(255,255,255,0.10) 62%, rgba(0,0,0,0.30) 88%, rgba(0,0,0,0.42) 100%)',
+          `linear-gradient(160deg, ${skin.metal[0]}, ${skin.metal[1]} 52%, ${skin.metal[2]})`,
+        ].join(','),
       }}>
       <Screws />
 
@@ -3074,7 +3080,7 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
           {[0.5, 1, 0.62, 0.62, 1, 0.5].map((f, i) => (
             <span
               key={i}
-              className="rounded-full bg-black/55 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.06)]"
+              className="rounded-full bg-black/65 shadow-[inset_0_1px_2px_rgba(0,0,0,0.9),0_1px_0_rgba(255,255,255,0.22)]"
               style={{ width: `${f * 5}%`, aspectRatio: '1' }}
             />
           ))}
@@ -3086,7 +3092,7 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
         A
       </span>
 
-      <Gloss dark />
+      <Gloss metal />
     </div>
   );
 }
@@ -3111,13 +3117,14 @@ function Screws({ light }: { light?: boolean }) {
 }
 
 // moulded plastic catches the light across one corner
-function Gloss({ dark }: { dark?: boolean }) {
+function Gloss({ metal }: { metal?: boolean }) {
   return (
     <div
       className="pointer-events-none absolute inset-0 rounded-[16px]"
       style={{
-        background: dark
-          ? 'linear-gradient(118deg, rgba(255,255,255,0.16) 0 12%, rgba(255,255,255,0.04) 22%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.16) 82%, rgba(0,0,0,0.3) 100%)'
+        // metal takes a narrow specular streak; plastic takes a broad soft one
+        background: metal
+          ? 'linear-gradient(114deg, rgba(255,255,255,0.30) 0 4%, rgba(255,255,255,0.08) 9%, rgba(255,255,255,0) 20%, rgba(255,255,255,0.06) 44%, rgba(255,255,255,0) 56%, rgba(0,0,0,0.20) 78%, rgba(0,0,0,0.36) 100%)'
           : 'linear-gradient(118deg, rgba(255,255,255,0.42) 0 14%, rgba(255,255,255,0.10) 24%, rgba(255,255,255,0) 42%, rgba(0,0,0,0.10) 82%, rgba(0,0,0,0.22) 100%)',
       }}
     />
