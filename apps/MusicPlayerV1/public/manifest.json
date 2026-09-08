@@ -83,6 +83,14 @@
       }
     },
     {
+      "type": "boolean",
+      "data": {
+        "key": "tapeArt",
+        "label": "Album art on the cassette label",
+        "default": true
+      }
+    },
+    {
       "type": "enum",
       "data": {
         "key": "wheel",

@@ -424,6 +424,7 @@ export default function App() {
           elapsed={elapsed}
           duration={duration}
           remaining={prefs.remaining}
+          artUrl={prefs.tapeArt ? artUrl : null}
           showTransport={prefs.transport}
           quarter={prefs.rotate === 90 || prefs.rotate === 270}
           onToggle={toggle}
@@ -746,6 +747,7 @@ type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
 const STYLE_ROWS: Row[] = [
   { key: 'lyricsInfo', label: 'Track corner', only: ['lyrics'] },
   { key: 'words', label: 'Show the words', only: ['lyrics'] },
+  { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
   { key: 'coverPanel', label: 'Panel behind the track', only: ['widget'] },
   { key: 'coverVolume', label: 'Volume slider', only: ['widget'] },
@@ -2744,6 +2746,7 @@ function Cassette({
   elapsed,
   duration,
   remaining,
+  artUrl,
   showTransport,
   quarter,
   onToggle,
@@ -2760,6 +2763,7 @@ function Cassette({
   elapsed: number;
   duration: number;
   remaining: boolean;
+  artUrl: string | null;
   showTransport: boolean;
   quarter: boolean;
   onToggle: () => void;
@@ -2767,16 +2771,25 @@ function Cassette({
   onNext: () => void;
 }) {
   const tint = accent?.fill ?? '#e7d9c9';
-  const tint2 = accent?.fill2 ?? '#cbb9a4';
   // a cover with one hue would give five identical bands, so the band fans out around that hue instead
   const base = readHsl(accent?.fill) ?? { h: 28, s: 52, l: 62 };
   const sat = Math.min(76, Math.max(46, base.s));
   const stripes = [-56, -28, 0, 28, 56].map(
     (d, i) => `hsl(${(base.h + d + 360) % 360} ${sat}% ${[71, 64, 59, 64, 71][i]}%)`,
   );
-  const well = `hsl(${base.h} ${Math.min(24, sat)}% 11%)`;
-  const tapeIn = `hsl(${base.h} ${Math.min(28, sat)}% 16%)`;
-  const tapeOut = `hsl(${base.h} ${Math.min(22, sat)}% 31%)`;
+  const base2 = readHsl(accent?.fill2) ?? base;
+  const paper = `hsl(${base.h} ${Math.min(34, sat)}% 95%)`;
+  const plate = `hsl(${base.h} ${Math.min(30, sat)}% 85%)`;
+  const shell = [
+    `hsl(${base.h} ${Math.min(42, sat)}% 90%)`,
+    `hsl(${base2.h} ${Math.min(38, base2.s)}% 79%)`,
+    `hsl(${base.h} ${Math.min(40, sat)}% 66%)`,
+  ];
+  const ink = `hsl(${base.h} ${Math.min(46, sat)}% 17%)`;
+  const inkAt = (pct: number) => `color-mix(in oklab, ${ink} ${pct}%, transparent)`;
+  const well = `hsl(${base.h} ${Math.min(32, sat)}% 11%)`;
+  const tapeIn = `hsl(${base.h} ${Math.min(36, sat)}% 16%)`;
+  const tapeOut = `hsl(${base.h} ${Math.min(30, sat)}% 32%)`;
 
   const done = Math.min(1, Math.max(0, progress));
   // a spool never empties completely: the hub is still there under the last of the tape
@@ -2817,7 +2830,7 @@ function Cassette({
       aria-label={label}
       onClick={onClick}
       style={{
-        background: `linear-gradient(180deg, color-mix(in oklab, ${tint} 40%, transparent), color-mix(in oklab, ${tint} 12%, transparent))`,
+        background: `linear-gradient(180deg, color-mix(in oklab, ${tint} 48%, transparent), color-mix(in oklab, ${tint} 16%, transparent))`,
       }}
       className={`grid h-full place-items-center rounded-[7px] text-near ring-1 ring-white/14 shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_3px_0_rgba(0,0,0,0.5)] transition active:translate-y-[3px] active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] ${
         wide ? 'w-16' : 'w-13'
@@ -2835,13 +2848,13 @@ function Cassette({
         }`}
         style={{
           height: quarter ? undefined : showTransport ? '84%' : '97%',
-          background: `linear-gradient(150deg, color-mix(in oklab, ${tint} 26%, #f7f1e9), color-mix(in oklab, ${tint2} 22%, #e2d7cb) 58%, color-mix(in oklab, ${tint} 26%, #c9bdb1))`,
+          background: `linear-gradient(150deg, ${shell[0]}, ${shell[1]} 58%, ${shell[2]})`,
         }}>
         {['left-[1.6%] top-[2.4%]', 'right-[1.6%] top-[2.4%]', 'left-[1.6%] bottom-[2.4%]', 'right-[1.6%] bottom-[2.4%]'].map(
           at => (
             <span
               key={at}
-              className={`absolute z-20 h-2.5 w-2.5 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.6),0_1px_2px_rgba(0,0,0,0.4)] ${at}`}
+              className={`absolute z-[1] h-2.5 w-2.5 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.6),0_1px_2px_rgba(0,0,0,0.4)] ${at}`}
               style={{ background: 'radial-gradient(circle at 32% 30%, #d8cec3, #8d8177 70%, #6d6259)' }}>
               <span className="absolute top-1/2 left-1/2 h-[1px] w-[7px] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-black/45" />
             </span>
@@ -2850,23 +2863,43 @@ function Cassette({
 
         <div
           className="relative flex h-full w-full flex-col overflow-hidden rounded-[10px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),inset_0_2px_5px_rgba(0,0,0,0.18)]"
-          style={{ backgroundColor: `color-mix(in oklab, ${tint} 5%, #fbf6ee)` }}>
+          style={{ backgroundColor: paper }}>
           {/* the written label */}
-          <div className="flex min-h-0 flex-[42] flex-col px-[3.5%] pt-[2.5%]">
-            <div className="flex shrink-0 items-baseline justify-between font-mono text-[0.5rem] tracking-[0.22em] text-black/40 uppercase">
+          <div
+            className="relative flex min-h-0 flex-[42] flex-col overflow-hidden px-[3.5%] pt-[2.5%]"
+            style={{ paddingRight: artUrl ? '29%' : undefined }}>
+            {artUrl && (
+              <>
+                <img
+                  src={artUrl}
+                  alt=""
+                  className="absolute inset-y-0 right-0 aspect-square h-full object-cover"
+                  style={{ maskImage: 'linear-gradient(to right, transparent, #000 22%)' }}
+                />
+                <div
+                  className="absolute inset-y-0 right-0 aspect-square h-full"
+                  style={{ boxShadow: 'inset 5px 0 10px -7px rgba(0,0,0,0.5)' }}
+                />
+              </>
+            )}
+            <div
+              className="relative flex shrink-0 items-baseline justify-between font-mono text-[0.5rem] tracking-[0.22em] uppercase"
+              style={{ color: inkAt(52) }}>
               <span>side a &middot; {playing ? 'play' : 'pause'}</span>
               <span>type ii &middot; stereo</span>
             </div>
-            <div className="flex min-h-0 flex-1 items-center">
+            <div className="relative flex min-h-0 flex-1 items-center">
               {/* a -webkit-box flex item sizes to max-content and runs off the label, so it is held to the width */}
               <span
-                className="line-clamp-2 w-full min-w-0 pr-[0.12em] font-display leading-[1.12] font-semibold text-black/80 italic [text-shadow:0_1px_0_rgba(255,255,255,0.7)]"
-                style={{ fontSize: title.length > 58 ? '0.95rem' : title.length > 34 ? '1.15rem' : '1.5rem' }}>
+                className="line-clamp-2 w-full min-w-0 pr-[0.12em] font-display leading-[1.12] font-semibold italic [text-shadow:0_1px_0_rgba(255,255,255,0.55)]"
+                style={{ color: ink, fontSize: title.length > 58 ? '0.95rem' : title.length > 34 ? '1.15rem' : '1.5rem' }}>
                 {title}
               </span>
             </div>
-            <div className="shrink-0 border-b" style={{ borderColor: `color-mix(in oklab, ${tint} 45%, rgba(0,0,0,0.35))` }} />
-            <div className="shrink-0 truncate pt-[1.5%] pb-[1.5%] text-right text-hint text-black/45">{artist}</div>
+            <div className="relative shrink-0 border-b" style={{ borderColor: inkAt(35) }} />
+            <div className="relative shrink-0 truncate pt-[1.5%] pb-[1.5%] text-right text-hint" style={{ color: inkAt(62) }}>
+              {artist}
+            </div>
           </div>
 
           {/* the stripes a tape always wore */}
@@ -2879,7 +2912,7 @@ function Cassette({
           {/* the window: spools carry the progress */}
           <div
             className="relative min-h-0 flex-[48]"
-            style={{ backgroundColor: `color-mix(in oklab, ${tint} 13%, #e9dfd4)` }}>
+            style={{ backgroundColor: plate }}>
             <svg viewBox="0 0 360 100" className="absolute inset-0 h-full w-full">
               <defs>
                 <radialGradient id="cass-tape" cx="50%" cy="50%" r="50%">
@@ -2929,7 +2962,9 @@ function Cassette({
             </svg>
           </div>
 
-          <div className="flex shrink-0 items-center justify-between gap-3 px-[3.5%] py-[1.4%] font-mono text-hint tabular-nums text-black/55">
+          <div
+            className="flex shrink-0 items-center justify-between gap-3 px-[3.5%] py-[1.4%] font-mono text-hint tabular-nums"
+            style={{ color: inkAt(66) }}>
             <span className="min-w-0 truncate uppercase">{album ?? 'tape'}</span>
             <span>
               {clock(elapsed)}

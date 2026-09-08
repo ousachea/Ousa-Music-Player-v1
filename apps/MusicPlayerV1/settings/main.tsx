@@ -33,6 +33,7 @@ const HINTS: Record<string, string> = {
   rotate: 'Turns the whole screen, for a device mounted on its side or upside down. Preset button 4 also steps through it. At 90 and 270 the player is a tall column with a bar down each side, because the screen itself never changes shape.',
   coverPanel: 'Puts the track and the controls on a tinted panel of their own instead of straight over the blurred artwork. Cover style only.',
   coverVolume: 'The volume slider Cover draws under its transport. With it off the wheel still sets the volume, and the reading the other styles show over the middle of the screen comes back. Cover style only.',
+  tapeArt: 'Prints the album art on the cassette label, behind the title. Cassette style only.',
   words: 'Whether the Lyrics style shows the words or just what is playing. The button on the left of the screen does the same thing.',
   lyricsInfo: 'Which corner the artwork and track sit in on the Lyrics style. Play and pause take the other end of the same edge, and previous and next sit at the sides.',
   coverEdge: 'Drops the padding around the album art so it runs to the edges with square corners. Cover style only.',

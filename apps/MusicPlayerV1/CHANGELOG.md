@@ -14,6 +14,15 @@ tape on the spools and the keys all take the album's colour, and the rainbow ban
 the cover's own hue rather than mixing two of them, since a cover with one hue would otherwise give
 five bands of the same colour.
 
+**Artwork on the label**, on by default, prints the cover square on the right of the label with the
+title and artist keeping the room to its left. It fades into the paper along its inside edge rather
+than sitting in a frame, so it reads as printed on the label instead of stuck to it.
+
+The colours come off the cover more directly. The shell, the label, the plate around the window, the
+tape on the spools, the writing on the label and the keys are all built from the cover's own hue and
+saturation rather than mixed into a cream, so a warm album gives a warm tape and a cold one gives a
+cold tape, and the label's writing is the album's dark rather than black.
+
 It is moulded rather than drawn flat. Light rakes across the shell in one diagonal, the screws are
 turned and slotted, and the window is sunk into the label with a shadow down its inside and a
 highlight along the lip. The tape wound on a spool is a radial gradient ringed with the turns of the
