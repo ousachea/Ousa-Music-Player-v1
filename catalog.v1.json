@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T04:51:57.941Z",
+  "updated_at": "2026-09-08T06:27:15.167Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -218,11 +218,31 @@
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/02-vinyl.jpg",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-poster.jpg",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/04-cover.jpg",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/05-settings.jpg"
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/05-cd.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/06-settings.jpg"
       ],
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.24.0",
+          "released_at": "2026-09-08T06:27:15.164Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.24.0.zip",
+            "size": 942790,
+            "sha256": "73ac8e5d94372a616a352f6493e1519035518c97f4965f0a9f6fa3321457b75d"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.24.0.html",
+            "size": 30644,
+            "sha256": "ed1d242abf129b58aa730c174ff5e47bcd9a0870695c8446a2aedb469a74590f"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**On-screen buttons** is a new setting. The presets already do previous, play and next, so the\nbuttons drawn on screen are optional; turning them off gives every style back that room. A small\nmarker takes their place at each preset's own position, taken off the device diagram: four of them,\nevenly spread across the width of the screen with a matching margin at each end, each a bump against\nthe edge the button is on with the glyph for what it does just inside. The fourth is marked too,\nsince it turns the screen. The markers sit on one soft band running along that edge and the bumps\ntake the album's colour, so they read as part of the player rather than four chips laid over it.\n\nWith the buttons gone there is height to spend, so the track title and artist wrap onto as many\nrows as they need instead of scrolling past on one line. A title takes up to three rows, an artist\ntwo, and anything longer than that is trimmed rather than allowed to push the layout around. It is not a list in the middle of the layout, it is\nlaid over the player against the real edge, so whichever way the screen is turned the bumps stay on\nthe physical buttons.\n\nA swipe across the screen skips a track. Left for the next one, right for the previous, the way it\nworks on a phone, and it follows the rotation so the gesture is the one the viewer makes rather than\nthe one the layout sees. Short drags are ignored, and so are ones that wander too far off the line,\nso scrubbing the bar and pressing buttons still work.\n\nA fifth player style, **CD**. The album is printed across the whole face of a compact disc, with the\nsilver clamping hub punched through the middle of it and the hole showing the screen behind. The\ndisc turns while the track plays and holds its angle when you pause, and a sheen rides around with\nthe art, which is what makes the turn read on a picture that is nearly symmetrical.\n\nTurned to 90 or 270 the disc is sized by height rather than width, so it stays round instead of\nbeing squashed into a portrait column. Mode, and the 5 key, cycle five styles now."
+        },
         {
           "version": "0.23.0",
           "released_at": "2026-09-08T04:50:00.256Z",
