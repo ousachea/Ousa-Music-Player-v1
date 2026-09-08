@@ -13,6 +13,10 @@ other than Auto still applies everywhere.
 Cover is the exception: it always draws a line. It is built after a lock screen, which has a plain
 bar and no room for a wave, so the seek bar setting does not reach it.
 
+Turned to 90 or 270, the settings panel drops its padding and uses the full width. The wide right
+margin it carries in landscape keeps the rows clear of the wheel; turned, that edge is the bottom of
+the screen and the column is only 480 wide, so the margin was all cost.
+
 The Mode button cycles the player style as it always has, and the **5** key now does the same. No
 hardware button sends a 5, so it costs the device nothing and puts the style within reach of a
 keyboard while you are working on the dev server.

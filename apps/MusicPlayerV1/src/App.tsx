@@ -587,6 +587,7 @@ function Panel({
 }) {
   // the pixel size is what tells you whether the sharper lookup actually landed
   const [artPx, setArtPx] = useState<string | null>(null);
+  const upright = prefs.rotate === 90 || prefs.rotate === 270;
   const tint = accent?.fill ?? '#efefef';
   const ink = accent?.ink ?? '#060809';
   const { state: update, check } = useUpdateCheck(client);
@@ -673,7 +674,12 @@ function Panel({
   };
 
   return (
-    <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 py-5 pl-8 pr-24 backdrop-blur-sm">
+    <div
+      className={`absolute inset-0 z-10 flex flex-col bg-screen/97 backdrop-blur-sm ${
+        // the wide right margin keeps the rows clear of the wheel in landscape; turned, that edge is
+        // the bottom of the screen and the column is only 480 wide, so it is all cost and no benefit
+        upright ? 'p-0' : 'py-5 pl-8 pr-24'
+      }`}>
       <div className="flex items-baseline justify-between gap-4">
         <span className="font-mono text-hint tracking-[0.22em] text-dim uppercase">Settings</span>
         <span className="flex items-center gap-2 text-hint text-dim">
