@@ -143,6 +143,11 @@ The words, with the line being sung held on the middle of the screen and lit in 
 The rest fade away above and below it, and the top and bottom of the screen fade out so a line
 leaves rather than stopping at an edge. The column is what moves, not the lines.
 
+The artwork and the track sit in whichever corner you pick, under **Track corner**. On the right the
+artwork leads and the track reads back towards it. Play and pause take the other end of that same
+edge, previous and next sit at the middle of the sides, and all of them go away when the on-screen
+buttons do.
+
 What you get depends on what the phone has. Timed lyrics get the moving column. Lyrics without
 timings are laid out as a page, which the wheel scrolls. A track with neither says so under its
 title rather than leaving the screen blank.

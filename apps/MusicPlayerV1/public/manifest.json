@@ -36,6 +36,20 @@
       }
     },
     {
+      "type": "enum",
+      "data": {
+        "key": "lyricsInfo",
+        "label": "Where the track sits in Lyrics",
+        "choices": [
+          "tl",
+          "bl",
+          "tr",
+          "br"
+        ],
+        "default": "tl"
+      }
+    },
+    {
       "type": "boolean",
       "data": {
         "key": "coverEdge",

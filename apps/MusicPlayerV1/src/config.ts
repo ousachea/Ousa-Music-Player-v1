@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 export type Prefs = {
   theme: 'widget' | 'vinyl' | 'cd' | 'poster' | 'lyrics';
   rotate: 0 | 90 | 180 | 270;
+  lyricsInfo: 'tl' | 'bl' | 'tr' | 'br';
   coverEdge: boolean;
   coverPanel: boolean;
   coverVolume: boolean;
@@ -30,7 +31,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, coverEdge: false, coverPanel: false, coverVolume: true, wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', coverEdge: false, coverPanel: false, coverVolume: true, wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -88,6 +89,8 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, seek: value === 'bar' || value === 'wave' ? value : 'auto' };
     case 'seekDot':
       return { ...prefs, seekDot: value === 'on' || value === 'off' ? value : 'auto' };
+    case 'lyricsInfo':
+      return { ...prefs, lyricsInfo: value === 'bl' || value === 'tr' || value === 'br' ? value : 'tl' };
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
     case 'clockSize': {

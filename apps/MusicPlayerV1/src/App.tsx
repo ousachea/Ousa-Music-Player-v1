@@ -390,11 +390,18 @@ export default function App() {
         <Lyrics
           lyrics={lyrics}
           elapsed={elapsed}
+          artUrl={artUrl}
           title={track.title ?? 'unknown'}
           artist={artistName ?? '—'}
           accent={accentOn}
           motion={prefs.motion}
           upright={upright}
+          corner={prefs.lyricsInfo}
+          playing={playing}
+          showTransport={prefs.transport}
+          onToggle={toggle}
+          onPrev={() => goPrev(true)}
+          onNext={() => goNext()}
         />
       ) : prefs.theme === 'cd' ? (
         <>
@@ -661,6 +668,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   clockPos: { values: ['left', 'center', 'right'], labels: ['Left', 'Centre', 'Right'] },
   clockFormat: { values: ['auto', 'h12', 'h24'], labels: ['Auto', '12h', '24h'] },
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
+  lyricsInfo: { values: ['tl', 'bl', 'tr', 'br'], labels: ['Top left', 'Bottom left', 'Top right', 'Bottom right'] },
   rotate: { values: ['0', '90', '180', '270'], labels: ['0°', '90°', '180°', '270°'] },
 };
 
@@ -677,6 +685,7 @@ type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
 
 // rows that only some styles can use, kept together under the name of the style you are in
 const STYLE_ROWS: Row[] = [
+  { key: 'lyricsInfo', label: 'Track corner', only: ['lyrics'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
   { key: 'coverPanel', label: 'Panel behind the track', only: ['widget'] },
   { key: 'coverVolume', label: 'Volume slider', only: ['widget'] },
@@ -2346,21 +2355,84 @@ const LYRIC_LINE_PX = 58;
 function Lyrics({
   lyrics,
   elapsed,
+  artUrl,
   title,
   artist,
   accent,
   motion,
   upright,
+  corner,
+  playing,
+  showTransport,
+  onToggle,
+  onPrev,
+  onNext,
 }: {
   lyrics: ReturnType<typeof useLyrics>;
   elapsed: number;
+  artUrl: string | null;
   title: string;
   artist: string;
   accent: Accent | null;
   motion: boolean;
   upright: boolean;
+  corner: Prefs['lyricsInfo'];
+  playing: boolean;
+  showTransport: boolean;
+  onToggle: () => void;
+  onPrev: () => void;
+  onNext: () => void;
 }) {
   const tint = accent?.fill ?? '#efefef';
+  const right = corner === 'tr' || corner === 'br';
+  const bottom = corner === 'bl' || corner === 'br';
+  const edge = `${bottom ? 'bottom-5' : 'top-5'} ${right ? 'right-6' : 'left-6'}`;
+  // play and pause take the other end of the same edge, which is the end previous and next leave free
+  const other = `${bottom ? 'bottom-5' : 'top-5'} ${right ? 'left-6' : 'right-6'}`;
+
+  const chrome = (
+    <>
+      {/* on the right the artwork leads and the track reads back towards it, so the pair stays
+          anchored to its own corner rather than pointing out of the screen */}
+      <div className={`pointer-events-none absolute z-[3] flex max-w-[46%] items-center gap-3 ${edge} ${right ? 'flex-row-reverse' : ''}`}>
+        {artUrl ? (
+          <img src={artUrl} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover shadow-lg ring-1 ring-white/15" />
+        ) : (
+          <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-white/8 ring-1 ring-white/15">
+            <Disc className="h-6 w-6 text-off-white/30" />
+          </div>
+        )}
+        <div className={`min-w-0 ${right ? 'text-right' : ''}`}>
+          <div className="truncate text-row-lg font-semibold text-off-white">{title}</div>
+          <div className="truncate text-hint text-soft">{artist}</div>
+        </div>
+      </div>
+
+      {showTransport && (
+        <>
+          <button
+            aria-label={playing ? 'pause' : 'play'}
+            onClick={onToggle}
+            className={`absolute z-[3] grid h-14 w-14 place-items-center rounded-full bg-black/40 text-near ring-1 ring-white/12 backdrop-blur-md transition active:scale-90 ${other}`}
+            style={{ color: tint }}>
+            {playing ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7" />}
+          </button>
+          <button
+            aria-label="previous"
+            onClick={onPrev}
+            className="absolute top-1/2 left-4 z-[3] grid h-14 w-14 -translate-y-1/2 place-items-center rounded-full bg-black/35 text-near ring-1 ring-white/10 backdrop-blur-md transition active:scale-90">
+            <Skip className="h-6 w-6 -scale-x-100" />
+          </button>
+          <button
+            aria-label="next"
+            onClick={onNext}
+            className="absolute top-1/2 right-4 z-[3] grid h-14 w-14 -translate-y-1/2 place-items-center rounded-full bg-black/35 text-near ring-1 ring-white/10 backdrop-blur-md transition active:scale-90">
+            <Skip className="h-6 w-6" />
+          </button>
+        </>
+      )}
+    </>
+  );
 
   if (lyrics.state === 'timed') {
     const at = activeIndex(lyrics.lines, elapsed);
@@ -2374,7 +2446,7 @@ function Lyrics({
             return (
               <div
                 key={i}
-                className={`flex items-center justify-center px-12 text-center ${motion ? 'lyric-line' : ''}`}
+                className={`flex items-center justify-center px-24 text-center ${motion ? 'lyric-line' : ''}`}
                 style={{
                   height: LYRIC_LINE_PX,
                   color: i === at ? tint : '#efefef',
@@ -2394,16 +2466,20 @@ function Lyrics({
         {/* the ends fade rather than being cut, so lines leave the screen instead of stopping at it */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-screen to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-screen to-transparent" />
+        {chrome}
       </div>
     );
   }
 
   if (lyrics.state === 'plain')
     return (
-      <div className="absolute inset-0 overflow-y-auto overscroll-contain px-12 py-16 [scrollbar-width:none]">
-        <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft">
-          {lyrics.text}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 overflow-y-auto overscroll-contain px-24 py-24 [scrollbar-width:none]">
+          <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft">
+            {lyrics.text}
+          </div>
         </div>
+        {chrome}
       </div>
     );
 
@@ -2416,6 +2492,7 @@ function Lyrics({
           {lyrics.state === 'loading' ? 'looking for the words' : 'no lyrics for this track'}
         </div>
       </div>
+      {chrome}
     </div>
   );
 }
