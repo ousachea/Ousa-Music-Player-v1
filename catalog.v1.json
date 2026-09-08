@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T08:36:51.599Z",
+  "updated_at": "2026-09-08T08:53:29.835Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -223,6 +223,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.27.1",
+          "released_at": "2026-09-08T08:53:29.833Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.27.1.zip",
+            "size": 948947,
+            "sha256": "ce493b66e057477176fb78ed176cade609be66f69a1d10f1cf903c49045ebf91"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.27.1.html",
+            "size": 30541,
+            "sha256": "5b26c99458b25176ef7dae69e8c203079fc14954823378cec5638129530e90fd"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The style you are in is named in a small tag along the bottom of the screen, low enough to sit under\nthe settings hint and quiet enough to ignore.\n\nTurned, with the on-screen buttons off, the Vinyl style gives the record the space they leave. The\nclock stops reserving a row height it does not need and the record grows from 52 to 56 percent of\nthe screen, which is as large as it goes before it is wider than the column it sits in. With the\nbuttons showing there is no spare height, so nothing moves."
+        },
         {
           "version": "0.27.0",
           "released_at": "2026-09-08T08:36:51.596Z",
