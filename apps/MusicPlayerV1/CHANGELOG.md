@@ -31,7 +31,8 @@ wearing the crown of teeth a spindle grips, the guide assembly and its pressure 
 the plastic down one side, COMPACT CASSETTE moulded into it, and a white label strip down the other
 edge carrying the track read bottom to top with TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO
 and the time. It stands taller than it is wide, so in landscape the transport keys take a column
-beside it rather than a row beneath.
+beside it rather than a row beneath, and previous and next turn a quarter with the bar so they point
+along it. Play, pause and the design key stay square, because they point at nothing.
 
 **Artwork on the label**, on by default, prints the cover square on the right of the written label
 with the title and artist keeping the room to its left. It fades into the paper along its inside

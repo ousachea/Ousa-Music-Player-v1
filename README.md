@@ -100,7 +100,7 @@ assembly and its pressure pad showing through the plastic down one side, COMPACT
 into it, and a white label strip down the other edge carrying the track read bottom to top, with
 TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO and the time. It is the one design that stands
 taller than it is wide, so in landscape the transport keys move to a column beside it rather than a
-row beneath.
+row beneath, with previous and next turned a quarter to point up and down the bar they sit in.
 
 A new track is a new tape, not the same one relabelled: one of eight patterns is picked from the
 track itself, so the same song always comes back on the same tape while the next one arrives on

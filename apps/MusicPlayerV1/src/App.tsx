@@ -3470,7 +3470,8 @@ function Cassette({
             upright ? 'w-11 flex-col' : 'h-11'
           }`}>
           {key('tape design', onTape, <TapeGlyph className="h-4 w-4" />)}
-          {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
+          {/* a column of keys runs the tape up and down, so the arrows point along the bar they sit in */}
+          {key('previous', onPrev, <Skip className={`h-4 w-4 -scale-x-100 ${upright ? 'rotate-90' : ''}`} />)}
           {key(
             playing ? 'pause' : 'play',
             onToggle,
@@ -3478,7 +3479,7 @@ function Cassette({
             true,
             playing,
           )}
-          {key('next', onNext, <Skip className="h-4 w-4" />)}
+          {key('next', onNext, <Skip className={`h-4 w-4 ${upright ? 'rotate-90' : ''}`} />)}
         </div>
       )}
     </div>
