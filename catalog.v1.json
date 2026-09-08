@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T04:50:01.290Z",
+  "updated_at": "2026-09-08T04:51:57.941Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -85,7 +85,6 @@
       "screenshots": [
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/01-spot.png",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/02-converter.png",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/03-purchases.png",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/04-reference.png",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/05-settings.png"
       ],
@@ -216,11 +215,10 @@
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.jpg",
       "screenshots": [
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/01-classic.jpg",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/01-cover.png",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/02-vinyl.jpg",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/02-vinyl.png",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-poster.jpg",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-poster.png"
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/04-cover.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/05-settings.jpg"
       ],
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
