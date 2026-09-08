@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T08:05:34.073Z",
+  "updated_at": "2026-09-08T08:22:06.399Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -223,6 +223,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.26.1",
+          "released_at": "2026-09-08T08:22:06.396Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.26.1.zip",
+            "size": 947482,
+            "sha256": "20e9f6d984d531672d7716bfe2b1ab30794c265be07363aae208c006aff985d6"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.26.1.html",
+            "size": 30541,
+            "sha256": "5b26c99458b25176ef7dae69e8c203079fc14954823378cec5638129530e90fd"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "In landscape the CD style centres the track in the space above the controls rather than starting it\nat the top, which left it hanging under the clock with a gap beneath.\n\nA new track puts a new record on the platter and a new disc in the tray: in Vinyl and CD the disc\ndrops in from slightly small and turned back, and settles. It arrives when you switch into the style\ntoo, and it follows the Animations setting.\n\nTurning the screen settles the preset markers into their new edge instead of stretching them into\nit. The bump runs along a different axis in each orientation, and animating that swap pulled it out\nof shape on the way; it now eases in once, quickly, and the bump's own fade is left alone."
+        },
         {
           "version": "0.26.0",
           "released_at": "2026-09-08T08:05:34.071Z",
