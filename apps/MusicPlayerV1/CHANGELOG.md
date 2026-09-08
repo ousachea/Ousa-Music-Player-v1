@@ -7,8 +7,10 @@ a progress bar with the elapsed time on one side and the remaining on the other,
 a volume slider of its own. The slider drags against the daemon's volume, and the slot a phone gives
 the output picker toggles mute instead, because the device has nowhere else to send audio.
 
-Portrait, at 90 or 270, is the layout the style was drawn for. Landscape sets the artwork beside the
-stack rather than above it, which is the only way six rows fit a 480 tall screen.
+The arrangement never changes; only the frame around it does. Portrait, at 90 or 270, fills the
+screen with it. Landscape floats it as a narrow card over the blurred artwork, sized so the cover
+lands square and uncropped, because stacking the six rows is the whole look and a full width version
+of it would only be the Cover style again.
 
 ## 0.21.2
 

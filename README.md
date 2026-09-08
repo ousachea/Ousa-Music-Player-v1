@@ -78,8 +78,10 @@ the elapsed time on one side and the time remaining on the other, the transport,
 of its own. Dragging that slider sets the volume on the device, and the slot a phone gives the output
 picker toggles mute here, because a Car Thing has nowhere else to send audio.
 
-Turned to 90 or 270 this is the layout it was drawn for, art above the stack. Left in landscape the
-art moves beside the stack instead, which is the only way six rows fit a 480 tall screen.
+The arrangement never changes; only the frame around it does. Turned to 90 or 270 it fills the
+screen. Left in landscape it floats as a narrow card over the blurred artwork, sized so the cover
+lands square and uncropped, because stacking the six rows is the whole look and a full width version
+of it would only be the Cover style again.
 
 ### Controls
 
@@ -241,8 +243,6 @@ width of the screen while the request is out.
 The converter covers li, hun, chi, damlung, grams and troy ounces — 1 damlung = 10 chi = 100 hun =
 1000 li, and 1 troy ounce = 31.1034768 g. Everything is priced off the purity you select: 24K, 22K,
 18K, or a percentage of your own.
-
-![Purchases](apps/gold-tracker/screenshots/03-purchases.png)
 
 Purchases are a private ledger, valued against live spot at the selected purity, showing what each
 position cost against what it is worth now. Add one on the device with the steppers — it shows the

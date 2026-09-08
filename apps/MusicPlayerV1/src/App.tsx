@@ -1057,9 +1057,10 @@ const WAVE_LENGTH = 26;
 
 // played is drawn as a wave and the rest as a flat line, which is what separates this style from a plain bar.
 // it runs a wavelength past each end so the travelling animation always has crests to pull into view.
-// the phone lock screen layout: art above, then the track, a bar with the times either side, the
-// transport, and a volume slider of its own. landscape sets the art beside the stack instead of
-// above it, which is the only way a 480 tall screen fits all six rows
+// the phone lock screen card: art above, then the track, a bar with the times either side, the
+// transport and a volume slider. the arrangement never changes; only the frame around it does.
+// landscape floats it as a narrow card over the blurred art, because stacking six rows is the whole
+// look and a full width version of it would just be the Cover style again
 function Widget({
   artUrl,
   context,
@@ -1114,82 +1115,103 @@ function Widget({
   const tint = accent?.fill ?? '#efefef';
   const tint2 = accent?.fill2 ?? '#efefef';
   const level = volume ? (volume.muted ? 0 : volume.level) : 0;
+  // the card is 280px wide against a 480px tall screen, so every row it holds has to come down a size
+  const small = !upright;
 
-  return (
-    <div className={`relative flex h-full w-full items-stretch gap-8 p-7 ${upright ? 'flex-col' : ''}`}>
+  const stack = (
+    <>
       <div
-        className={`relative aspect-square overflow-hidden rounded-[22px] bg-white/6 shadow-2xl ring-1 ring-white/10 ${
-          upright ? 'w-full min-h-0 shrink self-center' : 'h-full shrink-0'
+        className={`relative aspect-square w-full min-h-0 shrink overflow-hidden bg-white/6 shadow-2xl ring-1 ring-white/10 ${
+          small ? 'rounded-2xl' : 'rounded-[22px]'
         }`}>
         {artUrl ? (
           <img src={artUrl} alt="" className="h-full w-full object-cover" />
         ) : (
           <div className="grid h-full w-full place-items-center">
-            <Disc className="h-16 w-16 text-off-white/25" />
+            <Disc className={`text-off-white/25 ${small ? 'h-10 w-10' : 'h-16 w-16'}`} />
           </div>
         )}
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col justify-center gap-4">
-        {wallClock && (
-          <div className={`flex ${JUSTIFY[clockPos]}`}>
-            <ClockView parts={wallClock} size={(11 * clockSize) / 100} className="text-dim" color={accent?.soft} />
-          </div>
-        )}
-
-        <div className="min-w-0">
-          <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>
-          <Roll
-            text={title}
-            className="font-display text-[1.875rem] leading-[1.2] font-semibold tracking-display text-off-white"
+      {wallClock && (
+        <div className={`flex shrink-0 ${JUSTIFY[clockPos]}`}>
+          <ClockView
+            parts={wallClock}
+            size={((small ? 9 : 11) * clockSize) / 100}
+            className="text-dim"
+            color={accent?.soft}
           />
-          <Roll text={artist} className="mt-0.5 text-title text-soft" />
         </div>
+      )}
 
-        {/* the times sit either side of the bar here rather than under it, which is the whole look */}
-        <div className="flex items-center gap-3 font-mono text-hint tabular-nums text-dim">
-          <span className="w-11 shrink-0">{clock(elapsed)}</span>
-          <div className="min-w-0 flex-1">
-            <Seek
-              style={seekStyle}
-              rotate={rotate}
-              progress={progress}
-              playing={playing && motion}
-              tint={tint}
-              tint2={tint2}
-              onSeek={onSeek}
-            />
-          </div>
-          <span className="w-11 shrink-0 text-right">
-            {duration ? (remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}
+      <div className="min-w-0 shrink-0">
+        <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>
+        <Roll
+          text={title}
+          className={`font-display leading-[1.2] font-semibold tracking-display text-off-white ${
+            small ? 'text-[1.375rem]' : 'text-[1.875rem]'
+          }`}
+        />
+        <Roll text={artist} className={`mt-0.5 text-soft ${small ? 'text-row-lg' : 'text-title'}`} />
+      </div>
+
+      {/* the times sit either side of the bar rather than under it, which is the whole look */}
+      <div className="flex shrink-0 items-center gap-2.5 font-mono text-hint tabular-nums text-dim">
+        <span className={`shrink-0 ${small ? 'w-9' : 'w-11'}`}>{clock(elapsed)}</span>
+        <div className="min-w-0 flex-1">
+          <Seek
+            style={seekStyle}
+            rotate={rotate}
+            progress={progress}
+            playing={playing && motion}
+            tint={tint}
+            tint2={tint2}
+            onSeek={onSeek}
+          />
+        </div>
+        <span className={`shrink-0 text-right ${small ? 'w-9' : 'w-11'}`}>
+          {duration ? (remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}
+        </span>
+      </div>
+
+      <div className={`flex shrink-0 items-center justify-center ${small ? 'gap-6' : 'gap-10'}`}>
+        <Ghost label="previous" onClick={onPrev}>
+          <Skip className={`-scale-x-100 ${small ? 'h-6 w-6' : 'h-8 w-8'}`} />
+        </Ghost>
+        <Ghost label={playing ? 'pause' : 'play'} tint={accent?.fill} onClick={onToggle}>
+          <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+            {playing ? (
+              <Pause className={small ? 'h-7 w-7' : 'h-9 w-9'} />
+            ) : (
+              <Play className={small ? 'h-7 w-7' : 'h-9 w-9'} />
+            )}
           </span>
-        </div>
+        </Ghost>
+        <Ghost label="next" onClick={onNext}>
+          <Skip className={small ? 'h-6 w-6' : 'h-8 w-8'} />
+        </Ghost>
+        {/* the device has no output picker, so the slot that holds one on a phone toggles mute */}
+        <Ghost label={volume?.muted ? 'unmute' : 'mute'} onClick={onMute}>
+          <Speaker className={small ? 'h-5 w-5' : 'h-7 w-7'} muted={volume?.muted === true} />
+        </Ghost>
+      </div>
 
-        <div className="flex items-center justify-center gap-10">
-          <Ghost label="previous" onClick={onPrev}>
-            <Skip className="h-8 w-8 -scale-x-100" />
-          </Ghost>
-          <Ghost label={playing ? 'pause' : 'play'} tint={accent?.fill} onClick={onToggle}>
-            <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-              {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
-            </span>
-          </Ghost>
-          <Ghost label="next" onClick={onNext}>
-            <Skip className="h-8 w-8" />
-          </Ghost>
-          {/* the device has no output picker, so the slot that holds one on a phone toggles mute */}
-          <Ghost label={volume?.muted ? 'unmute' : 'mute'} onClick={onMute}>
-            <Speaker className="h-7 w-7" muted={volume?.muted === true} />
-          </Ghost>
+      <div className="flex shrink-0 items-center gap-2.5">
+        <Speaker className="h-3.5 w-3.5 shrink-0 text-dim" />
+        <div className="min-w-0 flex-1">
+          <VolumeBar level={level} rotate={rotate} tint={tint} onPick={onVolume} />
         </div>
+        <Speaker className="h-[18px] w-[18px] shrink-0 text-dim" />
+      </div>
+    </>
+  );
 
-        <div className="flex items-center gap-3">
-          <Speaker className="h-4 w-4 shrink-0 text-dim" />
-          <div className="min-w-0 flex-1">
-            <VolumeBar level={level} rotate={rotate} tint={tint} onPick={onVolume} />
-          </div>
-          <Speaker className="h-5 w-5 shrink-0 text-dim" />
-        </div>
+  if (upright) return <div className="relative flex h-full w-full flex-col gap-4 p-7">{stack}</div>;
+
+  return (
+    <div className="relative grid h-full w-full place-items-center">
+      <div className="flex h-[95%] w-[245px] flex-col justify-center gap-2.5 rounded-[26px] bg-black/45 p-4 ring-1 ring-white/10 backdrop-blur-2xl">
+        {stack}
       </div>
     </div>
   );
