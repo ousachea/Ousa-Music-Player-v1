@@ -1,5 +1,10 @@
 # weather
 
+## 0.25.2
+
+The store description is rewritten. It still said only that this shows what is playing on your
+phone, which was true when there was one player style and no way to turn the screen.
+
 ## 0.25.1
 
 Poster wraps a long title onto as many rows as it needs, up to three, with two for the artist,

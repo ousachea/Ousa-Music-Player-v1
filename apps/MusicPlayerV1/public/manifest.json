@@ -1,8 +1,8 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "Music Player",
-  "version": "0.25.1",
-  "description": "Now playing from your phone, on the Car Thing.",
+  "version": "0.25.2",
+  "description": "Now playing from your phone, in five styles coloured by the album art, and turnable to any mounting.",
   "icon": "icon.jpg",
   "settings": "settings.html",
   "config": [
