@@ -2,9 +2,10 @@
 
 ## 0.30.2
 
-The top and bottom of the Lyrics screen fade more softly. The darkening ran straight from solid to
-clear, which showed its own edge as a faint band across the words; it follows an ease now, most of
-the change happening near the edge with a long tail into the middle, over a taller run.
+The top and bottom of the Lyrics screen no longer darken. A gradient laid over the screen dimmed the
+artwork along with the words; the words are masked instead, so they thin to nothing at the edges and
+what is behind them is left alone. The artwork, the track and the buttons in the corners keep their
+full strength.
 
 ## 0.30.1
 

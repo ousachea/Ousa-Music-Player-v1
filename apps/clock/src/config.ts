@@ -7,19 +7,30 @@ export type Prefs = {
   format: 'auto' | 'h12' | 'h24';
   seconds: boolean;
   date: boolean;
-  tint: 'white' | 'amber' | 'cyan' | 'green' | 'magenta';
+  tint: 'white' | 'amber' | 'cyan' | 'green' | 'magenta' | 'sunset' | 'aurora' | 'ember';
   chime: boolean;
 };
 
 const DEFAULTS: Prefs = { style: 'digital', format: 'auto', seconds: true, date: true, tint: 'white', chime: true };
 
-export const TINTS: Record<Prefs['tint'], string> = {
-  white: '#f2f4f7',
-  amber: '#ffb454',
-  cyan: '#5fd3f3',
-  green: '#5fe39b',
-  magenta: '#f08bd0',
+// every colour is a pair, not one value: the numerals run a gradient between them and the screen
+// behind takes a wash of the same pair, so the app has a temperature rather than one lit shape
+export type Palette = { main: string; second: string; glow: string };
+
+export const PALETTES: Record<Prefs['tint'], Palette> = {
+  white: { main: '#f2f4f7', second: '#9db4cc', glow: '#2b4460' },
+  amber: { main: '#ffb454', second: '#ff7a59', glow: '#5e2f10' },
+  cyan: { main: '#5fd3f3', second: '#6b8bf5', glow: '#123f63' },
+  green: { main: '#5fe39b', second: '#b6e35f', glow: '#154d33' },
+  magenta: { main: '#f08bd0', second: '#9b8bf0', glow: '#4a2258' },
+  sunset: { main: '#ffa46b', second: '#ff5f9e', glow: '#63204a' },
+  aurora: { main: '#7cf0c8', second: '#6bb0ff', glow: '#144c5c' },
+  ember: { main: '#ff7d6b', second: '#ffd36b', glow: '#5e2418' },
 };
+
+export const TINTS: Record<Prefs['tint'], string> = Object.fromEntries(
+  Object.entries(PALETTES).map(([k, v]) => [k, v.main]),
+) as Record<Prefs['tint'], string>;
 
 export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
   if (value === null) return { ...prefs, [key]: DEFAULTS[key as keyof Prefs] };

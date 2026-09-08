@@ -118,8 +118,10 @@ around it, at a tempo you set.
 ![Lyrics style](apps/MusicPlayerV1/screenshots/05-lyrics.jpg)
 
 The words, with the line being sung held on the middle of the screen and lit in the album's colour.
-The rest fade away above and below it, and the top and bottom of the screen fade out so a line
-leaves rather than stopping at an edge. The column is what moves, not the lines.
+The rest fade away above and below it, and the words thin to nothing at the top and bottom so a line
+leaves rather than stopping at an edge. Nothing is darkened to do it: the words themselves are
+masked, and the artwork behind them keeps its full strength. The column is what moves, not the
+lines.
 
 The artwork and the track sit in whichever corner you pick, under **Track corner**. On the right the
 artwork leads and the track reads back towards it. Play and pause take the other end of that same

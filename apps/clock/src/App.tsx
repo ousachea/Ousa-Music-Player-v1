@@ -1,5 +1,5 @@
 import { BridgethingClient } from '@bridgething/client';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { TINTS, useAlarm, usePrefs, type Alarm, type Prefs } from './config';
 import { clockText, fields, readClock, useTick, useZone } from './time';
@@ -332,18 +332,54 @@ function Analogue({ h, m, s, tint, seconds }: { h: number; m: number; s: number;
   );
 }
 
+// matches the two 0.2s halves of the flip animation in index.css
+const FLIP_MS = 400;
+
 function Flip({ value, tint, small }: { value: string; tint: string; small?: boolean }) {
+  // the app re-renders twenty times a second, so the card has to remember what it is turning from
+  // rather than try to infer it from a render
+  const [card, setCard] = useState({ shown: value, from: null as string | null, turn: 0 });
+
+  useEffect(() => {
+    setCard(c => (c.shown === value ? c : { shown: value, from: c.shown, turn: c.turn + 1 }));
+  }, [value]);
+
+  useEffect(() => {
+    if (card.from === null) return;
+    const id = setTimeout(() => setCard(c => ({ ...c, from: null })), FLIP_MS);
+    return () => clearTimeout(id);
+  }, [card.from, card.turn]);
+
+  // every leaf is a full-card digit clipped to one half, so all four cut the same glyph in the same
+  // place. they stay direct children of the card because that is as far as its perspective reaches
+  const leaf = (half: 'top' | 'bottom', v: string, cls: string, shade?: string) => (
+    <div
+      className={`absolute inset-x-0 h-1/2 overflow-hidden ${
+        half === 'top' ? 'top-0 flip-top rounded-t-2xl' : 'bottom-0 flip-bottom rounded-b-2xl'
+      } ${cls}`}>
+      <div className={`absolute inset-x-0 grid h-[200%] place-items-center ${half === 'top' ? 'top-0' : 'bottom-0'}`}>
+        <span className="tabular-nums" style={{ color: tint }}>
+          {v}
+        </span>
+      </div>
+      {shade && <span className={`${shade} absolute inset-0 bg-black`} />}
+    </div>
+  );
+
   return (
     <div
-      className={`relative grid place-items-center rounded-2xl bg-white/6 ring-1 ring-white/10 ${
-        small ? 'h-24 w-20' : 'h-40 w-32'
+      className={`flip-card relative rounded-2xl font-mono leading-none ring-1 ring-white/10 ${
+        small ? 'h-24 w-20 text-[3rem]' : 'h-40 w-32 text-[5.5rem]'
       }`}>
-      <div className="absolute inset-x-0 top-1/2 h-px bg-black/50" />
-      <span
-        className={`font-mono leading-none tabular-nums ${small ? 'text-[3rem]' : 'text-[5.5rem]'}`}
-        style={{ color: tint }}>
-        {value}
-      </span>
+      {leaf('top', card.shown, 'z-[1]')}
+      {leaf('bottom', card.from ?? card.shown, 'z-[1]')}
+      {card.from !== null && (
+        <Fragment key={card.turn}>
+          {leaf('bottom', card.shown, 'z-[2] flip-leaf flip-rise', 'flip-shade-out')}
+          {leaf('top', card.from, 'z-[3] flip-leaf flip-fall', 'flip-shade-in')}
+        </Fragment>
+      )}
+      <div className="absolute inset-x-0 top-1/2 z-[4] h-px bg-black/55" />
     </div>
   );
 }

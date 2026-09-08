@@ -2408,24 +2408,23 @@ function Tick({ className }: { className?: string }) {
 // above and below it. the column moves rather than the lines, which is one transform for the lot
 const LYRIC_LINE_PX = 58;
 
-// eased alpha rather than linear: a linear fade reads as a band, because the eye follows the rate of
-// change and a straight ramp changes fastest exactly where it meets the words
-const FADE_STOPS = [
-  [0, 1],
-  [12, 0.97],
-  [24, 0.89],
-  [36, 0.76],
-  [48, 0.6],
-  [60, 0.43],
-  [72, 0.27],
-  [84, 0.15],
-  [92, 0.07],
-  [100, 0],
+// the ends are masked rather than covered. laying a dark gradient over the screen dims the artwork
+// along with the words; masking takes the words themselves to nothing and leaves what is behind them
+// alone. the stops are eased for the same reason a fade was: a straight ramp shows its own edge.
+const MASK_STOPS = [
+  [0, 0],
+  [7, 0.07],
+  [13, 0.2],
+  [19, 0.4],
+  [25, 0.63],
+  [31, 0.84],
+  [38, 0.96],
+  [45, 1],
 ] as const;
-const fade = (to: string) =>
-  `linear-gradient(${to}, ${FADE_STOPS.map(([at, a]) => `rgba(6, 8, 9, ${a}) ${at}%`).join(', ')})`;
-const FADE_DOWN = fade('to bottom');
-const FADE_UP = fade('to top');
+const LYRIC_MASK = `linear-gradient(to bottom, ${[
+  ...MASK_STOPS.map(([at, a]) => `rgba(0, 0, 0, ${a}) ${at}%`),
+  ...[...MASK_STOPS].reverse().map(([at, a]) => `rgba(0, 0, 0, ${a}) ${100 - at}%`),
+].join(', ')})`;
 
 function Lyrics({
   lyrics,
@@ -2556,6 +2555,8 @@ function Lyrics({
     const shown = Math.min(lyrics.lines.length - 1, Math.max(0, at + offset));
     return (
       <div className="absolute inset-0 overflow-hidden">
+        {/* the mask goes on the words alone, not on this box, or it would take the corners with it */}
+        <div className="absolute inset-0" style={{ maskImage: LYRIC_MASK, WebkitMaskImage: LYRIC_MASK }}>
         <div
           className={`absolute inset-x-0 top-1/2 ${motion ? 'lyric-scroll' : ''}`}
           style={{ transform: `translate3d(0, ${-(shown + 0.5) * LYRIC_LINE_PX}px, 0)` }}>
@@ -2585,11 +2586,8 @@ function Lyrics({
             );
           })}
         </div>
-        {/* the ends fade rather than being cut, so lines leave the screen instead of stopping at it.
-            a straight ramp from opaque to clear shows its own edge as a band across the words; these
-            stops follow an ease instead, so most of the change happens early and the tail is long */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-40" style={{ background: FADE_DOWN }} />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40" style={{ background: FADE_UP }} />
+        </div>
+
         {chrome}
       </div>
     );
