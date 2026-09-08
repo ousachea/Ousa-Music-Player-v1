@@ -1,5 +1,10 @@
 # weather
 
+## 0.27.2
+
+A long title no longer runs off the right of the screen in the CD style. It stays inside its column
+and scrolls, the way it does everywhere else.
+
 ## 0.27.1
 
 The style you are in is named in a small tag along the bottom of the screen, low enough to sit under

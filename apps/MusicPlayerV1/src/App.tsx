@@ -1257,8 +1257,15 @@ function CdDeck({
     <div className="absolute inset-0 flex items-stretch gap-7 p-6">
       {tray}
       <div className="flex min-w-0 flex-1 flex-col gap-4">
-        {/* the track sits in the middle of what the controls leave, rather than at the top of it */}
-        <div className="flex min-h-0 flex-1 items-center">{titles}</div>
+        {/* the track sits in the middle of what the controls leave, rather than at the top of it.
+            min-w-0 or this refuses to shrink under the marquee's full text width and pushes the
+            column past the edge of the screen */}
+        <div className="flex min-h-0 min-w-0 flex-1 items-center">
+          {/* titles carries shrink-0 for the column it sits in when turned, where it stops the block
+              being squeezed vertically. in a row that same flag refuses to give up width, so it goes
+              inside something that can */}
+          <div className="min-w-0 flex-1">{titles}</div>
+        </div>
         {/* the bar belongs directly above the buttons, not spread away from them */}
         <div className="flex flex-col gap-4">
           {bar}
