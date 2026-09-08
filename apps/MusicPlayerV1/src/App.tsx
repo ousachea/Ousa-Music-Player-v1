@@ -1199,9 +1199,10 @@ function CdDeck({
     <div className="absolute inset-0 flex items-stretch gap-7 p-6">
       {tray}
       <div className="flex min-w-0 flex-1 flex-col gap-4">
-        {titles}
+        {/* the track sits in the middle of what the controls leave, rather than at the top of it */}
+        <div className="flex min-h-0 flex-1 items-center">{titles}</div>
         {/* the bar belongs directly above the buttons, not spread away from them */}
-        <div className="mt-auto flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           {bar}
           {keys}
         </div>

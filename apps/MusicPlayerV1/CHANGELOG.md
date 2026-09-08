@@ -2,6 +2,9 @@
 
 ## 0.26.1
 
+In landscape the CD style centres the track in the space above the controls rather than starting it
+at the top, which left it hanging under the clock with a gap beneath.
+
 A new track puts a new record on the platter and a new disc in the tray: in Vinyl and CD the disc
 drops in from slightly small and turned back, and settles. It arrives when you switch into the style
 too, and it follows the Animations setting.
