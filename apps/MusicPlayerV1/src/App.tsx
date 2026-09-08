@@ -472,7 +472,7 @@ export default function App() {
               className={`flex min-w-0 flex-1 flex-col justify-between gap-2 ${upright ? 'w-full' : 'h-full'} ${
                 edge ? (upright ? 'px-7' : 'py-7') : ''
               }`}>
-              <div className={`flex min-h-5 items-center ${JUSTIFY[prefs.clockPos]}`}>
+              <div className={`flex items-center ${upright ? '' : 'min-h-5'} ${JUSTIFY[prefs.clockPos]}`}>
                 <ClockView
                   parts={wallClock}
                   size={(11 * prefs.clockSize) / 100}
@@ -1018,7 +1018,7 @@ function Turntable({
   return (
     <div
       className={`relative aspect-square shrink-0 ${spin ? 'disc-swap' : ''} ${
-        upright ? 'h-[52%] self-center' : 'h-full'
+        upright ? 'h-[56%] self-center' : 'h-full'
       }`}>
       <div className="absolute bottom-3 left-6 right-6 h-8 rounded-full bg-black/75 blur-2xl" />
 

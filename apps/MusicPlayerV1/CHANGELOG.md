@@ -1,5 +1,11 @@
 # weather
 
+## 0.27.1
+
+Turned, the Vinyl style gives the record the space the clock was holding. The clock no longer
+reserves a row height it does not need, and the record grows from 52 to 56 percent of the screen,
+which is as large as it goes before it is wider than the column it sits in.
+
 ## 0.27.0
 
 The settings on the device are reorganised around the style you are in.
