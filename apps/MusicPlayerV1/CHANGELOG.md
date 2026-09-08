@@ -2,8 +2,9 @@
 
 ## 0.27.2
 
-A long title no longer runs off the right of the screen in the CD style. It stays inside its column
-and scrolls, the way it does everywhere else.
+A long title no longer runs off the right of the screen in the CD style. It stays inside its column,
+and rather than scrolling past it wraps onto as many rows as it needs, up to three, with two for the
+artist. The track is centred in the space the controls leave, which is deep enough to grow into.
 
 ## 0.27.1
 

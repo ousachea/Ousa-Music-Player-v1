@@ -1193,17 +1193,19 @@ function CdDeck({
   const titles = (
     <div className="min-w-0 shrink-0">
       <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>
+      {/* the track is centred in the space the controls leave, which is deep enough to wrap into
+          whether or not the on-screen buttons are drawn */}
       <Roll
         text={title}
-        wrap={!showTransport}
-        lines={2}
+        wrap
+        lines={3}
         className={`font-display font-semibold leading-[1.2] tracking-display text-off-white ${
           upright ? 'text-[1.75rem]' : 'text-[1.625rem]'
         }`}
       />
       <div className="mt-1 flex min-w-0 items-center gap-2">
         {explicit && <Explicit />}
-        <Roll text={artist} wrap={!showTransport} lines={2} className="min-w-0 text-title text-soft" />
+        <Roll text={artist} wrap lines={2} className="min-w-0 text-title text-soft" />
       </div>
     </div>
   );
