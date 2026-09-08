@@ -1,6 +1,6 @@
 # Ousa apps for the Car Thing
 
-Four apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
+Five apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
 source once and all of them are available.
 
 ![Cover style](apps/MusicPlayerV1/screenshots/01-cover.png)
@@ -8,7 +8,6 @@ source once and all of them are available.
 | App | What it does |
 | --- | --- |
 | **Music Player** | Now playing, in three styles, coloured by the album art |
-| **Queue Manager** | The up-next queue, with select, bump and shuffle/repeat |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -35,7 +34,7 @@ settings on the device and press **Check** under *Software update*.
 
 > Music Player and Network Monitor each ask for `net.proxy`. Music Player uses it to fetch a sharper
 > copy of the album art than the device receives on its own, which you can turn off in its settings;
-> Network Monitor uses it to time the requests it measures with. Queue Manager asks for nothing.
+> Network Monitor uses it to time the requests it measures with.
 
 ## Music Player
 
@@ -102,26 +101,6 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
 
 Everything is also editable from the companion app, which has room for longer explanations. Whichever
 one you changed last wins.
-
-## Queue Manager
-
-The up-next queue on its own screen, so you can steer what plays without picking up your phone.
-
-![Queue Manager](apps/queue-manager/screenshots/01-queue.png)
-
-The current track sits on the left with its artwork, progress and transport, and the queue fills the
-right in a list you can scroll by touch or with the wheel. Tapping a row jumps straight to that
-track; the button beside it pushes that track to the front of what plays next. Shuffle and repeat
-are there too.
-
-**What the player will and will not allow.** It can read the queue, jump to an index, and queue a
-track to play next, so those work. It exposes no way to *remove* an entry, and re-queueing without a
-remove would duplicate a track rather than move it, so remove and free reordering are reported as
-unavailable rather than faked. Bumping a track to play next is the honest version of moving it up.
-
-With no phone attached it falls back to a mock queue, marked **DEMO DATA**, which is also what
-exercises the awkward cases: titles and artists long enough to truncate, and a queue longer than the
-panel.
 
 ## Network Monitor
 
