@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T10:10:42.420Z",
+  "updated_at": "2026-09-08T10:27:27.193Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -9,6 +9,42 @@
     "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.jpg"
   },
   "apps": [
+    {
+      "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
+      "name": "Clock",
+      "description": "A clock in four faces, with a timer, a stopwatch and an alarm.",
+      "author": "Ousa Chea",
+      "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a08085-a3c5-73fc-a3f9-1532161d74d2.png",
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08085-a3c5-73fc-a3f9-1532161d74d2/01-digital.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08085-a3c5-73fc-a3f9-1532161d74d2/02-analogue.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08085-a3c5-73fc-a3f9-1532161d74d2/03-flip.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08085-a3c5-73fc-a3f9-1532161d74d2/04-timer.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08085-a3c5-73fc-a3f9-1532161d74d2/05-stopwatch.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08085-a3c5-73fc-a3f9-1532161d74d2/06-alarm.jpg"
+      ],
+      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-09-08T10:27:27.190Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.1.0.zip",
+            "size": 920152,
+            "sha256": "67d6604ada13726a343ee90700d6c649d8dff332de14b8e8c3cc4dba944b7aaa"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.1.0.html",
+            "size": 26913,
+            "sha256": "cbef5c091173324a481315005bd165c6177f6409633cee7bf35b35a552ea588c"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A clock for the Car Thing, in four faces: **Digital**, **Analogue**, **Flip** and **Minimal**. Mode\ncycles them, or the wheel does, and the colour and hour format are settings.\n\nThree more things live behind the presets. **Timer** counts down from a length you dial with the\nwheel. **Stopwatch** runs to hundredths and keeps laps. **Alarm** rings at a time you set, and\nsurvives a restart.\n\nThe time comes from the daemon, which carries the phone's wall clock, zone and locale. The kiosk's\nown clock is not set from anything, which a clock app in particular has no business trusting; the\nface says so while it is waiting for the phone."
+        }
+      ]
+    },
     {
       "id": "01a07c6f-f65a-732a-ab3b-acae5a84b207",
       "name": "Desk Exchange",
