@@ -1,8 +1,9 @@
 {
   "id": "01a07c6f-f65a-732a-ab3b-acae5a84b207",
   "name": "Desk Exchange",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A fictional stock market for your desk. Invented tickers, invented headlines, nothing real.",
+  "icon": "icon.png",
   "settings": "settings.html",
   "config": [
     {

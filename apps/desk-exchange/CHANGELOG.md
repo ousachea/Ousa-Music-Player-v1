@@ -1,5 +1,9 @@
 # desk-exchange
 
+## 0.1.2
+
+An icon of its own for the store and the launcher.
+
 ## 0.1.1
 
 The clock in the header now comes from the daemon's zone rather than the browser's, which reports

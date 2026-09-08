@@ -1,5 +1,9 @@
 # quote-flow
 
+## 0.6.4
+
+An icon of its own for the store and the launcher.
+
 ## 0.6.3
 
 Both pagination arrows read the same.

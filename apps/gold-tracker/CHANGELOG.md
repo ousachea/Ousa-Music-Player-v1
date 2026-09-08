@@ -1,5 +1,9 @@
 # gold-tracker
 
+## 0.3.2
+
+An icon of its own for the store and the launcher.
+
 ## 0.3.1
 
 Every time on screen now comes from the daemon's zone rather than the browser's. The kiosk's
