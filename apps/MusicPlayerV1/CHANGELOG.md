@@ -14,7 +14,8 @@ tape on the spools and the keys all take the album's colour, and the rainbow ban
 the cover's own hue rather than mixing two of them, since a cover with one hue would otherwise give
 five bands of the same colour.
 
-A second cassette, **Printed**, and a key beside the transport to switch between the two. Where the
+Two more cassettes, **Printed** and **Clear**, and a key beside the transport that cycles the
+three. Where the
 written tape is a blank label somebody filled in, the printed one is a pressed release: the cover is
 the label, printed as a sticker with a paper edge, a sheen across it and half a degree of tilt, and
 pressed onto a shell of brushed metal anodised in the cover's hue and bolted at the corners with
@@ -23,6 +24,14 @@ it, with a tape counter reading across that window and a line riding the ticks a
 track is stamped on the moulded half below rather than over the picture, in bold caps with SIDE A
 and the artist under it, the album and the time under that, and the spindle holes along the very
 bottom.
+
+Clear is the tape itself, stood on end and seen through its own shell: two spools of brown tape
+filling the face with the wind drawn as the turns it actually has, hubs in the album's colour
+wearing the crown of teeth a spindle grips, the guide assembly and its pressure pad showing through
+the plastic down one side, COMPACT CASSETTE moulded into it, and a white label strip down the other
+edge carrying the track read bottom to top with TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO
+and the time. It stands taller than it is wide, so in landscape the transport keys take a column
+beside it rather than a row beneath.
 
 **Artwork on the label**, on by default, prints the cover square on the right of the written label
 with the title and artist keeping the room to its left. It fades into the paper along its inside

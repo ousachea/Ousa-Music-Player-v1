@@ -83,7 +83,7 @@ whole thing stacks the way a phone would.
 
 ### Cassette
 
-A tape sitting in a deck, in two designs. **Written** is a blank label somebody filled in: the title
+A tape sitting in a deck, in three designs. **Written** is a blank label somebody filled in: the title
 across the cream card, the rainbow band every tape wore under it, and a window below that showing
 the two spools. **Printed** is a pressed release: the cover itself is the label, printed as a
 sticker with a paper edge and pressed on a hair crooked, with the window die-cut through it, and the
@@ -94,8 +94,16 @@ machined edge and a narrow specular streak, anodised in the cover's hue so faint
 does most of the work. It is bolted together with socket caps rather than the slotted screws holding
 the written shell shut.
 
-A new track is a new tape, not the same one relabelled: one of eight printed patterns is picked from
-the track itself, so the same song always comes back on the same tape while the next one arrives on
+**Clear** is the tape itself, stood on end and seen through its own shell: two spools of brown tape
+filling the face, hubs in the album's colour with the crown of teeth a spindle grips, the guide
+assembly and its pressure pad showing through the plastic down one side, COMPACT CASSETTE moulded
+into it, and a white label strip down the other edge carrying the track read bottom to top, with
+TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO and the time. It is the one design that stands
+taller than it is wide, so in landscape the transport keys move to a column beside it rather than a
+row beneath.
+
+A new track is a new tape, not the same one relabelled: one of eight patterns is picked from the
+track itself, so the same song always comes back on the same tape while the next one arrives on
 another. On the written label it prints faintly under the writing and around the window; on the
 printed shell it is machined into the metal.
 
@@ -122,7 +130,8 @@ along its inside edge, with the writing keeping the room to its left. Turn it of
 nothing but handwriting on it. On the printed design the cover is the label itself, so nothing there
 depends on this.
 
-Turned a quarter the printed title takes a third line rather than a smaller shell.
+Turned a quarter the printed title takes a third line rather than a smaller shell, and the clear
+tape finally gets the shape it wants.
 
 It is moulded rather than drawn flat: light rakes across the shell in one diagonal, the screws are
 turned and slotted, the window is sunk into the label with a shadow down its inside, and the tape on

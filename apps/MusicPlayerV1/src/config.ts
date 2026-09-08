@@ -11,7 +11,7 @@ export type Prefs = {
   coverPanel: boolean;
   coverVolume: boolean;
   tapeArt: boolean;
-  tape: 'written' | 'printed';
+  tape: 'written' | 'printed' | 'clear';
   vinylTint: 'black' | 'album' | 'marble';
   wheel: 'volume' | 'seek';
   seekSeconds: number;
@@ -116,7 +116,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'vinylTint':
       return { ...prefs, vinylTint: value === 'album' || value === 'marble' ? value : 'black' };
     case 'tape':
-      return { ...prefs, tape: value === 'printed' ? 'printed' : 'written' };
+      return { ...prefs, tape: value === 'printed' || value === 'clear' ? value : 'written' };
     case 'clockFormat':
       return { ...prefs, clockFormat: value === 'h12' || value === 'h24' ? value : 'auto' };
     case 'clockSeconds':
