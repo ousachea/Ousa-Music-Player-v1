@@ -72,11 +72,15 @@ when the music stops.
 
 ![CD style](apps/MusicPlayerV1/screenshots/05-cd.jpg)
 
-The album printed across a compact disc, with the silver clamping hub punched through the middle of
-it and the hole showing the screen behind. The disc turns while the track plays and holds its angle
-when you pause, and a sheen rides around with the art, which is what makes the turn read on a
-picture that is nearly symmetrical. Turned to 90 or 270 the disc is sized by height so it stays
-round.
+A disc lying in a dark tray. It is plain mirrored chrome rather than the artwork, which is what a
+pressed disc looks like from the top, and it runs past two edges of the tray so it reads as a disc
+sitting in one. The track is lettered low across it and the album art is a small print in the
+corner, the way a case carries it. The disc turns while the track plays and holds its angle when you
+pause.
+
+The transport here is one outlined block split into three, with the progress bar directly above it.
+Landscape sets the tray on the left and stacks the bar and buttons at the bottom right; turned, the
+whole thing stacks the way a phone would.
 
 ### Poster
 

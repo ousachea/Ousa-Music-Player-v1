@@ -1,5 +1,16 @@
 # weather
 
+## 0.25.0
+
+**CD** is redrawn after a reference: the disc sits in a dark tray, plain mirrored chrome rather than
+the artwork, because that is what a pressed disc looks like from the top. It runs past two edges of
+the tray so it reads as a disc lying in one rather than a coaster. The track is lettered low across
+it over a scrim, and the album art is a small print in the corner, the way a case carries it.
+
+Its transport is one outlined block split into three cells rather than three separate glyphs, and
+the progress bar sits directly above it. Landscape puts the tray on the left with the bar and
+buttons stacked at the bottom right; turned, the whole thing stacks the way the reference does.
+
 ## 0.24.0
 
 **On-screen buttons** is a new setting. The presets already do previous, play and next, so the

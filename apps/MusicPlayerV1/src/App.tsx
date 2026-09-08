@@ -334,7 +334,34 @@ export default function App() {
   return (
     <Stage rotate={prefs.rotate}>
     <div className="relative h-full w-full overflow-hidden bg-screen">
-      {prefs.theme === 'widget' ? (
+      {prefs.theme === 'cd' ? (
+        <>
+          <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />
+          <CdDeck
+            artUrl={artUrl}
+            context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
+            title={track.title ?? 'unknown'}
+            artist={artistName ?? '—'}
+            accent={accentOn}
+            playing={playing}
+            motion={prefs.motion}
+            rotate={prefs.rotate}
+            upright={upright}
+            showTransport={prefs.transport}
+            progress={progress}
+            elapsed={elapsed}
+            duration={duration}
+            remaining={prefs.remaining}
+            wallClock={wallClock}
+            clockPos={prefs.clockPos}
+            clockSize={prefs.clockSize}
+            onToggle={toggle}
+            onPrev={() => client.player.skipPrev({ allowSeeking: true })}
+            onNext={() => client.player.skipNext()}
+            onSeek={ratio => seek(ratio * duration)}
+          />
+        </>
+      ) : prefs.theme === 'widget' ? (
         <>
           <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />
           <Widget
@@ -408,8 +435,6 @@ export default function App() {
             }`}>
             {prefs.theme === 'vinyl' ? (
               <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} upright={upright} />
-            ) : prefs.theme === 'cd' ? (
-              <CompactDisc artUrl={artUrl} playing={playing} spin={prefs.motion} upright={upright} />
             ) : (
               <div className={`relative aspect-square ${upright ? 'w-full min-h-0 shrink' : 'h-full shrink-0'}`}>
                 {!edge && <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />}
@@ -990,52 +1015,159 @@ function Turntable({
   );
 }
 
-// the art printed across the whole disc, with the clamping hub punched through the middle of it.
-// the hub does not turn with the art: it is concentric, so spinning it would only cost a repaint
-function CompactDisc({
+// a cd sat in a dark tray: a mirrored disc, the track lettered across the bottom of it, and the
+// album art as a small print in the corner the way a case carries it. the disc is plain chrome
+// rather than the artwork, which is what a pressed disc actually looks like from the top
+function CdDeck({
   artUrl,
+  context,
+  title,
+  artist,
+  accent,
   playing,
-  spin,
+  motion,
+  rotate,
   upright,
+  showTransport,
+  progress,
+  elapsed,
+  duration,
+  remaining,
+  wallClock,
+  clockPos,
+  clockSize,
+  onToggle,
+  onPrev,
+  onNext,
+  onSeek,
 }: {
   artUrl: string | null;
+  context: string;
+  title: string;
+  artist: string;
+  accent: Accent | null;
   playing: boolean;
-  spin: boolean;
+  motion: boolean;
+  rotate: Prefs['rotate'];
   upright: boolean;
+  showTransport: boolean;
+  progress: number;
+  elapsed: number;
+  duration: number;
+  remaining: boolean;
+  wallClock: ClockParts | null;
+  clockPos: 'left' | 'center' | 'right';
+  clockSize: number;
+  onToggle: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onSeek: (ratio: number) => void;
 }) {
-  return (
-    <div className={`relative aspect-square shrink-0 ${upright ? 'h-[52%] self-center' : 'h-full'}`}>
-      <div className="absolute inset-x-8 bottom-2 h-8 rounded-full bg-black/70 blur-2xl" />
+  const tint = accent?.fill ?? '#efefef';
 
+  const tray = (
+    <div
+      className={`relative shrink-0 overflow-hidden rounded-[28px] bg-[#161719] shadow-2xl ring-1 ring-white/8 ${
+        upright ? 'aspect-square w-full' : 'aspect-square h-full'
+      }`}>
+      {/* the disc runs past the tray on two sides, which is what stops it reading as a coaster */}
       <div
-        className="absolute inset-0 animate-platter overflow-hidden rounded-full shadow-2xl"
-        style={{ animationPlayState: playing && spin ? 'running' : 'paused' }}>
+        className="animate-platter absolute left-[6%] top-[4%] h-[104%] w-[104%] rounded-full"
+        style={{
+          animationPlayState: playing && motion ? 'running' : 'paused',
+          background:
+            'conic-gradient(from 208deg, #eff1f3 0deg, #a6acb4 38deg, #f5f7f9 76deg, #8c929a 116deg, #eaecef 154deg, #959ba3 196deg, #f3f5f7 236deg, #8f959d 278deg, #e3e6e9 318deg, #eff1f3 360deg)',
+          boxShadow: 'inset 0 0 60px rgba(0,0,0,0.28)',
+        }}>
+        <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/25" />
+        <div className="absolute left-1/2 top-1/2 aspect-square w-[27%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1b1c1f] shadow-[inset_0_0_18px_rgba(0,0,0,0.7)] ring-1 ring-white/12" />
+      </div>
+
+      {/* the track sits over the disc, low and left, with a scrim so it holds against the chrome */}
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent pt-10" />
+      <div className="absolute bottom-4 left-5 right-[26%] min-w-0">
+        <Roll
+          text={title}
+          wrap={!showTransport}
+          lines={2}
+          className={`font-display font-semibold leading-[1.15] tracking-display text-off-white ${
+            upright ? 'text-[1.5rem]' : 'text-[1.375rem]'
+          }`}
+        />
+        <div className="truncate text-hint text-off-white/60">{context}</div>
+        <Roll text={artist} className="text-body text-off-white/80" />
+      </div>
+
+      <div className="absolute bottom-4 right-4 aspect-square w-[22%] overflow-hidden rounded-lg shadow-lg ring-1 ring-white/20">
         {artUrl ? (
           <img src={artUrl} alt="" className="h-full w-full object-cover" />
         ) : (
-          <div className="h-full w-full bg-white/8" />
-        )}
-        {/* the sheen a pressed disc throws; it rides with the art, which is what makes the spin read */}
-        <div
-          className="absolute inset-0 rounded-full mix-blend-screen opacity-35"
-          style={{
-            background:
-              'conic-gradient(from 200deg, rgba(255,255,255,0) 0deg, rgba(120,220,255,0.5) 26deg, rgba(255,180,240,0.42) 52deg, rgba(255,255,255,0) 96deg, rgba(255,255,255,0) 190deg, rgba(180,255,210,0.4) 224deg, rgba(255,235,160,0.36) 250deg, rgba(255,255,255,0) 300deg)',
-          }}
-        />
-        <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/40" />
-      </div>
-
-      {/* hub: the silver clamping band, the clear inner ring, then the hole */}
-      <div className="pointer-events-none absolute inset-0 grid place-items-center">
-        <div
-          className="grid aspect-square w-[31%] place-items-center rounded-full ring-1 ring-black/35"
-          style={{ background: 'linear-gradient(150deg, #e8ebef 0%, #b9bfc7 42%, #d7dbe0 68%, #a9b0b9 100%)' }}>
-          <div
-            className="grid aspect-square w-[68%] place-items-center rounded-full ring-1 ring-black/20"
-            style={{ background: 'linear-gradient(150deg, #f3f5f7 0%, #cfd4da 55%, #eef1f4 100%)' }}>
-            <div className="aspect-square w-[52%] rounded-full bg-screen shadow-inner ring-1 ring-black/45" />
+          <div className="grid h-full w-full place-items-center bg-white/8">
+            <Disc className="h-5 w-5 text-off-white/30" />
           </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const bar = (
+    <div className="shrink-0">
+      <Rail rotate={rotate} dot progress={progress} playing={playing && motion} tint={tint} tint2={tint} onSeek={onSeek} />
+      <div className="mt-2 flex justify-between font-mono text-hint tabular-nums text-dim">
+        <span>{clock(elapsed)}</span>
+        <span>{duration ? (remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}</span>
+      </div>
+    </div>
+  );
+
+  // one outlined block split into three, rather than three separate buttons
+  const keys = showTransport ? (
+    <div className="flex shrink-0 divide-x divide-white/10 overflow-hidden rounded-2xl ring-1 ring-white/12">
+      {[
+        { label: 'previous', on: onPrev, icon: <Skip className="h-6 w-6 -scale-x-100" /> },
+        {
+          label: playing ? 'pause' : 'play',
+          on: onToggle,
+          icon: playing ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />,
+        },
+        { label: 'next', on: onNext, icon: <Skip className="h-6 w-6" /> },
+      ].map(k => (
+        <button
+          key={k.label}
+          aria-label={k.label}
+          onClick={k.on}
+          className="grid flex-1 place-items-center py-4 text-near transition-colors duration-200 active:bg-white/12">
+          {k.icon}
+        </button>
+      ))}
+    </div>
+  ) : null;
+
+  const clockRow = wallClock ? (
+    <div className={`flex shrink-0 ${JUSTIFY[clockPos]}`}>
+      <ClockView parts={wallClock} size={(10 * clockSize) / 100} className="text-dim" color={accent?.soft} />
+    </div>
+  ) : null;
+
+  if (upright)
+    return (
+      <div className="relative flex h-full w-full flex-col justify-between gap-5 p-6">
+        {clockRow}
+        {tray}
+        {bar}
+        {keys}
+      </div>
+    );
+
+  return (
+    <div className="absolute inset-0 flex items-stretch gap-7 p-6">
+      {tray}
+      <div className="flex min-w-0 flex-1 flex-col gap-5">
+        {clockRow}
+        {/* the bar belongs directly above the buttons, not spread away from them */}
+        <div className="mt-auto flex flex-col gap-5">
+          {bar}
+          {keys}
         </div>
       </div>
     </div>
