@@ -416,6 +416,7 @@ export default function App() {
         <Lyrics
           lyrics={lyrics}
           elapsed={elapsed}
+          duration={duration}
           artUrl={artUrl}
           title={track.title ?? 'unknown'}
           artist={artistName ?? '—'}
@@ -2429,6 +2430,7 @@ const LYRIC_MASK = `linear-gradient(to bottom, ${[
 function Lyrics({
   lyrics,
   elapsed,
+  duration,
   artUrl,
   title,
   artist,
@@ -2448,6 +2450,7 @@ function Lyrics({
 }: {
   lyrics: ReturnType<typeof useLyrics>;
   elapsed: number;
+  duration: number;
   artUrl: string | null;
   title: string;
   artist: string;
@@ -2506,22 +2509,15 @@ function Lyrics({
 
       {showTransport && (
         <>
-          {/* Poster's play button, smaller: the shape turns and the glyph stays upright on top of it */}
+          {/* the corner reports how far through the track is rather than repeating a button the
+              presets already carry; it still takes a tap, so nothing is lost by the change */}
           <button
             aria-label={playing ? 'pause' : 'play'}
             onClick={onToggle}
-            className={`absolute z-[3] grid h-14 w-14 place-items-center text-screen ${other}`}
-            style={accent ? { color: accent.ink } : undefined}>
-            <span
-              className={`absolute inset-0 rounded-[18px] bg-off-white shadow-2xl ${motion ? 'animate-platter' : ''}`}
-              style={{
-                backgroundColor: accent?.fill ?? '#efefef',
-                animationDuration: '9s',
-                animationPlayState: playing && motion ? 'running' : 'paused',
-              }}
-            />
-            <span key={playing ? 'pause' : 'play'} className="relative grid animate-pop place-items-center">
-              {playing ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+            className={`absolute z-[3] grid h-14 w-14 place-items-center transition active:scale-90 ${other}`}>
+            <Ring progress={duration > 0 ? elapsed / duration : 0} tint={tint} />
+            <span className="absolute font-mono text-[0.625rem] tabular-nums text-off-white/85">
+              {clock(elapsed)}
             </span>
           </button>
 
@@ -2676,6 +2672,29 @@ function Lyrics({
 }
 
 // lines of text, struck through when the words are off
+// a ring drawn from the top, the way a progress arc is read
+function Ring({ progress, tint }: { progress: number; tint: string }) {
+  const r = 25;
+  const circumference = 2 * Math.PI * r;
+  const done = Math.min(1, Math.max(0, progress));
+  return (
+    <svg viewBox="0 0 56 56" className="absolute inset-0 h-full w-full -rotate-90">
+      <circle cx="28" cy="28" r={r} fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.18)" strokeWidth="4" />
+      <circle
+        cx="28"
+        cy="28"
+        r={r}
+        fill="none"
+        stroke={tint}
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        strokeDashoffset={circumference * (1 - done)}
+      />
+    </svg>
+  );
+}
+
 function Words({ className, off }: { className?: string; off?: boolean }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

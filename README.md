@@ -124,9 +124,9 @@ masked, and the artwork behind them keeps its full strength. The column is what 
 lines.
 
 The artwork and the track sit in whichever corner you pick, under **Track corner**. On the right the
-artwork leads and the track reads back towards it. Play and pause take the other end of that same
-edge, drawn as Poster draws it, with only the rounded square turning. Previous and next take the far
-ends of the other edge, so the four sit one to a corner. All of them go away when the on-screen
+artwork leads and the track reads back towards it. The other end of that same edge carries a ring
+showing how far through the song is, with the elapsed time in the middle of it; tapping it plays or
+pauses. Previous and next take the far ends of the other edge, so the four sit one to a corner. All of them go away when the on-screen
 buttons do.
 
 Touching a line plays from it: each line knows the moment it belongs to, so the words are also the

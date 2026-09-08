@@ -2,6 +2,10 @@
 
 ## 0.30.2
 
+The corner opposite the track now shows how far through the song is, a ring with the elapsed time
+in it, rather than a play button repeating what preset 2 already does. It still takes a tap for play
+and pause, so nothing is lost by the change.
+
 The top and bottom of the Lyrics screen no longer darken. A gradient laid over the screen dimmed the
 artwork along with the words; the words are masked instead, so they thin to nothing at the edges and
 what is behind them is left alone. The artwork, the track and the buttons in the corners keep their
