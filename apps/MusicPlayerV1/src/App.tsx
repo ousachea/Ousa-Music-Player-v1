@@ -11,7 +11,7 @@ import {
 } from 'react';
 
 import { accentFrom, type Accent } from './artwork-color';
-import { hdArtwork } from './hd-art';
+import { explicitFor, hdArtwork } from './hd-art';
 import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
@@ -85,6 +85,7 @@ export default function App() {
   const upright = prefs.rotate === 90 || prefs.rotate === 270;
   const track = state?.track ?? null;
   const [foundArtist, setFoundArtist] = useState<string | null>(null);
+  const [explicit, setExplicit] = useState(false);
   const artistName = track?.artist ?? foundArtist;
   const playback = state?.playback ?? null;
   const artworkId = track?.artworkId ?? null;
@@ -136,6 +137,20 @@ export default function App() {
       stale = true;
     };
   }, [client, prefs.hdArt, track?.artist, track?.album]);
+
+  useEffect(() => {
+    setExplicit(false);
+    if (!prefs.hdArt || !track?.title) return;
+    let stale = false;
+    explicitFor(client, { artist: track.artist ?? null, title: track.title })
+      .then(flag => {
+        if (!stale && flag) setExplicit(true);
+      })
+      .catch(() => {});
+    return () => {
+      stale = true;
+    };
+  }, [client, prefs.hdArt, track?.artist, track?.title]);
 
   // snapshots are sparse, so the bar runs off an anchor and wall clock between them
   const anchor = useRef({ posMs: 0, at: 0 });
@@ -355,6 +370,7 @@ export default function App() {
             context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
             title={track.title ?? 'unknown'}
             artist={artistName ?? '—'}
+            explicit={explicit}
             accent={accentOn}
             playing={playing}
             motion={prefs.motion}
@@ -381,6 +397,7 @@ export default function App() {
             context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
             title={track.title ?? 'unknown'}
             artist={artistName ?? '—'}
+            explicit={explicit}
             accent={accentOn}
             playing={playing}
             motion={prefs.motion}
@@ -417,6 +434,7 @@ export default function App() {
           context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
           title={track.title ?? 'unknown'}
           artist={artistName ?? '—'}
+          explicit={explicit}
           accent={accentOn}
           playing={playing}
           motion={prefs.motion}
@@ -474,7 +492,10 @@ export default function App() {
                   wrap={!prefs.transport}
                   className="font-display text-[2.125rem] leading-[1.2] font-semibold tracking-display text-off-white"
                 />
-                <Roll text={artistName ?? '—'} wrap={!prefs.transport} lines={2} className="mt-2 text-title text-soft" />
+                <div className="mt-2 flex min-w-0 items-center gap-2">
+                  {explicit && <Explicit />}
+                  <Roll text={artistName ?? '—'} wrap={!prefs.transport} lines={2} className="min-w-0 text-title text-soft" />
+                </div>
               </div>
 
               <div className="shrink-0">
@@ -1009,6 +1030,7 @@ function CdDeck({
   context,
   title,
   artist,
+  explicit,
   accent,
   playing,
   motion,
@@ -1030,6 +1052,7 @@ function CdDeck({
   context: string;
   title: string;
   artist: string;
+  explicit: boolean;
   accent: Accent | null;
   playing: boolean;
   motion: boolean;
@@ -1115,7 +1138,10 @@ function CdDeck({
           upright ? 'text-[1.75rem]' : 'text-[1.625rem]'
         }`}
       />
-      <Roll text={artist} wrap={!showTransport} lines={2} className="mt-1 text-title text-soft" />
+      <div className="mt-1 flex min-w-0 items-center gap-2">
+        {explicit && <Explicit />}
+        <Roll text={artist} wrap={!showTransport} lines={2} className="min-w-0 text-title text-soft" />
+      </div>
     </div>
   );
 
@@ -1222,6 +1248,7 @@ function Poster({
   context,
   title,
   artist,
+  explicit,
   accent,
   playing,
   motion,
@@ -1244,6 +1271,7 @@ function Poster({
   context: string;
   title: string;
   artist: string;
+  explicit: boolean;
   accent: Accent | null;
   playing: boolean;
   motion: boolean;
@@ -1313,7 +1341,10 @@ function Poster({
           lines={3}
           className="font-display text-[2.375rem] leading-[1.15] font-semibold tracking-display text-off-white"
         />
-        <Roll text={artist} wrap lines={2} className="mt-1 text-title text-off-white/70" />
+        <div className="mt-1 flex min-w-0 items-center gap-2">
+          {explicit && <Explicit />}
+          <Roll text={artist} wrap lines={2} className="min-w-0 text-title text-off-white/70" />
+        </div>
         <div className="mt-2.5 font-mono text-hint tabular-nums text-off-white/60">
           {clock(elapsed)} / {duration ? clock(duration) : '--:--'}
         </div>
@@ -1371,6 +1402,7 @@ function Widget({
   context,
   title,
   artist,
+  explicit,
   accent,
   playing,
   motion,
@@ -1400,6 +1432,7 @@ function Widget({
   context: string;
   title: string;
   artist: string;
+  explicit: boolean;
   accent: Accent | null;
   playing: boolean;
   motion: boolean;
@@ -1479,12 +1512,10 @@ function Widget({
           small ? 'text-[1.75rem]' : 'text-[1.875rem]'
         }`}
       />
-      <Roll
-        text={artist}
-        wrap={!showTransport}
-        lines={2}
-        className={`mt-1.5 text-soft ${small ? 'text-title' : 'text-title'}`}
-      />
+      <div className="mt-1.5 flex min-w-0 items-center gap-2">
+        {explicit && <Explicit />}
+        <Roll text={artist} wrap={!showTransport} lines={2} className="min-w-0 text-title text-soft" />
+      </div>
     </div>
   );
 
@@ -2154,6 +2185,19 @@ function Turn({ className }: { className?: string }) {
       <path d="M20 12a8 8 0 1 1-2.6-5.9" />
       <path d="M20 4v4.6h-4.6" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+// the mark a store puts on a track, at the size a store puts it
+function Explicit({ className }: { className?: string }) {
+  return (
+    <span
+      aria-label="explicit"
+      className={`grid h-[15px] w-[15px] shrink-0 place-items-center rounded-[3px] bg-off-white/65 font-mono text-[0.5625rem] leading-none font-bold text-screen ${
+        className ?? ''
+      }`}>
+      E
+    </span>
   );
 }
 

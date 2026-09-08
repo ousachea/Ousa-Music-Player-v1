@@ -33,8 +33,9 @@ Updates show up in the same place. Music Player can also tell you when it is beh
 settings on the device and press **Check** under *Software update*.
 
 > Music Player and Network Monitor each ask for `net.proxy`. Music Player uses it to fetch a sharper
-> copy of the album art than the device receives on its own, and to fill in the artist on tracks the
-> phone sends none for, both of which you can turn off in its settings;
+> copy of the album art than the device receives on its own, to fill in the artist on tracks the
+> phone sends none for, and to mark the ones that are explicit, all of which you can turn off in its
+> settings;
 > Network Monitor uses it to time the requests it measures with.
 
 ## Music Player

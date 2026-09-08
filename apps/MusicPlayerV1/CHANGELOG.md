@@ -1,5 +1,13 @@
 # weather
 
+## 0.26.0
+
+Tracks marked explicit now carry an **E** beside the artist. The phone sends no such flag, so it
+comes from the same search that fetches the artwork, asked about the track rather than the album: an
+explicit album can hold clean tracks and marking those would be worse than marking none. It needs
+**HD album art** switched on, since it is the same lookup and the same permission, and a track the
+search cannot confidently match is left unmarked rather than guessed at.
+
 ## 0.25.4
 
 Turning the wheel in the Cover style no longer throws the volume readout over the middle of the

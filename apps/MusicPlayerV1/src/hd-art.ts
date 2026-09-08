@@ -70,3 +70,46 @@ export async function hdArtwork(
   remember(key, result);
   return result;
 }
+
+// the phone sends no explicit flag at all, so the same search that carries the artwork is asked
+// about the track itself. keyed per track rather than per album: an explicit album can hold clean
+// tracks, and marking those would be worse than marking nothing
+const EXPLICIT_MAX = 40;
+const explicitCache = new Map<string, boolean>();
+
+// search returns the nearest match rather than nothing, so a title that does not agree is a miss.
+// bracketed suffixes go, because one side carries feat. credits and the other often does not
+function samish(a: string, b: string) {
+  const strip = (t: string) =>
+    t
+      .toLowerCase()
+      .replace(/\([^)]*\)|\[[^\]]*\]/g, '')
+      .replace(/[^a-z0-9]/g, '');
+  const x = strip(a);
+  const y = strip(b);
+  return x.length > 0 && x === y;
+}
+
+export async function explicitFor(
+  client: BridgethingClient,
+  track: { artist: string | null; title: string | null },
+): Promise<boolean | null> {
+  const title = track.title?.trim();
+  if (!title) return null;
+  const artist = track.artist?.trim();
+
+  const key = `${artist ?? ''}|${title}`.toLowerCase();
+  const cached = explicitCache.get(key);
+  if (cached !== undefined) return cached;
+
+  const query = `${SEARCH}?term=${encodeURIComponent(artist ? `${artist} ${title}` : title)}&entity=song&limit=1`;
+  const found = await get(client, query);
+  const hit = JSON.parse(new TextDecoder().decode(found.bytes))?.results?.[0];
+  if (!hit || typeof hit.trackName !== 'string' || !samish(hit.trackName, title)) return null;
+  if (artist && typeof hit.artistName === 'string' && !samish(hit.artistName, artist)) return null;
+
+  const explicit = hit.trackExplicitness === 'explicit';
+  explicitCache.set(key, explicit);
+  while (explicitCache.size > EXPLICIT_MAX) explicitCache.delete(explicitCache.keys().next().value as string);
+  return explicit;
+}
