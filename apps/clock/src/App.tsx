@@ -1,7 +1,7 @@
 import { BridgethingClient } from '@bridgething/client';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
-import { PALETTES, useAlarm, usePrefs, type Alarm, type Palette, type Prefs } from './config';
+import { PALETTES, SPANS, STEPS, STEP_LABELS, useAlarm, usePrefs, type Alarm, type Palette, type Prefs } from './config';
 import { clockText, fields, readClock, useTick, useZone } from './time';
 import { daemonUrl } from './daemon';
 
@@ -13,8 +13,6 @@ const STYLES: Prefs['style'][] = ['digital', 'analogue', 'flip', 'minimal'];
 // one rotary detent lands around deltaX 1
 const WHEEL_PER_STEP = 1;
 const MAX_STEPS_PER_EVENT = 4;
-// how long an alarm or a finished timer keeps announcing itself before it gives up
-const RING_MS = 60000;
 // the last stretch of a countdown leaves the chosen colour for one that reads as running out
 const URGENT: Palette = { main: '#ff8a6b', second: '#ffcf5f', glow: '#5e2418' };
 const URGENT_AT = 10000;
@@ -43,7 +41,6 @@ export default function App() {
   const now = useTick(50);
   const at = useMemo(() => new Date(now + zone.offsetMs), [now, zone.offsetMs]);
   const pal = PALETTES[prefs.tint];
-  const tint = pal.main;
 
   // --- stopwatch -----------------------------------------------------------
   const [swFrom, setSwFrom] = useState<number | null>(null);
@@ -110,20 +107,22 @@ export default function App() {
   }, [alarm, nowH, nowM, at]);
 
   // the earcon is the only sound the daemon will make for us, so it repeats rather than sustains
+  const ringSound = ringing?.kind === 'alarm' ? prefs.alarmSound : prefs.timerSound;
+  const ringSpan = ringing?.kind === 'alarm' ? prefs.alarmRing : prefs.timerRing;
+
   useEffect(() => {
-    if (!ringing) return;
-    if (!prefs.chime) return;
+    if (!ringing || !ringSound) return;
     const beep = () => client.audio.earcon({ name: 'notify' }).catch(() => {});
     beep();
     const id = setInterval(beep, 2500);
     return () => clearInterval(id);
-  }, [ringing, prefs.chime, client]);
+  }, [ringing, ringSound, client]);
 
   useEffect(() => {
     if (!ringing) return;
-    const id = setTimeout(() => setRinging(null), RING_MS);
+    const id = setTimeout(() => setRinging(null), SPANS[ringSpan]);
     return () => clearTimeout(id);
-  }, [ringing]);
+  }, [ringing, ringSpan]);
 
   const stopRinging = useCallback(() => setRinging(null), []);
 
@@ -149,7 +148,7 @@ export default function App() {
 
       if (view === 'timer' && !timerRunning) {
         setTimerLeft(v => {
-          const next = Math.max(0, Math.min(99 * 3600000, v + count * 60000));
+          const next = Math.max(0, Math.min(99 * 3600000, v + count * STEPS[prefs.timerStep]));
           setTimerSet(next);
           return next;
         });
@@ -183,7 +182,7 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
     };
-  }, [alarm, cycleStyle, panel, ringing, setAlarm, stopRinging, swToggle, timerRunning, timerToggle, view]);
+  }, [alarm, cycleStyle, panel, prefs.timerStep, ringing, setAlarm, stopRinging, swToggle, timerRunning, timerToggle, view]);
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-screen text-off-white">
@@ -196,11 +195,23 @@ export default function App() {
           pal={timerRunning && timerRemaining <= URGENT_AT ? URGENT : pal}
           onToggle={timerToggle}
           onReset={timerReset}
+          step={STEPS[prefs.timerStep]}
+          stepLabel={STEP_LABELS[prefs.timerStep]}
           onStep={n => !timerRunning && setTimerLeft(v => { const x = Math.max(0, v + n); setTimerSet(x); return x; })}
         />
       )}
       {view === 'stopwatch' && (
-        <Stopwatch elapsed={swElapsed} running={swRunning} laps={laps} pal={pal} onToggle={swToggle} onLap={swLap} onReset={swReset} />
+        <Stopwatch
+          elapsed={swElapsed}
+          running={swRunning}
+          laps={prefs.swLaps ? laps : []}
+          keepLaps={prefs.swLaps}
+          hundredths={prefs.swHundredths}
+          pal={pal}
+          onToggle={swToggle}
+          onLap={swLap}
+          onReset={swReset}
+        />
       )}
       {view === 'alarm' && (
         <AlarmView alarm={alarm} pal={pal} zone={zone} at={at} format={prefs.format} onSet={setAlarm} />
@@ -214,7 +225,7 @@ export default function App() {
       />
 
       {ringing && <Ringing kind={ringing.kind} pal={ringing.kind === 'timer' ? URGENT : pal} onStop={stopRinging} />}
-      {panel && <Settings prefs={prefs} setPref={setPref} tint={tint} />}
+      {panel && <Settings view={view} prefs={prefs} setPref={setPref} pal={pal} />}
     </div>
   );
 }
@@ -269,7 +280,7 @@ function Presets({
   }, [view, face]);
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-[2]">
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-[6]">
       {/* one band along the whole edge rather than a chip behind each name: four dark patches read
           as stuck on top of the clock, a single fade reads as part of the edge they point at */}
       <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/55 via-black/15 to-transparent" />
@@ -496,6 +507,8 @@ function Timer({
   remaining,
   running,
   pal,
+  step,
+  stepLabel,
   onToggle,
   onReset,
   onStep,
@@ -503,6 +516,8 @@ function Timer({
   remaining: number;
   running: boolean;
   pal: Palette;
+  step: number;
+  stepLabel: string;
   onToggle: () => void;
   onReset: () => void;
   onStep: (ms: number) => void;
@@ -511,12 +526,14 @@ function Timer({
     <div className="flex h-full w-full flex-col items-center justify-center gap-6 pt-10">
       <Big pal={pal}>{clockText(remaining)}</Big>
       <div className="flex items-center gap-3">
-        {!running && <Key label="−1 min" onClick={() => onStep(-60000)} />}
+        {!running && <Key label={`−${stepLabel}`} onClick={() => onStep(-step)} />}
         <Key label={running ? 'Pause' : 'Start'} onClick={onToggle} pal={pal} wide />
-        {!running && <Key label="+1 min" onClick={() => onStep(60000)} />}
+        {!running && <Key label={`+${stepLabel}`} onClick={() => onStep(step)} />}
         <Key label="Reset" onClick={onReset} />
       </div>
-      <div className="text-hint text-dim">{running ? 'counting down' : 'turn the wheel to set the minutes'}</div>
+      <div className="text-hint text-dim">
+        {running ? 'counting down' : `turn the wheel, ${stepLabel} a click`}
+      </div>
     </div>
   );
 }
@@ -525,6 +542,8 @@ function Stopwatch({
   elapsed,
   running,
   laps,
+  keepLaps,
+  hundredths,
   pal,
   onToggle,
   onLap,
@@ -533,6 +552,8 @@ function Stopwatch({
   elapsed: number;
   running: boolean;
   laps: number[];
+  keepLaps: boolean;
+  hundredths: boolean;
   pal: Palette;
   onToggle: () => void;
   onLap: () => void;
@@ -541,10 +562,10 @@ function Stopwatch({
   return (
     <div className="flex h-full w-full items-center gap-8 px-10 pt-10">
       <div className="flex flex-1 flex-col items-center gap-6">
-        <Big pal={pal}>{clockText(elapsed, true)}</Big>
+        <Big pal={pal}>{clockText(elapsed, hundredths)}</Big>
         <div className="flex items-center gap-3">
           <Key label={running ? 'Stop' : 'Start'} onClick={onToggle} pal={pal} wide />
-          <Key label="Lap" onClick={onLap} />
+          {keepLaps && <Key label="Lap" onClick={onLap} />}
           <Key label="Reset" onClick={onReset} />
         </div>
       </div>
@@ -554,7 +575,7 @@ function Stopwatch({
             <div key={i} className="flex justify-between border-b border-white/6 py-1.5 font-mono text-hint last:border-0">
               <span className="text-dim">{laps.length - i}</span>
               <span className="tabular-nums" style={{ color: i === 0 ? pal.main : undefined, opacity: 1 - Math.min(i, 6) * 0.09 }}>
-                {clockText(lap, true)}
+                {clockText(lap, hundredths)}
               </span>
             </div>
           ))}
@@ -622,9 +643,23 @@ function Ringing({ kind, pal, onStop }: { kind: 'timer' | 'alarm'; pal: Palette;
   );
 }
 
-function Settings({ prefs, setPref, tint }: { prefs: Prefs; setPref: (k: keyof Prefs, v: string) => void; tint: string }) {
+function Settings({
+  view,
+  prefs,
+  setPref,
+  pal,
+}: {
+  view: View;
+  prefs: Prefs;
+  setPref: (k: keyof Prefs, v: string) => void;
+  pal: Palette;
+}) {
+  const tint = pal.main;
+  const group = (children: ReactNode) => (
+    <div className="flex flex-col overflow-hidden rounded-2xl bg-white/4">{children}</div>
+  );
   const row = (label: string, control: ReactNode) => (
-    <div className="flex items-center justify-between gap-5 border-b border-white/6 px-4 py-2.5 last:border-0">
+    <div key={label} className="flex items-center justify-between gap-5 border-b border-white/6 px-4 py-2.5 last:border-0">
       <span className="text-title text-near">{label}</span>
       {control}
     </div>
@@ -648,41 +683,70 @@ function Settings({ prefs, setPref, tint }: { prefs: Prefs; setPref: (k: keyof P
       aria-checked={on}
       onClick={onPick}
       className="relative h-8 w-14 shrink-0 rounded-full transition-colors"
-      style={{ backgroundColor: on ? tint : 'rgba(255,255,255,0.16)' }}>
+      style={{ background: on ? fill(pal) : 'rgba(255,255,255,0.16)' }}>
       <span className="absolute top-1 h-6 w-6 rounded-full bg-screen transition-[left]" style={{ left: on ? '28px' : '4px' }} />
     </button>
   );
+  const flag = (label: string, key: keyof Prefs, on: boolean) =>
+    row(label, toggle(on, () => setPref(key, on ? 'false' : 'true')));
+  const span = (label: string, key: 'timerRing' | 'alarmRing') =>
+    row(label, seg(['30s', '1m', '5m'] as const, ['30 sec', '1 min', '5 min'], prefs[key], v => setPref(key, v)));
+  const hours = () =>
+    row('Hour format', seg(['auto', 'h12', 'h24'] as const, ['Auto', '12h', '24h'], prefs.format, v => setPref('format', v)));
+
+  const rows: Record<View, ReactNode[]> = {
+    clock: [
+      row('Clock face', seg(STYLES, ['Digital', 'Analogue', 'Flip', 'Minimal'], prefs.style, v => setPref('style', v))),
+      hours(),
+      flag('Show seconds', 'seconds', prefs.seconds),
+      flag('Show the date', 'date', prefs.date),
+    ],
+    timer: [
+      flag('Sound when it rings', 'timerSound', prefs.timerSound),
+      span('How long it rings', 'timerRing'),
+      row(
+        'One click of the wheel',
+        seg(['10s', '1m', '5m'] as const, ['10 sec', '1 min', '5 min'], prefs.timerStep, v => setPref('timerStep', v)),
+      ),
+    ],
+    stopwatch: [
+      flag('Show hundredths', 'swHundredths', prefs.swHundredths),
+      flag('Keep laps', 'swLaps', prefs.swLaps),
+    ],
+    // the alarm reads its own time back, so the format it reads it in belongs on this screen too
+    alarm: [flag('Sound when it rings', 'alarmSound', prefs.alarmSound), span('How long it rings', 'alarmRing'), hours()],
+  };
 
   return (
-    <div className="absolute inset-0 z-10 flex flex-col bg-screen/97 px-8 py-5 backdrop-blur-sm">
+    <div className="absolute inset-0 z-[5] flex flex-col bg-screen/97 px-8 pt-8 pb-4 backdrop-blur-sm">
       <div className="flex items-baseline justify-between">
-        <span className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Settings</span>
-        <span className="text-hint text-dim">the button under the wheel closes this</span>
+        <span className="font-mono text-eyebrow tracking-[0.22em] uppercase" style={{ color: tint }}>
+          {LABELS[view]}
+        </span>
+        <span className="text-hint text-dim">the presets move between screens, the wheel button closes this</span>
       </div>
-      <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto rounded-2xl bg-white/4 [scrollbar-width:none]">
-        {row('Clock face', seg(STYLES, ['Digital', 'Analogue', 'Flip', 'Minimal'], prefs.style, v => setPref('style', v)))}
-        {row('Hour format', seg(['auto', 'h12', 'h24'] as const, ['Auto', '12h', '24h'], prefs.format, v => setPref('format', v)))}
-        {row(
-          'Colour',
-          <div className="flex shrink-0 items-center gap-2">
-            {(Object.keys(PALETTES) as Prefs['tint'][]).map(k => (
-              <button
-                key={k}
-                aria-label={k}
-                onClick={() => setPref('tint', k)}
-                className="h-8 w-8 rounded-full transition"
-                style={{
-                  background: fill(PALETTES[k]),
-                  outline: k === prefs.tint ? '2px solid #efefef' : '2px solid transparent',
-                  outlineOffset: '2px',
-                }}
-              />
-            ))}
-          </div>,
-        )}
-        {row('Show seconds', toggle(prefs.seconds, () => setPref('seconds', prefs.seconds ? 'false' : 'true')))}
-        {row('Show the date', toggle(prefs.date, () => setPref('date', prefs.date ? 'false' : 'true')))}
-        {row('Sound when it rings', toggle(prefs.chime, () => setPref('chime', prefs.chime ? 'false' : 'true')))}
+      <div className="mt-3 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [scrollbar-width:none]">
+        {group(rows[view])}
+        {group([
+          row(
+            'Colour, on every screen',
+            <div className="flex shrink-0 items-center gap-2">
+              {(Object.keys(PALETTES) as Prefs['tint'][]).map(k => (
+                <button
+                  key={k}
+                  aria-label={k}
+                  onClick={() => setPref('tint', k)}
+                  className="h-8 w-8 rounded-full transition"
+                  style={{
+                    background: fill(PALETTES[k]),
+                    outline: k === prefs.tint ? '2px solid #efefef' : '2px solid transparent',
+                    outlineOffset: '2px',
+                  }}
+                />
+              ))}
+            </div>,
+          ),
+        ])}
       </div>
       <div className="mt-2 text-hint text-dim">Changing a setting in the companion app overrides it here.</div>
     </div>

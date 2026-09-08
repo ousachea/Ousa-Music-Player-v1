@@ -9,33 +9,6 @@
     {
       "type": "enum",
       "data": {
-        "key": "style",
-        "label": "Clock face",
-        "choices": [
-          "digital",
-          "analogue",
-          "flip",
-          "minimal"
-        ],
-        "default": "digital"
-      }
-    },
-    {
-      "type": "enum",
-      "data": {
-        "key": "format",
-        "label": "Hour format",
-        "choices": [
-          "auto",
-          "h12",
-          "h24"
-        ],
-        "default": "auto"
-      }
-    },
-    {
-      "type": "enum",
-      "data": {
         "key": "tint",
         "label": "Colour",
         "choices": [
@@ -52,10 +25,37 @@
       }
     },
     {
+      "type": "enum",
+      "data": {
+        "key": "style",
+        "label": "Clock face",
+        "choices": [
+          "digital",
+          "analogue",
+          "flip",
+          "minimal"
+        ],
+        "default": "digital"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "format",
+        "label": "Clock: hour format",
+        "choices": [
+          "auto",
+          "h12",
+          "h24"
+        ],
+        "default": "auto"
+      }
+    },
+    {
       "type": "boolean",
       "data": {
         "key": "seconds",
-        "label": "Show seconds",
+        "label": "Clock: show seconds",
         "default": true
       }
     },
@@ -63,16 +63,79 @@
       "type": "boolean",
       "data": {
         "key": "date",
-        "label": "Show the date",
+        "label": "Clock: show the date",
         "default": true
       }
     },
     {
       "type": "boolean",
       "data": {
-        "key": "chime",
-        "label": "Sound when the timer or alarm rings",
+        "key": "timerSound",
+        "label": "Timer: sound when it rings",
         "default": true
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "timerRing",
+        "label": "Timer: how long it rings",
+        "choices": [
+          "30s",
+          "1m",
+          "5m"
+        ],
+        "default": "1m"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "timerStep",
+        "label": "Timer: what one wheel click is worth",
+        "choices": [
+          "10s",
+          "1m",
+          "5m"
+        ],
+        "default": "1m"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "swHundredths",
+        "label": "Stopwatch: show hundredths",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "swLaps",
+        "label": "Stopwatch: keep laps",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "alarmSound",
+        "label": "Alarm: sound when it rings",
+        "default": true
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "alarmRing",
+        "label": "Alarm: how long it rings",
+        "choices": [
+          "30s",
+          "1m",
+          "5m"
+        ],
+        "default": "1m"
       }
     }
   ],

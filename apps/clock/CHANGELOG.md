@@ -24,6 +24,19 @@ the empty half of a clock face has a temperature. Three new ones — **Sunset**,
 under ten seconds leaves whatever you chose for a colour that reads as running out, and takes the
 wash with it.
 
+**Each screen keeps its own settings.** The wheel button opens the settings for whichever screen you
+are on, and the presets move between them the way they move between the screens themselves, so the
+panel is always about the thing in front of you. The bumps stay lit over it to say which.
+
+Clock keeps the face, the hour format, the seconds and the date. Timer gains **how long it rings**
+and **what one click of the wheel is worth**, so a countdown can be dialled in ten-second steps or
+five-minute ones rather than always a minute at a time. Stopwatch gains **hundredths** and **keep
+laps**, and drops the Lap button when laps are off. Alarm gains **how long it rings**, and carries
+the hour format because it reads a time back to you.
+
+The one sound setting has become two, one for the timer and one for the alarm. Colour stays one
+setting, sitting under every panel, because it paints all four screens.
+
 ## 0.1.0
 
 A clock for the Car Thing, in four faces: **Digital**, **Analogue**, **Flip** and **Minimal**. Mode

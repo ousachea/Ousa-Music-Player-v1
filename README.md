@@ -242,12 +242,18 @@ stopwatch running to hundredths, with laps. **4** is an alarm: set the hour with
 minutes with the wheel, switch it on, and it rings at that time. The alarm outlives a restart.
 **Mode** moves between the four screens.
 
+The wheel button opens the settings for whichever screen you are on, and the presets move between
+those the same way they move between the screens, so the panel is always about the thing in front of
+you. Clock has the face, the hour format, the seconds and the date. Timer has how long it rings and
+what one click of the wheel is worth. Stopwatch has hundredths and whether to keep laps. Alarm has
+how long it rings, and the hour format it reads its own time back in. Each of the two that ring has
+its own sound setting.
+
 Colour is a pair rather than a single tint. The hour takes the first and the minute the second, the
 countdown and the stopwatch run a gradient across the numerals, the dial and its hands are drawn
 from the same two, and the screen behind carries a soft wash of them, so the empty half of a clock
 face has a temperature. Eight to pick from — White, Amber, Cyan, Green, Pink, Sunset, Aurora and
-Ember — as swatches in the on-device settings, or by name in the companion app. The hour format,
-the seconds and the date are settings too.
+Ember — as swatches under every settings panel, or by name in the companion app.
 
 ![Stopwatch](apps/clock/screenshots/05-stopwatch.jpg)
 

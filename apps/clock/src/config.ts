@@ -2,16 +2,43 @@
 import type { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+// every screen keeps its own settings; only the colour is shared, because it paints all four
+export type Span = '30s' | '1m' | '5m';
+export type Step = '10s' | '1m' | '5m';
+
 export type Prefs = {
+  tint: 'white' | 'amber' | 'cyan' | 'green' | 'magenta' | 'sunset' | 'aurora' | 'ember';
   style: 'digital' | 'analogue' | 'flip' | 'minimal';
   format: 'auto' | 'h12' | 'h24';
   seconds: boolean;
   date: boolean;
-  tint: 'white' | 'amber' | 'cyan' | 'green' | 'magenta' | 'sunset' | 'aurora' | 'ember';
-  chime: boolean;
+  timerSound: boolean;
+  timerRing: Span;
+  timerStep: Step;
+  swHundredths: boolean;
+  swLaps: boolean;
+  alarmSound: boolean;
+  alarmRing: Span;
 };
 
-const DEFAULTS: Prefs = { style: 'digital', format: 'auto', seconds: true, date: true, tint: 'white', chime: true };
+const DEFAULTS: Prefs = {
+  tint: 'white',
+  style: 'digital',
+  format: 'auto',
+  seconds: true,
+  date: true,
+  timerSound: true,
+  timerRing: '1m',
+  timerStep: '1m',
+  swHundredths: true,
+  swLaps: true,
+  alarmSound: true,
+  alarmRing: '1m',
+};
+
+export const SPANS: Record<Span, number> = { '30s': 30000, '1m': 60000, '5m': 300000 };
+export const STEPS: Record<Step, number> = { '10s': 10000, '1m': 60000, '5m': 300000 };
+export const STEP_LABELS: Record<Step, string> = { '10s': '10 sec', '1m': '1 min', '5m': '5 min' };
 
 // every colour is a pair, not one value: the numerals run a gradient between them and the screen
 // behind takes a wash of the same pair, so the app has a temperature rather than one lit shape
@@ -44,9 +71,17 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, format: value === 'h12' || value === 'h24' ? value : 'auto' };
     case 'tint':
       return { ...prefs, tint: value in TINTS ? (value as Prefs['tint']) : 'white' };
+    case 'timerRing':
+    case 'alarmRing':
+      return { ...prefs, [key]: value in SPANS ? (value as Span) : '1m' };
+    case 'timerStep':
+      return { ...prefs, timerStep: value in STEPS ? (value as Step) : '1m' };
     case 'seconds':
     case 'date':
-    case 'chime':
+    case 'timerSound':
+    case 'swHundredths':
+    case 'swLaps':
+    case 'alarmSound':
       return { ...prefs, [key]: value !== 'false' };
     default:
       return prefs;
