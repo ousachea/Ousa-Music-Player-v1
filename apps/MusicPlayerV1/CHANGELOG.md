@@ -39,8 +39,10 @@ turned and slotted, and the window is sunk into the label with a shadow down its
 highlight along the lip. The tape wound on a spool is a radial gradient ringed with the turns of the
 wind, and the hub is cream plastic with a bright arc riding round it, so a spool reads as a thing
 with a top and a bottom. A fine line texture sits over the label the way it sits over printed card,
-and the keys are chunky ones pressed into a sunken deck bar, going down and dark when touched. The
-label is marked SIDE A and TYPE II like the tape it is copying.
+and the transport is a tape deck's rather than a phone's: light plastic caps with black glyphs, a
+bright bevel along the top and a shadow under the bottom, set in a dark recessed strip with a
+hairline between them, pressing into it when touched. The label is marked SIDE A and TYPE II like
+the tape it is copying.
 
 The tape is larger in landscape, taking the height the screen actually has rather than three
 quarters of it. A long title stays on the label: it was laid out as a -webkit-box flex item, which

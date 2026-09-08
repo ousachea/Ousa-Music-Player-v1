@@ -94,8 +94,9 @@ machined edge and a narrow specular streak, anodised in the cover's hue so faint
 does most of the work. It is bolted together with socket caps rather than the slotted screws holding
 the written shell shut.
 
-A fourth key sits with the transport, in the same deck bar and the same chunky plastic, and switches
-between the two. **Tape design** does the same from the settings.
+The transport is a tape deck's: light plastic caps with black glyphs, bevelled at the top and shaded
+at the bottom, sunk in a dark strip that they press into. A fourth key sits with them and switches
+between the two designs, and **Tape design** does the same from the settings.
 
 The spools are the progress bar in both: the left one starts full and empties as the song plays
 while the right one fills, and both turn while the music runs and hold where they are when you
