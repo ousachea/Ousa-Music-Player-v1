@@ -2,6 +2,10 @@
 
 ## 0.28.0
 
+Cover wraps a long track onto as many rows as it needs, up to three, with two for the artist,
+rather than scrolling it past on one line. The column is deep in either orientation, and deeper
+still with the panel drawn, so there is room to grow into.
+
 Two settings for the Cover style.
 
 **Panel behind the track** puts the track and the controls on a tinted panel of their own instead of

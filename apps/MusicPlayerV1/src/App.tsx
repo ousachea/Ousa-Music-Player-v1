@@ -1602,17 +1602,19 @@ function Widget({
   const titles = (
     <div className="min-w-0 shrink-0">
       {!small && <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>}
+      {/* the column is deep in either orientation, so a long track grows into it rather than
+          scrolling past on one line */}
       <Roll
         text={title}
-        wrap={!showTransport}
-        lines={small ? 2 : 3}
+        wrap
+        lines={3}
         className={`font-display leading-[1.2] font-semibold tracking-display text-off-white ${
           small ? 'text-[1.75rem]' : 'text-[1.875rem]'
         }`}
       />
       <div className="mt-1.5 flex min-w-0 items-center gap-2">
         {explicit && <Explicit />}
-        <Roll text={artist} wrap={!showTransport} lines={2} className="min-w-0 text-title text-soft" />
+        <Roll text={artist} wrap lines={2} className="min-w-0 text-title text-soft" />
       </div>
     </div>
   );
