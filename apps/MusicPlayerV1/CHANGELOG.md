@@ -14,6 +14,19 @@ tape on the spools and the keys all take the album's colour, and the rainbow ban
 the cover's own hue rather than mixing two of them, since a cover with one hue would otherwise give
 five bands of the same colour.
 
+It is moulded rather than drawn flat. Light rakes across the shell in one diagonal, the screws are
+turned and slotted, and the window is sunk into the label with a shadow down its inside and a
+highlight along the lip. The tape wound on a spool is a radial gradient ringed with the turns of the
+wind, and the hub is cream plastic with a bright arc riding round it, so a spool reads as a thing
+with a top and a bottom. A fine line texture sits over the label the way it sits over printed card,
+and the keys are chunky ones pressed into a sunken deck bar, going down and dark when touched. The
+label is marked SIDE A and TYPE II like the tape it is copying.
+
+The tape is larger in landscape, taking the height the screen actually has rather than three
+quarters of it. A long title stays on the label: it was laid out as a -webkit-box flex item, which
+sizes to its longest line and ran off the edge instead of wrapping, so it is held to the label's
+width and drops a size again on very long titles.
+
 Mode, and `5` on a keyboard, cycles through it: Cover, Vinyl, CD, Cassette, Poster, Lyrics.
 
 ## 0.30.2

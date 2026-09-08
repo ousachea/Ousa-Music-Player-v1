@@ -2770,9 +2770,14 @@ function Cassette({
   const tint2 = accent?.fill2 ?? '#cbb9a4';
   // a cover with one hue would give five identical bands, so the band fans out around that hue instead
   const base = readHsl(accent?.fill) ?? { h: 28, s: 52, l: 62 };
+  const sat = Math.min(76, Math.max(46, base.s));
   const stripes = [-56, -28, 0, 28, 56].map(
-    (d, i) => `hsl(${(base.h + d + 360) % 360} ${Math.min(76, Math.max(46, base.s))}% ${[71, 64, 59, 64, 71][i]}%)`,
+    (d, i) => `hsl(${(base.h + d + 360) % 360} ${sat}% ${[71, 64, 59, 64, 71][i]}%)`,
   );
+  const well = `hsl(${base.h} ${Math.min(24, sat)}% 11%)`;
+  const tapeIn = `hsl(${base.h} ${Math.min(28, sat)}% 16%)`;
+  const tapeOut = `hsl(${base.h} ${Math.min(22, sat)}% 31%)`;
+
   const done = Math.min(1, Math.max(0, progress));
   // a spool never empties completely: the hub is still there under the last of the tape
   const left = 40 - 16 * done;
@@ -2781,8 +2786,12 @@ function Cassette({
 
   const reel = (cx: number, r: number) => (
     <g>
-      <circle cx={cx} cy="50" r={r} fill={`color-mix(in oklab, ${tint} 30%, #4b3f39)`} />
-      <circle cx={cx} cy="50" r={r} fill="none" stroke="rgba(0,0,0,0.45)" strokeWidth="1" />
+      <circle cx={cx} cy="52.5" r={r} fill="rgba(0,0,0,0.5)" />
+      <circle cx={cx} cy="50" r={r} fill="url(#cass-tape)" />
+      {[0.86, 0.68, 0.5].map(f => (
+        <circle key={f} cx={cx} cy="50" r={r * f} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+      ))}
+      <circle cx={cx} cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="0.8" />
       <g className={motion ? 'animate-platter' : ''} style={{ ...spin, transformOrigin: `${cx}px 50px` }}>
         {Array.from({ length: 6 }, (_, i) => (
           <rect
@@ -2792,12 +2801,13 @@ function Cassette({
             width="4"
             height="9"
             rx="1"
-            fill="#e7ddd2"
+            fill="url(#cass-hub)"
             transform={`rotate(${i * 60} ${cx} 50)`}
           />
         ))}
-        <circle cx={cx} cy="50" r="13" fill="#efe6dd" stroke="#b09e91" strokeWidth="1.2" />
-        <circle cx={cx} cy="50" r="4.5" fill="#7c6a63" />
+        <circle cx={cx} cy="50" r="13" fill="url(#cass-hub)" stroke="rgba(0,0,0,0.35)" strokeWidth="1" />
+        <circle cx={cx} cy="50" r="4.5" fill="#6a5a53" />
+        <circle cx={cx} cy="46.5" r="13" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.4" strokeDasharray="9 30" />
       </g>
     </g>
   );
@@ -2806,8 +2816,10 @@ function Cassette({
     <button
       aria-label={label}
       onClick={onClick}
-      style={{ backgroundColor: `color-mix(in oklab, ${tint} 26%, transparent)` }}
-      className={`grid h-full place-items-center rounded-[9px] text-near ring-1 ring-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_2px_0_rgba(0,0,0,0.35)] transition active:translate-y-[2px] active:shadow-none ${
+      style={{
+        background: `linear-gradient(180deg, color-mix(in oklab, ${tint} 40%, transparent), color-mix(in oklab, ${tint} 12%, transparent))`,
+      }}
+      className={`grid h-full place-items-center rounded-[7px] text-near ring-1 ring-white/14 shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_3px_0_rgba(0,0,0,0.5)] transition active:translate-y-[3px] active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] ${
         wide ? 'w-16' : 'w-13'
       }`}>
       {children}
@@ -2818,32 +2830,38 @@ function Cassette({
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-5">
       {/* the shell, screwed into a deck */}
       <div
-        className={`relative aspect-[100/62] max-h-full max-w-full rounded-[16px] p-[2.2%] shadow-2xl ring-1 ring-black/40 ${
+        className={`relative aspect-[100/62] max-h-full max-w-full rounded-[16px] p-[2.2%] shadow-[0_24px_48px_-18px_rgba(0,0,0,0.9),0_8px_16px_-8px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.6),inset_0_-3px_8px_rgba(0,0,0,0.28)] ring-1 ring-black/45 ${
           quarter ? 'h-auto w-full' : 'h-auto w-auto'
         }`}
         style={{
-          height: quarter ? undefined : showTransport ? '72%' : '90%',
+          height: quarter ? undefined : showTransport ? '84%' : '97%',
           background: `linear-gradient(150deg, color-mix(in oklab, ${tint} 26%, #f7f1e9), color-mix(in oklab, ${tint2} 22%, #e2d7cb) 58%, color-mix(in oklab, ${tint} 26%, #c9bdb1))`,
         }}>
         {['left-[1.6%] top-[2.4%]', 'right-[1.6%] top-[2.4%]', 'left-[1.6%] bottom-[2.4%]', 'right-[1.6%] bottom-[2.4%]'].map(
           at => (
-            <span key={at} className={`absolute h-2.5 w-2.5 rounded-full bg-black/12 ring-1 ring-black/20 ${at}`} />
+            <span
+              key={at}
+              className={`absolute z-20 h-2.5 w-2.5 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.6),0_1px_2px_rgba(0,0,0,0.4)] ${at}`}
+              style={{ background: 'radial-gradient(circle at 32% 30%, #d8cec3, #8d8177 70%, #6d6259)' }}>
+              <span className="absolute top-1/2 left-1/2 h-[1px] w-[7px] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-black/45" />
+            </span>
           ),
         )}
 
         <div
-          className="flex h-full w-full flex-col overflow-hidden rounded-[10px] ring-1 ring-black/10"
+          className="relative flex h-full w-full flex-col overflow-hidden rounded-[10px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),inset_0_2px_5px_rgba(0,0,0,0.18)]"
           style={{ backgroundColor: `color-mix(in oklab, ${tint} 5%, #fbf6ee)` }}>
           {/* the written label */}
           <div className="flex min-h-0 flex-[42] flex-col px-[3.5%] pt-[2.5%]">
             <div className="flex shrink-0 items-baseline justify-between font-mono text-[0.5rem] tracking-[0.22em] text-black/40 uppercase">
-              <span>{playing ? 'play' : 'pause'}</span>
-              <span>stereo</span>
+              <span>side a &middot; {playing ? 'play' : 'pause'}</span>
+              <span>type ii &middot; stereo</span>
             </div>
             <div className="flex min-h-0 flex-1 items-center">
+              {/* a -webkit-box flex item sizes to max-content and runs off the label, so it is held to the width */}
               <span
-                className="line-clamp-2 font-display leading-[1.12] font-semibold text-black/80 italic"
-                style={{ fontSize: title.length > 34 ? '1.15rem' : '1.5rem' }}>
+                className="line-clamp-2 w-full min-w-0 pr-[0.12em] font-display leading-[1.12] font-semibold text-black/80 italic [text-shadow:0_1px_0_rgba(255,255,255,0.7)]"
+                style={{ fontSize: title.length > 58 ? '0.95rem' : title.length > 34 ? '1.15rem' : '1.5rem' }}>
                 {title}
               </span>
             </div>
@@ -2852,20 +2870,62 @@ function Cassette({
           </div>
 
           {/* the stripes a tape always wore */}
-          <div className="flex h-[10%] shrink-0 flex-col">
+          <div className="flex h-[10%] shrink-0 flex-col shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
             {stripes.map((c, i) => (
               <div key={i} className="flex-1" style={{ backgroundColor: c }} />
             ))}
           </div>
 
           {/* the window: spools carry the progress */}
-          <div className="relative min-h-0 flex-[48]" style={{ backgroundColor: `color-mix(in oklab, ${tint} 13%, #e9dfd4)` }}>
+          <div
+            className="relative min-h-0 flex-[48]"
+            style={{ backgroundColor: `color-mix(in oklab, ${tint} 13%, #e9dfd4)` }}>
             <svg viewBox="0 0 360 100" className="absolute inset-0 h-full w-full">
-              <rect x="10" y="4" width="340" height="92" rx="10" fill={`color-mix(in oklab, ${tint} 16%, #2a2320)`} />
-              <rect x="10" y="4" width="340" height="92" rx="10" fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="2" />
-              <rect x="105" y="43" width="150" height="14" fill={`color-mix(in oklab, ${tint} 22%, #493d37)`} />
+              <defs>
+                <radialGradient id="cass-tape" cx="50%" cy="50%" r="50%">
+                  <stop offset="0.2" stopColor={tapeIn} />
+                  <stop offset="1" stopColor={tapeOut} />
+                </radialGradient>
+                <linearGradient id="cass-hub" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="#fdf8f2" />
+                  <stop offset="1" stopColor="#bfae9f" />
+                </linearGradient>
+                <linearGradient id="cass-shade" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="rgba(0,0,0,0.55)" />
+                  <stop offset="0.4" stopColor="rgba(0,0,0,0)" />
+                </linearGradient>
+                <linearGradient id="cass-gloss" x1="0" y1="0" x2="0.7" y2="1">
+                  <stop offset="0" stopColor="rgba(255,255,255,0.16)" />
+                  <stop offset="0.45" stopColor="rgba(255,255,255,0.03)" />
+                  <stop offset="0.46" stopColor="rgba(255,255,255,0)" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="4" width="340" height="92" rx="10" fill={well} />
+              <rect x="105" y="43" width="150" height="14" fill={tapeOut} />
               {reel(105, left)}
               {reel(255, right)}
+              <rect x="10" y="4" width="340" height="92" rx="10" fill="url(#cass-shade)" />
+              <rect x="10" y="4" width="340" height="92" rx="10" fill="url(#cass-gloss)" />
+              <rect
+                x="10"
+                y="4"
+                width="340"
+                height="92"
+                rx="10"
+                fill="none"
+                stroke="rgba(0,0,0,0.55)"
+                strokeWidth="2"
+              />
+              <rect
+                x="11.5"
+                y="5.5"
+                width="337"
+                height="89"
+                rx="9"
+                fill="none"
+                stroke="rgba(255,255,255,0.16)"
+                strokeWidth="1"
+              />
             </svg>
           </div>
 
@@ -2876,11 +2936,25 @@ function Cassette({
               {duration ? ` / ${remaining ? `-${clock(duration - elapsed)}` : clock(duration)}` : ''}
             </span>
           </div>
+
+          {/* moulded plastic catches the light across one corner, and the label is a printed one */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.045]"
+            style={{ backgroundImage: 'repeating-linear-gradient(0deg, #000 0 1px, transparent 1px 3px)' }}
+          />
         </div>
+
+        <div
+          className="pointer-events-none absolute inset-0 rounded-[16px]"
+          style={{
+            background:
+              'linear-gradient(118deg, rgba(255,255,255,0.42) 0 14%, rgba(255,255,255,0.10) 24%, rgba(255,255,255,0) 42%, rgba(0,0,0,0.10) 82%, rgba(0,0,0,0.22) 100%)',
+          }}
+        />
       </div>
 
       {showTransport && (
-        <div className="flex h-11 shrink-0 items-stretch gap-2">
+        <div className="flex h-11 shrink-0 items-stretch gap-1.5 rounded-xl bg-black/30 p-1.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.55),0_1px_0_rgba(255,255,255,0.10)] ring-1 ring-white/10">
           {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
           {key(playing ? 'pause' : 'play', onToggle, playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />, true)}
           {key('next', onNext, <Skip className="h-4 w-4" />)}

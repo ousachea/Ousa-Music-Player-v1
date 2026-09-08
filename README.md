@@ -91,7 +91,13 @@ the plate around the window, the tape on the spools and the keys all take the al
 rainbow band fans out around the cover's own hue, two bands to each side of it, rather than five
 bands of the one colour.
 
-Three small keys sit under the tape and press in when you touch them. With the on-screen buttons off
+It is moulded rather than drawn flat: light rakes across the shell in one diagonal, the screws are
+turned and slotted, the window is sunk into the label with a shadow down its inside, and the tape on
+a spool is ringed with the turns of its wind under a cream hub with a highlight riding round it. A
+fine line texture sits over the label the way it does over printed card, and the label is marked
+SIDE A and TYPE II like the tape it is copying.
+
+Three small keys sit in a sunken deck bar under the tape and go down and dark when you touch them. With the on-screen buttons off
 the tape takes the whole screen instead. Turned a quarter the tape is sized by the width it has
 rather than the height, so it keeps its shape rather than stretching into the taller box.
 
