@@ -17,7 +17,8 @@ five bands of the same colour.
 A second cassette, **Printed**, and a key beside the transport to switch between the two. Where the
 written tape is a blank label somebody filled in, the printed one is a pressed release: the cover is
 the label, printed as a sticker with a paper edge, a sheen across it and half a degree of tilt, and
-pressed onto a shell of brushed metal anodised in the cover's hue. The window is die-cut through
+pressed onto a shell of brushed metal anodised in the cover's hue and bolted at the corners with
+socket caps rather than slotted screws. The window is die-cut through
 it, with a tape counter reading across that window and a line riding the ticks at the playhead. The
 track is stamped on the moulded half below rather than over the picture, in bold caps with SIDE A
 and the artist under it, the album and the time under that, and the spindle holes along the very

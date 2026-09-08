@@ -3002,7 +3002,7 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
           `linear-gradient(160deg, ${skin.metal[0]}, ${skin.metal[1]} 52%, ${skin.metal[2]})`,
         ].join(','),
       }}>
-      <Screws />
+      <Screws hex />
 
       {/* the cover is the label, edge to edge, with the window cut through it */}
       <div
@@ -3097,19 +3097,36 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
   );
 }
 
-function Screws({ light }: { light?: boolean }) {
+const HEX = 'polygon(50% 0%, 96% 25%, 96% 75%, 50% 100%, 4% 75%, 4% 25%)';
+
+// the written shell is screwed together with slotted screws; the metal one takes socket bolts
+function Screws({ light, hex }: { light?: boolean; hex?: boolean }) {
   return (
     <>
       {['left-[1.6%] top-[2.4%]', 'right-[1.6%] top-[2.4%]', 'left-[1.6%] bottom-[2.4%]', 'right-[1.6%] bottom-[2.4%]'].map(at => (
         <span
           key={at}
-          className={`absolute z-[1] h-2.5 w-2.5 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_1px_2px_rgba(0,0,0,0.5)] ${at}`}
+          className={`absolute z-[1] rounded-full ${
+            hex
+              ? 'h-3.5 w-3.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.55),0_1px_3px_rgba(0,0,0,0.7)] ring-1 ring-black/45'
+              : 'h-2.5 w-2.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_1px_2px_rgba(0,0,0,0.5)]'
+          } ${at}`}
           style={{
-            background: light
-              ? 'radial-gradient(circle at 32% 30%, #d8cec3, #8d8177 70%, #6d6259)'
-              : 'radial-gradient(circle at 32% 30%, #6f6862, #3b3532 70%, #232019)',
+            background: hex
+              ? 'radial-gradient(circle at 34% 26%, #c6cbcf, #878d92 52%, #4a4f53 78%, #33383b)'
+              : light
+                ? 'radial-gradient(circle at 32% 30%, #d8cec3, #8d8177 70%, #6d6259)'
+                : 'radial-gradient(circle at 32% 30%, #6f6862, #3b3532 70%, #232019)',
           }}>
-          <span className="absolute top-1/2 left-1/2 h-[1px] w-[7px] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-black/50" />
+          {hex ? (
+            <span
+              className="absolute inset-[15%] bg-[#9aa1a6]"
+              style={{ clipPath: HEX }}>
+              <span className="absolute inset-[11%] bg-[#15191b] shadow-[inset_0_1px_2px_rgba(0,0,0,0.95)]" style={{ clipPath: HEX }} />
+            </span>
+          ) : (
+            <span className="absolute top-1/2 left-1/2 h-[1px] w-[7px] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-black/50" />
+          )}
         </span>
       ))}
     </>

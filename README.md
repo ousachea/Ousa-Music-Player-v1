@@ -91,7 +91,8 @@ track is stamped on the moulded half below in bold caps, with SIDE A and the art
 album and the time under that, and the spindle holes along the very bottom. Its shell is brushed
 metal rather than plastic: a fine grain across it, the sheen rolled metal carries in bands, a bright
 machined edge and a narrow specular streak, anodised in the cover's hue so faintly that the light
-does most of the work.
+does most of the work. It is bolted together with socket caps rather than the slotted screws holding
+the written shell shut.
 
 A fourth key sits with the transport, in the same deck bar and the same chunky plastic, and switches
 between the two. **Tape design** does the same from the settings.
