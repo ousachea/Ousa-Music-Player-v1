@@ -12,7 +12,7 @@ the HD lookup is on, on one line.
 style*, instead of being scattered through the groups and quietly vanishing when you switch. Poster,
 which has no settings of its own, simply has no such group.
 
-A rail down the right edge shows how far the list runs and where you are in it, which the wheel
+A rail down the left edge shows how far the list runs and where you are in it, which the wheel
 could not tell you before.
 
 ## 0.26.1

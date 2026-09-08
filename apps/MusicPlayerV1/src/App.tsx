@@ -816,7 +816,7 @@ function Panel({
       <div
         ref={list}
         onScroll={onScroll}
-        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pr-4 [scrollbar-width:none]">
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pl-4 [scrollbar-width:none]">
         {[{ title: styleName, rows: STYLE_ROWS, own: true }, ...GROUPS.map(g => ({ ...g, own: false }))]
           .map(group => ({ ...group, rows: group.rows.filter(r => !r.only || r.only.includes(prefs.theme)) }))
           .filter(group => group.rows.length > 0)
@@ -860,7 +860,7 @@ function Panel({
       </div>
 
       {scroll.shown < 1 && (
-        <div className="absolute top-0 right-0 bottom-0 w-[3px] rounded-full bg-white/8">
+        <div className="absolute top-0 bottom-0 left-0 w-[3px] rounded-full bg-white/8">
           <div
             className="absolute w-full rounded-full transition-[top] duration-100"
             style={{

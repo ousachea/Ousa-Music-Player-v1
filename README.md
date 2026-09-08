@@ -136,7 +136,7 @@ needs, so the transport always keeps its margin from the bottom edge. The rotati
 Press the button under the wheel to open them on the device. The style picker sits at the top,
 outside the list, because it decides what the rest of the list holds, and everything that only
 applies to the style you are in is gathered under that style's name. Poster has no such group: it
-has no settings of its own. A rail down the right edge shows where you are in the list.
+has no settings of its own. A rail down the left edge shows where you are in the list.
 
 - **Player** — style, accent colour, HD album art, the art pulse with its tempo, and whether the
   Classic style's art runs to the edge of the screen
