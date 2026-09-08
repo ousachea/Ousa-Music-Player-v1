@@ -125,8 +125,9 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
 - **Player** — style, accent colour, sharper artwork, the cover pulse with its tempo, and whether
   the Classic style's art runs to the edge of the screen
 - **Controls** — what the wheel does, how far each click seeks, whether the seek bar is a line or a
-  wave, and whether it carries a dot at the playhead. Both seek settings default to Auto, which gives
-  Classic and Poster the wave, Vinyl and Cover a line, and drops the dot on Cover only
+  wave, and whether it carries a dot at the playhead. Both default to Auto, which gives Classic and
+  Poster the wave, Vinyl a line, and drops the dot on Cover only. Cover always draws a line, whatever
+  the seek bar is set to
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts
 - **Display** — animations, screen rotation, and whether the time counts down or shows the track length
 - **Clock** — position, size, 12 or 24 hour, and seconds

@@ -7,8 +7,11 @@ round handle on the line, the tick on the wave, and the halo that pulses under t
 track plays. The bar still scrubs by dragging, whether or not the dot is drawn.
 
 Both seek settings sit on **Auto** now, which means each style gets what suits it: Classic and Poster
-draw the wave, Vinyl and Cover draw a line, and every style carries the dot except Cover, which
-reads cleaner without one. Choosing anything other than Auto still applies everywhere.
+draw the wave, Vinyl draws a line, and every style carries the dot except Cover. Choosing anything
+other than Auto still applies everywhere.
+
+Cover is the exception: it always draws a line. It is built after a lock screen, which has a plain
+bar and no room for a wave, so the seek bar setting does not reach it.
 
 The Mode button cycles the player style as it always has, and the **5** key now does the same. No
 hardware button sends a 5, so it costs the device nothing and puts the style within reach of a

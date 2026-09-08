@@ -66,8 +66,16 @@ export default function App() {
   }, [client]);
 
   const accentOn = prefs.accent === 'artwork' ? accent : null;
+  // Cover is drawn after a lock screen, which has a plain line and no room for a wave, so it keeps
+  // one whatever the seek setting says; every other style honours the choice
   const seekStyle =
-    prefs.seek === 'auto' ? (prefs.theme === 'poster' || prefs.theme === 'card' ? 'wave' : 'bar') : prefs.seek;
+    prefs.theme === 'widget'
+      ? 'bar'
+      : prefs.seek === 'auto'
+        ? prefs.theme === 'poster' || prefs.theme === 'card'
+          ? 'wave'
+          : 'bar'
+        : prefs.seek;
   const seekDot = prefs.seekDot === 'auto' ? prefs.theme !== 'widget' : prefs.seekDot === 'on';
   const track = state?.track ?? null;
   const [foundArtist, setFoundArtist] = useState<string | null>(null);
