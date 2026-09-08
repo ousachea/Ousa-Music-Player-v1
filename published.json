@@ -472,6 +472,17 @@
         "size": 29828,
         "sha256": "d13e9c5fc6ee1509917ff9de70f7c3f85a03919625b21abace9176977ba006f0"
       }
+    },
+    "0.23.0": {
+      "released_at": "2026-09-08T04:50:00.256Z",
+      "sha256": "3f7ecdea3c88c35e8302cdc06991413065c3b2b15c5834b10c80616fefd7bda8",
+      "size": 937829,
+      "file": "r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.23.0.zip",
+      "settings": {
+        "file": "s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.23.0.html",
+        "size": 30369,
+        "sha256": "b93e8f75afd6e3fa299ad28b381e27d18e692df27e189594c90be0bd6e15de02"
+      }
     }
   },
   "01a07c16-be12-7003-91aa-482b107fdccb": {
@@ -482,6 +493,17 @@
       "file": "r/01a07c16-be12-7003-91aa-482b107fdccb/0.1.0.zip",
       "settings": {
         "file": "s/01a07c16-be12-7003-91aa-482b107fdccb/0.1.0.html",
+        "size": 26933,
+        "sha256": "49a1db6d5704fc351b6196e3b5979ef92a40b0f656c96af108dfb7806a0fff22"
+      }
+    },
+    "0.1.1": {
+      "released_at": "2026-09-08T04:50:00.760Z",
+      "sha256": "bc604478d5fab258bc460047bab466e706bb34bc93d18d1897bacbd99a63251a",
+      "size": 880212,
+      "file": "r/01a07c16-be12-7003-91aa-482b107fdccb/0.1.1.zip",
+      "settings": {
+        "file": "s/01a07c16-be12-7003-91aa-482b107fdccb/0.1.1.html",
         "size": 26933,
         "sha256": "49a1db6d5704fc351b6196e3b5979ef92a40b0f656c96af108dfb7806a0fff22"
       }
@@ -643,6 +665,17 @@
         "size": 28607,
         "sha256": "d553101d44a532160f2633f1e414894a70dd9507260c27277e11aed9212a944d"
       }
+    },
+    "0.6.4": {
+      "released_at": "2026-09-08T04:50:01.289Z",
+      "sha256": "28e3cf40b61b93c2277355c2ce5f0f78c648c7e5c8499d55dd0cdd4749c7f285",
+      "size": 924231,
+      "file": "r/01a07c31-5053-72cd-a790-a2be27c8bc79/0.6.4.zip",
+      "settings": {
+        "file": "s/01a07c31-5053-72cd-a790-a2be27c8bc79/0.6.4.html",
+        "size": 28607,
+        "sha256": "d553101d44a532160f2633f1e414894a70dd9507260c27277e11aed9212a944d"
+      }
     }
   },
   "01a07c6f-f65a-732a-ab3b-acae5a84b207": {
@@ -664,6 +697,17 @@
       "file": "r/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.1.zip",
       "settings": {
         "file": "s/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.1.html",
+        "size": 27797,
+        "sha256": "d79981f52c531d00e9990148de4b9b16c1bf509aba3aa1194adad2f7d7335ce3"
+      }
+    },
+    "0.1.2": {
+      "released_at": "2026-09-08T04:49:59.194Z",
+      "sha256": "fe6206de5c170a2bb09f0c3f0d0c9c323729102e4f4392ac212ec40ef860617b",
+      "size": 912936,
+      "file": "r/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.2.zip",
+      "settings": {
+        "file": "s/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.2.html",
         "size": 27797,
         "sha256": "d79981f52c531d00e9990148de4b9b16c1bf509aba3aa1194adad2f7d7335ce3"
       }
@@ -721,6 +765,17 @@
       "file": "r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.1.zip",
       "settings": {
         "file": "s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.1.html",
+        "size": 32644,
+        "sha256": "1236d2d5a1ec09aa6e5735b468ecb7e37186ec3dd78c94ed955c48ddfbf9a4ab"
+      }
+    },
+    "0.3.2": {
+      "released_at": "2026-09-08T04:49:59.725Z",
+      "sha256": "015a0a242c97e76d7503ec3f4d5f3879b115f37be05bc8039d87fccfa4db3f87",
+      "size": 904950,
+      "file": "r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.2.zip",
+      "settings": {
+        "file": "s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.2.html",
         "size": 32644,
         "sha256": "1236d2d5a1ec09aa6e5735b468ecb7e37186ec3dd78c94ed955c48ddfbf9a4ab"
       }

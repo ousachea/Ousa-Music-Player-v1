@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T04:01:04.319Z",
+  "updated_at": "2026-09-08T04:50:01.290Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -14,7 +14,7 @@
       "name": "Desk Exchange",
       "description": "A fictional stock market for your desk. Invented tickers, invented headlines, nothing real.",
       "author": "Ousa Chea",
-      "icon": null,
+      "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07c6f-f65a-732a-ab3b-acae5a84b207.png",
       "screenshots": [
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c6f-f65a-732a-ab3b-acae5a84b207/01-board.png",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c6f-f65a-732a-ab3b-acae5a84b207/02-chart.png",
@@ -23,6 +23,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.1.2",
+          "released_at": "2026-09-08T04:49:59.194Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.2.zip",
+            "size": 912936,
+            "sha256": "fe6206de5c170a2bb09f0c3f0d0c9c323729102e4f4392ac212ec40ef860617b"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.1.2.html",
+            "size": 27797,
+            "sha256": "d79981f52c531d00e9990148de4b9b16c1bf509aba3aa1194adad2f7d7335ce3"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "An icon of its own for the store and the launcher."
+        },
         {
           "version": "0.1.1",
           "released_at": "2026-09-07T16:08:20.461Z",
@@ -64,7 +81,7 @@
       "name": "Gold Tracker",
       "description": "Live gold spot, Khmer weight conversion and a private purchase ledger.",
       "author": "Ousa Chea",
-      "icon": null,
+      "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07c7f-7529-7704-b7be-4ea1a6e66d1d.png",
       "screenshots": [
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/01-spot.png",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/02-converter.png",
@@ -75,6 +92,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.3.2",
+          "released_at": "2026-09-08T04:49:59.725Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.2.zip",
+            "size": 904950,
+            "sha256": "015a0a242c97e76d7503ec3f4d5f3879b115f37be05bc8039d87fccfa4db3f87"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.2.html",
+            "size": 32644,
+            "sha256": "1236d2d5a1ec09aa6e5735b468ecb7e37186ec3dd78c94ed955c48ddfbf9a4ab"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "An icon of its own for the store and the launcher."
+        },
         {
           "version": "0.3.1",
           "released_at": "2026-09-07T16:08:20.980Z",
@@ -179,14 +215,35 @@
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.jpg",
       "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/01-classic.jpg",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/01-cover.png",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/02-vinyl.jpg",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/02-vinyl.png",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-poster.png",
-        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/04-settings.png"
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-poster.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-poster.png"
       ],
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.23.0",
+          "released_at": "2026-09-08T04:50:00.256Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.23.0.zip",
+            "size": 937829,
+            "sha256": "3f7ecdea3c88c35e8302cdc06991413065c3b2b15c5834b10c80616fefd7bda8"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.23.0.html",
+            "size": 30369,
+            "sha256": "b93e8f75afd6e3fa299ad28b381e27d18e692df27e189594c90be0bd6e15de02"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Floating notes** is a new setting, on by default. Music notes drift up the screen while a track\nplays, each tinted somewhere between the two colours pulled from the album art, so no two are the\nsame shade. They are drawn over whichever style you are using rather than belonging to any one of\nthem, they hold still when the music is paused, and they follow the Animations setting: with that\noff, nothing floats.\n\n**Dot at the playhead** is a new setting. Off, the seek bar loses the marker that rides it: the\nround handle on the line, the tick on the wave, and the halo that pulses under the handle while a\ntrack plays. The bar still scrubs by dragging, whether or not the dot is drawn.\n\nBoth seek settings sit on **Auto** now, which means each style gets what suits it: Classic and Poster\ndraw the wave, Vinyl draws a line, and every style carries the dot except Cover. Choosing anything\nother than Auto still applies everywhere.\n\nCover is the exception: it always draws a line. It is built after a lock screen, which has a plain\nbar and no room for a wave, so the seek bar setting does not reach it.\n\nTurned to 90 or 270, the settings panel is inset evenly on all four sides. The wide right margin it\ncarries in landscape keeps the rows clear of the wheel; turned, that edge is the bottom of the\nscreen and the column is only 480 wide, so the margin was all cost.\n\nThe Mode button cycles the player style as it always has, and the **5** key now does the same. No\nhardware button sends a 5, so it costs the device nothing and puts the style within reach of a\nkeyboard while you are working on the dev server.\n\nThe player styles are renamed. **Cover** is now **Classic**, and **Widget** is now **Cover**. Only\nthe names change; the layouts, and the value each style is stored under, are the same, so nothing\nyou have set moves.\n\nTwo settings said Cover when they meant the album art, which now reads as the style of that name.\nThey are **Art to the edge** and **Art pulse**."
+        },
         {
           "version": "0.22.0",
           "released_at": "2026-09-08T04:01:04.316Z",
@@ -1011,13 +1068,32 @@
       "name": "Network Monitor",
       "description": "Live link status, latency and throughput for the Car Thing.",
       "author": "Ousa Chea",
-      "icon": null,
+      "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07c16-be12-7003-91aa-482b107fdccb.png",
       "screenshots": [
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c16-be12-7003-91aa-482b107fdccb/01-dashboard.png"
       ],
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.1.1",
+          "released_at": "2026-09-08T04:50:00.760Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c16-be12-7003-91aa-482b107fdccb/0.1.1.zip",
+            "size": 880212,
+            "sha256": "bc604478d5fab258bc460047bab466e706bb34bc93d18d1897bacbd99a63251a"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c16-be12-7003-91aa-482b107fdccb/0.1.1.html",
+            "size": 26933,
+            "sha256": "49a1db6d5704fc351b6196e3b5979ef92a40b0f656c96af108dfb7806a0fff22"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "An icon of its own for the store and the launcher."
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-09-07T13:44:51.432Z",
@@ -1044,7 +1120,7 @@
       "name": "Quote Flow",
       "description": "A quote of the moment, rotating quietly on the dashboard.",
       "author": "Ousa Chea",
-      "icon": null,
+      "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07c31-5053-72cd-a790-a2be27c8bc79.png",
       "screenshots": [
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c31-5053-72cd-a790-a2be27c8bc79/01-quote.png",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07c31-5053-72cd-a790-a2be27c8bc79/02-settings.png"
@@ -1052,6 +1128,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.6.4",
+          "released_at": "2026-09-08T04:50:01.289Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c31-5053-72cd-a790-a2be27c8bc79/0.6.4.zip",
+            "size": 924231,
+            "sha256": "28e3cf40b61b93c2277355c2ce5f0f78c648c7e5c8499d55dd0cdd4749c7f285"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c31-5053-72cd-a790-a2be27c8bc79/0.6.4.html",
+            "size": 28607,
+            "sha256": "d553101d44a532160f2633f1e414894a70dd9507260c27277e11aed9212a944d"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "An icon of its own for the store and the launcher."
+        },
         {
           "version": "0.6.3",
           "released_at": "2026-09-07T15:10:16.470Z",
