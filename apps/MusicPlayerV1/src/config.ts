@@ -12,6 +12,7 @@ export type Prefs = {
   coverVolume: boolean;
   tapeArt: boolean;
   tape: 'written' | 'printed';
+  vinylTint: 'black' | 'album' | 'marble';
   wheel: 'volume' | 'seek';
   seekSeconds: number;
   seek: 'auto' | 'bar' | 'wave';
@@ -35,7 +36,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', vinylTint: 'black', wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -112,6 +113,8 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     }
     case 'clockPos':
       return { ...prefs, clockPos: value === 'left' || value === 'center' ? value : 'right' };
+    case 'vinylTint':
+      return { ...prefs, vinylTint: value === 'album' || value === 'marble' ? value : 'black' };
     case 'tape':
       return { ...prefs, tape: value === 'printed' ? 'printed' : 'written' };
     case 'clockFormat':

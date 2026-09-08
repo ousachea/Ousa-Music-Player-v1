@@ -566,6 +566,8 @@ export default function App() {
             }`}>
             <Turntable
               artUrl={artUrl}
+              accent={accentOn}
+              tint={prefs.vinylTint}
               playing={playing}
               spin={prefs.motion}
               upright={upright}
@@ -724,6 +726,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
     labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Poster', 'Lyrics'],
   },
   tape: { values: ['written', 'printed'], labels: ['Written', 'Printed'] },
+  vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
@@ -750,6 +753,7 @@ type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
 const STYLE_ROWS: Row[] = [
   { key: 'lyricsInfo', label: 'Track corner', only: ['lyrics'] },
   { key: 'words', label: 'Show the words', only: ['lyrics'] },
+  { key: 'vinylTint', label: 'Record colour', only: ['vinyl'] },
   { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
@@ -1148,14 +1152,37 @@ function Roll({ text, className, wrap, lines = 3 }: { text: string; className?: 
 }
 
 // the sleeve sits behind, the record carries the art as its label, and the arm drops when the track runs
+// coloured vinyl is a pressing, not a filter: the grooves stay black and the colour is what the
+// resin is, so it darkens rather than brightens
+function pressing(tint: Prefs['vinylTint'], accent: Accent | null) {
+  const base = readHsl(accent?.fill);
+  const second = readHsl(accent?.fill2) ?? base;
+  if (tint === 'black' || !base || !second) {
+    return 'radial-gradient(circle at 50% 50%, #121212 0 33%, #0b0b0b 33.4% 100%)';
+  }
+  const sat = Math.min(72, Math.max(40, base.s));
+  const shade = (hue: number, light: number) => `hsl(${hue} ${sat}% ${light}%)`;
+  if (tint === 'marble') {
+    return `conic-gradient(from 20deg, ${shade(base.h, 24)}, ${shade(second.h, 15)} 22%, ${shade(base.h, 27)} 44%, ${shade(
+      second.h,
+      14,
+    )} 68%, ${shade(base.h, 22)} 86%, ${shade(base.h, 24)})`;
+  }
+  return `radial-gradient(circle at 50% 50%, ${shade(base.h, 29)} 0 33%, ${shade(base.h, 19)} 33.4% 100%)`;
+}
+
 function Turntable({
   artUrl,
+  accent,
+  tint,
   playing,
   spin,
   upright,
   roomy,
 }: {
   artUrl: string | null;
+  accent: Accent | null;
+  tint: Prefs['vinylTint'];
   playing: boolean;
   spin: boolean;
   upright: boolean;
@@ -1183,7 +1210,7 @@ function Turntable({
           animationPlayState: playing && spin ? 'running' : 'paused',
           background: [
             'repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.055) 0 1px, rgba(0,0,0,0) 1px 4px)',
-            'radial-gradient(circle at 50% 50%, #121212 0 33%, #0b0b0b 33.4% 100%)',
+            pressing(tint, accent),
           ].join(','),
         }}>
         {/* the sheen stays with the disc, which is what makes the rotation legible on a plain black circle */}

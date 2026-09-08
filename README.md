@@ -63,6 +63,11 @@ the CD style. The sleeve tucked behind a record that carries the artwork as its 
 track plays and holds its angle when you pause; the tonearm rests on the outer grooves and lifts off
 when the music stops.
 
+**Record colour** presses the disc in something other than black. Album gives it the cover's own
+colour and Marble swirls the cover's two colours through it, both dark enough that the grooves and
+the sheen still read, since a coloured pressing is what the resin is rather than a light shone on
+it.
+
 ### CD
 
 ![CD style](apps/MusicPlayerV1/screenshots/03-cd.jpg)

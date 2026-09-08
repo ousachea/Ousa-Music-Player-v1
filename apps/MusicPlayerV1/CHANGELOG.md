@@ -44,6 +44,11 @@ quarters of it. A long title stays on the label: it was laid out as a -webkit-bo
 sizes to its longest line and ran off the edge instead of wrapping, so it is held to the label's
 width and drops a size again on very long titles.
 
+The Vinyl style can press its record in a colour. **Record colour** takes Black, which is what it
+has always been, Album, which presses it in the cover's own colour, and Marble, which swirls the
+cover's two colours through it. Both keep the lightness low so the grooves and the sheen still read:
+a coloured pressing is what the resin is, not a light shone on the disc.
+
 Mode, and `5` on a keyboard, cycles through it: Cover, Vinyl, CD, Cassette, Poster, Lyrics.
 
 ## 0.30.2

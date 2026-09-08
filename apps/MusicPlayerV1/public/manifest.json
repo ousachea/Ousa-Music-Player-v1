@@ -85,6 +85,19 @@
     {
       "type": "enum",
       "data": {
+        "key": "vinylTint",
+        "label": "Record colour",
+        "choices": [
+          "black",
+          "album",
+          "marble"
+        ],
+        "default": "black"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
         "key": "tape",
         "label": "Cassette tape design",
         "choices": [

@@ -33,6 +33,7 @@ const HINTS: Record<string, string> = {
   rotate: 'Turns the whole screen, for a device mounted on its side or upside down. Preset button 4 also steps through it. At 90 and 270 the player is a tall column with a bar down each side, because the screen itself never changes shape.',
   coverPanel: 'Puts the track and the controls on a tinted panel of their own instead of straight over the blurred artwork. Cover style only.',
   coverVolume: 'The volume slider Cover draws under its transport. With it off the wheel still sets the volume, and the reading the other styles show over the middle of the screen comes back. Cover style only.',
+  vinylTint: 'The colour the record is pressed in. Black is the ordinary one. Album presses it in the cover\u2019s own colour, and Marble swirls the cover\u2019s two colours through it. The grooves and the sheen stay as they are. Vinyl style only.',
   tape: 'Written is a blank label somebody filled in, with the colour band every tape wore. Printed is a pressed release: the label printed edge to edge in the album\u2019s colour, with a tape counter reading across the window. The button on the left of the screen switches between them. Cassette style only.',
   tapeArt: 'Prints the album art on the cassette label, behind the title. Cassette style only.',
   words: 'Whether the Lyrics style shows the words or just what is playing. The button on the left of the screen does the same thing.',
