@@ -175,10 +175,13 @@ has no settings of its own. A rail down the left edge shows where you are in the
 Both seek settings sit on **Auto**, which gives Classic and Poster the wave and Vinyl a line, and
 draws the playhead dot everywhere except Cover. Cover always draws a line whatever you pick.
 
+A few seconds into a track the player offers to hide the on-screen buttons, since the presets do the
+same job. The note has a box to stop it asking again, and **Controls → Offer to hide them** turns it
+back on if you change your mind.
+
 **With the on-screen buttons off**, Poster hands the track the full width of the screen, since the
 half it usually keeps is only there to clear the play button. A bump appears against the edge at
-each of the four presets' own
-positions, with the glyph for what that button does beside it. The bumps follow the screen rotation
+each of the four presets' own positions, with the glyph for what that button does beside it. The bumps follow the screen rotation
 so they stay on the physical buttons, and the glyphs stay square to the device rather than lying
 over with the layout, because they describe hardware. Each glyph shows itself on every new track and
 then fades, leaving the bumps. The room the buttons give up goes to the track, whose title and
