@@ -1,5 +1,11 @@
 # weather
 
+## 0.25.3
+
+With the on-screen buttons off, Poster gives the track the full width of the screen instead of the
+half it was holding. That half existed only to keep the title clear of the play button, and with the
+button gone the block is inset the same on both sides.
+
 ## 0.25.2
 
 The store description is rewritten. It still said only that this shows what is playing on your

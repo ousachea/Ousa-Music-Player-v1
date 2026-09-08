@@ -1313,7 +1313,9 @@ function Poster({
         </button>
       )}
 
-      <div className="absolute left-8 top-1/2 w-[52%] -translate-y-1/2">
+      {/* the 52% is there to clear the play button; with it gone the track gets the whole width,
+          inset the same on both sides */}
+      <div className={`absolute top-1/2 -translate-y-1/2 ${showTransport ? 'left-8 w-[52%]' : 'inset-x-8'}`}>
         <div className="mb-2 truncate font-mono text-eyebrow tracking-[0.22em] text-off-white/65 uppercase">
           {context}
         </div>
