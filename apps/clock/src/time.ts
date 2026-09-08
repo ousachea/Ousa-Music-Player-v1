@@ -44,6 +44,36 @@ export function useTick(ms: number) {
 
 export type Parts = { hour: string; minute: string; second: string; dayPeriod: string | null; date: string };
 
+// the same reading, but in a zone the caller names rather than the phone's, for the world clock
+export function readIn(at: Date, tz: string, locale: string | null, format: 'auto' | 'h12' | 'h24') {
+  const opts: Intl.DateTimeFormatOptions = {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: tz,
+    ...(format === 'auto' ? {} : { hour12: format === 'h12' }),
+  };
+  try {
+    return new Intl.DateTimeFormat(locale ?? undefined, opts).format(at);
+  } catch {
+    return '--:--';
+  }
+}
+
+// whether a zone is already on the next day, or still on the last one, relative to the phone's
+export function dayShift(at: Date, tz: string, home: string | null): -1 | 0 | 1 {
+  const day = (z: string | undefined) => {
+    try {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: z, year: 'numeric', month: '2-digit', day: '2-digit' }).format(at);
+    } catch {
+      return '';
+    }
+  };
+  const there = day(tz);
+  const here = day(home ?? undefined);
+  if (!there || !here || there === here) return 0;
+  return there > here ? 1 : -1;
+}
+
 export function readClock(at: Date, zone: Zone, format: 'auto' | 'h12' | 'h24'): Parts {
   const opts: Intl.DateTimeFormatOptions = {
     hour: 'numeric',

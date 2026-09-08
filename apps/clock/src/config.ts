@@ -2,23 +2,88 @@
 import type { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// every screen keeps its own settings; only the colour is shared, because it paints all four
-export type Span = '30s' | '1m' | '5m';
-export type Step = '10s' | '1m' | '5m';
+// every screen keeps its own settings; only the colour is shared, because it paints all of them
+export type Face = 'digital' | 'digital-date' | 'minimal' | 'flip' | 'analogue' | 'world' | 'binary' | 'word';
+export type TimerMode = 'countdown' | 'circular' | 'pomodoro' | 'interval' | 'kitchen' | 'preset' | 'multi';
+
+export const FACES: Face[] = ['digital', 'digital-date', 'minimal', 'flip', 'analogue', 'world', 'binary', 'word'];
+export const FACE_LABELS: Record<Face, string> = {
+  digital: 'Digital',
+  'digital-date': 'Digital + Date',
+  minimal: 'Minimal',
+  flip: 'Flip',
+  analogue: 'Analogue',
+  world: 'World',
+  binary: 'Binary',
+  word: 'Word',
+};
+
+export const TIMER_MODES: TimerMode[] = ['countdown', 'circular', 'pomodoro', 'interval', 'kitchen', 'preset', 'multi'];
+export const TIMER_LABELS: Record<TimerMode, string> = {
+  countdown: 'Countdown',
+  circular: 'Circular',
+  pomodoro: 'Pomodoro',
+  interval: 'Interval',
+  kitchen: 'Kitchen',
+  preset: 'Preset',
+  multi: 'Multi',
+};
+
+// a curated list rather than every zone the runtime knows: the wheel has to get through it, and a
+// world clock is about the four places you care about
+export const CITIES: Record<string, { label: string; tz: string } | null> = {
+  off: null,
+  london: { label: 'London', tz: 'Europe/London' },
+  paris: { label: 'Paris', tz: 'Europe/Paris' },
+  newyork: { label: 'New York', tz: 'America/New_York' },
+  chicago: { label: 'Chicago', tz: 'America/Chicago' },
+  losangeles: { label: 'Los Angeles', tz: 'America/Los_Angeles' },
+  saopaulo: { label: 'Sao Paulo', tz: 'America/Sao_Paulo' },
+  utc: { label: 'UTC', tz: 'UTC' },
+  dubai: { label: 'Dubai', tz: 'Asia/Dubai' },
+  mumbai: { label: 'Mumbai', tz: 'Asia/Kolkata' },
+  bangkok: { label: 'Bangkok', tz: 'Asia/Bangkok' },
+  phnompenh: { label: 'Phnom Penh', tz: 'Asia/Phnom_Penh' },
+  singapore: { label: 'Singapore', tz: 'Asia/Singapore' },
+  hongkong: { label: 'Hong Kong', tz: 'Asia/Hong_Kong' },
+  tokyo: { label: 'Tokyo', tz: 'Asia/Tokyo' },
+  seoul: { label: 'Seoul', tz: 'Asia/Seoul' },
+  sydney: { label: 'Sydney', tz: 'Australia/Sydney' },
+  auckland: { label: 'Auckland', tz: 'Pacific/Auckland' },
+};
+export const CITY_KEYS = Object.keys(CITIES);
+
+// every duration setting is written the way it reads, and turns into milliseconds here
+export const ms = (spec: string) =>
+  spec.endsWith('s') ? Number(spec.slice(0, -1)) * 1000 : Number(spec.slice(0, -1)) * 60000;
+export const spanLabel = (spec: string) =>
+  spec.endsWith('s') ? `${spec.slice(0, -1)} sec` : `${spec.slice(0, -1)} min`;
+
+const SPANS = ['30s', '1m', '5m'] as const;
+const STEPS = ['10s', '1m', '5m'] as const;
 
 export type Prefs = {
   tint: 'white' | 'amber' | 'cyan' | 'green' | 'magenta' | 'sunset' | 'aurora' | 'ember';
-  style: 'digital' | 'analogue' | 'flip' | 'minimal';
+  style: Face;
   format: 'auto' | 'h12' | 'h24';
   seconds: boolean;
   date: boolean;
+  world1: string;
+  world2: string;
+  world3: string;
+  timerMode: TimerMode;
   timerSound: boolean;
-  timerRing: Span;
-  timerStep: Step;
+  timerRing: (typeof SPANS)[number];
+  timerStep: (typeof STEPS)[number];
+  pomodoroWork: '15m' | '25m' | '45m';
+  pomodoroBreak: '5m' | '10m' | '15m';
+  intervalWork: '30s' | '45s' | '1m' | '2m';
+  intervalRest: '10s' | '15s' | '30s' | '1m';
+  intervalRounds: '4' | '6' | '8' | '12';
   swHundredths: boolean;
   swLaps: boolean;
   alarmSound: boolean;
-  alarmRing: Span;
+  alarmRing: (typeof SPANS)[number];
 };
 
 const DEFAULTS: Prefs = {
@@ -27,18 +92,45 @@ const DEFAULTS: Prefs = {
   format: 'auto',
   seconds: true,
   date: true,
+  world1: 'london',
+  world2: 'newyork',
+  world3: 'tokyo',
+  timerMode: 'countdown',
   timerSound: true,
   timerRing: '1m',
   timerStep: '1m',
+  pomodoroWork: '25m',
+  pomodoroBreak: '5m',
+  intervalWork: '45s',
+  intervalRest: '15s',
+  intervalRounds: '8',
   swHundredths: true,
   swLaps: true,
   alarmSound: true,
   alarmRing: '1m',
 };
 
-export const SPANS: Record<Span, number> = { '30s': 30000, '1m': 60000, '5m': 300000 };
-export const STEPS: Record<Step, number> = { '10s': 10000, '1m': 60000, '5m': 300000 };
-export const STEP_LABELS: Record<Step, string> = { '10s': '10 sec', '1m': '1 min', '5m': '5 min' };
+// one table of what each key may hold, so a value from the daemon is checked in one place rather
+// than in a case per setting
+export const CHOICES = {
+  tint: ['white', 'amber', 'cyan', 'green', 'magenta', 'sunset', 'aurora', 'ember'],
+  style: FACES,
+  format: ['auto', 'h12', 'h24'],
+  world1: CITY_KEYS,
+  world2: CITY_KEYS,
+  world3: CITY_KEYS,
+  timerMode: TIMER_MODES,
+  timerRing: SPANS,
+  timerStep: STEPS,
+  alarmRing: SPANS,
+  pomodoroWork: ['15m', '25m', '45m'],
+  pomodoroBreak: ['5m', '10m', '15m'],
+  intervalWork: ['30s', '45s', '1m', '2m'],
+  intervalRest: ['10s', '15s', '30s', '1m'],
+  intervalRounds: ['4', '6', '8', '12'],
+} as const satisfies Partial<Record<keyof Prefs, readonly string[]>>;
+
+const FLAGS = ['seconds', 'date', 'timerSound', 'swHundredths', 'swLaps', 'alarmSound'] as const;
 
 // every colour is a pair, not one value: the numerals run a gradient between them and the screen
 // behind takes a wash of the same pair, so the app has a temperature rather than one lit shape
@@ -55,37 +147,31 @@ export const PALETTES: Record<Prefs['tint'], Palette> = {
   ember: { main: '#ff7d6b', second: '#ffd36b', glow: '#5e2418' },
 };
 
+// one gradient across a single run of text. only safe where nothing inside carries its own opacity,
+// which would composite separately and lose the background the glyphs are cut out of
+export const ink = (p: Palette) => ({
+  backgroundImage: `linear-gradient(115deg, ${p.main} 8%, ${p.second} 92%)`,
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  color: 'transparent',
+});
+
+export const fill = (p: Palette) => `linear-gradient(115deg, ${p.main}, ${p.second})`;
+
 export const TINTS: Record<Prefs['tint'], string> = Object.fromEntries(
   Object.entries(PALETTES).map(([k, v]) => [k, v.main]),
 ) as Record<Prefs['tint'], string>;
 
 export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
-  if (value === null) return { ...prefs, [key]: DEFAULTS[key as keyof Prefs] };
-  switch (key) {
-    case 'style':
-      return {
-        ...prefs,
-        style: value === 'analogue' || value === 'flip' || value === 'minimal' ? value : 'digital',
-      };
-    case 'format':
-      return { ...prefs, format: value === 'h12' || value === 'h24' ? value : 'auto' };
-    case 'tint':
-      return { ...prefs, tint: value in TINTS ? (value as Prefs['tint']) : 'white' };
-    case 'timerRing':
-    case 'alarmRing':
-      return { ...prefs, [key]: value in SPANS ? (value as Span) : '1m' };
-    case 'timerStep':
-      return { ...prefs, timerStep: value in STEPS ? (value as Step) : '1m' };
-    case 'seconds':
-    case 'date':
-    case 'timerSound':
-    case 'swHundredths':
-    case 'swLaps':
-    case 'alarmSound':
-      return { ...prefs, [key]: value !== 'false' };
-    default:
-      return prefs;
+  if (!(key in DEFAULTS)) return prefs;
+  const k = key as keyof Prefs;
+  if (value === null) return { ...prefs, [k]: DEFAULTS[k] };
+  if (k in CHOICES) {
+    const allowed = CHOICES[k as keyof typeof CHOICES] as readonly string[];
+    return { ...prefs, [k]: allowed.includes(value) ? value : DEFAULTS[k] };
   }
+  if ((FLAGS as readonly string[]).includes(k)) return { ...prefs, [k]: value !== 'false' };
+  return prefs;
 }
 
 export const PREF_KEYS = Object.keys(DEFAULTS) as (keyof Prefs)[];

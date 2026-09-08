@@ -2,40 +2,52 @@
 
 ## 0.2.0
 
+**Eight clock faces.** Digital, Digital + Date, Minimal, Flip, Analogue, World, Binary and Word.
+**World** reads three cities beside the local time, picked from eighteen, and says when one of them
+is already on tomorrow. **Binary** is four rows of 8-4-2-1, one column per digit, with the decimal
+under each column. **Word** spells the time out, and reads a twelve hour dial however the rest of
+the app is set, because "seventeen forty-five" is not how anyone says it.
+
+**Seven timers.** **Countdown** is the plain one. **Circular** puts a ring around it that empties as
+the time does. **Pomodoro** runs work and break and moves itself between them. **Interval** runs
+work and rest for a number of rounds, with a pip per round. **Kitchen** is a real dial: one turn, an
+hour, whole minutes, and the wedge shrinks back to twelve o'clock. **Preset** is 1, 5, 10 and 30
+minutes, and picking one starts it. **Multi** runs up to four at once, the wheel setting whichever
+you picked.
+
+A phase ending inside a pomodoro or an interval chimes once and carries straight on, rather than
+taking the screen: a countdown you have to dismiss is no use to someone halfway through a set. Only
+a timer that has actually finished rings.
+
 **Preset 1** is now the whole clock. It opens the clock from anywhere, and pressing it again while
-the clock is already up walks the faces: Digital, Analogue, Flip, Minimal, round again. **Mode** now
-moves between the four screens everywhere, including on the clock, where it used to turn the faces
-instead and so could never leave. The wheel still turns the faces.
+the clock is already up walks the eight faces. Preset 2 does the same for the seven timers by way of
+its own settings. **Mode** now moves between the four screens everywhere, including on the clock,
+where it used to turn the faces instead and so could never leave. The wheel still turns the faces.
 
 The tab bar has moved to the top edge and become **four bumps, one under each physical button**, so
 the marker is where the finger already is rather than somewhere else on the screen. Each names its
 screen when you arrive and then fades back to the bump, and the one you are on stays lit; on the
-clock it names the face rather than saying "Clock", so preset 1 explains itself.
+clock and the timer it names the face or the style, so the preset explains itself.
+
+**Each screen keeps its own settings.** The wheel button opens the settings for whichever screen you
+are on, and the presets move between them the way they move between the screens themselves. Clock
+holds the face, its cities, the hour format, the seconds and the date. Timer holds the style and
+whatever that style runs on: pomodoro's work and break, interval's work, rest and rounds, how long
+it rings, and what one click of the wheel is worth. Stopwatch holds hundredths and keep laps, and
+drops the Lap button when laps are off. Alarm holds how long it rings, and the hour format it reads
+its own time back in. The one sound setting has become two, one for the timer and one for the alarm.
 
 **Flip actually flips.** The old top leaf falls away to uncover the digit already waiting behind it,
 then the new bottom leaf swings up over the old one, each half darkening as it turns out of the
 light.
 
-**Colour, rather than one lit shape on black.** Every colour is now a pair: the hour takes the first
-and the minute the second, the countdown and the stopwatch run a gradient across the numerals, the
-dial and its hands are drawn from the same two, and the screen behind carries a soft wash of them so
-the empty half of a clock face has a temperature. Three new ones — **Sunset**, **Aurora** and
-**Ember** — and the on-device settings pick them as swatches now that there are eight. A countdown
-under ten seconds leaves whatever you chose for a colour that reads as running out, and takes the
-wash with it.
-
-**Each screen keeps its own settings.** The wheel button opens the settings for whichever screen you
-are on, and the presets move between them the way they move between the screens themselves, so the
-panel is always about the thing in front of you. The bumps stay lit over it to say which.
-
-Clock keeps the face, the hour format, the seconds and the date. Timer gains **how long it rings**
-and **what one click of the wheel is worth**, so a countdown can be dialled in ten-second steps or
-five-minute ones rather than always a minute at a time. Stopwatch gains **hundredths** and **keep
-laps**, and drops the Lap button when laps are off. Alarm gains **how long it rings**, and carries
-the hour format because it reads a time back to you.
-
-The one sound setting has become two, one for the timer and one for the alarm. Colour stays one
-setting, sitting under every panel, because it paints all four screens.
+**Colour, rather than one lit shape on black.** Every colour is a pair: the hour takes the first and
+the minute the second, the countdowns and the stopwatch run a gradient across the numerals, the
+dials and their hands are drawn from the same two, and the screen behind carries a soft wash of them
+so the empty half of a clock face has a temperature. Three new ones — **Sunset**, **Aurora** and
+**Ember** — and the colour sits under every settings panel as swatches, because it paints all four
+screens. A countdown under ten seconds leaves whatever you chose for a colour that reads as running
+out, and takes the wash with it.
 
 ## 0.1.0
 

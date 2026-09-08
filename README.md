@@ -8,7 +8,7 @@ source once and all of them are available.
 | App | What it does |
 | --- | --- |
 | **Music Player** | Now playing, in five styles, coloured by the album art, on a screen that turns |
-| **Clock** | A clock in four faces, with a timer, a stopwatch and an alarm |
+| **Clock** | A clock in eight faces, seven timers, a stopwatch and an alarm |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -225,40 +225,52 @@ A clock, and the three things that usually sit beside one.
 
 ![Digital face](apps/clock/screenshots/01-digital.jpg)
 
-Four faces: **Digital**, **Analogue**, **Flip** and **Minimal**. Flip is a real split-flap: the top
-leaf falls away to uncover the digit behind it, then the new bottom leaf swings up over the old one.
+**Eight faces.** Digital, Digital + Date, Minimal, Flip, Analogue, World, Binary and Word. Flip is a
+real split-flap: the top leaf falls away to uncover the digit behind it, then the new bottom leaf
+swings up over the old one. World reads three cities beside the local time, picked from eighteen,
+and says when one of them is already on tomorrow. Binary is four rows of 8-4-2-1, one column per
+digit, with the decimal under each. Word spells it out, on a twelve hour dial, because "seventeen
+forty-five" is not how anyone says it.
 
 ![Analogue face](apps/clock/screenshots/02-analogue.jpg)
+
+**Seven timers.** Countdown is the plain one; Circular puts a ring around it that empties as the
+time does; Pomodoro runs work and break and moves itself between them; Interval runs work and rest
+for a number of rounds; Kitchen is a real dial, one turn an hour, whole minutes; Preset is 1, 5, 10
+and 30 minutes and picking one starts it; Multi runs up to four at once. A phase ending inside a
+pomodoro or an interval chimes once and carries on rather than taking the screen, since a countdown
+you have to dismiss is no use halfway through a set.
 
 The presets are the four screens, and each one has a bump along the top edge of the glass directly
 under the button that works it. The bump names its screen when you arrive and then fades, leaving
 the mark; the one you are on stays lit.
 
 **1** is the clock, and pressing it again once the clock is up walks the faces, so one button is the
-whole thing — the bump names the face rather than saying "Clock", so it explains itself. The wheel
-walks them too. **2** is a timer you dial with the wheel, a minute a click, which counts down and
-rings at zero; under ten seconds it leaves your colour for one that reads as running out. **3** is a
-stopwatch running to hundredths, with laps. **4** is an alarm: set the hour with the buttons and the
-minutes with the wheel, switch it on, and it rings at that time. The alarm outlives a restart.
-**Mode** moves between the four screens.
+whole thing — the bump names the face, so it explains itself. The wheel walks them too. **2** is the
+timer, whichever of the seven you have it set to; the wheel dials it. **3** is a stopwatch running
+to hundredths, with laps. **4** is an alarm: set the hour with the buttons and the minutes with the
+wheel, switch it on, and it rings at that time. The alarm outlives a restart. **Mode** moves between
+the four screens.
+
+![Stopwatch](apps/clock/screenshots/05-stopwatch.jpg)
 
 The wheel button opens the settings for whichever screen you are on, and the presets move between
 those the same way they move between the screens, so the panel is always about the thing in front of
-you. Clock has the face, the hour format, the seconds and the date. Timer has how long it rings and
-what one click of the wheel is worth. Stopwatch has hundredths and whether to keep laps. Alarm has
-how long it rings, and the hour format it reads its own time back in. Each of the two that ring has
-its own sound setting.
+you. Clock has the face, its cities, the hour format, the seconds and the date. Timer has the style
+and whatever that style runs on — pomodoro's work and break, interval's work, rest and rounds, how
+long it rings, what one click of the wheel is worth. Stopwatch has hundredths and whether to keep
+laps. Alarm has how long it rings, and the hour format it reads its own time back in. Each of the
+two that ring has its own sound setting.
 
 Colour is a pair rather than a single tint. The hour takes the first and the minute the second, the
-countdown and the stopwatch run a gradient across the numerals, the dial and its hands are drawn
+countdowns and the stopwatch run a gradient across the numerals, the dials and their hands are drawn
 from the same two, and the screen behind carries a soft wash of them, so the empty half of a clock
 face has a temperature. Eight to pick from — White, Amber, Cyan, Green, Pink, Sunset, Aurora and
 Ember — as swatches under every settings panel, or by name in the companion app.
 
-![Stopwatch](apps/clock/screenshots/05-stopwatch.jpg)
-
 When something rings it takes the screen and repeats a tone until you touch it or press anything,
-and gives up after a minute either way. The tone can be switched off.
+and gives up after however long that screen says. A countdown under ten seconds leaves your colour
+for one that reads as running out, and takes the wash with it.
 
 The time itself comes from the daemon, which carries the phone's wall clock, timezone and locale.
 The kiosk's own clock is not set from anything, so the face says it is waiting rather than showing a

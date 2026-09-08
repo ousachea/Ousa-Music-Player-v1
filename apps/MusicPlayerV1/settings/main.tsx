@@ -8,6 +8,7 @@ const CHOICE_LABELS: Record<string, string> = {
   widget: 'Cover',
   vinyl: 'Vinyl record',
   cd: 'Compact disc',
+  cassette: 'Cassette tape',
   poster: 'Full bleed artwork',
   lyrics: 'Lyrics',
   tl: 'Top left',
@@ -28,7 +29,7 @@ const CHOICE_LABELS: Record<string, string> = {
 const HINTS: Record<string, string> = {
   wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',
   seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
-  theme: 'Cover sets the album art beside the track with a volume slider of its own, after a phone lock screen. Vinyl puts the art on a spinning record and CD prints it on a spinning disc. Poster fills the screen with it. Lyrics follows the words, when the phone has them.',
+  theme: 'Cover sets the album art beside the track with a volume slider of its own, after a phone lock screen. Vinyl puts the art on a spinning record and CD prints it on a spinning disc. Cassette winds the track through a tape. Poster fills the screen with it. Lyrics follows the words, when the phone has them.',
   rotate: 'Turns the whole screen, for a device mounted on its side or upside down. Preset button 4 also steps through it. At 90 and 270 the player is a tall column with a bar down each side, because the screen itself never changes shape.',
   coverPanel: 'Puts the track and the controls on a tinted panel of their own instead of straight over the blurred artwork. Cover style only.',
   coverVolume: 'The volume slider Cover draws under its transport. With it off the wheel still sets the volume, and the reading the other styles show over the middle of the screen comes back. Cover style only.',

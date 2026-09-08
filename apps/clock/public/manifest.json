@@ -2,7 +2,7 @@
   "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
   "name": "Clock",
   "version": "0.2.0",
-  "description": "A clock in four faces, with a timer, a stopwatch and an alarm.",
+  "description": "A clock in eight faces, seven timers, a stopwatch and an alarm.",
   "icon": "icon.png",
   "settings": "settings.html",
   "config": [
@@ -31,9 +31,13 @@
         "label": "Clock face",
         "choices": [
           "digital",
-          "analogue",
+          "digital-date",
+          "minimal",
           "flip",
-          "minimal"
+          "analogue",
+          "world",
+          "binary",
+          "word"
         ],
         "default": "digital"
       }
@@ -68,6 +72,107 @@
       }
     },
     {
+      "type": "enum",
+      "data": {
+        "key": "world1",
+        "label": "World clock: first city",
+        "choices": [
+          "off",
+          "london",
+          "paris",
+          "newyork",
+          "chicago",
+          "losangeles",
+          "saopaulo",
+          "utc",
+          "dubai",
+          "mumbai",
+          "bangkok",
+          "phnompenh",
+          "singapore",
+          "hongkong",
+          "tokyo",
+          "seoul",
+          "sydney",
+          "auckland"
+        ],
+        "default": "london"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "world2",
+        "label": "World clock: second city",
+        "choices": [
+          "off",
+          "london",
+          "paris",
+          "newyork",
+          "chicago",
+          "losangeles",
+          "saopaulo",
+          "utc",
+          "dubai",
+          "mumbai",
+          "bangkok",
+          "phnompenh",
+          "singapore",
+          "hongkong",
+          "tokyo",
+          "seoul",
+          "sydney",
+          "auckland"
+        ],
+        "default": "newyork"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "world3",
+        "label": "World clock: third city",
+        "choices": [
+          "off",
+          "london",
+          "paris",
+          "newyork",
+          "chicago",
+          "losangeles",
+          "saopaulo",
+          "utc",
+          "dubai",
+          "mumbai",
+          "bangkok",
+          "phnompenh",
+          "singapore",
+          "hongkong",
+          "tokyo",
+          "seoul",
+          "sydney",
+          "auckland"
+        ],
+        "default": "tokyo"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "timerMode",
+        "label": "Timer style",
+        "choices": [
+          "countdown",
+          "circular",
+          "pomodoro",
+          "interval",
+          "kitchen",
+          "preset",
+          "multi"
+        ],
+        "default": "countdown"
+      }
+    },
+    {
       "type": "boolean",
       "data": {
         "key": "timerSound",
@@ -99,6 +204,74 @@
           "5m"
         ],
         "default": "1m"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "pomodoroWork",
+        "label": "Pomodoro: work",
+        "choices": [
+          "15m",
+          "25m",
+          "45m"
+        ],
+        "default": "25m"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "pomodoroBreak",
+        "label": "Pomodoro: break",
+        "choices": [
+          "5m",
+          "10m",
+          "15m"
+        ],
+        "default": "5m"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "intervalWork",
+        "label": "Interval: work",
+        "choices": [
+          "30s",
+          "45s",
+          "1m",
+          "2m"
+        ],
+        "default": "45s"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "intervalRest",
+        "label": "Interval: rest",
+        "choices": [
+          "10s",
+          "15s",
+          "30s",
+          "1m"
+        ],
+        "default": "15s"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "intervalRounds",
+        "label": "Interval: rounds",
+        "choices": [
+          "4",
+          "6",
+          "8",
+          "12"
+        ],
+        "default": "8"
       }
     },
     {

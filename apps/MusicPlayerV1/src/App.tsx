@@ -337,7 +337,7 @@ export default function App() {
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
       else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'poster', 'lyrics'];
+        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'poster', 'lyrics'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
@@ -412,7 +412,24 @@ export default function App() {
                 ? 'skip-prev'
                 : 'skip-next'
         }`}>
-      {prefs.theme === 'lyrics' ? (
+      {prefs.theme === 'cassette' ? (
+        <Cassette
+          title={track.title ?? 'unknown'}
+          artist={artistName ?? '—'}
+          album={track.album ?? null}
+          accent={accentOn}
+          playing={playing}
+          motion={prefs.motion}
+          progress={progress}
+          elapsed={elapsed}
+          duration={duration}
+          remaining={prefs.remaining}
+          showTransport={prefs.transport}
+          onToggle={toggle}
+          onPrev={() => goPrev(true)}
+          onNext={() => goNext()}
+        />
+      ) : prefs.theme === 'lyrics' ? (
         <Lyrics
           lyrics={lyrics}
           elapsed={elapsed}
@@ -698,7 +715,10 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 }
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
-  theme: { values: ['widget', 'vinyl', 'cd', 'poster', 'lyrics'], labels: ['Cover', 'Vinyl', 'CD', 'Poster', 'Lyrics'] },
+  theme: {
+    values: ['widget', 'vinyl', 'cd', 'cassette', 'poster', 'lyrics'],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Poster', 'Lyrics'],
+  },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
@@ -730,10 +750,10 @@ const STYLE_ROWS: Row[] = [
   { key: 'coverVolume', label: 'Volume slider', only: ['widget'] },
   { key: 'pulse', label: 'Art pulse', only: ['widget'] },
   { key: 'pulseBpm', label: 'Pulse tempo', only: ['widget'] },
-  { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd', 'lyrics'] },
-  { key: 'blur', label: 'Backdrop blur', only: ['widget', 'vinyl', 'cd', 'lyrics'] },
-  { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd', 'lyrics'] },
-  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd'] },
+  { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd', 'cassette', 'lyrics'] },
+  { key: 'blur', label: 'Backdrop blur', only: ['widget', 'vinyl', 'cd', 'cassette', 'lyrics'] },
+  { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd', 'cassette', 'lyrics'] },
+  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette'] },
 ];
 
 const GROUPS: { title: string; rows: Row[] }[] = [
@@ -2701,6 +2721,152 @@ function Words({ className, off }: { className?: string; off?: boolean }) {
       <path d="M4 6h16M4 11h11M4 16h14M4 21h8" />
       {off && <path d="M3 21 21 3" strokeWidth="2.2" />}
     </svg>
+  );
+}
+
+// a tape in a deck. the reels turn while it plays and the spools change size as it winds across,
+// which is the honest way for a cassette to show progress
+function Cassette({
+  title,
+  artist,
+  album,
+  accent,
+  playing,
+  motion,
+  progress,
+  elapsed,
+  duration,
+  remaining,
+  showTransport,
+  onToggle,
+  onPrev,
+  onNext,
+}: {
+  title: string;
+  artist: string;
+  album: string | null;
+  accent: Accent | null;
+  playing: boolean;
+  motion: boolean;
+  progress: number;
+  elapsed: number;
+  duration: number;
+  remaining: boolean;
+  showTransport: boolean;
+  onToggle: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  const tint = accent?.fill ?? '#e7d9c9';
+  const done = Math.min(1, Math.max(0, progress));
+  // a spool never empties completely: the hub is still there under the last of the tape
+  const left = 34 - 14 * done;
+  const right = 20 + 14 * done;
+  const spin = { animationDuration: '2.6s', animationPlayState: playing && motion ? 'running' : 'paused' };
+
+  const reel = (cx: number, r: number) => (
+    <g>
+      <circle cx={cx} cy="50" r={r} fill="#5b4b45" />
+      <circle cx={cx} cy="50" r={r} fill="none" stroke="rgba(0,0,0,0.45)" strokeWidth="1" />
+      <g className={motion ? 'animate-platter' : ''} style={{ ...spin, transformOrigin: `${cx}px 50px` }}>
+        {Array.from({ length: 6 }, (_, i) => (
+          <rect
+            key={i}
+            x={cx - 1.8}
+            y={31}
+            width="3.6"
+            height="8"
+            rx="1"
+            fill="#e7ddd2"
+            transform={`rotate(${i * 60} ${cx} 50)`}
+          />
+        ))}
+        <circle cx={cx} cy="50" r="11" fill="#efe6dd" stroke="#b09e91" strokeWidth="1.2" />
+        <circle cx={cx} cy="50" r="4" fill="#7c6a63" />
+      </g>
+    </g>
+  );
+
+  const key = (label: string, onClick: () => void, children: ReactNode, wide?: boolean) => (
+    <button
+      aria-label={label}
+      onClick={onClick}
+      className={`grid h-full place-items-center rounded-lg bg-white/8 text-near ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_2px_0_rgba(0,0,0,0.35)] transition active:translate-y-[2px] active:shadow-none ${
+        wide ? 'w-24' : 'w-20'
+      }`}>
+      {children}
+    </button>
+  );
+
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-5">
+      {/* the shell, screwed into a deck */}
+      <div
+        className="relative aspect-[100/62] max-h-full w-auto max-w-full rounded-[16px] p-[2.2%] shadow-2xl ring-1 ring-black/40"
+        style={{
+          height: showTransport ? '72%' : '90%',
+          background: `linear-gradient(150deg, color-mix(in oklab, ${tint} 30%, #f7f1e9), #e2d7cb 58%, color-mix(in oklab, ${tint} 20%, #c9bdb1))`,
+        }}>
+        {['left-[1.6%] top-[2.4%]', 'right-[1.6%] top-[2.4%]', 'left-[1.6%] bottom-[2.4%]', 'right-[1.6%] bottom-[2.4%]'].map(
+          at => (
+            <span key={at} className={`absolute h-2.5 w-2.5 rounded-full bg-black/12 ring-1 ring-black/20 ${at}`} />
+          ),
+        )}
+
+        <div className="flex h-full w-full flex-col overflow-hidden rounded-[10px] bg-[#fbf6ee] ring-1 ring-black/10">
+          {/* the written label */}
+          <div className="flex min-h-0 flex-[46] flex-col px-[3.5%] pt-[2.5%]">
+            <div className="flex shrink-0 items-baseline justify-between font-mono text-[0.5rem] tracking-[0.22em] text-black/40 uppercase">
+              <span>{playing ? 'play' : 'pause'}</span>
+              <span>stereo</span>
+            </div>
+            <div className="flex min-h-0 flex-1 items-center">
+              <span
+                className="line-clamp-2 font-display leading-[1.12] font-semibold text-black/80 italic"
+                style={{ fontSize: title.length > 34 ? '1.15rem' : '1.5rem' }}>
+                {title}
+              </span>
+            </div>
+            <div className="shrink-0 border-b border-black/20" />
+            <div className="shrink-0 truncate pt-[1.5%] pb-[1.5%] text-right text-hint text-black/45">{artist}</div>
+          </div>
+
+          {/* the stripes a tape always wore */}
+          <div className="flex h-[10%] shrink-0 flex-col">
+            {['#7fb2e8', '#79c9a0', '#f2d979', '#efab6a', '#e5808a'].map(c => (
+              <div key={c} className="flex-1" style={{ backgroundColor: c }} />
+            ))}
+          </div>
+
+          {/* the window: spools carry the progress */}
+          <div className="relative min-h-0 flex-[44] bg-[#e6dbcf]">
+            <svg viewBox="0 0 360 100" className="absolute inset-0 h-full w-full">
+              <rect x="14" y="7" width="332" height="86" rx="10" fill="#2e2724" />
+              <rect x="14" y="7" width="332" height="86" rx="10" fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="2" />
+              <rect x="110" y="46" width="140" height="8" fill="#463b36" />
+              {reel(110, left)}
+              {reel(250, right)}
+            </svg>
+          </div>
+
+          <div className="flex shrink-0 items-center justify-between gap-3 px-[3.5%] py-[1.4%] font-mono text-hint tabular-nums text-black/55">
+            <span className="min-w-0 truncate uppercase">{album ?? 'tape'}</span>
+            <span>
+              {clock(elapsed)}
+              {duration ? ` / ${remaining ? `-${clock(duration - elapsed)}` : clock(duration)}` : ''}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {showTransport && (
+        <div className="flex h-16 shrink-0 items-stretch gap-2">
+          {key('previous', onPrev, <Skip className="h-5 w-5 -scale-x-100" />)}
+          {key(playing ? 'pause' : 'play', onToggle, playing ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />, true)}
+          {key('next', onNext, <Skip className="h-5 w-5" />)}
+        </div>
+      )}
+    </div>
   );
 }
 
