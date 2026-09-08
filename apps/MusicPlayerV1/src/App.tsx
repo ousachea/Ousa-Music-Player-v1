@@ -3254,19 +3254,12 @@ function Cassette({
       {tape === 'printed' ? <PrintedTape {...face} /> : <WrittenTape {...face} />}
 
       {showTransport && (
-        <>
-          <button
-            aria-label="tape design"
-            onClick={onTape}
-            className="absolute top-1/2 left-2 z-[3] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-black/35 text-off-white/60 ring-1 ring-white/12 backdrop-blur-sm transition active:scale-90">
-            <TapeGlyph className="h-5 w-5" />
-          </button>
-          <div className="flex h-11 shrink-0 items-stretch gap-1.5 rounded-xl bg-black/30 p-1.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.55),0_1px_0_rgba(255,255,255,0.10)] ring-1 ring-white/10">
-            {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
-            {key(playing ? 'pause' : 'play', onToggle, playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />, true)}
-            {key('next', onNext, <Skip className="h-4 w-4" />)}
-          </div>
-        </>
+        <div className="flex h-11 shrink-0 items-stretch gap-1.5 rounded-xl bg-black/30 p-1.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.55),0_1px_0_rgba(255,255,255,0.10)] ring-1 ring-white/10">
+          {key('tape design', onTape, <TapeGlyph className="h-4 w-4" />)}
+          {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
+          {key(playing ? 'pause' : 'play', onToggle, playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />, true)}
+          {key('next', onNext, <Skip className="h-4 w-4" />)}
+        </div>
       )}
     </div>
   );

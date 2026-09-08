@@ -90,8 +90,8 @@ colour with the title in bold caps over it, SIDE A under that, the artist and al
 either side, and a tape counter reading across the window, all set into a dark moulded shell with
 the spindle holes along the bottom.
 
-A button on the left of the screen switches between the two, and **Tape design** does the same from
-the settings.
+A fourth key sits with the transport, in the same deck bar and the same chunky plastic, and switches
+between the two. **Tape design** does the same from the settings.
 
 The spools are the progress bar in both: the left one starts full and empties as the song plays
 while the right one fills, and both turn while the music runs and hold where they are when you

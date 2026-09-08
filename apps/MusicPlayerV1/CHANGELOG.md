@@ -14,7 +14,7 @@ tape on the spools and the keys all take the album's colour, and the rainbow ban
 the cover's own hue rather than mixing two of them, since a cover with one hue would otherwise give
 five bands of the same colour.
 
-A second cassette, **Printed**, and a button on the left of the screen to switch between the two.
+A second cassette, **Printed**, and a key beside the transport to switch between the two.
 Where the written tape is a blank label somebody filled in, the printed one is a pressed release: the
 label printed edge to edge in the album's colour, the title in bold caps with SIDE A under it, the
 artist and album in small type either side, a tape counter reading across the window with a line
