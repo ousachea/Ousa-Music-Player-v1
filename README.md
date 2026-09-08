@@ -98,6 +98,7 @@ of it would only be the Classic style again.
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
 | Mode, the button past the presets | Cycle the player style: Classic, Vinyl, Poster, Cover |
+| `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
 | Press it twice | Next track |
@@ -124,7 +125,8 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
 - **Player** — style, accent colour, sharper artwork, the cover pulse with its tempo, and whether
   the Classic style's art runs to the edge of the screen
 - **Controls** — what the wheel does, how far each click seeks, whether the seek bar is a line or a
-  wave, and whether it carries a dot at the playhead
+  wave, and whether it carries a dot at the playhead. Both seek settings default to Auto, which gives
+  Classic and Poster the wave, Vinyl and Cover a line, and drops the dot on Cover only
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts
 - **Display** — animations, screen rotation, and whether the time counts down or shows the track length
 - **Clock** — position, size, 12 or 24 hour, and seconds

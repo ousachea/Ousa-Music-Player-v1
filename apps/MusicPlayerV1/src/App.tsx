@@ -66,7 +66,9 @@ export default function App() {
   }, [client]);
 
   const accentOn = prefs.accent === 'artwork' ? accent : null;
-  const seekStyle = prefs.seek === 'auto' ? (prefs.theme === 'poster' ? 'wave' : 'bar') : prefs.seek;
+  const seekStyle =
+    prefs.seek === 'auto' ? (prefs.theme === 'poster' || prefs.theme === 'card' ? 'wave' : 'bar') : prefs.seek;
+  const seekDot = prefs.seekDot === 'auto' ? prefs.theme !== 'widget' : prefs.seekDot === 'on';
   const track = state?.track ?? null;
   const [foundArtist, setFoundArtist] = useState<string | null>(null);
   const artistName = track?.artist ?? foundArtist;
@@ -249,8 +251,9 @@ export default function App() {
       else if (e.key === '2') toggle();
       else if (e.key === 'ArrowRight' || e.key === '3') client.player.skipNext();
       else if (e.key === '4') setPref('rotate', String((prefs.rotate + 90) % 360));
-      // the button past the four presets; the launcher still owns five fast presses of it
-      else if (e.key === 'm' || e.key === 'M') {
+      // the button past the four presets; the launcher still owns five fast presses of it. no button
+      // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
+      else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
         const order: Prefs['theme'][] = ['card', 'vinyl', 'poster', 'widget'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
@@ -292,7 +295,7 @@ export default function App() {
             motion={prefs.motion}
             seekStyle={seekStyle}
             rotate={prefs.rotate}
-            dot={prefs.seekDot}
+            dot={seekDot}
             upright={upright}
             progress={progress}
             elapsed={elapsed}
@@ -323,7 +326,7 @@ export default function App() {
           playing={playing}
           motion={prefs.motion}
           seekStyle={seekStyle}
-          dot={prefs.seekDot}
+          dot={seekDot}
           progress={progress}
           elapsed={elapsed}
           duration={duration}
@@ -412,7 +415,7 @@ export default function App() {
                 <Seek
                   style={seekStyle}
                   rotate={prefs.rotate}
-                  dot={prefs.seekDot}
+                  dot={seekDot}
                   progress={progress}
                   playing={playing && prefs.motion}
                   tint={accentOn?.fill ?? '#efefef'}
@@ -495,6 +498,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: { values: ['card', 'vinyl', 'poster', 'widget'], labels: ['Classic', 'Vinyl', 'Poster', 'Cover'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
+  seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
   clockPos: { values: ['left', 'center', 'right'], labels: ['Left', 'Centre', 'Right'] },
   clockFormat: { values: ['auto', 'h12', 'h24'], labels: ['Auto', '12h', '24h'] },
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },

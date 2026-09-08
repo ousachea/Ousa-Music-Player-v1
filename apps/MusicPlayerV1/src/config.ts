@@ -9,7 +9,7 @@ export type Prefs = {
   wheel: 'volume' | 'seek';
   seekSeconds: number;
   seek: 'auto' | 'bar' | 'wave';
-  seekDot: boolean;
+  seekDot: 'auto' | 'on' | 'off';
   accent: 'artwork' | 'mono';
   hdArt: boolean;
   pulse: boolean;
@@ -25,7 +25,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'card', rotate: 0, coverEdge: false, wheel: 'volume', seekSeconds: 2, seek: 'wave', seekDot: true, accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, motion: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'card', rotate: 0, coverEdge: false, wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, motion: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -78,6 +78,8 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     }
     case 'seek':
       return { ...prefs, seek: value === 'bar' || value === 'wave' ? value : 'auto' };
+    case 'seekDot':
+      return { ...prefs, seekDot: value === 'on' || value === 'off' ? value : 'auto' };
     case 'accent':
       return { ...prefs, accent: value === 'mono' ? 'mono' : 'artwork' };
     case 'clockSize': {
@@ -91,7 +93,6 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, clockFormat: value === 'h12' || value === 'h24' ? value : 'auto' };
     case 'clockSeconds':
     case 'clock':
-    case 'seekDot':
     case 'coverEdge':
     case 'hdArt':
     case 'motion':

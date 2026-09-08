@@ -2,9 +2,17 @@
 
 ## 0.23.0
 
-**Dot at the playhead** is a new setting, on by default. Off, the seek bar loses the marker that
-rides it: the round handle on the line, the tick on the wave, and the halo that pulses under the
-handle while a track plays. The bar still scrubs by dragging, whether or not the dot is drawn.
+**Dot at the playhead** is a new setting. Off, the seek bar loses the marker that rides it: the
+round handle on the line, the tick on the wave, and the halo that pulses under the handle while a
+track plays. The bar still scrubs by dragging, whether or not the dot is drawn.
+
+Both seek settings sit on **Auto** now, which means each style gets what suits it: Classic and Poster
+draw the wave, Vinyl and Cover draw a line, and every style carries the dot except Cover, which
+reads cleaner without one. Choosing anything other than Auto still applies everywhere.
+
+The Mode button cycles the player style as it always has, and the **5** key now does the same. No
+hardware button sends a 5, so it costs the device nothing and puts the style within reach of a
+keyboard while you are working on the dev server.
 
 The player styles are renamed. **Cover** is now **Classic**, and **Widget** is now **Cover**. Only
 the names change; the layouts, and the value each style is stored under, are the same, so nothing

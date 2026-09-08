@@ -75,15 +75,20 @@
           "bar",
           "wave"
         ],
-        "default": "wave"
+        "default": "auto"
       }
     },
     {
-      "type": "boolean",
+      "type": "enum",
       "data": {
         "key": "seekDot",
         "label": "Dot at the playhead",
-        "default": true
+        "choices": [
+          "auto",
+          "on",
+          "off"
+        ],
+        "default": "auto"
       }
     },
     {
