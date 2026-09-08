@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "Music Player",
-  "version": "0.20.2",
+  "version": "0.21.0",
   "description": "Now playing from your phone, on the Car Thing.",
   "icon": "icon.jpg",
   "settings": "settings.html",
@@ -17,6 +17,28 @@
           "poster"
         ],
         "default": "card"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "rotate",
+        "label": "Screen rotation",
+        "choices": [
+          "0",
+          "90",
+          "180",
+          "270"
+        ],
+        "default": "0"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "coverEdge",
+        "label": "Cover runs to the screen edge",
+        "default": false
       }
     },
     {

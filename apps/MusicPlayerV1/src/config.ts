@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Prefs = {
   theme: 'card' | 'vinyl' | 'poster';
+  rotate: 0 | 90 | 180 | 270;
+  coverEdge: boolean;
   wheel: 'volume' | 'seek';
   seekSeconds: number;
   seek: 'auto' | 'bar' | 'wave';
@@ -22,7 +24,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'card', wheel: 'volume', seekSeconds: 2, seek: 'wave', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, motion: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'card', rotate: 0, coverEdge: false, wheel: 'volume', seekSeconds: 2, seek: 'wave', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, motion: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -41,6 +43,10 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, theme: value === 'vinyl' || value === 'poster' ? value : 'card' };
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };
+    case 'rotate': {
+      const turn = Number(value);
+      return { ...prefs, rotate: turn === 90 || turn === 180 || turn === 270 ? turn : 0 };
+    }
     case 'pulseBpm': {
       const bpm = Number(value);
       if (!Number.isFinite(bpm)) return { ...prefs, pulseBpm: DEFAULTS.pulseBpm };
@@ -84,6 +90,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, clockFormat: value === 'h12' || value === 'h24' ? value : 'auto' };
     case 'clockSeconds':
     case 'clock':
+    case 'coverEdge':
     case 'hdArt':
     case 'motion':
     case 'pulse':

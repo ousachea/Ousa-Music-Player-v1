@@ -245,6 +245,7 @@ export default function App() {
       else if (e.key === 'ArrowLeft' || e.key === '1') client.player.skipPrev({ allowSeeking: true });
       else if (e.key === '2') toggle();
       else if (e.key === 'ArrowRight' || e.key === '3') client.player.skipNext();
+      else if (e.key === '4') setPref('rotate', String((prefs.rotate + 90) % 360));
       // the button past the four presets; the launcher still owns five fast presses of it
       else if (e.key === 'm' || e.key === 'M') {
         const order: Prefs['theme'][] = ['card', 'vinyl', 'poster'];
@@ -257,17 +258,23 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
     };
-  }, [client, duration, flashHud, live, panel, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, toggle]);
+  }, [client, duration, flashHud, live, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, toggle]);
 
   if (!track)
     return (
-      <>
+      <Stage rotate={prefs.rotate}>
         <Empty conn={conn} />
         <VolumeHud show={hud} volume={volume} accent={accentOn} />
-      </>
+      </Stage>
     );
 
+  // the cover only runs to the edge in the style that draws a cover at all
+  const edge = prefs.theme === 'card' && prefs.coverEdge;
+  // a quarter turn lays the player out portrait, where a square cover cannot sit beside the track
+  const upright = prefs.rotate === 90 || prefs.rotate === 270;
+
   return (
+    <Stage rotate={prefs.rotate}>
     <div className="relative h-full w-full overflow-hidden bg-screen">
       {prefs.theme === 'poster' ? (
         <Poster
@@ -285,6 +292,7 @@ export default function App() {
           wallClock={wallClock}
           clockPos={prefs.clockPos}
           clockSize={prefs.clockSize}
+          rotate={prefs.rotate}
           onToggle={toggle}
           onPrev={() => client.player.skipPrev({ allowSeeking: true })}
           onNext={() => client.player.skipNext()}
@@ -294,15 +302,18 @@ export default function App() {
         <>
           <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />
 
-          <div className="relative flex h-full w-full items-stretch gap-7 p-7">
+          <div
+            className={`relative flex h-full w-full items-stretch gap-7 ${upright ? 'flex-col' : ''} ${
+              edge ? (upright ? 'px-0 pt-0 pb-7' : 'py-0 pr-7 pl-0') : 'p-7'
+            }`}>
             {prefs.theme === 'vinyl' ? (
-              <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} />
+              <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} upright={upright} />
             ) : (
-              <div className="relative aspect-square h-full shrink-0">
-                <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />
+              <div className={`relative aspect-square shrink-0 ${upright ? 'w-full' : 'h-full'}`}>
+                {!edge && <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />}
                 {accentOn && prefs.motion && prefs.pulse && (
                   <div
-                    className="cover-pulse pointer-events-none absolute inset-0 rounded-2xl"
+                    className={`cover-pulse pointer-events-none absolute inset-0 ${edge ? '' : 'rounded-2xl'}`}
                     style={{
                       boxShadow: `0 0 0 1.5px ${accentOn.soft}, 0 0 38px 5px ${accentOn.fill}`,
                       ['--pulse-duration' as string]: `${Math.round(60000 / (prefs.pulseBpm || AUTO_PULSE_BPM))}ms`,
@@ -313,17 +324,25 @@ export default function App() {
                   <img
                     src={artUrl}
                     alt=""
-                    className="relative h-full w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/12"
+                    className={`relative h-full w-full object-cover ${
+                      edge ? '' : 'rounded-2xl shadow-2xl ring-1 ring-white/12'
+                    }`}
                   />
                 ) : (
-                  <div className="relative grid h-full w-full place-items-center rounded-2xl bg-white/6 ring-1 ring-white/12">
+                  <div
+                    className={`relative grid h-full w-full place-items-center bg-white/6 ${
+                      edge ? '' : 'rounded-2xl ring-1 ring-white/12'
+                    }`}>
                     <Disc className="h-16 w-16 text-off-white/25" />
                   </div>
                 )}
               </div>
             )}
 
-            <div className="flex h-full min-w-0 flex-1 flex-col">
+            <div
+              className={`flex min-w-0 flex-1 flex-col ${upright ? 'w-full' : 'h-full'} ${
+                edge ? (upright ? 'px-7' : 'py-7') : ''
+              }`}>
               <div className={`flex min-h-5 items-center ${JUSTIFY[prefs.clockPos]}`}>
                 <ClockView
                   parts={wallClock}
@@ -349,6 +368,7 @@ export default function App() {
               <div>
                 <Seek
                   style={seekStyle}
+                  rotate={prefs.rotate}
                   progress={progress}
                   playing={playing && prefs.motion}
                   tint={accentOn?.fill ?? '#efefef'}
@@ -401,7 +421,42 @@ export default function App() {
       </div>
       {panel && <Panel client={client} prefs={prefs} setPref={setPref} accent={accentOn} artUrl={artUrl} />}
     </div>
+    </Stage>
   );
+}
+
+// the screen never resizes, so a quarter turn is laid out at the swapped size and rotated into place;
+// the strip left either side is dead space, which is why 90 and 270 cost the player its width
+function Stage({ rotate, children }: { rotate: Prefs['rotate']; children: ReactNode }) {
+  const quarter = rotate === 90 || rotate === 270;
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-black">
+      <div
+        className="absolute top-1/2 left-1/2"
+        style={{
+          width: quarter ? '100vh' : '100vw',
+          height: quarter ? '100vw' : '100vh',
+          transform: `translate(-50%, -50%) rotate(${rotate}deg)`,
+        }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// the stage is turned with a css transform, so a drag reads along the axis the bar lies on for the
+// viewer, not the one it lies on in the layout
+function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
+  const box = e.currentTarget.getBoundingClientRect();
+  const ratio =
+    rotate === 90
+      ? (e.clientY - box.top) / box.height
+      : rotate === 180
+        ? (box.right - e.clientX) / box.width
+        : rotate === 270
+          ? (box.bottom - e.clientY) / box.height
+          : (e.clientX - box.left) / box.width;
+  return Math.min(1, Math.max(0, ratio));
 }
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
@@ -411,6 +466,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   clockPos: { values: ['left', 'center', 'right'], labels: ['Left', 'Centre', 'Right'] },
   clockFormat: { values: ['auto', 'h12', 'h24'], labels: ['Auto', '12h', '24h'] },
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
+  rotate: { values: ['0', '90', '180', '270'], labels: ['0°', '90°', '180°', '270°'] },
 };
 
 const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: string; auto?: number }> = {
@@ -429,6 +485,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
     title: 'Player',
     rows: [
       { key: 'theme', label: 'Player style' },
+      { key: 'coverEdge', label: 'Cover to the edge', only: ['card'] },
       { key: 'accent', label: 'Accent colour' },
       { key: 'hdArt', label: 'HD album art' },
       { key: 'pulse', label: 'Cover pulse', only: ['card'] },
@@ -454,6 +511,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
     title: 'Display',
     rows: [
       { key: 'motion', label: 'Animations' },
+      { key: 'rotate', label: 'Screen rotation' },
       { key: 'remaining', label: 'Show time remaining', only: ['card', 'vinyl'] },
     ],
   },
@@ -763,9 +821,19 @@ function Roll({ text, className }: { text: string; className?: string }) {
 }
 
 // the sleeve sits behind, the record carries the art as its label, and the arm drops when the track runs
-function Turntable({ artUrl, playing, spin }: { artUrl: string | null; playing: boolean; spin: boolean }) {
+function Turntable({
+  artUrl,
+  playing,
+  spin,
+  upright,
+}: {
+  artUrl: string | null;
+  playing: boolean;
+  spin: boolean;
+  upright: boolean;
+}) {
   return (
-    <div className="relative aspect-square h-full shrink-0">
+    <div className={`relative aspect-square shrink-0 ${upright ? 'w-full' : 'h-full'}`}>
       <div className="absolute bottom-3 left-6 right-6 h-8 rounded-full bg-black/75 blur-2xl" />
 
       <div className="absolute left-0 top-[3%] h-[62%] w-[62%] -rotate-6 overflow-hidden rounded shadow-2xl ring-1 ring-white/10">
@@ -860,6 +928,7 @@ function Poster({
   wallClock,
   clockPos,
   clockSize,
+  rotate,
   progress,
   elapsed,
   duration,
@@ -879,6 +948,7 @@ function Poster({
   wallClock: ClockParts | null;
   clockPos: 'left' | 'center' | 'right';
   clockSize: number;
+  rotate: Prefs['rotate'];
   progress: number;
   elapsed: number;
   duration: number;
@@ -940,6 +1010,7 @@ function Poster({
 
         <Seek
           style={seekStyle}
+          rotate={rotate}
           progress={progress}
           playing={playing && motion}
           tint={tint}
@@ -975,12 +1046,14 @@ function wavePath(from: number, to: number, mid: number) {
 }
 
 function Wave({
+  rotate,
   progress,
   playing,
   tint,
   tint2,
   onSeek,
 }: {
+  rotate: Prefs['rotate'];
   progress: number;
   playing: boolean;
   tint: string;
@@ -1002,10 +1075,7 @@ function Wave({
   const height = 22;
   const mid = height / 2;
   const played = Math.max(0, Math.min(width, width * progress));
-  const pick = (e: PointerEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    onSeek(Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width)));
-  };
+  const pick = (e: PointerEvent<HTMLDivElement>) => onSeek(alongBar(e, rotate));
 
   return (
     <div
@@ -1054,6 +1124,7 @@ function Wave({
 
 function Seek({
   style,
+  rotate,
   progress,
   playing,
   tint,
@@ -1061,6 +1132,7 @@ function Seek({
   onSeek,
 }: {
   style: 'bar' | 'wave';
+  rotate: Prefs['rotate'];
   progress: number;
   playing: boolean;
   tint: string;
@@ -1068,9 +1140,9 @@ function Seek({
   onSeek: (ratio: number) => void;
 }) {
   return style === 'wave' ? (
-    <Wave progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
+    <Wave rotate={rotate} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
   ) : (
-    <Rail progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
+    <Rail rotate={rotate} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
   );
 }
 
@@ -1157,12 +1229,14 @@ function Backdrop({ url, intensity, drift }: { url: string | null; intensity: nu
 
 // pointer anywhere on the strip seeks, and the hit area is taller than the visible rail
 function Rail({
+  rotate,
   progress,
   playing,
   tint,
   tint2,
   onSeek,
 }: {
+  rotate: Prefs['rotate'];
   progress: number;
   playing: boolean;
   tint: string;
@@ -1181,10 +1255,7 @@ function Rail({
     observer.observe(track.current);
     return () => observer.disconnect();
   }, []);
-  const pick = (e: PointerEvent<HTMLDivElement>) => {
-    const box = e.currentTarget.getBoundingClientRect();
-    onSeek(Math.min(1, Math.max(0, (e.clientX - box.left) / box.width)));
-  };
+  const pick = (e: PointerEvent<HTMLDivElement>) => onSeek(alongBar(e, rotate));
   return (
     <div
       className="group -my-3 flex h-6 w-full cursor-pointer items-center py-3"

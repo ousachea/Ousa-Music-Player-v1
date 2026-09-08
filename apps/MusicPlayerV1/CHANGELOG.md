@@ -1,5 +1,14 @@
 # weather
 
+## 0.21.0
+
+Preset 4 turns the screen a quarter at a time: 0, 90, 180, 270 and round again. At 90 and 270 the
+player lays itself out portrait, with the cover above the track rather than beside it. The rotation
+is also a setting, on the device and in the companion app, and it survives a restart.
+
+The Cover style gains **Cover to the edge**: the album art drops its padding, corners, ring and
+shadow and runs to the top, bottom and left of the screen.
+
 ## 0.20.2
 
 Keep device settings when an update rewrites the same config.

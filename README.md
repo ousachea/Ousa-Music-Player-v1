@@ -50,6 +50,10 @@ The album at full height with the track beside it. The artwork's own colour driv
 the seek bar and the button outlines, and a glow pulses around the cover's edge. The blurred cover
 sits behind everything, and both its strength and its slow drift are adjustable.
 
+**Cover to the edge** drops the padding around the art, along with its rounded corners, ring and
+shadow, so the cover runs flush to the top, bottom and left of the screen. The track keeps its own
+padding on the right.
+
 ### Vinyl
 
 ![Vinyl style](apps/MusicPlayerV1/screenshots/02-vinyl.png)
@@ -73,6 +77,7 @@ This is the style that benefits most from the sharper artwork lookup.
 | Preset button 1 | Previous track |
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
+| Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
 | Mode, the button past the presets | Cycle the player style |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -85,6 +90,10 @@ This is the style that benefits most from the sharper artwork lookup.
 A press waits a moment to see whether another one follows, so play/pause from the wheel is very
 slightly delayed. The on-screen button is instant.
 
+Preset 4 turns the whole screen, for a device that is not sitting the way it was designed to. The
+screen itself never changes shape, so at 90 and 270 the player is laid out portrait instead: the
+cover above the track rather than beside it. The rotation is remembered.
+
 ### Settings
 
 ![Settings](apps/MusicPlayerV1/screenshots/04-settings.png)
@@ -92,10 +101,11 @@ slightly delayed. The on-screen button is instant.
 Press the button under the wheel to open them on the device. The list only shows what the style you
 picked can actually use, so switching to Poster hides the backdrop and pulse rows it does not draw.
 
-- **Player** — style, accent colour, sharper artwork, and the cover pulse with its tempo
+- **Player** — style, accent colour, sharper artwork, the cover pulse with its tempo, and whether
+  the Cover style's art runs to the edge of the screen
 - **Controls** — what the wheel does, how far each click seeks, and whether the seek bar is a line or a wave
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts
-- **Display** — animations, and whether the time counts down or shows the track length
+- **Display** — animations, screen rotation, and whether the time counts down or shows the track length
 - **Clock** — position, size, 12 or 24 hour, and seconds
 - **About** — check whether a newer version has been published
 
