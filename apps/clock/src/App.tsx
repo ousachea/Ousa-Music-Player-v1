@@ -1,7 +1,7 @@
 import { BridgethingClient } from '@bridgething/client';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
-import { TINTS, useAlarm, usePrefs, type Alarm, type Prefs } from './config';
+import { PALETTES, useAlarm, usePrefs, type Alarm, type Palette, type Prefs } from './config';
 import { clockText, fields, readClock, useTick, useZone } from './time';
 import { daemonUrl } from './daemon';
 
@@ -15,6 +15,20 @@ const WHEEL_PER_STEP = 1;
 const MAX_STEPS_PER_EVENT = 4;
 // how long an alarm or a finished timer keeps announcing itself before it gives up
 const RING_MS = 60000;
+// the last stretch of a countdown leaves the chosen colour for one that reads as running out
+const URGENT: Palette = { main: '#ff8a6b', second: '#ffcf5f', glow: '#5e2418' };
+const URGENT_AT = 10000;
+
+// one gradient across a single run of text. only safe where nothing inside carries its own opacity,
+// which would composite separately and lose the background the glyphs are cut out of
+const ink = (p: Palette) => ({
+  backgroundImage: `linear-gradient(115deg, ${p.main} 8%, ${p.second} 92%)`,
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  color: 'transparent',
+});
+
+const fill = (p: Palette) => `linear-gradient(115deg, ${p.main}, ${p.second})`;
 
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
@@ -28,7 +42,8 @@ export default function App() {
   // the whole app runs off one ticker; 50ms is what the stopwatch's hundredths need
   const now = useTick(50);
   const at = useMemo(() => new Date(now + zone.offsetMs), [now, zone.offsetMs]);
-  const tint = TINTS[prefs.tint];
+  const pal = PALETTES[prefs.tint];
+  const tint = pal.main;
 
   // --- stopwatch -----------------------------------------------------------
   const [swFrom, setSwFrom] = useState<number | null>(null);
@@ -172,33 +187,61 @@ export default function App() {
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-screen text-off-white">
-      {view === 'clock' && <ClockFace prefs={prefs} zone={zone} at={at} tint={tint} />}
+      <Wash pal={timerRunning && timerRemaining <= URGENT_AT ? URGENT : pal} />
+      {view === 'clock' && <ClockFace prefs={prefs} zone={zone} at={at} pal={pal} />}
       {view === 'timer' && (
         <Timer
           remaining={timerRemaining}
           running={timerRunning}
-          tint={tint}
+          pal={timerRunning && timerRemaining <= URGENT_AT ? URGENT : pal}
           onToggle={timerToggle}
           onReset={timerReset}
           onStep={n => !timerRunning && setTimerLeft(v => { const x = Math.max(0, v + n); setTimerSet(x); return x; })}
         />
       )}
       {view === 'stopwatch' && (
-        <Stopwatch elapsed={swElapsed} running={swRunning} laps={laps} tint={tint} onToggle={swToggle} onLap={swLap} onReset={swReset} />
+        <Stopwatch elapsed={swElapsed} running={swRunning} laps={laps} pal={pal} onToggle={swToggle} onLap={swLap} onReset={swReset} />
       )}
       {view === 'alarm' && (
-        <AlarmView alarm={alarm} tint={tint} zone={zone} at={at} format={prefs.format} onSet={setAlarm} />
+        <AlarmView alarm={alarm} pal={pal} zone={zone} at={at} format={prefs.format} onSet={setAlarm} />
       )}
 
-      <Tabs view={view} tint={tint} onPick={v => (v === 'clock' && view === 'clock' ? cycleStyle(1) : setView(v))} face={prefs.style} />
+      <Presets
+        view={view}
+        face={prefs.style}
+        pal={pal}
+        onPick={v => (v === 'clock' && view === 'clock' ? cycleStyle(1) : setView(v))}
+      />
 
-      {ringing && <Ringing kind={ringing.kind} tint={tint} onStop={stopRinging} />}
+      {ringing && <Ringing kind={ringing.kind} pal={ringing.kind === 'timer' ? URGENT : pal} onStop={stopRinging} />}
       {panel && <Settings prefs={prefs} setPref={setPref} tint={tint} />}
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
+
+// the screen is otherwise near black, and a clock is mostly empty screen. two soft washes in the
+// chosen pair give the emptiness a temperature without lifting the black the numerals sit on
+function Wash({ pal }: { pal: Palette }) {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 transition-[background] duration-700"
+      style={{
+        background:
+          `radial-gradient(120% 85% at 12% -10%, ${pal.glow}88, transparent 62%),` +
+          `radial-gradient(100% 70% at 92% 112%, ${pal.second}1f, transparent 60%)`,
+      }}
+    />
+  );
+}
+
+// the four presets sit along the top edge of the glass, evenly spread with a matching margin at
+// each end. the marker is a bump under each one rather than a tab somewhere else, so the thing on
+// screen is where the finger already is
+const PRESET_AT = [12.5, 37.5, 62.5, 87.5];
+// the names are there to teach the mapping, not to sit over a clock forever
+const PRESET_LABEL_MS = 4200;
 
 const FACE_LABELS: Record<Prefs['style'], string> = {
   digital: 'Digital',
@@ -207,39 +250,64 @@ const FACE_LABELS: Record<Prefs['style'], string> = {
   minimal: 'Minimal',
 };
 
-function Tabs({
+function Presets({
   view,
-  tint,
-  onPick,
   face,
+  pal,
+  onPick,
 }: {
   view: View;
-  tint: string;
-  onPick: (v: View) => void;
   face: Prefs['style'];
+  pal: Palette;
+  onPick: (v: View) => void;
 }) {
+  const [named, setNamed] = useState(true);
+  useEffect(() => {
+    setNamed(true);
+    const id = setTimeout(() => setNamed(false), PRESET_LABEL_MS);
+    return () => clearTimeout(id);
+  }, [view, face]);
+
   return (
-    <div className="absolute inset-x-0 bottom-0 z-[2] flex justify-center gap-1 pb-2">
-      {VIEWS.map((v, i) => (
-        <button
-          key={v}
-          onClick={() => onPick(v)}
-          className="flex items-center gap-1.5 rounded-full px-3 py-1 text-hint transition-colors"
-          style={{ color: v === view ? tint : 'rgba(239,239,239,0.35)' }}>
-          <span className="grid h-4 w-4 place-items-center rounded bg-white/10 font-mono text-[0.5625rem]">{i + 1}</span>
-          {v === 'clock' && view === 'clock' ? FACE_LABELS[face] : LABELS[v]}
-        </button>
-      ))}
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-[2]">
+      {/* one band along the whole edge rather than a chip behind each name: four dark patches read
+          as stuck on top of the clock, a single fade reads as part of the edge they point at */}
+      <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/55 via-black/15 to-transparent" />
+      {VIEWS.map((v, i) => {
+        const here = v === view;
+        return (
+          <button
+            key={v}
+            onClick={() => onPick(v)}
+            className="pointer-events-auto absolute top-0 flex -translate-x-1/2 flex-col items-center gap-1.5 px-5 pb-3"
+            style={{ left: `${PRESET_AT[i]}%` }}>
+            <span
+              className={`w-[61px] shrink-0 rounded-b-full transition-all duration-700 ${
+                here || named ? 'h-[2px]' : 'h-px'
+              }`}
+              style={{
+                background: here ? fill(pal) : '#efefef',
+                opacity: here ? 0.95 : named ? 0.45 : 0.22,
+              }}
+            />
+            <span
+              className={`text-hint whitespace-nowrap transition-opacity duration-700 ${named ? 'opacity-100' : 'opacity-0'}`}
+              style={{ color: here ? pal.main : 'rgba(239,239,239,0.5)' }}>
+              {v === 'clock' && here ? FACE_LABELS[face] : LABELS[v]}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
 
-function ClockFace({ prefs, zone, at, tint }: { prefs: Prefs; zone: ReturnType<typeof useZone>; at: Date; tint: string }) {
+function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: ReturnType<typeof useZone>; at: Date; pal: Palette }) {
   const parts = readClock(at, zone, prefs.format);
   const { h, m, s } = fields(at, zone);
 
   const foot = (
-    <div className="absolute inset-x-0 bottom-9 flex flex-col items-center gap-1 text-hint text-dim">
+    <div className="absolute inset-x-0 bottom-7 flex flex-col items-center gap-1 text-hint text-dim">
       {prefs.date && <span>{parts.date}</span>}
       {!zone.synced && <span className="opacity-70">waiting for the phone's clock</span>}
     </div>
@@ -248,7 +316,7 @@ function ClockFace({ prefs, zone, at, tint }: { prefs: Prefs; zone: ReturnType<t
   if (prefs.style === 'analogue')
     return (
       <div className="grid h-full w-full place-items-center">
-        <Analogue h={h} m={m} s={s} tint={tint} seconds={prefs.seconds} />
+        <Analogue h={h} m={m} s={s} pal={pal} seconds={prefs.seconds} />
         {foot}
       </div>
     );
@@ -257,9 +325,9 @@ function ClockFace({ prefs, zone, at, tint }: { prefs: Prefs; zone: ReturnType<t
     return (
       <div className="grid h-full w-full place-items-center">
         <div className="flex items-center gap-3">
-          <Flip value={parts.hour} tint={tint} />
-          <Flip value={parts.minute} tint={tint} />
-          {prefs.seconds && <Flip value={parts.second} tint={tint} small />}
+          <Flip value={parts.hour} pal={pal} />
+          <Flip value={parts.minute} pal={pal} />
+          {prefs.seconds && <Flip value={parts.second} pal={pal} small />}
           {parts.dayPeriod && <span className="ml-1 self-end pb-3 font-mono text-title text-dim">{parts.dayPeriod}</span>}
         </div>
         {foot}
@@ -269,10 +337,14 @@ function ClockFace({ prefs, zone, at, tint }: { prefs: Prefs; zone: ReturnType<t
   if (prefs.style === 'minimal')
     return (
       <div className="grid h-full w-full place-items-center">
-        <div className="flex items-baseline gap-2 font-display tracking-display" style={{ color: tint }}>
-          <span className="text-[7rem] leading-none font-light tabular-nums">{parts.hour}</span>
+        <div className="flex items-baseline gap-2 font-display tracking-display">
+          <span className="text-[7rem] leading-none font-light tabular-nums" style={{ color: pal.main }}>
+            {parts.hour}
+          </span>
           <span className="text-[7rem] leading-none font-light text-dim">:</span>
-          <span className="text-[7rem] leading-none font-light tabular-nums">{parts.minute}</span>
+          <span className="text-[7rem] leading-none font-light tabular-nums" style={{ color: pal.second }}>
+            {parts.minute}
+          </span>
         </div>
         {foot}
       </div>
@@ -280,11 +352,21 @@ function ClockFace({ prefs, zone, at, tint }: { prefs: Prefs; zone: ReturnType<t
 
   return (
     <div className="grid h-full w-full place-items-center">
-      <div className="flex items-baseline gap-1 font-mono tabular-nums" style={{ color: tint }}>
-        <span className="text-[8rem] leading-none">{parts.hour}</span>
-        <span className="text-[8rem] leading-none opacity-40">:</span>
-        <span className="text-[8rem] leading-none">{parts.minute}</span>
-        {prefs.seconds && <span className="ml-2 self-end pb-4 text-[2.5rem] leading-none opacity-60">{parts.second}</span>}
+      <div className="flex items-baseline gap-1 font-mono tabular-nums">
+        <span className="text-[8rem] leading-none" style={{ color: pal.main }}>
+          {parts.hour}
+        </span>
+        <span className="text-[8rem] leading-none opacity-40" style={{ color: pal.main }}>
+          :
+        </span>
+        <span className="text-[8rem] leading-none" style={{ color: pal.second }}>
+          {parts.minute}
+        </span>
+        {prefs.seconds && (
+          <span className="ml-2 self-end pb-4 text-[2.5rem] leading-none opacity-70" style={{ color: pal.second }}>
+            {parts.second}
+          </span>
+        )}
         {parts.dayPeriod && <span className="ml-2 self-end pb-5 text-title text-dim">{parts.dayPeriod}</span>}
       </div>
       {foot}
@@ -292,7 +374,7 @@ function ClockFace({ prefs, zone, at, tint }: { prefs: Prefs; zone: ReturnType<t
   );
 }
 
-function Analogue({ h, m, s, tint, seconds }: { h: number; m: number; s: number; tint: string; seconds: boolean }) {
+function Analogue({ h, m, s, pal, seconds }: { h: number; m: number; s: number; pal: Palette; seconds: boolean }) {
   const hand = (deg: number, len: number, width: number, colour: string, round = true) => (
     <line
       x1="100"
@@ -306,7 +388,13 @@ function Analogue({ h, m, s, tint, seconds }: { h: number; m: number; s: number;
   );
   return (
     <svg viewBox="0 0 200 200" className="h-[19rem] w-[19rem]">
-      <circle cx="100" cy="100" r="96" fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="2" />
+      <defs>
+        <linearGradient id="dial" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={pal.main} />
+          <stop offset="100%" stopColor={pal.second} />
+        </linearGradient>
+      </defs>
+      <circle cx="100" cy="100" r="96" fill="none" stroke="url(#dial)" strokeOpacity="0.35" strokeWidth="2" />
       {Array.from({ length: 60 }, (_, i) => {
         const major = i % 5 === 0;
         const a = (i * 6 * Math.PI) / 180;
@@ -318,16 +406,17 @@ function Analogue({ h, m, s, tint, seconds }: { h: number; m: number; s: number;
             y1={100 - r1 * Math.cos(a)}
             x2={100 + 90 * Math.sin(a)}
             y2={100 - 90 * Math.cos(a)}
-            stroke={major ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.18)'}
+            stroke={major ? pal.main : 'rgba(255,255,255,0.18)'}
+            strokeOpacity={major ? 0.6 : 1}
             strokeWidth={major ? 3 : 1.5}
             strokeLinecap="round"
           />
         );
       })}
       {hand(((h % 12) + m / 60) * 30, 48, 7, '#efefef')}
-      {hand((m + s / 60) * 6, 68, 5, '#efefef')}
-      {seconds && hand(s * 6, 76, 2, tint)}
-      <circle cx="100" cy="100" r="5" fill={tint} />
+      {hand((m + s / 60) * 6, 68, 5, pal.main)}
+      {seconds && hand(s * 6, 76, 2, pal.second)}
+      <circle cx="100" cy="100" r="5" fill="url(#dial)" />
     </svg>
   );
 }
@@ -335,7 +424,7 @@ function Analogue({ h, m, s, tint, seconds }: { h: number; m: number; s: number;
 // matches the two 0.2s halves of the flip animation in index.css
 const FLIP_MS = 400;
 
-function Flip({ value, tint, small }: { value: string; tint: string; small?: boolean }) {
+function Flip({ value, pal, small }: { value: string; pal: Palette; small?: boolean }) {
   // the app re-renders twenty times a second, so the card has to remember what it is turning from
   // rather than try to infer it from a render
   const [card, setCard] = useState({ shown: value, from: null as string | null, turn: 0 });
@@ -358,7 +447,7 @@ function Flip({ value, tint, small }: { value: string; tint: string; small?: boo
         half === 'top' ? 'top-0 flip-top rounded-t-2xl' : 'bottom-0 flip-bottom rounded-b-2xl'
       } ${cls}`}>
       <div className={`absolute inset-x-0 grid h-[200%] place-items-center ${half === 'top' ? 'top-0' : 'bottom-0'}`}>
-        <span className="tabular-nums" style={{ color: tint }}>
+        <span className="tabular-nums" style={ink(pal)}>
           {v}
         </span>
       </div>
@@ -384,20 +473,20 @@ function Flip({ value, tint, small }: { value: string; tint: string; small?: boo
   );
 }
 
-function Big({ children, tint }: { children: ReactNode; tint: string }) {
+function Big({ children, pal }: { children: ReactNode; pal: Palette }) {
   return (
-    <div className="font-mono text-[5.5rem] leading-none tabular-nums" style={{ color: tint }}>
+    <div className="font-mono text-[5.5rem] leading-none tabular-nums" style={ink(pal)}>
       {children}
     </div>
   );
 }
 
-function Key({ label, onClick, tint, wide }: { label: string; onClick: () => void; tint?: string; wide?: boolean }) {
+function Key({ label, onClick, pal, wide }: { label: string; onClick: () => void; pal?: Palette; wide?: boolean }) {
   return (
     <button
       onClick={onClick}
       className={`rounded-full px-6 py-3 text-row font-medium transition active:scale-95 ${wide ? 'min-w-32' : ''}`}
-      style={{ backgroundColor: tint ? tint : 'rgba(255,255,255,0.10)', color: tint ? '#0a0c0e' : '#efefef' }}>
+      style={{ background: pal ? fill(pal) : 'rgba(255,255,255,0.10)', color: pal ? '#0a0c0e' : '#efefef' }}>
       {label}
     </button>
   );
@@ -406,24 +495,24 @@ function Key({ label, onClick, tint, wide }: { label: string; onClick: () => voi
 function Timer({
   remaining,
   running,
-  tint,
+  pal,
   onToggle,
   onReset,
   onStep,
 }: {
   remaining: number;
   running: boolean;
-  tint: string;
+  pal: Palette;
   onToggle: () => void;
   onReset: () => void;
   onStep: (ms: number) => void;
 }) {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-6 pb-10">
-      <Big tint={tint}>{clockText(remaining)}</Big>
+    <div className="flex h-full w-full flex-col items-center justify-center gap-6 pt-10">
+      <Big pal={pal}>{clockText(remaining)}</Big>
       <div className="flex items-center gap-3">
         {!running && <Key label="−1 min" onClick={() => onStep(-60000)} />}
-        <Key label={running ? 'Pause' : 'Start'} onClick={onToggle} tint={tint} wide />
+        <Key label={running ? 'Pause' : 'Start'} onClick={onToggle} pal={pal} wide />
         {!running && <Key label="+1 min" onClick={() => onStep(60000)} />}
         <Key label="Reset" onClick={onReset} />
       </div>
@@ -436,7 +525,7 @@ function Stopwatch({
   elapsed,
   running,
   laps,
-  tint,
+  pal,
   onToggle,
   onLap,
   onReset,
@@ -444,17 +533,17 @@ function Stopwatch({
   elapsed: number;
   running: boolean;
   laps: number[];
-  tint: string;
+  pal: Palette;
   onToggle: () => void;
   onLap: () => void;
   onReset: () => void;
 }) {
   return (
-    <div className="flex h-full w-full items-center gap-8 px-10 pb-10">
+    <div className="flex h-full w-full items-center gap-8 px-10 pt-10">
       <div className="flex flex-1 flex-col items-center gap-6">
-        <Big tint={tint}>{clockText(elapsed, true)}</Big>
+        <Big pal={pal}>{clockText(elapsed, true)}</Big>
         <div className="flex items-center gap-3">
-          <Key label={running ? 'Stop' : 'Start'} onClick={onToggle} tint={tint} wide />
+          <Key label={running ? 'Stop' : 'Start'} onClick={onToggle} pal={pal} wide />
           <Key label="Lap" onClick={onLap} />
           <Key label="Reset" onClick={onReset} />
         </div>
@@ -464,7 +553,9 @@ function Stopwatch({
           {laps.map((lap, i) => (
             <div key={i} className="flex justify-between border-b border-white/6 py-1.5 font-mono text-hint last:border-0">
               <span className="text-dim">{laps.length - i}</span>
-              <span className="tabular-nums">{clockText(lap, true)}</span>
+              <span className="tabular-nums" style={{ color: i === 0 ? pal.main : undefined, opacity: 1 - Math.min(i, 6) * 0.09 }}>
+                {clockText(lap, true)}
+              </span>
             </div>
           ))}
         </div>
@@ -475,14 +566,14 @@ function Stopwatch({
 
 function AlarmView({
   alarm,
-  tint,
+  pal,
   zone,
   at,
   format,
   onSet,
 }: {
   alarm: Alarm;
-  tint: string;
+  pal: Palette;
   zone: ReturnType<typeof useZone>;
   at: Date;
   format: Prefs['format'];
@@ -503,27 +594,26 @@ function AlarmView({
   }, [alarm.h, alarm.m, at, zone.locale, format]);
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-6 pb-10">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-6 pt-10">
       <div style={{ opacity: alarm.on ? 1 : 0.45 }}>
-        <Big tint={tint}>{label}</Big>
+        <Big pal={pal}>{label}</Big>
       </div>
       <div className="flex items-center gap-3">
         <Key label="− hour" onClick={() => onSet({ ...alarm, h: (alarm.h + 23) % 24 })} />
         <Key label="+ hour" onClick={() => onSet({ ...alarm, h: (alarm.h + 1) % 24 })} />
-        <Key label={alarm.on ? 'On' : 'Off'} onClick={() => onSet({ ...alarm, on: !alarm.on })} tint={alarm.on ? tint : undefined} wide />
+        <Key label={alarm.on ? 'On' : 'Off'} onClick={() => onSet({ ...alarm, on: !alarm.on })} pal={alarm.on ? pal : undefined} wide />
       </div>
       <div className="text-hint text-dim">turn the wheel for the minutes</div>
     </div>
   );
 }
 
-function Ringing({ kind, tint, onStop }: { kind: 'timer' | 'alarm'; tint: string; onStop: () => void }) {
+function Ringing({ kind, pal, onStop }: { kind: 'timer' | 'alarm'; pal: Palette; onStop: () => void }) {
   return (
-    <button
-      onClick={onStop}
-      className="absolute inset-0 z-10 grid place-items-center bg-screen/95 backdrop-blur-sm">
-      <div className="flex flex-col items-center gap-5">
-        <div className="animate-ring font-display text-[3.5rem] leading-none font-semibold" style={{ color: tint }}>
+    <button onClick={onStop} className="absolute inset-0 z-10 grid place-items-center bg-screen/95 backdrop-blur-sm">
+      <Wash pal={pal} />
+      <div className="relative flex flex-col items-center gap-5">
+        <div className="animate-ring font-display text-[3.5rem] leading-none font-semibold" style={ink(pal)}>
           {kind === 'alarm' ? 'Alarm' : 'Time up'}
         </div>
         <div className="text-title text-dim">touch anywhere, or any button, to stop</div>
@@ -572,12 +662,24 @@ function Settings({ prefs, setPref, tint }: { prefs: Prefs; setPref: (k: keyof P
       <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto rounded-2xl bg-white/4 [scrollbar-width:none]">
         {row('Clock face', seg(STYLES, ['Digital', 'Analogue', 'Flip', 'Minimal'], prefs.style, v => setPref('style', v)))}
         {row('Hour format', seg(['auto', 'h12', 'h24'] as const, ['Auto', '12h', '24h'], prefs.format, v => setPref('format', v)))}
-        {row('Colour', seg(
-          ['white', 'amber', 'cyan', 'green', 'magenta'] as const,
-          ['White', 'Amber', 'Cyan', 'Green', 'Pink'],
-          prefs.tint,
-          v => setPref('tint', v),
-        ))}
+        {row(
+          'Colour',
+          <div className="flex shrink-0 items-center gap-2">
+            {(Object.keys(PALETTES) as Prefs['tint'][]).map(k => (
+              <button
+                key={k}
+                aria-label={k}
+                onClick={() => setPref('tint', k)}
+                className="h-8 w-8 rounded-full transition"
+                style={{
+                  background: fill(PALETTES[k]),
+                  outline: k === prefs.tint ? '2px solid #efefef' : '2px solid transparent',
+                  outlineOffset: '2px',
+                }}
+              />
+            ))}
+          </div>,
+        )}
         {row('Show seconds', toggle(prefs.seconds, () => setPref('seconds', prefs.seconds ? 'false' : 'true')))}
         {row('Show the date', toggle(prefs.date, () => setPref('date', prefs.date ? 'false' : 'true')))}
         {row('Sound when it rings', toggle(prefs.chime, () => setPref('chime', prefs.chime ? 'false' : 'true')))}

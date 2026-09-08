@@ -43,7 +43,10 @@
           "amber",
           "cyan",
           "green",
-          "magenta"
+          "magenta",
+          "sunset",
+          "aurora",
+          "ember"
         ],
         "default": "white"
       }

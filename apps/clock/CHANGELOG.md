@@ -3,11 +3,26 @@
 ## 0.2.0
 
 **Preset 1** is now the whole clock. It opens the clock from anywhere, and pressing it again while
-the clock is already up walks the faces: Digital, Analogue, Flip, Minimal, round again. The tab bar
-names the face you are on rather than saying "Clock", so the button explains itself.
+the clock is already up walks the faces: Digital, Analogue, Flip, Minimal, round again. **Mode** now
+moves between the four screens everywhere, including on the clock, where it used to turn the faces
+instead and so could never leave. The wheel still turns the faces.
 
-**Mode** now moves between the four screens everywhere, including on the clock, where it used to
-turn the faces instead and so could never leave. The wheel still turns the faces on the clock.
+The tab bar has moved to the top edge and become **four bumps, one under each physical button**, so
+the marker is where the finger already is rather than somewhere else on the screen. Each names its
+screen when you arrive and then fades back to the bump, and the one you are on stays lit; on the
+clock it names the face rather than saying "Clock", so preset 1 explains itself.
+
+**Flip actually flips.** The old top leaf falls away to uncover the digit already waiting behind it,
+then the new bottom leaf swings up over the old one, each half darkening as it turns out of the
+light.
+
+**Colour, rather than one lit shape on black.** Every colour is now a pair: the hour takes the first
+and the minute the second, the countdown and the stopwatch run a gradient across the numerals, the
+dial and its hands are drawn from the same two, and the screen behind carries a soft wash of them so
+the empty half of a clock face has a temperature. Three new ones — **Sunset**, **Aurora** and
+**Ember** — and the on-device settings pick them as swatches now that there are eight. A countdown
+under ten seconds leaves whatever you chose for a colour that reads as running out, and takes the
+wash with it.
 
 ## 0.1.0
 

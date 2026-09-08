@@ -225,17 +225,29 @@ A clock, and the three things that usually sit beside one.
 
 ![Digital face](apps/clock/screenshots/01-digital.jpg)
 
-Four faces: **Digital**, **Analogue**, **Flip** and **Minimal**. The colour, the hour format, the
-seconds and the date are settings.
+Four faces: **Digital**, **Analogue**, **Flip** and **Minimal**. Flip is a real split-flap: the top
+leaf falls away to uncover the digit behind it, then the new bottom leaf swings up over the old one.
 
 ![Analogue face](apps/clock/screenshots/02-analogue.jpg)
 
-The presets are the four screens. **1** is the clock, and pressing it again once the clock is up
-walks the faces, so one button is the whole thing; the tab bar names the face you are on rather than
-saying "Clock". The wheel walks them too. **2** is a timer you dial with the wheel, a minute a click,
-which counts down and rings at zero. **3** is a stopwatch running to hundredths, with laps. **4** is
-an alarm: set the hour with the buttons and the minutes with the wheel, switch it on, and it rings at
-that time. The alarm outlives a restart. **Mode** moves between the four screens.
+The presets are the four screens, and each one has a bump along the top edge of the glass directly
+under the button that works it. The bump names its screen when you arrive and then fades, leaving
+the mark; the one you are on stays lit.
+
+**1** is the clock, and pressing it again once the clock is up walks the faces, so one button is the
+whole thing — the bump names the face rather than saying "Clock", so it explains itself. The wheel
+walks them too. **2** is a timer you dial with the wheel, a minute a click, which counts down and
+rings at zero; under ten seconds it leaves your colour for one that reads as running out. **3** is a
+stopwatch running to hundredths, with laps. **4** is an alarm: set the hour with the buttons and the
+minutes with the wheel, switch it on, and it rings at that time. The alarm outlives a restart.
+**Mode** moves between the four screens.
+
+Colour is a pair rather than a single tint. The hour takes the first and the minute the second, the
+countdown and the stopwatch run a gradient across the numerals, the dial and its hands are drawn
+from the same two, and the screen behind carries a soft wash of them, so the empty half of a clock
+face has a temperature. Eight to pick from — White, Amber, Cyan, Green, Pink, Sunset, Aurora and
+Ember — as swatches in the on-device settings, or by name in the companion app. The hour format,
+the seconds and the date are settings too.
 
 ![Stopwatch](apps/clock/screenshots/05-stopwatch.jpg)
 
