@@ -6,6 +6,8 @@ export type Prefs = {
   theme: 'widget' | 'vinyl' | 'cd' | 'poster';
   rotate: 0 | 90 | 180 | 270;
   coverEdge: boolean;
+  coverPanel: boolean;
+  coverVolume: boolean;
   wheel: 'volume' | 'seek';
   seekSeconds: number;
   seek: 'auto' | 'bar' | 'wave';
@@ -27,7 +29,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, coverEdge: false, wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, transport: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, coverEdge: false, coverPanel: false, coverVolume: true, wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, transport: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -98,6 +100,8 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, clockFormat: value === 'h12' || value === 'h24' ? value : 'auto' };
     case 'clockSeconds':
     case 'clock':
+    case 'coverPanel':
+    case 'coverVolume':
     case 'transport':
     case 'notes':
     case 'coverEdge':

@@ -1,5 +1,17 @@
 # weather
 
+## 0.28.0
+
+Two settings for the Cover style.
+
+**Panel behind the track** puts the track and the controls on a tinted panel of their own instead of
+straight over the blurred artwork, which is the phone lock screen look. It takes the album's colour
+the way the rest of the style does. Off by default, since the style has been drawing without one.
+
+**Volume slider** turns Cover's slider off. The wheel still sets the volume, and with no slider on
+screen the reading the other styles throw over the middle comes back, since there is nothing left to
+watch instead.
+
 ## 0.27.3
 
 The CD style's transport bar sits on a dark ground of its own rather than straight on the blurred

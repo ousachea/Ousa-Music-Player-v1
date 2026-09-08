@@ -25,6 +25,8 @@ const HINTS: Record<string, string> = {
   seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
   theme: 'Cover sets the album art beside the track with a volume slider of its own, after a phone lock screen. Vinyl puts the art on a spinning record and CD prints it on a spinning disc. Poster fills the screen with it.',
   rotate: 'Turns the whole screen, for a device mounted on its side or upside down. Preset button 4 also steps through it. At 90 and 270 the player is a tall column with a bar down each side, because the screen itself never changes shape.',
+  coverPanel: 'Puts the track and the controls on a tinted panel of their own instead of straight over the blurred artwork. Cover style only.',
+  coverVolume: 'The volume slider Cover draws under its transport. With it off the wheel still sets the volume, and the reading the other styles show over the middle of the screen comes back. Cover style only.',
   coverEdge: 'Drops the padding around the album art so it runs to the edges with square corners. Cover style only.',
   transport: 'The previous, play and next buttons drawn on screen. The four preset buttons do the same job, so turning these off gives the artwork more room; a small legend takes their place showing which preset does what.',
   seekDot: 'The marker that rides the progress bar at the playhead: a dot on the line, a tick on the wave. Auto draws it everywhere except Cover, which reads cleaner without it. The bar still scrubs by dragging either way.',

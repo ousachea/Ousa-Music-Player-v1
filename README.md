@@ -103,6 +103,10 @@ album's colour carries under the controls instead of stopping at an edge. Turned
 same rows stack into a column and fill the screen, with the times either side of the bar because the
 column is too tall to put them under it.
 
+**Panel behind the track** puts the track and the controls on a tinted panel of their own rather
+than straight over the artwork, and **Volume slider** takes the slider away, in which case the wheel
+still works and the reading the other styles show over the middle of the screen comes back.
+
 **Art to the edge** drops the padding around the art, along with its rounded corners, ring and
 shadow, so it runs flush to the edges of the screen. The track and the controls keep an even margin
 of their own, the same on every side, rather than losing it with the art. **Art pulse** beats a glow

@@ -82,7 +82,7 @@ export default function App() {
   const seekStyle =
     prefs.theme === 'widget' ? 'bar' : prefs.seek === 'auto' ? (prefs.theme === 'poster' ? 'wave' : 'bar') : prefs.seek;
   const seekDot = prefs.seekDot === 'auto' ? prefs.theme !== 'widget' : prefs.seekDot === 'on';
-  const ownsVolume = prefs.theme === 'widget';
+  const ownsVolume = prefs.theme === 'widget' && prefs.coverVolume;
   // a quarter turn lays the player out portrait, where a square cover cannot sit beside the track
   const upright = prefs.rotate === 90 || prefs.rotate === 270;
   const track = state?.track ?? null;
@@ -416,6 +416,8 @@ export default function App() {
             dot={seekDot}
             showTransport={prefs.transport}
             edge={edge}
+            panel={prefs.coverPanel}
+            showVolume={prefs.coverVolume}
             pulse={prefs.motion && prefs.pulse}
             pulseMs={Math.round(60000 / (prefs.pulseBpm || AUTO_PULSE_BPM))}
             upright={upright}
@@ -638,6 +640,8 @@ type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
 // rows that only some styles can use, kept together under the name of the style you are in
 const STYLE_ROWS: Row[] = [
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
+  { key: 'coverPanel', label: 'Panel behind the track', only: ['widget'] },
+  { key: 'coverVolume', label: 'Volume slider', only: ['widget'] },
   { key: 'pulse', label: 'Art pulse', only: ['widget'] },
   { key: 'pulseBpm', label: 'Pulse tempo', only: ['widget'] },
   { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd'] },
@@ -1500,6 +1504,8 @@ function Widget({
   dot,
   showTransport,
   edge,
+  panel,
+  showVolume,
   pulse,
   pulseMs,
   rotate,
@@ -1530,6 +1536,8 @@ function Widget({
   dot: boolean;
   showTransport: boolean;
   edge: boolean;
+  panel: boolean;
+  showVolume: boolean;
   pulse: boolean;
   pulseMs: number;
   rotate: Prefs['rotate'];
@@ -1649,7 +1657,7 @@ function Widget({
     </div>
   );
 
-  const volumeRow = (
+  const volumeRow = !showVolume ? null : (
     <div className="flex shrink-0 items-center gap-2.5">
       <Speaker className="h-4 w-4 shrink-0 text-dim" muted={volume?.muted === true} />
       <div className="min-w-0 flex-1">
@@ -1658,6 +1666,22 @@ function Widget({
       <Speaker className="h-5 w-5 shrink-0 text-dim" />
     </div>
   );
+
+  // the track and the controls on a panel of their own rather than straight over the artwork
+  const wrap = (inner: ReactNode) =>
+    panel ? (
+      <div
+        className="rounded-2xl px-4 py-3 ring-1 ring-white/10 backdrop-blur-md"
+        style={{
+          background: accent
+            ? `linear-gradient(155deg, color-mix(in oklab, ${accent.fill} 18%, rgba(10,12,14,0.72)), rgba(10,12,14,0.72) 78%)`
+            : 'rgba(10,12,14,0.72)',
+        }}>
+        {inner}
+      </div>
+    ) : (
+      <>{inner}</>
+    );
 
   const rest = (
     <>
@@ -1690,18 +1714,22 @@ function Widget({
     // ratio needs or a content-sized track grows to fit it
     <div className={`absolute inset-0 flex items-stretch overflow-hidden ${edge ? 'gap-0 p-0' : 'gap-7 p-7'}`}>
       {cover}
-      <div className={`flex min-w-0 flex-1 flex-col gap-5 ${edge ? 'p-7' : ''}`}>
-        {/* the track takes the space above; the controls hold the bottom edge whatever is left */}
-        <div className="flex min-h-0 flex-1 flex-col justify-between gap-4 py-1">
-          {clockRow}
-          {titles}
-          <div className="shrink-0">
-            {bar}
-            <div className="mt-2">{times}</div>
-          </div>
-        </div>
-        {transport}
-        {volumeRow}
+      <div className={`flex min-w-0 flex-1 flex-col ${edge ? 'p-7' : ''}`}>
+        {wrap(
+          <div className="flex min-h-0 flex-1 flex-col gap-5">
+            {/* the track takes the space above; the controls hold the bottom edge whatever is left */}
+            <div className="flex min-h-0 flex-1 flex-col justify-between gap-4 py-1">
+              {clockRow}
+              {titles}
+              <div className="shrink-0">
+                {bar}
+                <div className="mt-2">{times}</div>
+              </div>
+            </div>
+            {transport}
+            {volumeRow}
+          </div>,
+        )}
       </div>
     </div>
   );
