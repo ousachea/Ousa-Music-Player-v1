@@ -1,5 +1,11 @@
 # Music Player
 
+## 0.30.2
+
+The top and bottom of the Lyrics screen fade more softly. The darkening ran straight from solid to
+clear, which showed its own edge as a faint band across the words; it follows an ease now, most of
+the change happening near the edge with a long tail into the middle, over a taller run.
+
 ## 0.30.1
 
 Clicking a lyric after reading ahead with the wheel lands on the line you clicked. It was seeking

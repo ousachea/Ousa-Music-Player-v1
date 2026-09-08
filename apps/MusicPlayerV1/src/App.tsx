@@ -2408,6 +2408,25 @@ function Tick({ className }: { className?: string }) {
 // above and below it. the column moves rather than the lines, which is one transform for the lot
 const LYRIC_LINE_PX = 58;
 
+// eased alpha rather than linear: a linear fade reads as a band, because the eye follows the rate of
+// change and a straight ramp changes fastest exactly where it meets the words
+const FADE_STOPS = [
+  [0, 1],
+  [12, 0.97],
+  [24, 0.89],
+  [36, 0.76],
+  [48, 0.6],
+  [60, 0.43],
+  [72, 0.27],
+  [84, 0.15],
+  [92, 0.07],
+  [100, 0],
+] as const;
+const fade = (to: string) =>
+  `linear-gradient(${to}, ${FADE_STOPS.map(([at, a]) => `rgba(6, 8, 9, ${a}) ${at}%`).join(', ')})`;
+const FADE_DOWN = fade('to bottom');
+const FADE_UP = fade('to top');
+
 function Lyrics({
   lyrics,
   elapsed,
@@ -2566,9 +2585,11 @@ function Lyrics({
             );
           })}
         </div>
-        {/* the ends fade rather than being cut, so lines leave the screen instead of stopping at it */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-screen to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-screen to-transparent" />
+        {/* the ends fade rather than being cut, so lines leave the screen instead of stopping at it.
+            a straight ramp from opaque to clear shows its own edge as a band across the words; these
+            stops follow an ease instead, so most of the change happens early and the tail is long */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-40" style={{ background: FADE_DOWN }} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40" style={{ background: FADE_UP }} />
         {chrome}
       </div>
     );
