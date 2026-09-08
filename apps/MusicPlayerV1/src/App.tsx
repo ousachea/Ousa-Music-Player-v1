@@ -1235,7 +1235,7 @@ function Widget({
     // inset-0 is what makes the box definite: a grid track sized to content grows to fit the cover's
     // aspect ratio, and the card's percentages then resolve against that instead of the screen
     <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-      <div className="flex h-[93%] w-[95%] min-w-0 items-stretch gap-6 rounded-[30px] bg-black/45 p-5 ring-1 ring-white/10 backdrop-blur-2xl">
+      <div className="flex h-[93%] w-[95%] min-w-0 items-stretch gap-6 rounded-[30px] bg-black/45 p-5 backdrop-blur-2xl">
         {cover}
         <div className="flex min-w-0 flex-1 flex-col justify-center gap-5">
           {clockRow}
