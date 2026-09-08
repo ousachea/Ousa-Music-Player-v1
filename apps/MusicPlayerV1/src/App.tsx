@@ -2446,32 +2446,44 @@ function Lyrics({
 
       {showTransport && (
         <>
-          {/* the same pair Poster draws: a filled square for play, bare glyphs for the skips */}
+          {/* Poster's play button, smaller: the shape turns and the glyph stays upright on top of it */}
           <button
             aria-label={playing ? 'pause' : 'play'}
             onClick={onToggle}
-            className={`absolute z-[3] grid h-20 w-20 place-items-center rounded-[26px] bg-off-white text-screen shadow-2xl transition-[transform,background-color,color] duration-300 ease-spring active:scale-90 ${other}`}
-            style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}>
-            <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-              {playing ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+            className={`absolute z-[3] grid h-14 w-14 place-items-center text-screen ${other}`}
+            style={accent ? { color: accent.ink } : undefined}>
+            <span
+              className={`absolute inset-0 rounded-[18px] bg-off-white shadow-2xl ${motion ? 'animate-platter' : ''}`}
+              style={{
+                backgroundColor: accent?.fill ?? '#efefef',
+                animationDuration: '9s',
+                animationPlayState: playing && motion ? 'running' : 'paused',
+              }}
+            />
+            <span key={playing ? 'pause' : 'play'} className="relative grid animate-pop place-items-center">
+              {playing ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
             </span>
           </button>
-          <div className="absolute inset-x-0 bottom-6 z-[3] flex items-center justify-center gap-20">
-            <button
-              aria-label="previous"
-              onClick={onPrev}
-              style={{ color: tint }}
-              className="-m-3 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
-              <Skip className="h-9 w-9 -scale-x-100" />
-            </button>
-            <button
-              aria-label="next"
-              onClick={onNext}
-              style={{ color: tint }}
-              className="-m-3 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
-              <Skip className="h-9 w-9" />
-            </button>
-          </div>
+
+          {/* the skips take the far ends of the edge the track is not on, so nothing shares a corner */}
+          <button
+            aria-label="previous"
+            onClick={onPrev}
+            style={{ color: tint }}
+            className={`absolute left-6 z-[3] -m-3 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90 ${
+              bottom ? 'top-7' : 'bottom-7'
+            }`}>
+            <Skip className="h-9 w-9 -scale-x-100" />
+          </button>
+          <button
+            aria-label="next"
+            onClick={onNext}
+            style={{ color: tint }}
+            className={`absolute right-6 z-[3] -m-3 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90 ${
+              bottom ? 'top-7' : 'bottom-7'
+            }`}>
+            <Skip className="h-9 w-9" />
+          </button>
         </>
       )}
     </>

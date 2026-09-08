@@ -10,8 +10,9 @@ screen rather than stopping at it.
 The artwork and the track sit in a corner of your choosing, under **Lyrics → Track corner**: top or
 bottom, left or right. On the right the artwork leads and the track reads back towards it, so the
 pair stays anchored to its own corner. Play and pause take the other end of that same edge, drawn
-the way Poster draws it, and previous and next sit together along the bottom as bare glyphs. All of
-it goes away with the on-screen buttons.
+the way Poster draws it: only the rounded square turns, and the glyph stays upright on top of it.
+Previous and next take the far ends of the other edge, so the four sit one to a corner. All of it
+goes away with the on-screen buttons.
 
 **Backdrop blur** is a new setting, beside intensity and drift. Lower it to read the cover through
 the words, raise it for a wash of colour, take it to zero to leave the artwork sharp behind them. It
