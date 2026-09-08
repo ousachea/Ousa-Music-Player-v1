@@ -144,7 +144,8 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
   wave, whether it carries a dot at the playhead, and whether the transport buttons are drawn at all.
   With them off, a bump appears against the edge at each of the four presets' own positions, with
   the glyph for what that button does beside it, so the markers sit on the physical buttons
-  whichever way the screen is turned. The two seek settings default to Auto, which gives Classic
+  whichever way the screen is turned. The room that frees up goes to the track: the title and artist
+  wrap onto as many rows as they need rather than scrolling past on one line. The two seek settings default to Auto, which gives Classic
   and Poster the wave, Vinyl a line, and drops the dot on Cover only. Cover always draws a line,
   whatever the seek bar is set to
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts

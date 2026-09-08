@@ -7,7 +7,12 @@ buttons drawn on screen are optional; turning them off gives every style back th
 marker takes their place at each preset's own position, taken off the device diagram: four of them,
 evenly spread across the width of the screen with a matching margin at each end, each a bump against
 the edge the button is on with the glyph for what it does just inside. The fourth is marked too,
-since it turns the screen. It is not a list in the middle of the layout, it is
+since it turns the screen. The markers sit on one soft band running along that edge and the bumps
+take the album's colour, so they read as part of the player rather than four chips laid over it.
+
+With the buttons gone there is height to spend, so the track title and artist wrap onto as many
+rows as they need instead of scrolling past on one line. A title takes up to three rows, an artist
+two, and anything longer than that is trimmed rather than allowed to push the layout around. It is not a list in the middle of the layout, it is
 laid over the player against the real edge, so whichever way the screen is turned the bumps stay on
 the physical buttons.
 

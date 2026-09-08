@@ -462,9 +462,10 @@ export default function App() {
                 </div>
                 <Roll
                   text={track.title ?? 'unknown'}
+                  wrap={!prefs.transport}
                   className="font-display text-[2.125rem] leading-[1.2] font-semibold tracking-display text-off-white"
                 />
-                <Roll text={artistName ?? '—'} className="mt-2 text-title text-soft" />
+                <Roll text={artistName ?? '—'} wrap={!prefs.transport} lines={2} className="mt-2 text-title text-soft" />
               </div>
 
               <div className="shrink-0">
@@ -505,7 +506,7 @@ export default function App() {
       )}
 
       {prefs.notes && prefs.motion && <Notes accent={accentOn} playing={playing} />}
-      {!prefs.transport && <PresetHint playing={playing} rotate={prefs.rotate} />}
+      {!prefs.transport && <PresetHint playing={playing} rotate={prefs.rotate} accent={accentOn} />}
 
       <VolumeHud show={hud} volume={volume} accent={accentOn} />
       <div
@@ -887,7 +888,7 @@ function Step({ label, onClick, children }: { label: string; onClick: () => void
 }
 
 // a marquee only earns its motion when the text actually overflows, so the width is measured rather than guessed
-function Roll({ text, className }: { text: string; className?: string }) {
+function Roll({ text, className, wrap, lines = 3 }: { text: string; className?: string; wrap?: boolean; lines?: number }) {
   const outer = useRef<HTMLDivElement>(null);
   const inner = useRef<HTMLSpanElement>(null);
   const [shift, setShift] = useState(0);
@@ -910,6 +911,10 @@ function Roll({ text, className }: { text: string; className?: string }) {
       observer.disconnect();
     };
   }, [text]);
+
+  // written out rather than built, so tailwind sees the class names and emits them
+  const clamp = lines === 2 ? 'line-clamp-2' : lines === 4 ? 'line-clamp-4' : 'line-clamp-3';
+  if (wrap) return <div className={`${clamp} ${className ?? ''}`}>{text}</div>;
 
   return (
     <div ref={outer} className={`overflow-hidden ${className ?? ''}`}>
@@ -1156,9 +1161,10 @@ function Poster({
         </div>
         <Roll
           text={title}
+          wrap={!showTransport}
           className="font-display text-[2.375rem] leading-[1.15] font-semibold tracking-display text-off-white"
         />
-        <Roll text={artist} className="mt-1 text-title text-off-white/70" />
+        <Roll text={artist} wrap={!showTransport} lines={2} className="mt-1 text-title text-off-white/70" />
         <div className="mt-2.5 font-mono text-hint tabular-nums text-off-white/60">
           {clock(elapsed)} / {duration ? clock(duration) : '--:--'}
         </div>
@@ -1301,11 +1307,18 @@ function Widget({
       {!small && <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>}
       <Roll
         text={title}
+        wrap={!showTransport}
+        lines={small ? 2 : 3}
         className={`font-display leading-[1.2] font-semibold tracking-display text-off-white ${
           small ? 'text-[1.75rem]' : 'text-[1.875rem]'
         }`}
       />
-      <Roll text={artist} className={`mt-1.5 text-soft ${small ? 'text-title' : 'text-title'}`} />
+      <Roll
+        text={artist}
+        wrap={!showTransport}
+        lines={2}
+        className={`mt-1.5 text-soft ${small ? 'text-title' : 'text-title'}`}
+      />
     </div>
   );
 
@@ -1801,9 +1814,20 @@ const PRESET_EDGE: Record<number, { edge: 'top' | 'bottom' | 'left' | 'right'; m
   270: { edge: 'right', mirror: false },
 };
 
-function PresetHint({ playing, rotate }: { playing: boolean; rotate: Prefs['rotate'] }) {
+function PresetHint({
+  playing,
+  rotate,
+  accent,
+}: {
+  playing: boolean;
+  rotate: Prefs['rotate'];
+  accent: Accent | null;
+}) {
   const { edge, mirror } = PRESET_EDGE[rotate];
   const vertical = edge === 'left' || edge === 'right';
+  // one soft band along the whole edge rather than a chip behind each glyph: four dark discs read as
+  // stuck on top of the player, a single fade reads as part of the edge they are pointing at
+  const scrim = { top: 'bg-gradient-to-b', bottom: 'bg-gradient-to-t', left: 'bg-gradient-to-r', right: 'bg-gradient-to-l' }[edge];
   const icons = [
     <Skip key="p" className="h-4 w-4 -scale-x-100" />,
     playing ? <Pause key="t" className="h-4 w-4" /> : <Play key="t" className="h-4 w-4" />,
@@ -1811,7 +1835,13 @@ function PresetHint({ playing, rotate }: { playing: boolean; rotate: Prefs['rota
     <Turn key="r" className="h-4 w-4" />,
   ];
   return (
-    <div className="pointer-events-none absolute inset-0 z-[2] text-dim">
+    <div className="pointer-events-none absolute inset-0 z-[2]">
+      <div
+        className={`absolute ${scrim} from-black/55 via-black/20 to-transparent ${
+          vertical ? 'inset-y-0 w-16' : 'inset-x-0 h-16'
+        }`}
+        style={{ [edge]: 0 }}
+      />
       {PRESET_AT.map((at, i) => {
         const along = `${mirror ? 100 - at : at}%`;
         return (
@@ -1824,17 +1854,16 @@ function PresetHint({ playing, rotate }: { playing: boolean; rotate: Prefs['rota
               [vertical ? 'top' : 'left']: along,
               [edge]: 0,
             }}>
+            {/* the bump takes the album's colour, so the marker belongs to the player it sits over */}
             <span
-              className={`shrink-0 bg-off-white/70 ${
-                vertical ? 'h-7 w-[3px] rounded-r-full' : 'h-[3px] w-8 rounded-b-full'
+              className={`shrink-0 opacity-80 ${
+                vertical ? 'h-8 w-[3px] rounded-r-full' : 'h-[3px] w-9 rounded-b-full'
               } ${edge === 'bottom' ? 'rounded-t-full rounded-b-none' : ''} ${
                 edge === 'right' ? 'rounded-l-full rounded-r-none' : ''
               }`}
+              style={{ backgroundColor: accent?.soft ?? 'rgba(239,239,239,0.7)' }}
             />
-            {/* the glyph sits on its own ground, or it disappears into whatever artwork is behind */}
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-black/55 text-near backdrop-blur-sm">
-              {icons[i]}
-            </span>
+            <span className="text-off-white/65">{icons[i]}</span>
           </div>
         );
       })}
