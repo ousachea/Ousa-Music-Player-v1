@@ -1,5 +1,11 @@
 # weather
 
+## 0.25.4
+
+Turning the wheel in the Cover style no longer throws the volume readout over the middle of the
+screen. Cover draws a slider of its own, which moves with the wheel, so the readout was saying the
+same thing twice and covering the player to do it. Every other style still shows it.
+
 ## 0.25.3
 
 **Classic and Cover are one style now, called Cover.** They were two takes on the same idea, art

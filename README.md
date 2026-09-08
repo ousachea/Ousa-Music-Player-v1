@@ -83,7 +83,9 @@ This is the style that benefits most from the sharper artwork lookup.
 
 The album art beside the track, after a phone lock screen: the artwork, the track, a progress bar
 with the elapsed and remaining times, the transport, and a volume slider of its own. Dragging that
-slider sets the volume on the device, and unmutes it first if it was muted. The output picker a
+slider sets the volume on the device, and unmutes it first if it was muted. It also moves when you
+turn the wheel, so this style leaves out the volume readout the others throw over the middle of the
+screen. The output picker a
 phone puts beside the transport is not here, because a Car Thing has nowhere else to send audio.
 
 Landscape sets the artwork at full height on the left. To the right the clock, the track and the

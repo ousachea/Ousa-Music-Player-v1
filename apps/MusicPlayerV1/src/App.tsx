@@ -80,6 +80,7 @@ export default function App() {
   const seekStyle =
     prefs.theme === 'widget' ? 'bar' : prefs.seek === 'auto' ? (prefs.theme === 'poster' ? 'wave' : 'bar') : prefs.seek;
   const seekDot = prefs.seekDot === 'auto' ? prefs.theme !== 'widget' : prefs.seekDot === 'on';
+  const ownsVolume = prefs.theme === 'widget';
   // a quarter turn lays the player out portrait, where a square cover cannot sit beside the track
   const upright = prefs.rotate === 90 || prefs.rotate === 270;
   const track = state?.track ?? null;
@@ -518,7 +519,7 @@ export default function App() {
       {prefs.notes && prefs.motion && <Notes accent={accentOn} playing={playing} />}
       {!prefs.transport && <PresetHint playing={playing} rotate={prefs.rotate} accent={accentOn} cue={track.persistentId ?? track.title ?? ''} />}
 
-      <VolumeHud show={hud} volume={volume} accent={accentOn} />
+      <VolumeHud show={hud && !ownsVolume} volume={volume} accent={accentOn} />
       <div
         className={`pointer-events-none absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded-full bg-black/78 px-4 py-2.5 text-hint text-near ring-1 ring-white/12 backdrop-blur-md transition-opacity duration-500 ${
           hint && !panel ? 'opacity-100' : 'opacity-0'
