@@ -111,7 +111,7 @@
       "type": "boolean",
       "data": {
         "key": "tapeArt",
-        "label": "Album art on the cassette label",
+        "label": "Album art on the written cassette label",
         "default": true
       }
     },

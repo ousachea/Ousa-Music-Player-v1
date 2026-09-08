@@ -105,9 +105,10 @@ the plate around the window, the tape wound on the spools, the writing and the k
 from the album's own hue rather than from a cream that has been tinted, and the rainbow band fans out
 around that hue, two bands to each side of it, rather than five bands of the one colour.
 
-**Artwork on the label** prints the cover on the right of the label, faded into the paper along its
-inside edge, with the writing keeping the room to its left, where the printed design would carry a
-photograph of the artist. Turn it off for a label with nothing but type on it.
+**Artwork on the label** prints the cover on the right of the written label, faded into the paper
+along its inside edge, with the writing keeping the room to its left. Turn it off for a label with
+nothing but handwriting on it. The printed label carries no cover: it is type across a colour, the
+way a pressed tape is.
 
 Turned a quarter the printed label drops the columns either side of the title and puts the artist
 under it, because a label that narrow has no room for three columns.

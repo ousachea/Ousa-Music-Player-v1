@@ -2975,7 +2975,7 @@ function WrittenTape({ title, artist, album, playing, motion, progress, elapsed,
 }
 
 // the printed tape: a release somebody pressed, the whole label printed in the album's colour
-function PrintedTape({ title, artist, album, playing, motion, progress, elapsed, duration, remaining, artUrl, showTransport, quarter, skin }: Face) {
+function PrintedTape({ title, artist, album, playing, motion, progress, elapsed, duration, remaining, showTransport, quarter, skin }: Face) {
   const done = Math.min(1, Math.max(0, progress));
   const left = 36 - 14 * done;
   const right = 22 + 14 * done;
@@ -2997,24 +2997,9 @@ function PrintedTape({ title, artist, album, playing, motion, progress, elapsed,
       <div
         className="absolute inset-x-[2.6%] top-[3.4%] h-[64%] overflow-hidden rounded-[3px] shadow-[0_3px_8px_rgba(0,0,0,0.55)]"
         style={{ backgroundColor: skin.label }}>
-        {artUrl && (
-          <>
-            <img
-              src={artUrl}
-              alt=""
-              className="absolute inset-y-0 right-0 w-[22%] object-cover"
-              style={{ maskImage: 'linear-gradient(to right, transparent, #000 30%)' }}
-            />
-            <div
-              className="absolute inset-y-0 right-0 w-[22%]"
-              style={{ background: `linear-gradient(to top, ${alpha(skin.label, 45)}, transparent 40%)` }}
-            />
-          </>
-        )}
-
         <div
           className="relative flex h-full flex-col justify-between px-[2.6%] py-[2.2%]"
-          style={{ color: skin.labelInk, paddingRight: artUrl ? '25%' : undefined }}>
+          style={{ color: skin.labelInk }}>
           {/* a turned label has no room for the flanking columns, so the artist goes under the title */}
           <div className="flex items-start justify-between gap-2">
             {!quarter && (

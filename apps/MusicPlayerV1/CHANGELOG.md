@@ -19,7 +19,8 @@ Where the written tape is a blank label somebody filled in, the printed one is a
 label printed edge to edge in the album's colour, the title in bold caps with SIDE A under it, the
 artist and album in small type either side, a tape counter reading across the window with a line
 riding the ticks, and the whole thing set into a dark moulded shell with the spindle holes along the
-bottom. Turned a quarter it drops the flanking columns and puts the artist under the title, since a
+bottom. It carries no cover art: a pressed label is type across a colour, and the title reads better
+across the whole width than beside a photograph. Turned a quarter it drops the flanking columns and puts the artist under the title, since a
 label that narrow has no room for three.
 
 **Artwork on the label**, on by default, prints the cover square on the right of the label with the
