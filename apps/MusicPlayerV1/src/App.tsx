@@ -50,7 +50,6 @@ export default function App() {
   const [accent, setAccent] = useState<Accent | null>(null);
   const [volume, setVolume] = useState<Volume | null>(null);
   const [hud, setHud] = useState(false);
-  const [playTap, bumpPlay] = useState(0);
 
   useEffect(() => {
     const offConn = client.on(event => {
@@ -385,29 +384,17 @@ export default function App() {
                   <span>{duration ? (prefs.remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}</span>
                 </div>
 
-                <div className="mt-8 flex items-center justify-center gap-5">
-                  <Ghost label="previous" tint={accentOn?.soft} onClick={() => client.player.skipPrev({ allowSeeking: true })}>
-                    <Skip className="h-6 w-6 -scale-x-100" />
+                <div className="mt-8 flex items-center justify-center gap-12">
+                  <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
+                    <Skip className="h-10 w-10 -scale-x-100" />
                   </Ghost>
-                  <button
-                    aria-label={playing ? 'pause' : 'play'}
-                    onPointerDown={() => bumpPlay(n => n + 1)}
-                    onClick={toggle}
-                    style={accentOn ? { backgroundColor: accentOn.fill, color: accentOn.ink } : undefined}
-                    className="relative grid h-20 w-20 shrink-0 place-items-center rounded-full bg-off-white text-screen shadow-lg transition-[transform,background-color,color] duration-300 ease-spring active:scale-90">
-                    {playTap > 0 && (
-                      <span
-                        key={playTap}
-                        className="pointer-events-none absolute inset-0 animate-ripple rounded-full ring-3"
-                        style={{ color: accentOn?.fill ?? '#efefef' }}
-                      />
-                    )}
+                  <Ghost label={playing ? 'pause' : 'play'} tint={accentOn?.fill} onClick={toggle}>
                     <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-                      {playing ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+                      {playing ? <Pause className="h-11 w-11" /> : <Play className="h-11 w-11" />}
                     </span>
-                  </button>
-                  <Ghost label="next" tint={accentOn?.soft} onClick={() => client.player.skipNext()}>
-                    <Skip className="h-6 w-6" />
+                  </Ghost>
+                  <Ghost label="next" onClick={() => client.player.skipNext()}>
+                    <Skip className="h-10 w-10" />
                   </Ghost>
                 </div>
               </div>
@@ -1314,12 +1301,9 @@ function Ghost({
       aria-label={label}
       onPointerDown={() => bump(n => n + 1)}
       onClick={onClick}
-      // the ring reads currentcolor by default, which the glyph also uses, so the colour goes on the ring itself
-      style={{ ['--tw-ring-color' as string]: tint ?? 'rgba(255,255,255,0.15)' }}
-      className="relative grid h-16 w-16 shrink-0 place-items-center rounded-full text-near ring-1 transition-[transform,background-color] duration-300 ease-spring active:scale-90 active:bg-white/20">
-      {tap > 0 && (
-        <span key={tap} className="pointer-events-none absolute inset-0 animate-ripple rounded-full text-off-white ring-2" />
-      )}
+      // the padding is the only hit area a bare glyph has, and the negative margin keeps it off the layout
+      style={tint ? { color: tint } : undefined}
+      className="-m-3 shrink-0 p-3 text-off-white transition-[transform,color] duration-300 ease-spring active:scale-90">
       <span key={tap} className="grid animate-tap place-items-center">
         {children}
       </span>
@@ -1397,17 +1381,19 @@ function Play({ className }: { className?: string }) {
 function Pause({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="currentColor">
-      <rect x="6" y="5" width="4" height="14" rx="1.4" />
-      <rect x="14" y="5" width="4" height="14" rx="1.4" />
+      <rect x="5.5" y="3.5" width="4.6" height="17" rx="0.9" />
+      <rect x="13.9" y="3.5" width="4.6" height="17" rx="0.9" />
     </svg>
   );
 }
 
+// two solid triangles rather than a triangle and a bar: the pair reads as scan at a glance, and the
+// mirrored copy is what draws previous
 function Skip({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="currentColor">
-      <path d="M5 6.3v11.4a1 1 0 0 0 1.54.84l8.9-5.7a1 1 0 0 0 0-1.68l-8.9-5.7A1 1 0 0 0 5 6.3Z" />
-      <rect x="17" y="5" width="2.6" height="14" rx="1.3" />
+      <path d="M1.6 5.6v12.8a0.9 0.9 0 0 0 1.38.76l9.6-6.4a0.9 0.9 0 0 0 0-1.52l-9.6-6.4a0.9 0.9 0 0 0-1.38.76Z" />
+      <path d="M11.4 5.6v12.8a0.9 0.9 0 0 0 1.38.76l9.6-6.4a0.9 0.9 0 0 0 0-1.52l-9.6-6.4a0.9 0.9 0 0 0-1.38.76Z" />
     </svg>
   );
 }

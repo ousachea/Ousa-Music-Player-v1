@@ -46,8 +46,9 @@ Switch between them in the settings, under **Player style**.
 
 ![Cover style](apps/MusicPlayerV1/screenshots/01-cover.png)
 
-The album at full height with the track beside it. The artwork's own colour drives the play button,
-the seek bar and the button outlines, and a glow pulses around the cover's edge. The blurred cover
+The album at full height with the track beside it. The transport under it is bare white glyphs, no
+circles: two solid triangles for skip, two bars for pause. The artwork's own colour drives the
+play/pause glyph and the seek bar, and a glow pulses around the cover's edge. The blurred cover
 sits behind everything, and both its strength and its slow drift are adjustable.
 
 **Cover to the edge** drops the padding around the art, along with its rounded corners, ring and

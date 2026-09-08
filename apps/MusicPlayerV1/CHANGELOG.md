@@ -1,5 +1,11 @@
 # weather
 
+## 0.21.2
+
+The transport is bare glyphs. The ringed circles around previous and next and the filled disc behind
+play are gone, and skip is drawn as two solid triangles rather than a triangle and a bar. Cover and
+Vinyl carry the new row; Poster keeps its own large play button but takes the same glyphs.
+
 ## 0.21.1
 
 The transport keeps a clear margin from the bottom of the screen at 90 and 270. It had none: the
