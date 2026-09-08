@@ -3,7 +3,7 @@
 Five apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
 source once and all of them are available.
 
-![Classic style](apps/MusicPlayerV1/screenshots/01-cover.png)
+![Classic style](apps/MusicPlayerV1/screenshots/01-classic.jpg)
 
 | App | What it does |
 | --- | --- |
@@ -48,7 +48,7 @@ Switch between them in the settings, under **Player style**.
 
 ### Classic
 
-![Classic style](apps/MusicPlayerV1/screenshots/01-cover.png)
+![Classic style](apps/MusicPlayerV1/screenshots/01-classic.jpg)
 
 The album at full height with the track beside it. The clock, the track, the progress bar and the
 transport share the height between them rather than bunching, at every rotation. The transport is
@@ -62,7 +62,7 @@ padding on the right.
 
 ### Vinyl
 
-![Vinyl style](apps/MusicPlayerV1/screenshots/02-vinyl.png)
+![Vinyl style](apps/MusicPlayerV1/screenshots/02-vinyl.jpg)
 
 The sleeve tucked behind a record that carries the artwork as its label. The platter turns while the
 track plays and holds its angle when you pause; the tonearm rests on the outer grooves and lifts off
@@ -70,13 +70,15 @@ when the music stops.
 
 ### Poster
 
-![Poster style](apps/MusicPlayerV1/screenshots/03-poster.png)
+![Poster style](apps/MusicPlayerV1/screenshots/03-poster.jpg)
 
 The artwork fills the whole screen with the track laid over it. The progress line is drawn as a wave
 for the part you have played and a flat line for the rest, and the wave travels while the music runs.
 This is the style that benefits most from the sharper artwork lookup.
 
 ### Cover
+
+![Cover style](apps/MusicPlayerV1/screenshots/04-cover.jpg)
 
 The phone lock screen, near enough. Rounded artwork, the track, a progress bar with the elapsed and
 remaining times, the transport, and a volume slider of its own. Dragging that slider sets the volume
@@ -120,7 +122,7 @@ needs, so the transport always keeps its margin from the bottom edge. The rotati
 
 ### Settings
 
-![Settings](apps/MusicPlayerV1/screenshots/04-settings.png)
+![Settings](apps/MusicPlayerV1/screenshots/05-settings.jpg)
 
 Press the button under the wheel to open them on the device. The list only shows what the style you
 picked can actually use, so switching to Poster hides the backdrop and pulse rows it does not draw.
