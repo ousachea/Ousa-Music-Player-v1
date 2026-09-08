@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T07:43:25.687Z",
+  "updated_at": "2026-09-08T07:53:06.363Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -223,6 +223,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.25.4",
+          "released_at": "2026-09-08T07:53:06.361Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.25.4.zip",
+            "size": 945635,
+            "sha256": "bdd945f6deb811e05043483d0820f94ee6421eab9a5483badd9d3478106c331b"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.25.4.html",
+            "size": 30541,
+            "sha256": "5b26c99458b25176ef7dae69e8c203079fc14954823378cec5638129530e90fd"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Turning the wheel in the Cover style no longer throws the volume readout over the middle of the\nscreen. Cover draws a slider of its own, which moves with the wheel, so the readout was saying the\nsame thing twice and covering the player to do it. Every other style still shows it."
+        },
         {
           "version": "0.25.3",
           "released_at": "2026-09-08T07:43:25.685Z",
