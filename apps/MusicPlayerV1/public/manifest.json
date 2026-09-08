@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "Music Player",
-  "version": "0.22.0",
+  "version": "0.22.1",
   "description": "Now playing from your phone, on the Car Thing.",
   "icon": "icon.jpg",
   "settings": "settings.html",
@@ -38,7 +38,7 @@
       "type": "boolean",
       "data": {
         "key": "coverEdge",
-        "label": "Cover runs to the screen edge",
+        "label": "Album art runs to the screen edge",
         "default": false
       }
     },
@@ -102,7 +102,7 @@
       "type": "boolean",
       "data": {
         "key": "pulse",
-        "label": "Cover pulse",
+        "label": "Album art pulse",
         "default": false
       }
     },

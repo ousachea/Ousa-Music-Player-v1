@@ -5,9 +5,10 @@ import './style.css';
 
 // the enum keys are terse on purpose so they read well in the manifest; spell them out for a person
 const CHOICE_LABELS: Record<string, string> = {
-  card: 'Cover',
+  card: 'Classic',
   vinyl: 'Vinyl record',
   poster: 'Full bleed artwork',
+  widget: 'Cover',
   auto: 'Match the player style',
   bar: 'Straight line',
   wave: 'Wave',
@@ -20,16 +21,16 @@ const CHOICE_LABELS: Record<string, string> = {
 const HINTS: Record<string, string> = {
   wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',
   seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
-  theme: 'Cover shows the album art square. Vinyl puts it on a spinning record. Poster fills the screen with it. Widget is the phone lock screen layout, with the times either side of the bar and a volume slider of its own.',
+  theme: 'Classic sets the album art square beside the track. Vinyl puts it on a spinning record. Poster fills the screen with it. Cover is the phone lock screen layout, with the progress times either side of the bar and a volume slider of its own.',
   rotate: 'Turns the whole screen, for a device mounted on its side or upside down. Preset button 4 also steps through it. At 90 and 270 the player is a tall column with a bar down each side, because the screen itself never changes shape.',
-  coverEdge: 'Drops the padding around the album art so it runs to the top, bottom and left edges with square corners. Cover style only.',
+  coverEdge: 'Drops the padding around the album art so it runs to the top, bottom and left edges with square corners. Classic style only.',
   seek: 'Auto gives Poster the wave and the other styles a line. Pick one to use it everywhere.',
   backdrop: 'How strongly the blurred album art tints the screen behind the player. 0 turns it off. Poster does not use it.',
   drift: 'How far and how fast the blurred backdrop pans. 0 holds it still.',
   clock: 'Shows the time from your phone, in its own timezone.',
   clockSize: 'Scales the clock relative to its normal size.',
   hdArt: 'The device only receives 512px artwork. This looks the album up on Apple\u2019s public search and uses the 1000px cover instead, which matters most in the Poster style. When the phone sends no artist for a track, the same lookup supplies one, so turning this off can leave the artist line blank. Off keeps the player entirely offline.',
-  pulse: 'A glow that beats around the cover art. Cover style only.',
+  pulse: 'A glow that beats around the album art. Classic style only.',
   pulseBpm: 'How fast the glow beats, in BPM. 0 means auto, which is simply a steady 90: the app never receives the audio, so it cannot know the song\u2019s own tempo.',
   accent: 'The progress bar, play button and header take this colour.',
 };

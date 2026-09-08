@@ -489,7 +489,7 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 }
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
-  theme: { values: ['card', 'vinyl', 'poster', 'widget'], labels: ['Cover', 'Vinyl', 'Poster', 'Widget'] },
+  theme: { values: ['card', 'vinyl', 'poster', 'widget'], labels: ['Classic', 'Vinyl', 'Poster', 'Cover'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   clockPos: { values: ['left', 'center', 'right'], labels: ['Left', 'Centre', 'Right'] },
@@ -514,10 +514,10 @@ const GROUPS: { title: string; rows: Row[] }[] = [
     title: 'Player',
     rows: [
       { key: 'theme', label: 'Player style' },
-      { key: 'coverEdge', label: 'Cover to the edge', only: ['card'] },
+      { key: 'coverEdge', label: 'Art to the edge', only: ['card'] },
       { key: 'accent', label: 'Accent colour' },
       { key: 'hdArt', label: 'HD album art' },
-      { key: 'pulse', label: 'Cover pulse', only: ['card'] },
+      { key: 'pulse', label: 'Art pulse', only: ['card'] },
       { key: 'pulseBpm', label: 'Pulse tempo', only: ['card'] },
     ],
   },
@@ -675,7 +675,7 @@ function Panel({
             className="h-20 w-20 rounded-xl object-cover ring-1 ring-white/12"
           />
           <div className="min-w-0">
-            <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Cover</div>
+            <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Album art</div>
             <div className="font-mono text-row tabular-nums" style={{ color: tint }}>
               {artPx ?? '...'}
             </div>

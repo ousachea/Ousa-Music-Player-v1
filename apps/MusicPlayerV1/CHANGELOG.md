@@ -1,5 +1,14 @@
 # weather
 
+## 0.22.1
+
+The player styles are renamed. **Cover** is now **Classic**, and **Widget** is now **Cover**. Only
+the names change; the layouts, and the value each style is stored under, are the same, so nothing
+you have set moves.
+
+Two settings said Cover when they meant the album art, which now reads as the style of that name.
+They are **Art to the edge** and **Art pulse**.
+
 ## 0.22.0
 
 A fourth player style, **Widget**, after the phone lock screen: rounded artwork, the track under it,

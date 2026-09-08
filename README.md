@@ -3,7 +3,7 @@
 Five apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
 source once and all of them are available.
 
-![Cover style](apps/MusicPlayerV1/screenshots/01-cover.png)
+![Classic style](apps/MusicPlayerV1/screenshots/01-cover.png)
 
 | App | What it does |
 | --- | --- |
@@ -43,9 +43,9 @@ settings on the device and press **Check** under *Software update*.
 
 Switch between them in the settings, under **Player style**.
 
-### Cover
+### Classic
 
-![Cover style](apps/MusicPlayerV1/screenshots/01-cover.png)
+![Classic style](apps/MusicPlayerV1/screenshots/01-cover.png)
 
 The album at full height with the track beside it. The clock, the track, the progress bar and the
 transport share the height between them rather than bunching, at every rotation. The transport is
@@ -53,7 +53,7 @@ bare white glyphs, no circles: two solid triangles for skip, two bars for pause.
 play/pause glyph and the seek bar, and a glow pulses around the cover's edge. The blurred cover
 sits behind everything, and both its strength and its slow drift are adjustable.
 
-**Cover to the edge** drops the padding around the art, along with its rounded corners, ring and
+**Art to the edge** drops the padding around the art, along with its rounded corners, ring and
 shadow, so the cover runs flush to the top, bottom and left of the screen. The track keeps its own
 padding on the right.
 
@@ -73,7 +73,7 @@ The artwork fills the whole screen with the track laid over it. The progress lin
 for the part you have played and a flat line for the rest, and the wave travels while the music runs.
 This is the style that benefits most from the sharper artwork lookup.
 
-### Widget
+### Cover
 
 The phone lock screen, near enough. Rounded artwork, the track, a progress bar with the elapsed and
 remaining times, the transport, and a volume slider of its own. Dragging that slider sets the volume
@@ -87,7 +87,7 @@ blurred artwork runs the whole screen, so the album's colour carries under the c
 stopping at an edge. Turned to 90 or 270 the same rows stack into a column and fill the screen, with
 the times either side of the bar because the column is too tall to put them under it. Left in landscape it floats as a narrow card over the blurred artwork, sized so the cover
 lands square and uncropped, because stacking the six rows is the whole look and a full width version
-of it would only be the Cover style again.
+of it would only be the Classic style again.
 
 ### Controls
 
@@ -97,7 +97,7 @@ of it would only be the Cover style again.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, Poster, Widget |
+| Mode, the button past the presets | Cycle the player style: Classic, Vinyl, Poster, Cover |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
 | Press it twice | Next track |
@@ -122,7 +122,7 @@ Press the button under the wheel to open them on the device. The list only shows
 picked can actually use, so switching to Poster hides the backdrop and pulse rows it does not draw.
 
 - **Player** — style, accent colour, sharper artwork, the cover pulse with its tempo, and whether
-  the Cover style's art runs to the edge of the screen
+  the Classic style's art runs to the edge of the screen
 - **Controls** — what the wheel does, how far each click seeks, and whether the seek bar is a line or a wave
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts
 - **Display** — animations, screen rotation, and whether the time counts down or shows the track length
