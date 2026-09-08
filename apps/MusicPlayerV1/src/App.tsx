@@ -223,6 +223,19 @@ export default function App() {
   // the daemon owns the step size and the clamping, and its level cannot be read back, so nudge rather than compute one
   const detents = useRef(0);
   const swipeFrom = useRef<{ x: number; y: number } | null>(null);
+  // a track can also change on its own when one ends, which counts as going forward
+  const skipDir = useRef<'next' | 'prev'>('next');
+  const goNext = useCallback(() => {
+    skipDir.current = 'next';
+    client.player.skipNext();
+  }, [client]);
+  const goPrev = useCallback(
+    (allowSeeking: boolean) => {
+      skipDir.current = 'prev';
+      client.player.skipPrev({ allowSeeking });
+    },
+    [client],
+  );
 
   // one press plays or pauses, two skip forward, three skip back
   const clicks = useRef(0);
@@ -235,9 +248,9 @@ export default function App() {
       const count = clicks.current;
       clicks.current = 0;
       if (count === 1) toggle();
-      else if (count === 2) client.player.skipNext();
+      else if (count === 2) goNext();
       // a triple press means the previous track, never a restart of this one
-      else client.player.skipPrev({ allowSeeking: false });
+      else goPrev(false);
     }, MULTI_CLICK_MS);
   }, [client, toggle]);
 
@@ -267,9 +280,9 @@ export default function App() {
       if (e.repeat) return;
       if (e.key === ' ' || e.key === 'Enter') press();
       else if (e.key === 'Escape') setPanel(open => !open);
-      else if (e.key === 'ArrowLeft' || e.key === '1') client.player.skipPrev({ allowSeeking: true });
+      else if (e.key === 'ArrowLeft' || e.key === '1') goPrev(true);
       else if (e.key === '2') toggle();
-      else if (e.key === 'ArrowRight' || e.key === '3') client.player.skipNext();
+      else if (e.key === 'ArrowRight' || e.key === '3') goNext();
       else if (e.key === '4') setPref('rotate', String((prefs.rotate + 90) % 360));
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
@@ -299,8 +312,8 @@ export default function App() {
       if (Math.abs(across) > Math.abs(along) * SWIPE_MAX_DRIFT) return;
       // swiping the artwork away to the left brings the next track in behind it, as on a phone
       const back = prefs.rotate === 180 || prefs.rotate === 270 ? along < 0 : along > 0;
-      if (back) client.player.skipPrev({ allowSeeking: true });
-      else client.player.skipNext();
+      if (back) goPrev(true);
+      else goNext();
     };
 
     window.addEventListener('wheel', onWheel, { passive: true });
@@ -334,6 +347,11 @@ export default function App() {
   return (
     <Stage rotate={prefs.rotate}>
     <div className="relative h-full w-full overflow-hidden bg-screen">
+      <div
+        key={track.persistentId ?? track.title ?? ''}
+        className={`relative h-full w-full ${
+          prefs.motion ? (skipDir.current === 'prev' ? 'skip-prev' : 'skip-next') : ''
+        }`}>
       {prefs.theme === 'cd' ? (
         <>
           <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />
@@ -356,8 +374,8 @@ export default function App() {
             clockPos={prefs.clockPos}
             clockSize={prefs.clockSize}
             onToggle={toggle}
-            onPrev={() => client.player.skipPrev({ allowSeeking: true })}
-            onNext={() => client.player.skipNext()}
+            onPrev={() => goPrev(true)}
+            onNext={() => goNext()}
             onSeek={ratio => seek(ratio * duration)}
           />
         </>
@@ -386,8 +404,8 @@ export default function App() {
             clockPos={prefs.clockPos}
             clockSize={prefs.clockSize}
             onToggle={toggle}
-            onPrev={() => client.player.skipPrev({ allowSeeking: true })}
-            onNext={() => client.player.skipNext()}
+            onPrev={() => goPrev(true)}
+            onNext={() => goNext()}
             onSeek={ratio => seek(ratio * duration)}
             onVolume={level => {
               // reaching for the slider means you want sound, so a muted device comes back first
@@ -416,8 +434,8 @@ export default function App() {
           clockSize={prefs.clockSize}
           rotate={prefs.rotate}
           onToggle={toggle}
-          onPrev={() => client.player.skipPrev({ allowSeeking: true })}
-          onNext={() => client.player.skipNext()}
+          onPrev={() => goPrev(true)}
+          onNext={() => goNext()}
           onSeek={ratio => seek(ratio * duration)}
         />
       ) : (
@@ -512,7 +530,7 @@ export default function App() {
 
               {prefs.transport && (
               <div className="flex shrink-0 items-center justify-center gap-12">
-                <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
+                <Ghost label="previous" onClick={() => goPrev(true)}>
                   <Skip className="h-10 w-10 -scale-x-100" />
                 </Ghost>
                 <Ghost label={playing ? 'pause' : 'play'} tint={accentOn?.fill} onClick={toggle}>
@@ -520,7 +538,7 @@ export default function App() {
                     {playing ? <Pause className="h-11 w-11" /> : <Play className="h-11 w-11" />}
                   </span>
                 </Ghost>
-                <Ghost label="next" onClick={() => client.player.skipNext()}>
+                <Ghost label="next" onClick={() => goNext()}>
                   <Skip className="h-10 w-10" />
                 </Ghost>
               </div>
@@ -529,6 +547,8 @@ export default function App() {
           </div>
         </>
       )}
+
+      </div>
 
       {prefs.notes && prefs.motion && <Notes accent={accentOn} playing={playing} />}
       {!prefs.transport && <PresetHint playing={playing} rotate={prefs.rotate} accent={accentOn} cue={track.persistentId ?? track.title ?? ''} />}
@@ -1165,9 +1185,20 @@ function CdDeck({
   if (upright)
     return (
       <div className="relative flex h-full w-full flex-col justify-between gap-4 p-6">
-        {clockRow}
         {tray}
-        {titles}
+        {/* portrait has width to spare beside the track, so the clock sits there rather than
+            taking a row of its own above the tray */}
+        <div className="flex items-start gap-4">
+          <div className="min-w-0 flex-1">{titles}</div>
+          {wallClock && (
+            <ClockView
+              parts={wallClock}
+              size={(10 * clockSize) / 100}
+              className="shrink-0 text-dim"
+              color={accent?.soft}
+            />
+          )}
+        </div>
         <div className="flex flex-col gap-4">
           {bar}
           {keys}

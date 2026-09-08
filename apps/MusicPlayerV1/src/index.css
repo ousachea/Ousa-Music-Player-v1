@@ -279,3 +279,37 @@ img {
   -webkit-user-drag: none;
   user-drag: none;
 }
+
+/* a skip carries the player with it: the incoming track slides in from the side it came from.
+   every style is wrapped by the same element, so one pair of keyframes covers all five. the
+   wrapper is inside the rotated stage, so a translate along x is the direction the viewer swiped
+   whichever way the screen is mounted. */
+@keyframes skip-from-next {
+  from {
+    opacity: 0;
+    transform: translate3d(7%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes skip-from-prev {
+  from {
+    opacity: 0;
+    transform: translate3d(-7%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.skip-next {
+  animation: skip-from-next 400ms cubic-bezier(0.2, 0.75, 0.3, 1);
+}
+
+.skip-prev {
+  animation: skip-from-prev 400ms cubic-bezier(0.2, 0.75, 0.3, 1);
+}

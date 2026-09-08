@@ -2,6 +2,14 @@
 
 ## 0.25.3
 
+Skipping a track slides the new one in from the side it came from, in every style. The animation
+sits on the one element all five share, so it is the same movement whichever player you are using,
+and because that element is inside the turned stage the slide follows the direction you actually
+swiped however the screen is mounted.
+
+Turned, the CD style puts the clock beside the track rather than on a row of its own above the tray,
+where the width was going spare.
+
 With the on-screen buttons off, Poster gives the track the full width of the screen instead of the
 half it was holding. That half existed only to keep the title clear of the play button, and with the
 button gone the block is inset the same on both sides.
