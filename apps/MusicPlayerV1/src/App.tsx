@@ -373,7 +373,7 @@ export default function App() {
     <div className="relative h-full w-full overflow-hidden bg-screen">
       {/* outside the keyed wrapper: inside it, every track change tore the blurred art down and
           built it again, which showed as a flash while the new one decoded */}
-      {prefs.theme !== 'poster' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />}
+      {prefs.theme !== 'poster' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
 
       <div
         key={track.persistentId ?? track.title ?? ''}
@@ -676,6 +676,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
 const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: string; auto?: number }> = {
   seekSeconds: { min: 1, max: 30, step: 1, suffix: 's' },
   backdrop: { min: 0, max: 100, step: 10, suffix: '%' },
+  blur: { min: 0, max: 100, step: 10, suffix: '%' },
   drift: { min: 0, max: 100, step: 10, suffix: '%' },
   clockSize: { min: 70, max: 200, step: 10, suffix: '%' },
   pulseBpm: { min: PULSE_BPM_MIN, max: PULSE_BPM_MAX, step: 5, suffix: '', auto: 0 },
@@ -693,6 +694,7 @@ const STYLE_ROWS: Row[] = [
   { key: 'pulse', label: 'Art pulse', only: ['widget'] },
   { key: 'pulseBpm', label: 'Pulse tempo', only: ['widget'] },
   { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd', 'lyrics'] },
+  { key: 'blur', label: 'Backdrop blur', only: ['widget', 'vinyl', 'cd', 'lyrics'] },
   { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd', 'lyrics'] },
   { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd'] },
 ];
@@ -1973,7 +1975,19 @@ function ClockView({
   );
 }
 
-function Backdrop({ url, intensity, drift }: { url: string | null; intensity: number; drift: number }) {
+function Backdrop({
+  url,
+  intensity,
+  drift,
+  blur,
+}: {
+  url: string | null;
+  intensity: number;
+  drift: number;
+  blur: number;
+}) {
+  // 60 lands on the 72px the backdrop always used, so the default look is unchanged
+  const blurPx = Math.round((Math.min(100, Math.max(0, blur)) / 100) * 120);
   const level = Math.min(1, Math.max(0, intensity / 100));
   // travel has to stay inside the overhang the zoom creates, or the pan would drag an edge into frame
   const d = Math.min(1, Math.max(0, drift / 100));
@@ -2004,8 +2018,13 @@ function Backdrop({ url, intensity, drift }: { url: string | null; intensity: nu
     <img
       src={src}
       alt=""
-      style={{ opacity: level, transform: d > 0 ? undefined : 'scale(1.5)', ...(d > 0 ? driftVars : {}) }}
-      className={`absolute inset-0 h-full w-full object-cover blur-[72px] saturate-[1.6] ${d > 0 ? 'drift' : ''}`}
+      style={{
+        opacity: level,
+        filter: `blur(${blurPx}px) saturate(1.6)`,
+        transform: d > 0 ? undefined : 'scale(1.5)',
+        ...(d > 0 ? driftVars : {}),
+      }}
+      className={`absolute inset-0 h-full w-full object-cover ${d > 0 ? 'drift' : ''}`}
     />
   );
 

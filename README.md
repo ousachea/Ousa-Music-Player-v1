@@ -186,7 +186,8 @@ has no settings of its own. A rail down the left edge shows where you are in the
   Classic style's art runs to the edge of the screen
 - **Controls** — what the wheel does, how far each click seeks, the seek bar and its playhead dot,
   and whether the on-screen transport buttons are drawn at all
-- **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts
+- **Backdrop** — how strongly the blurred art tints the screen, how far out of focus it is, and how
+  far it drifts
 - **Display** — animations, floating notes, screen rotation, and whether the time counts down or
   shows the track length
 - **Clock** — position, size, 12 or 24 hour, and seconds

@@ -39,6 +39,7 @@ const HINTS: Record<string, string> = {
   seekDot: 'The marker that rides the progress bar at the playhead: a dot on the line, a tick on the wave. Auto draws it everywhere except Cover, which reads cleaner without it. The bar still scrubs by dragging either way.',
   seek: 'Auto gives Classic and Poster the wave, and Vinyl and Cover a line. Pick one to use it everywhere.',
   backdrop: 'How strongly the blurred album art tints the screen behind the player. 0 turns it off. Poster does not use it.',
+  blur: 'How far out of focus the artwork behind the screen is. Lower it to read the cover through the words, raise it for a wash of colour. 0 leaves it sharp.',
   drift: 'How far and how fast the blurred backdrop pans. 0 holds it still.',
   clock: 'Shows the time from your phone, in its own timezone.',
   clockSize: 'Scales the clock relative to its normal size.',

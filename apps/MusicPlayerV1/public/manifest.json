@@ -191,6 +191,17 @@
     {
       "type": "number",
       "data": {
+        "key": "blur",
+        "label": "Artwork backdrop blur (%)",
+        "min": 0,
+        "max": 100,
+        "step": 10,
+        "default": 60
+      }
+    },
+    {
+      "type": "number",
+      "data": {
         "key": "drift",
         "label": "Backdrop drift intensity (%)",
         "min": 0,

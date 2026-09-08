@@ -18,6 +18,7 @@ export type Prefs = {
   pulse: boolean;
   pulseBpm: number;
   backdrop: number;
+  blur: number;
   drift: number;
   transport: boolean;
   tip: boolean;
@@ -31,7 +32,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', coverEdge: false, coverPanel: false, coverVolume: true, wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', coverEdge: false, coverPanel: false, coverVolume: true, wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -70,6 +71,11 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       const amount = Number(value);
       if (!Number.isFinite(amount)) return { ...prefs, drift: DEFAULTS.drift };
       return { ...prefs, drift: Math.min(100, Math.max(0, amount)) };
+    }
+    case 'blur': {
+      const px = Number(value);
+      if (!Number.isFinite(px)) return { ...prefs, blur: DEFAULTS.blur };
+      return { ...prefs, blur: Math.min(100, Math.max(0, px)) };
     }
     case 'backdrop': {
       // this key used to be a boolean, so an old stored value still has to mean something sensible

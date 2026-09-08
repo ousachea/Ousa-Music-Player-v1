@@ -13,6 +13,10 @@ pair stays anchored to its own corner. Play and pause take the other end of that
 the way Poster draws it, and previous and next sit together along the bottom as bare glyphs. All of
 it goes away with the on-screen buttons.
 
+**Backdrop blur** is a new setting, beside intensity and drift. Lower it to read the cover through
+the words, raise it for a wash of colour, take it to zero to leave the artwork sharp behind them. It
+applies wherever the backdrop draws, and its default is the blur the backdrop always had.
+
 **Touching a line plays from it.** Every line knows the moment it belongs to, which is exactly what
 a seek needs, so the words double as somewhere to scrub.
 
