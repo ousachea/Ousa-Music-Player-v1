@@ -677,8 +677,8 @@ function Panel({
     <div
       className={`absolute inset-0 z-10 flex flex-col bg-screen/97 backdrop-blur-sm ${
         // the wide right margin keeps the rows clear of the wheel in landscape; turned, that edge is
-        // the bottom of the screen and the column is only 480 wide, so it is all cost and no benefit
-        upright ? 'p-0' : 'py-5 pl-8 pr-24'
+        // the bottom of the screen and the column is only 480 wide, so it evens out instead
+        upright ? 'p-5' : 'py-5 pl-8 pr-24'
       }`}>
       <div className="flex items-baseline justify-between gap-4">
         <span className="font-mono text-hint tracking-[0.22em] text-dim uppercase">Settings</span>
