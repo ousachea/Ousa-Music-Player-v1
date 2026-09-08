@@ -18,10 +18,12 @@ goes away with the on-screen buttons.
 the words, raise it for a wash of colour, take it to zero to leave the artwork sharp behind them. It
 applies wherever the backdrop draws, and its default is the blur the backdrop always had.
 
-**Touching a line plays from it**, and **the wheel walks the lines**, a line a click, playing from
-wherever it lands. Every line knows the moment it belongs to, which is exactly what a seek needs, so
-the words double as the scrubber. The wheel does this in Lyrics whatever it is set to elsewhere,
-since there is nothing better for it to do while the words are up.
+**Touching a line plays from it.** Every line knows the moment it belongs to, which is exactly what
+a seek needs, so the words double as the scrubber.
+
+**The wheel reads ahead** rather than scrubbing: it moves the words a line a click while the song
+carries on, and the view goes back to the line being sung five seconds after you stop. It does this
+in Lyrics whatever the wheel is set to elsewhere.
 
 A track with no lyrics at all now shows what is playing rather than only saying there is nothing:
 artwork, title and artist down the middle, with the transport under them.

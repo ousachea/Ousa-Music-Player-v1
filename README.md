@@ -149,9 +149,9 @@ edge, drawn as Poster draws it, with only the rounded square turning. Previous a
 ends of the other edge, so the four sit one to a corner. All of them go away when the on-screen
 buttons do.
 
-Touching a line plays from it, and the wheel walks the lines a click at a time, playing from
-wherever it lands. Each line knows the moment it belongs to, so the words are also the scrubber, and
-the wheel does this here whatever it is set to elsewhere.
+Touching a line plays from it: each line knows the moment it belongs to, so the words are also the
+scrubber. The wheel reads rather than scrubs, moving the words a line a click while the song carries
+on, and the view returns to the line being sung a few seconds after you stop.
 
 A track with no lyrics shows the artwork, title and artist down the middle instead, with the
 transport under them.

@@ -32,6 +32,8 @@ const HINT_MS = 7000;
 // long enough that the note is not the first thing a track does, short enough to still be about it
 const TIP_DELAY_MS = 6000;
 const WHEEL_SCROLL_PX = 26;
+// how long a browsed lyric view stays put before it goes back to following the song
+const LYRIC_BROWSE_MS = 5000;
 // how long the blurred art takes to dissolve from one track to the next
 const BACKDROP_FADE_MS = 700;
 // a swipe has to travel this far, and stay flat enough, to count as one rather than a stray drag
@@ -146,6 +148,8 @@ export default function App() {
     };
   }, [client, prefs.hdArt, track?.artist, track?.album]);
 
+  useEffect(() => setBrowse(0), [track?.persistentId, track?.title, prefs.theme]);
+
   useEffect(() => {
     setExplicit(false);
     if (!prefs.hdArt || !track?.title) return;
@@ -247,6 +251,9 @@ export default function App() {
   // the daemon owns the step size and the clamping, and its level cannot be read back, so nudge rather than compute one
   const detents = useRef(0);
   const swipeFrom = useRef<{ x: number; y: number } | null>(null);
+  // lines away from the one being sung, while the wheel is being used to read ahead or back
+  const [browse, setBrowse] = useState(0);
+  const browseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // a track can also change on its own when one ends, which counts as going forward
   const skipDir = useRef<'next' | 'prev'>('next');
   const goNext = useCallback(() => {
@@ -291,9 +298,14 @@ export default function App() {
       // in Lyrics the wheel belongs to the words: a detent is a line, and landing on one plays from
       // it. that is worth more than volume here, so it takes the wheel whatever the setting says
       if (prefs.theme === 'lyrics' && lyrics.state === 'timed') {
-        const from = activeIndex(lyrics.lines, scrub ?? live);
-        const to = Math.min(lyrics.lines.length - 1, Math.max(0, from + Math.sign(steps) * count));
-        if (to !== from || from < 0) seek(lyrics.lines[Math.max(0, to)].startMs);
+        // the wheel reads, it does not scrub: the song keeps playing and the view comes back on its own
+        const at = Math.max(0, activeIndex(lyrics.lines, scrub ?? live));
+        setBrowse(b => {
+          const next = b + Math.sign(steps) * count;
+          return Math.min(lyrics.lines.length - 1 - at, Math.max(-at, next));
+        });
+        if (browseTimer.current) clearTimeout(browseTimer.current);
+        browseTimer.current = setTimeout(() => setBrowse(0), LYRIC_BROWSE_MS);
         return;
       }
       if (prefs.theme === 'lyrics' && lyrics.state === 'plain') {
@@ -410,6 +422,7 @@ export default function App() {
           accent={accentOn}
           motion={prefs.motion}
           upright={upright}
+          offset={browse}
           corner={prefs.lyricsInfo}
           playing={playing}
           showTransport={prefs.transport}
@@ -2395,6 +2408,7 @@ function Lyrics({
   accent,
   motion,
   upright,
+  offset,
   corner,
   playing,
   showTransport,
@@ -2411,6 +2425,7 @@ function Lyrics({
   accent: Accent | null;
   motion: boolean;
   upright: boolean;
+  offset: number;
   corner: Prefs['lyricsInfo'];
   playing: boolean;
   showTransport: boolean;
@@ -2491,11 +2506,13 @@ function Lyrics({
 
   if (lyrics.state === 'timed') {
     const at = activeIndex(lyrics.lines, elapsed);
+    // the line the column is parked on, which is the sung one unless the wheel has moved away
+    const shown = Math.min(lyrics.lines.length - 1, Math.max(0, at + offset));
     return (
       <div className="absolute inset-0 overflow-hidden">
         <div
           className={`absolute inset-x-0 top-1/2 ${motion ? 'lyric-scroll' : ''}`}
-          style={{ transform: `translate3d(0, ${-(at + 0.5) * LYRIC_LINE_PX}px, 0)` }}>
+          style={{ transform: `translate3d(0, ${-(shown + 0.5) * LYRIC_LINE_PX}px, 0)` }}>
           {lyrics.lines.map((line, i) => {
             const away = Math.abs(i - at);
             return (
