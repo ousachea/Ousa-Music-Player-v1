@@ -1,4 +1,9 @@
-# weather
+# Music Player
+
+## 0.30.1
+
+The app is called Music Player everywhere now. Its page title, its package and the heading on this
+file all still said **weather**, which is the app the scaffold was copied from.
 
 ## 0.30.0
 
