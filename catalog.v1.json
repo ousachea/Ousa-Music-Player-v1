@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T08:22:06.399Z",
+  "updated_at": "2026-09-08T08:36:51.599Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -223,6 +223,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.27.0",
+          "released_at": "2026-09-08T08:36:51.596Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.27.0.zip",
+            "size": 948605,
+            "sha256": "eaae62eef3fe6c9c5550bd59c4adf8f2b3c33bc0ba53afada5d078b81c33a2b3"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.27.0.html",
+            "size": 30541,
+            "sha256": "5b26c99458b25176ef7dae69e8c203079fc14954823378cec5638129530e90fd"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The settings on the device are reorganised around the style you are in.\n\n**The style picker sits above the list** rather than scrolling inside it, since it decides what the\nrest of the list holds. The album art block beside it is smaller and carries its size and whether\nthe HD lookup is on, on one line.\n\n**Everything that depends on the style is gathered under that style's name**, marked *only in this\nstyle*, instead of being scattered through the groups and quietly vanishing when you switch. Poster,\nwhich has no settings of its own, simply has no such group.\n\nThe clock's **Position** is hidden in the CD style, which pins its clock to the corner of the tray\nand so has no position to offer. It stays in the Clock group for the three styles that honour it,\nrather than moving in with the style's own settings, because it is a clock setting that one style\nhappens not to use.\n\nA rail down the left edge shows how far the list runs and where you are in it, which the wheel\ncould not tell you before."
+        },
         {
           "version": "0.26.1",
           "released_at": "2026-09-08T08:22:06.396Z",
