@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T08:53:29.835Z",
+  "updated_at": "2026-09-08T09:40:17.103Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -223,6 +223,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.27.2",
+          "released_at": "2026-09-08T09:40:17.098Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.27.2.zip",
+            "size": 949765,
+            "sha256": "92b6ec3c7924af9bddbc773a3711dc235cb273627cdd4964f3446ebad6344df5"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.27.2.html",
+            "size": 30541,
+            "sha256": "5b26c99458b25176ef7dae69e8c203079fc14954823378cec5638129530e90fd"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Changing a track no longer flashes the background. The blurred artwork was being torn down and\nrebuilt on every change, leaving the screen bare while the new one decoded; it now stays where it is\nand the incoming art dissolves over the outgoing one, in every style.\n\nCD and Vinyl stop sliding the whole player at the same time as swapping the disc, which was two\nmovements arguing. The player changes over on the spot and the record or disc does the moving,\nturning in from a little smaller and settling.\n\nA long title no longer runs off the right of the screen in the CD style. It stays inside its column,\nand rather than scrolling past it wraps onto as many rows as it needs, up to three, with two for the\nartist. The track is centred in the space the controls leave, which is deep enough to grow into."
+        },
         {
           "version": "0.27.1",
           "released_at": "2026-09-08T08:53:29.833Z",
