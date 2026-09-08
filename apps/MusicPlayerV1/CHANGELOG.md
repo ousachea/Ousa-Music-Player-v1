@@ -1,5 +1,11 @@
 # weather
 
+## 0.27.3
+
+The CD style's transport bar sits on a dark ground of its own rather than straight on the blurred
+artwork. It takes the same wash of the album's colour the tray does, over a lighter base, so it
+belongs to the style without sinking to the tray's depth.
+
 ## 0.27.2
 
 Changing a track no longer flashes the background. The blurred artwork was being torn down and

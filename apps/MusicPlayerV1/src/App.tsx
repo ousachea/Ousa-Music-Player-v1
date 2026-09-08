@@ -1231,7 +1231,15 @@ function CdDeck({
 
   // one outlined block split into three, rather than three separate buttons
   const keys = showTransport ? (
-    <div className="flex shrink-0 divide-x divide-white/10 overflow-hidden rounded-2xl ring-1 ring-white/12">
+    <div
+      className="flex shrink-0 divide-x divide-white/10 overflow-hidden rounded-2xl ring-1 ring-white/12"
+      style={{
+        // the same wash the tray takes, over a lighter base, so the bar reads as part of the style
+        // without sinking to the tray's depth
+        background: accent
+          ? `linear-gradient(155deg, color-mix(in oklab, ${accent.fill} 14%, #1c1e22), #1c1e22 75%)`
+          : '#1c1e22',
+      }}>
       {[
         { label: 'previous', on: onPrev, icon: <Skip className="h-6 w-6 -scale-x-100" /> },
         {
