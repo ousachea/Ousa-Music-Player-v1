@@ -1814,12 +1814,23 @@ function KeyHint({
     { n: '2', icon: playing ? <Pause className={glyph} /> : <Play className={glyph} /> },
     { n: '3', icon: <Skip className={glyph} /> },
   ];
+  // the presets sit along one edge of the device, and which edge that is for the viewer depends on
+  // how the screen is turned: a quarter turn puts the row of them down one side instead of the top
+  const side = { 0: 'top', 90: 'left', 180: 'bottom', 270: 'right' }[rotate];
+  const stack =
+    side === 'top' ? 'flex-col' : side === 'bottom' ? 'flex-col-reverse' : side === 'left' ? 'flex-row' : 'flex-row-reverse';
+  const nub =
+    side === 'top' || side === 'bottom' ? `${small ? 'w-3.5' : 'w-4'} h-[3px]` : `w-[3px] ${small ? 'h-3.5' : 'h-4'}`;
   return (
     <div className={`flex shrink-0 items-center justify-center text-dim ${small ? 'gap-4' : 'gap-6'}`}>
       {(flipped ? [...keys].reverse() : keys).map(k => (
-        <span key={k.n} className="flex items-center gap-2">
-          <span className={cap}>{k.n}</span>
-          {k.icon}
+        <span key={k.n} className={`flex items-center gap-1.5 ${stack}`}>
+          {/* the bump points at the edge the button is actually on, so the legend is a map */}
+          <span className={`shrink-0 rounded-full bg-white/30 ${nub}`} />
+          <span className="flex items-center gap-2">
+            <span className={cap}>{k.n}</span>
+            {k.icon}
+          </span>
         </span>
       ))}
     </div>
