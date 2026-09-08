@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T09:51:33.246Z",
+  "updated_at": "2026-09-08T10:10:42.420Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -223,6 +223,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.28.0",
+          "released_at": "2026-09-08T10:10:42.419Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.28.0.zip",
+            "size": 950613,
+            "sha256": "19aa19cb368b272d804f6600c904756ef7c9c54dba3e9d8ff066ae67d620f1a7"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.28.0.html",
+            "size": 30889,
+            "sha256": "bdd047821e41953060596e65352d6c5dab25cb24a740dafa87e2356890137d21"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Cover wraps a long track onto as many rows as it needs, up to three, with two for the artist,\nrather than scrolling it past on one line. The column is deep in either orientation, and deeper\nstill with the panel drawn, so there is room to grow into.\n\nTwo settings for the Cover style.\n\n**Panel behind the track** puts the track and the controls on a tinted panel of their own instead of\nstraight over the blurred artwork, which is the phone lock screen look. It fills the height it is\ngiven rather than shrinking to its contents, sits an even margin from the edges, and takes the\nalbum's colour the way the rest of the style does. It draws in both orientations. Off by default, since the style has been drawing without one.\n\n**Volume slider** turns Cover's slider off. The wheel still sets the volume, and with no slider on\nscreen the reading the other styles throw over the middle comes back, since there is nothing left to\nwatch instead."
+        },
         {
           "version": "0.27.3",
           "released_at": "2026-09-08T09:51:33.244Z",
