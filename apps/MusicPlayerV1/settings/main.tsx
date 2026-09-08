@@ -28,6 +28,7 @@ const HINTS: Record<string, string> = {
   coverPanel: 'Puts the track and the controls on a tinted panel of their own instead of straight over the blurred artwork. Cover style only.',
   coverVolume: 'The volume slider Cover draws under its transport. With it off the wheel still sets the volume, and the reading the other styles show over the middle of the screen comes back. Cover style only.',
   coverEdge: 'Drops the padding around the album art so it runs to the edges with square corners. Cover style only.',
+  tip: 'A one-off note offering to hide the on-screen buttons, since the presets do the same job. It appears a few seconds after a track starts and only while the buttons are showing.',
   transport: 'The previous, play and next buttons drawn on screen. The four preset buttons do the same job, so turning these off gives the artwork more room; a small legend takes their place showing which preset does what.',
   seekDot: 'The marker that rides the progress bar at the playhead: a dot on the line, a tick on the wave. Auto draws it everywhere except Cover, which reads cleaner without it. The bar still scrubs by dragging either way.',
   seek: 'Auto gives Classic and Poster the wave, and Vinyl and Cover a line. Pick one to use it everywhere.',

@@ -28,6 +28,8 @@ const MULTI_CLICK_MS = 300;
 // the panel is only reachable by a hardware button, so say so once and then stop
 const HINT_KEY = 'hint.settingsSeen';
 const HINT_MS = 7000;
+// long enough that the note is not the first thing a track does, short enough to still be about it
+const TIP_DELAY_MS = 6000;
 const WHEEL_SCROLL_PX = 26;
 // how long the blurred art takes to dissolve from one track to the next
 const BACKDROP_FADE_MS = 700;
@@ -54,6 +56,8 @@ export default function App() {
   const wallClock = useClock(client, prefs.clock, prefs.clockSeconds, prefs.clockFormat);
   const [panel, setPanel] = useState(false);
   const [hint, setHint] = useState(false);
+  const [tip, setTip] = useState(false);
+  const [tipAgain, setTipAgain] = useState(true);
   const hintSaved = useRef(false);
   const [conn, setConn] = useState<ConnectionState>(client.connectionState);
   const [state, setState] = useState<PlayerState | null>(null);
@@ -153,6 +157,12 @@ export default function App() {
       stale = true;
     };
   }, [client, prefs.hdArt, track?.artist, track?.title]);
+
+  useEffect(() => {
+    if (!prefs.tip || !prefs.transport || !track) return;
+    const id = setTimeout(() => setTip(true), TIP_DELAY_MS);
+    return () => clearTimeout(id);
+  }, [prefs.tip, prefs.transport, track]);
 
   // snapshots are sparse, so the bar runs off an anchor and wall clock between them
   const anchor = useRef({ posMs: 0, at: 0 });
@@ -575,6 +585,22 @@ export default function App() {
         <BackGlyph className="h-3.5 w-3.5" />
         Press the button under the wheel for settings
       </div>
+      {tip && !panel && (
+        <Tip
+          tint={accentOn?.fill ?? '#efefef'}
+          again={tipAgain}
+          onAgain={setTipAgain}
+          onHide={() => {
+            setPref('transport', 'false');
+            if (!tipAgain) setPref('tip', 'false');
+            setTip(false);
+          }}
+          onKeep={() => {
+            if (!tipAgain) setPref('tip', 'false');
+            setTip(false);
+          }}
+        />
+      )}
       {panel && <Panel client={client} prefs={prefs} setPref={setPref} accent={accentOn} artUrl={artUrl} />}
     </div>
     </Stage>
@@ -665,6 +691,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
       { key: 'seek', label: 'Seek bar' },
       { key: 'seekDot', label: 'Dot at the playhead' },
       { key: 'transport', label: 'On-screen buttons' },
+      { key: 'tip', label: 'Offer to hide them' },
     ],
   },
   {
@@ -2234,6 +2261,69 @@ function PresetHint({
         );
       })}
     </div>
+  );
+}
+
+// the presets already do previous, play and next, which is worth saying once rather than leaving
+// someone to find the setting
+function Tip({
+  tint,
+  again,
+  onAgain,
+  onHide,
+  onKeep,
+}: {
+  tint: string;
+  again: boolean;
+  onAgain: (v: boolean) => void;
+  onHide: () => void;
+  onKeep: () => void;
+}) {
+  return (
+    <div className="absolute inset-0 z-20 grid place-items-center bg-screen/80 px-16 backdrop-blur-sm">
+      <div className="w-full max-w-[30rem] rounded-3xl bg-screen p-6 ring-1 ring-white/12 shadow-2xl">
+        <div className="font-display text-title font-semibold text-off-white">Use the buttons on the device?</div>
+        <p className="mt-2 text-body text-soft">
+          The four presets already do previous, play and next. Hiding the on-screen ones gives the
+          artwork the room, and a small marker shows which preset does what.
+        </p>
+
+        <button
+          onClick={() => onAgain(!again)}
+          className="mt-4 flex w-full items-center gap-3 rounded-xl px-1 py-2 text-left"
+          role="checkbox"
+          aria-checked={!again}>
+          <span
+            className="grid h-6 w-6 shrink-0 place-items-center rounded-md ring-1 ring-white/25"
+            style={{ backgroundColor: again ? 'transparent' : tint }}>
+            {!again && <Tick className="h-3.5 w-3.5 text-screen" />}
+          </span>
+          <span className="text-body text-soft">Don't show this again</span>
+        </button>
+
+        <div className="mt-5 flex justify-end gap-3">
+          <button
+            onClick={onKeep}
+            className="rounded-full bg-white/10 px-5 py-2.5 text-row font-medium text-near transition active:scale-95">
+            Keep them
+          </button>
+          <button
+            onClick={onHide}
+            className="rounded-full px-5 py-2.5 text-row font-medium transition active:scale-95"
+            style={{ backgroundColor: tint, color: '#060809' }}>
+            Hide them
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Tick({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m5 12.5 5 5L19 7" />
+    </svg>
   );
 }
 

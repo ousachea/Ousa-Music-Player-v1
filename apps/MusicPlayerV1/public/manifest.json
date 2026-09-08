@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "Music Player",
-  "version": "0.28.0",
+  "version": "0.29.0",
   "description": "Now playing from your phone, in five styles coloured by the album art, and turnable to any mounting.",
   "icon": "icon.jpg",
   "settings": "settings.html",
@@ -112,6 +112,14 @@
       "data": {
         "key": "transport",
         "label": "On-screen transport buttons",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "tip",
+        "label": "Offer to hide the on-screen buttons",
         "default": true
       }
     },

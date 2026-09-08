@@ -1,5 +1,15 @@
 # weather
 
+## 0.29.0
+
+A note now offers to hide the on-screen buttons, since the four presets already do previous, play
+and next and the artwork would rather have the room. It appears a few seconds after a track starts,
+only while the buttons are actually showing, and never over the settings.
+
+**Hide them** switches them off there and then; **Keep them** leaves everything alone. Either way,
+ticking *Don't show this again* stops it coming back, and **Controls → Offer to hide them** turns it
+off or on afterwards.
+
 ## 0.28.0
 
 Cover wraps a long track onto as many rows as it needs, up to three, with two for the artist,
