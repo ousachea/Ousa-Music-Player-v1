@@ -7,8 +7,9 @@ rather than scrolling it past on one line. Its block is placed against the left 
 it grows downward without moving anything around it, and it wraps whether or not the on-screen
 buttons are showing.
 
-Poster's play button turns while a track plays, slowly, and holds where it is when you pause, the
-way the record and the disc do.
+Poster's play button turns while a track plays and holds where it is when you pause. Only its shape
+turns: the glyph sits on a layer above and stays upright, so it is the rounded square that rotates
+and the pause bars never tip over.
 
 ## 0.25.0
 

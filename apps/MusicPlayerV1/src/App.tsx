@@ -1296,14 +1296,19 @@ function Poster({
         <button
           aria-label={playing ? 'pause' : 'play'}
           onClick={onToggle}
-          style={accent ? { backgroundColor: accent.fill, color: accent.ink } : undefined}
-          className="absolute right-7 top-1/2 grid h-24 w-24 -translate-y-1/2 place-items-center rounded-[30px] bg-off-white text-screen shadow-2xl">
+          style={accent ? { color: accent.ink } : undefined}
+          className="absolute right-7 top-1/2 grid h-24 w-24 -translate-y-1/2 place-items-center text-screen">
+          {/* the shape turns on its own layer; the glyph sits above it and stays upright */}
           <span
-            className={`grid h-full w-full place-items-center rounded-[30px] ${motion ? 'animate-platter' : ''}`}
-            style={{ animationDuration: '9s', animationPlayState: playing && motion ? 'running' : 'paused' }}>
-            <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-              {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
-            </span>
+            className={`absolute inset-0 rounded-[30px] shadow-2xl ${motion ? 'animate-platter' : ''}`}
+            style={{
+              backgroundColor: accent?.fill ?? '#efefef',
+              animationDuration: '9s',
+              animationPlayState: playing && motion ? 'running' : 'paused',
+            }}
+          />
+          <span key={playing ? 'pause' : 'play'} className="relative grid animate-pop place-items-center">
+            {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
           </span>
         </button>
       )}
