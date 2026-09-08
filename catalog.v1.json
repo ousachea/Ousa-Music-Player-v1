@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-08T06:27:15.167Z",
+  "updated_at": "2026-09-08T06:43:19.271Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -224,6 +224,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.25.0",
+          "released_at": "2026-09-08T06:43:19.269Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.25.0.zip",
+            "size": 944432,
+            "sha256": "e054560778e39aafd46aa934d929b6f29921dd3a92339de814a822d836482626"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.25.0.html",
+            "size": 30644,
+            "sha256": "ed1d242abf129b58aa730c174ff5e47bcd9a0870695c8446a2aedb469a74590f"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**CD** is redrawn after a reference. The album is printed across the disc with the clamping ring and\nthe hole punched through the middle of it, and a sheen sweeps over the print the way it does on a\npressed disc. The disc sits centred in a tray that takes a dark wash of the album's own colour\nrather than a flat grey.\n\nThe track sits beside the disc rather than over it, so nothing is read against the artwork. Its\ntransport is one outlined block split into three cells rather than three separate glyphs, with the\nprogress bar directly above it. Landscape puts the tray on the left and the track, bar and buttons\ndown the right; turned, the whole thing stacks."
+        },
         {
           "version": "0.24.0",
           "released_at": "2026-09-08T06:27:15.164Z",
