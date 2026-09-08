@@ -313,3 +313,21 @@ img {
 .skip-prev {
   animation: skip-from-prev 400ms cubic-bezier(0.2, 0.75, 0.3, 1);
 }
+
+/* the markers move to a different edge when the screen is turned, and their bump swaps which axis
+   it runs along. animating that swap stretches the bump through the change; this eases the whole
+   marker into its new place instead, and is over quickly. */
+@keyframes preset-settle {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.preset-settle {
+  animation: preset-settle 300ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}

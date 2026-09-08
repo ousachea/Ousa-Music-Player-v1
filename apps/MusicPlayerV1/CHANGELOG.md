@@ -1,5 +1,11 @@
 # weather
 
+## 0.26.1
+
+Turning the screen settles the preset markers into their new edge instead of stretching them into
+it. The bump runs along a different axis in each orientation, and animating that swap pulled it out
+of shape on the way; it now eases in once, quickly, and the bump's own fade is left alone.
+
 ## 0.26.0
 
 The preset markers are longer again, another third, and the bump now thins and dims as the glyph

@@ -2049,7 +2049,7 @@ function PresetHint({
     <Turn key="r" className="h-4 w-4" />,
   ];
   return (
-    <div className="pointer-events-none absolute inset-0 z-[2]">
+    <div key={rotate} className="preset-settle pointer-events-none absolute inset-0 z-[2]">
       <div
         className={`absolute ${scrim} from-black/55 via-black/20 to-transparent ${
           vertical ? 'inset-y-0 w-16' : 'inset-x-0 h-16'
@@ -2072,7 +2072,7 @@ function PresetHint({
             {/* once the glyphs have gone the bump is the whole marker, so it thins out and dims
                 rather than staying as loud as it was while it had a label to introduce */}
             <span
-              className={`shrink-0 transition-[opacity,width,height] duration-700 ${
+              className={`shrink-0 transition-opacity duration-700 ${
                 showIcons ? 'opacity-80' : 'opacity-40'
               } ${
                 vertical
