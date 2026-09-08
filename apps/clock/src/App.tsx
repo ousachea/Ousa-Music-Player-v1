@@ -113,6 +113,14 @@ export default function App() {
   const stopRinging = useCallback(() => setRinging(null), []);
 
   // --- controls ------------------------------------------------------------
+  const cycleStyle = useCallback(
+    (by: number) => {
+      const i = STYLES.indexOf(prefs.style);
+      setPref('style', STYLES[(((i + by) % STYLES.length) + STYLES.length) % STYLES.length]);
+    },
+    [prefs.style, setPref],
+  );
+
   const detents = useRef(0);
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
@@ -133,7 +141,7 @@ export default function App() {
       } else if (view === 'alarm') {
         setAlarm({ ...alarm, m: (((alarm.m + count) % 60) + 60) % 60 });
       } else if (view === 'clock') {
-        setPref('style', STYLES[(((STYLES.indexOf(prefs.style) + count) % STYLES.length) + STYLES.length) % STYLES.length]);
+        cycleStyle(count);
       }
     };
 
@@ -141,11 +149,11 @@ export default function App() {
       if (e.repeat) return;
       if (ringing && e.key !== 'Escape') return stopRinging();
       if (e.key === 'Escape') return setPanel(open => !open);
+      // preset 1 pressed again on the screen it already opened walks the faces, so one button is the whole clock
+      if (e.key === '1' && view === 'clock') return cycleStyle(1);
       if (e.key >= '1' && e.key <= '4') return setView(VIEWS[Number(e.key) - 1]);
       if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        if (view === 'clock') setPref('style', STYLES[(STYLES.indexOf(prefs.style) + 1) % STYLES.length]);
-        else setView(VIEWS[(VIEWS.indexOf(view) + 1) % VIEWS.length]);
-        return;
+        return setView(VIEWS[(VIEWS.indexOf(view) + 1) % VIEWS.length]);
       }
       if (e.key === ' ' || e.key === 'Enter') {
         if (view === 'stopwatch') swToggle();
@@ -160,7 +168,7 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
     };
-  }, [alarm, panel, prefs.style, ringing, setAlarm, setPref, stopRinging, swToggle, timerRunning, timerToggle, view]);
+  }, [alarm, cycleStyle, panel, ringing, setAlarm, stopRinging, swToggle, timerRunning, timerToggle, view]);
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-screen text-off-white">
@@ -182,7 +190,7 @@ export default function App() {
         <AlarmView alarm={alarm} tint={tint} zone={zone} at={at} format={prefs.format} onSet={setAlarm} />
       )}
 
-      <Tabs view={view} tint={tint} onPick={setView} />
+      <Tabs view={view} tint={tint} onPick={v => (v === 'clock' && view === 'clock' ? cycleStyle(1) : setView(v))} face={prefs.style} />
 
       {ringing && <Ringing kind={ringing.kind} tint={tint} onStop={stopRinging} />}
       {panel && <Settings prefs={prefs} setPref={setPref} tint={tint} />}
@@ -192,7 +200,24 @@ export default function App() {
 
 // ---------------------------------------------------------------------------
 
-function Tabs({ view, tint, onPick }: { view: View; tint: string; onPick: (v: View) => void }) {
+const FACE_LABELS: Record<Prefs['style'], string> = {
+  digital: 'Digital',
+  analogue: 'Analogue',
+  flip: 'Flip',
+  minimal: 'Minimal',
+};
+
+function Tabs({
+  view,
+  tint,
+  onPick,
+  face,
+}: {
+  view: View;
+  tint: string;
+  onPick: (v: View) => void;
+  face: Prefs['style'];
+}) {
   return (
     <div className="absolute inset-x-0 bottom-0 z-[2] flex justify-center gap-1 pb-2">
       {VIEWS.map((v, i) => (
@@ -202,7 +227,7 @@ function Tabs({ view, tint, onPick }: { view: View; tint: string; onPick: (v: Vi
           className="flex items-center gap-1.5 rounded-full px-3 py-1 text-hint transition-colors"
           style={{ color: v === view ? tint : 'rgba(239,239,239,0.35)' }}>
           <span className="grid h-4 w-4 place-items-center rounded bg-white/10 font-mono text-[0.5625rem]">{i + 1}</span>
-          {LABELS[v]}
+          {v === 'clock' && view === 'clock' ? FACE_LABELS[face] : LABELS[v]}
         </button>
       ))}
     </div>

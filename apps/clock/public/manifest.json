@@ -1,7 +1,7 @@
 {
   "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
   "name": "Clock",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A clock in four faces, with a timer, a stopwatch and an alarm.",
   "icon": "icon.png",
   "settings": "settings.html",

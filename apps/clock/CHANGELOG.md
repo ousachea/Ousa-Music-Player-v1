@@ -1,5 +1,14 @@
 # clock
 
+## 0.2.0
+
+**Preset 1** is now the whole clock. It opens the clock from anywhere, and pressing it again while
+the clock is already up walks the faces: Digital, Analogue, Flip, Minimal, round again. The tab bar
+names the face you are on rather than saying "Clock", so the button explains itself.
+
+**Mode** now moves between the four screens everywhere, including on the clock, where it used to
+turn the faces instead and so could never leave. The wheel still turns the faces on the clock.
+
 ## 0.1.0
 
 A clock for the Car Thing, in four faces: **Digital**, **Analogue**, **Flip** and **Minimal**. Mode

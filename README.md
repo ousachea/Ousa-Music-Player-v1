@@ -223,15 +223,17 @@ A clock, and the three things that usually sit beside one.
 
 ![Digital face](apps/clock/screenshots/01-digital.jpg)
 
-Four faces: **Digital**, **Analogue**, **Flip** and **Minimal**. Mode cycles them, the wheel does the
-same, and the colour, the hour format, the seconds and the date are settings.
+Four faces: **Digital**, **Analogue**, **Flip** and **Minimal**. The colour, the hour format, the
+seconds and the date are settings.
 
 ![Analogue face](apps/clock/screenshots/02-analogue.jpg)
 
-The presets are the four screens. **1** is the clock. **2** is a timer you dial with the wheel, a
-minute a click, which counts down and rings at zero. **3** is a stopwatch running to hundredths,
-with laps. **4** is an alarm: set the hour with the buttons and the minutes with the wheel, switch it
-on, and it rings at that time. The alarm outlives a restart.
+The presets are the four screens. **1** is the clock, and pressing it again once the clock is up
+walks the faces, so one button is the whole thing; the tab bar names the face you are on rather than
+saying "Clock". The wheel walks them too. **2** is a timer you dial with the wheel, a minute a click,
+which counts down and rings at zero. **3** is a stopwatch running to hundredths, with laps. **4** is
+an alarm: set the hour with the buttons and the minutes with the wheel, switch it on, and it rings at
+that time. The alarm outlives a restart. **Mode** moves between the four screens.
 
 ![Stopwatch](apps/clock/screenshots/05-stopwatch.jpg)
 
