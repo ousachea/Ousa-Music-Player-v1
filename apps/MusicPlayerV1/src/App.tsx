@@ -32,6 +32,12 @@ const WHEEL_SCROLL_PX = 26;
 
 type Volume = { level: number; muted: boolean };
 
+// the rotary reports a horizontal delta and nothing vertical. a trackpad almost never does, so
+// requiring the horizontal to dominate is what separates a turn of the wheel from a two finger scroll
+function turned(e: WheelEvent) {
+  return e.deltaX !== 0 && Math.abs(e.deltaX) > Math.abs(e.deltaY);
+}
+
 function clock(ms: number) {
   const total = Math.max(0, Math.round(ms / 1000));
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
@@ -232,7 +238,7 @@ export default function App() {
   useEffect(() => {
     // both modes go through the same detent gate, so a click means the same amount either way
     const onWheel = (e: WheelEvent) => {
-      if (panel || !e.deltaX) return;
+      if (panel || !turned(e)) return;
       detents.current += e.deltaX;
       const steps = Math.trunc(detents.current / WHEEL_PER_STEP);
       if (!steps) return;
@@ -599,7 +605,8 @@ function Panel({
   // the wheel drives volume everywhere else, but while this is open it belongs to the list
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
-      if (!list.current || !e.deltaX) return;
+      // a vertical scroll is the browser's to handle here; the list already scrolls itself
+      if (!list.current || !turned(e)) return;
       list.current.scrollTop += e.deltaX * WHEEL_SCROLL_PX;
     };
     window.addEventListener('wheel', onWheel, { passive: true });
