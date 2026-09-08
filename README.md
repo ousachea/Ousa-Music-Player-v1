@@ -123,7 +123,8 @@ picked can actually use, so switching to Poster hides the backdrop and pulse row
 
 - **Player** — style, accent colour, sharper artwork, the cover pulse with its tempo, and whether
   the Classic style's art runs to the edge of the screen
-- **Controls** — what the wheel does, how far each click seeks, and whether the seek bar is a line or a wave
+- **Controls** — what the wheel does, how far each click seeks, whether the seek bar is a line or a
+  wave, and whether it carries a dot at the playhead
 - **Backdrop** — how strongly the blurred art tints the screen, and how far it drifts
 - **Display** — animations, screen rotation, and whether the time counts down or shows the track length
 - **Clock** — position, size, 12 or 24 hour, and seconds

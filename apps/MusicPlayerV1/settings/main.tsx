@@ -24,6 +24,7 @@ const HINTS: Record<string, string> = {
   theme: 'Classic sets the album art square beside the track. Vinyl puts it on a spinning record. Poster fills the screen with it. Cover is the phone lock screen layout, with the progress times either side of the bar and a volume slider of its own.',
   rotate: 'Turns the whole screen, for a device mounted on its side or upside down. Preset button 4 also steps through it. At 90 and 270 the player is a tall column with a bar down each side, because the screen itself never changes shape.',
   coverEdge: 'Drops the padding around the album art so it runs to the top, bottom and left edges with square corners. Classic style only.',
+  seekDot: 'The marker that rides the progress bar at the playhead: a dot on the line, a tick on the wave. Off leaves the bar clean.',
   seek: 'Auto gives Poster the wave and the other styles a line. Pick one to use it everywhere.',
   backdrop: 'How strongly the blurred album art tints the screen behind the player. 0 turns it off. Poster does not use it.',
   drift: 'How far and how fast the blurred backdrop pans. 0 holds it still.',

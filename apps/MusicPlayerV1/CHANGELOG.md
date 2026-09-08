@@ -1,6 +1,10 @@
 # weather
 
-## 0.22.1
+## 0.23.0
+
+**Dot at the playhead** is a new setting, on by default. Off, the seek bar loses the marker that
+rides it: the round handle on the line, the tick on the wave, and the halo that pulses under the
+handle while a track plays. The bar still scrubs by dragging, whether or not the dot is drawn.
 
 The player styles are renamed. **Cover** is now **Classic**, and **Widget** is now **Cover**. Only
 the names change; the layouts, and the value each style is stored under, are the same, so nothing

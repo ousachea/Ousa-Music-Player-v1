@@ -292,6 +292,7 @@ export default function App() {
             motion={prefs.motion}
             seekStyle={seekStyle}
             rotate={prefs.rotate}
+            dot={prefs.seekDot}
             upright={upright}
             progress={progress}
             elapsed={elapsed}
@@ -322,6 +323,7 @@ export default function App() {
           playing={playing}
           motion={prefs.motion}
           seekStyle={seekStyle}
+          dot={prefs.seekDot}
           progress={progress}
           elapsed={elapsed}
           duration={duration}
@@ -410,6 +412,7 @@ export default function App() {
                 <Seek
                   style={seekStyle}
                   rotate={prefs.rotate}
+                  dot={prefs.seekDot}
                   progress={progress}
                   playing={playing && prefs.motion}
                   tint={accentOn?.fill ?? '#efefef'}
@@ -527,6 +530,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
       { key: 'wheel', label: 'Rotary wheel' },
       { key: 'seekSeconds', label: 'Seek step' },
       { key: 'seek', label: 'Seek bar' },
+      { key: 'seekDot', label: 'Dot at the playhead' },
     ],
   },
   {
@@ -954,6 +958,7 @@ function Poster({
   playing,
   motion,
   seekStyle,
+  dot,
   wallClock,
   clockPos,
   clockSize,
@@ -974,6 +979,7 @@ function Poster({
   playing: boolean;
   motion: boolean;
   seekStyle: 'bar' | 'wave';
+  dot: boolean;
   wallClock: ClockParts | null;
   clockPos: 'left' | 'center' | 'right';
   clockSize: number;
@@ -1040,6 +1046,7 @@ function Poster({
         <Seek
           style={seekStyle}
           rotate={rotate}
+          dot={dot}
           progress={progress}
           playing={playing && motion}
           tint={tint}
@@ -1077,6 +1084,7 @@ function Widget({
   playing,
   motion,
   seekStyle,
+  dot,
   rotate,
   upright,
   progress,
@@ -1101,6 +1109,7 @@ function Widget({
   playing: boolean;
   motion: boolean;
   seekStyle: 'bar' | 'wave';
+  dot: boolean;
   rotate: Prefs['rotate'];
   upright: boolean;
   progress: number;
@@ -1166,6 +1175,7 @@ function Widget({
     <Seek
       style={seekStyle}
       rotate={rotate}
+      dot={dot}
       progress={progress}
       playing={playing && motion}
       tint={tint}
@@ -1294,6 +1304,7 @@ function wavePath(from: number, to: number, mid: number) {
 
 function Wave({
   rotate,
+  dot,
   progress,
   playing,
   tint,
@@ -1301,6 +1312,7 @@ function Wave({
   onSeek,
 }: {
   rotate: Prefs['rotate'];
+  dot: boolean;
   progress: number;
   playing: boolean;
   tint: string;
@@ -1363,7 +1375,7 @@ function Wave({
             fill="none"
           />
         </g>
-        <rect x={played - 1.5} y={mid - 9} width="3" height="18" rx="1.5" fill={tint2} />
+        {dot && <rect x={played - 1.5} y={mid - 9} width="3" height="18" rx="1.5" fill={tint2} />}
       </svg>
     </div>
   );
@@ -1372,6 +1384,7 @@ function Wave({
 function Seek({
   style,
   rotate,
+  dot,
   progress,
   playing,
   tint,
@@ -1380,6 +1393,7 @@ function Seek({
 }: {
   style: 'bar' | 'wave';
   rotate: Prefs['rotate'];
+  dot: boolean;
   progress: number;
   playing: boolean;
   tint: string;
@@ -1387,9 +1401,9 @@ function Seek({
   onSeek: (ratio: number) => void;
 }) {
   return style === 'wave' ? (
-    <Wave rotate={rotate} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
+    <Wave rotate={rotate} dot={dot} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
   ) : (
-    <Rail rotate={rotate} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
+    <Rail rotate={rotate} dot={dot} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
   );
 }
 
@@ -1477,6 +1491,7 @@ function Backdrop({ url, intensity, drift }: { url: string | null; intensity: nu
 // pointer anywhere on the strip seeks, and the hit area is taller than the visible rail
 function Rail({
   rotate,
+  dot,
   progress,
   playing,
   tint,
@@ -1484,6 +1499,7 @@ function Rail({
   onSeek,
 }: {
   rotate: Prefs['rotate'];
+  dot: boolean;
   progress: number;
   playing: boolean;
   tint: string;
@@ -1523,16 +1539,18 @@ function Rail({
             <div className="absolute inset-y-0 w-1/3 animate-sheen bg-gradient-to-r from-transparent via-white/70 to-transparent" />
           )}
         </div>
-        {playing && (
+        {dot && playing && (
           <div
             className="pointer-events-none absolute top-1/2 h-3 w-3 animate-halo rounded-full bg-off-white"
             style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: tint2 }}
           />
         )}
-        <div
-          className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-off-white shadow transition-colors duration-500"
-          style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: tint2 }}
-        />
+        {dot && (
+          <div
+            className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-off-white shadow transition-colors duration-500"
+            style={{ left: `${Math.min(100, progress * 100)}%`, backgroundColor: tint2 }}
+          />
+        )}
       </div>
     </div>
   );
