@@ -8,6 +8,11 @@ a volume slider of its own, which drags against the daemon's volume rather than 
 The output picker a phone puts beside the transport is dropped: the device has nowhere else to send
 audio, so the row is the three transport glyphs and nothing more.
 
+Cover and Widget both share their height out between the rows now, at every rotation, rather than
+letting the track block swallow the slack and leaving the transport crowded against the bottom. The
+Widget card narrowed to make room for that, since the cover has to give up height for the rows to
+have any to share and cropping it instead was not worth it.
+
 The arrangement never changes; only the frame around it does. Portrait, at 90 or 270, fills the
 screen with it, and the volume slider takes the bottom edge so the slack the stack leaves lands
 above it rather than under it. Landscape floats it as a narrow card over the blurred artwork, sized so the cover

@@ -373,7 +373,7 @@ export default function App() {
             )}
 
             <div
-              className={`flex min-w-0 flex-1 flex-col ${upright ? 'w-full' : 'h-full'} ${
+              className={`flex min-w-0 flex-1 flex-col justify-between gap-2 ${upright ? 'w-full' : 'h-full'} ${
                 edge ? (upright ? 'px-7' : 'py-7') : ''
               }`}>
               <div className={`flex min-h-5 items-center ${JUSTIFY[prefs.clockPos]}`}>
@@ -385,7 +385,7 @@ export default function App() {
                 />
               </div>
 
-              <div className="flex min-h-0 flex-1 flex-col justify-center">
+              <div className="min-w-0 shrink-0">
                 <div
                   className="mb-2 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase transition-colors duration-500"
                   style={accentOn ? { color: accentOn.soft } : undefined}>
@@ -398,7 +398,7 @@ export default function App() {
                 <Roll text={track.artist ?? '—'} className="mt-2 text-title text-soft" />
               </div>
 
-              <div>
+              <div className="shrink-0">
                 <Seek
                   style={seekStyle}
                   rotate={prefs.rotate}
@@ -412,20 +412,20 @@ export default function App() {
                   <span>{clock(elapsed)}</span>
                   <span>{duration ? (prefs.remaining ? `-${clock(duration - elapsed)}` : clock(duration)) : '--:--'}</span>
                 </div>
+              </div>
 
-                <div className="mt-8 flex items-center justify-center gap-12">
-                  <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
-                    <Skip className="h-10 w-10 -scale-x-100" />
-                  </Ghost>
-                  <Ghost label={playing ? 'pause' : 'play'} tint={accentOn?.fill} onClick={toggle}>
-                    <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-                      {playing ? <Pause className="h-11 w-11" /> : <Play className="h-11 w-11" />}
-                    </span>
-                  </Ghost>
-                  <Ghost label="next" onClick={() => client.player.skipNext()}>
-                    <Skip className="h-10 w-10" />
-                  </Ghost>
-                </div>
+              <div className="flex shrink-0 items-center justify-center gap-12">
+                <Ghost label="previous" onClick={() => client.player.skipPrev({ allowSeeking: true })}>
+                  <Skip className="h-10 w-10 -scale-x-100" />
+                </Ghost>
+                <Ghost label={playing ? 'pause' : 'play'} tint={accentOn?.fill} onClick={toggle}>
+                  <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+                    {playing ? <Pause className="h-11 w-11" /> : <Play className="h-11 w-11" />}
+                  </span>
+                </Ghost>
+                <Ghost label="next" onClick={() => client.player.skipNext()}>
+                  <Skip className="h-10 w-10" />
+                </Ghost>
               </div>
             </div>
           </div>
@@ -1189,7 +1189,7 @@ function Widget({
         </Ghost>
       </div>
 
-      <div className={`flex shrink-0 items-center gap-2.5 ${upright ? 'mt-auto' : ''}`}>
+      <div className="flex shrink-0 items-center gap-2.5">
         <Speaker className="h-3.5 w-3.5 shrink-0 text-dim" />
         <div className="min-w-0 flex-1">
           <VolumeBar level={level} rotate={rotate} tint={tint} onPick={onVolume} />
@@ -1199,11 +1199,11 @@ function Widget({
     </>
   );
 
-  if (upright) return <div className="relative flex h-full w-full flex-col gap-4 p-7">{stack}</div>;
+  if (upright) return <div className="relative flex h-full w-full flex-col justify-between gap-4 p-7">{stack}</div>;
 
   return (
     <div className="relative grid h-full w-full place-items-center">
-      <div className="flex h-[95%] w-[245px] flex-col justify-center gap-2.5 rounded-[26px] bg-black/45 p-4 ring-1 ring-white/10 backdrop-blur-2xl">
+      <div className="flex h-full w-[210px] flex-col justify-between gap-2 rounded-[26px] bg-black/45 p-4 ring-1 ring-white/10 backdrop-blur-2xl">
         {stack}
       </div>
     </div>
