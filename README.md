@@ -120,7 +120,7 @@ around it, at a tempo you set.
 | Button under the wheel | Opens and closes settings |
 | Tap the play button | Play or pause |
 | Drag the progress bar | Seek |
-| Swipe across the screen | Next track, or previous if you swipe the other way; the new one slides in behind it |
+| Swipe across the screen | Next track, or previous if you swipe the other way |
 
 A press waits a moment to see whether another one follows, so play/pause from the wheel is very
 slightly delayed. The on-screen button is instant.

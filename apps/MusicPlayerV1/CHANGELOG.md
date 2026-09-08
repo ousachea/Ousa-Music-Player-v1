@@ -2,6 +2,14 @@
 
 ## 0.27.2
 
+Changing a track no longer flashes the background. The blurred artwork was being torn down and
+rebuilt on every change, leaving the screen bare while the new one decoded; it now stays where it is
+and the incoming art dissolves over the outgoing one, in every style.
+
+CD and Vinyl stop sliding the whole player at the same time as swapping the disc, which was two
+movements arguing. The player changes over on the spot and the record or disc does the moving,
+turning in from a little smaller and settling.
+
 A long title no longer runs off the right of the screen in the CD style. It stays inside its column,
 and rather than scrolling past it wraps onto as many rows as it needs, up to three, with two for the
 artist. The track is centred in the space the controls leave, which is deep enough to grow into.

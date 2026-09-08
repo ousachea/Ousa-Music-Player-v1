@@ -29,6 +29,8 @@ const MULTI_CLICK_MS = 300;
 const HINT_KEY = 'hint.settingsSeen';
 const HINT_MS = 7000;
 const WHEEL_SCROLL_PX = 26;
+// how long the blurred art takes to dissolve from one track to the next
+const BACKDROP_FADE_MS = 700;
 // a swipe has to travel this far, and stay flat enough, to count as one rather than a stray drag
 const SWIPE_MIN_PX = 70;
 const SWIPE_MAX_DRIFT = 0.7;
@@ -357,14 +359,23 @@ export default function App() {
   return (
     <Stage rotate={prefs.rotate}>
     <div className="relative h-full w-full overflow-hidden bg-screen">
+      {/* outside the keyed wrapper: inside it, every track change tore the blurred art down and
+          built it again, which showed as a flash while the new one decoded */}
+      {prefs.theme !== 'poster' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />}
+
       <div
         key={track.persistentId ?? track.title ?? ''}
         className={`relative h-full w-full ${
-          prefs.motion ? (skipDir.current === 'prev' ? 'skip-prev' : 'skip-next') : ''
+          !prefs.motion
+            ? ''
+            : prefs.theme === 'cd' || prefs.theme === 'vinyl'
+              ? 'skip-fade'
+              : skipDir.current === 'prev'
+                ? 'skip-prev'
+                : 'skip-next'
         }`}>
       {prefs.theme === 'cd' ? (
         <>
-          <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />
           <CdDeck
             artUrl={artUrl}
             context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
@@ -391,7 +402,6 @@ export default function App() {
         </>
       ) : prefs.theme === 'widget' ? (
         <>
-          <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />
           <Widget
             artUrl={artUrl}
             context={conn === 'open' ? (state?.context?.name ?? track.album ?? 'now playing') : conn}
@@ -455,7 +465,6 @@ export default function App() {
         />
       ) : (
         <>
-          <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} />
 
           <div
             className={`relative flex h-full w-full items-stretch gap-7 ${upright ? 'flex-col' : ''} ${
@@ -1887,19 +1896,37 @@ function Backdrop({ url, intensity, drift }: { url: string | null; intensity: nu
   } as CSSProperties;
   // the scrims were fixed, so raising the image opacity alone did almost nothing; they have to yield as it rises
   const scrim = (alpha: number) => `rgba(6, 8, 9, ${(alpha * (1 - 0.62 * level)).toFixed(3)})`;
+
+  // the outgoing art stays underneath while the incoming one fades over it, so a track change is a
+  // dissolve rather than a cut back to bare screen and up again
+  const [shown, setShown] = useState(url);
+  const [under, setUnder] = useState<string | null>(null);
+  useEffect(() => {
+    if (url === shown) return;
+    setUnder(shown);
+    setShown(url);
+    const t = setTimeout(() => setUnder(null), BACKDROP_FADE_MS);
+    return () => clearTimeout(t);
+  }, [url, shown]);
+
+  // tailwind's scale utility sets the separate scale property, which would compound with the
+  // keyframes' own transform, so the zoom is owned by one of them and never both
+  const art = (src: string) => (
+    <img
+      src={src}
+      alt=""
+      style={{ opacity: level, transform: d > 0 ? undefined : 'scale(1.5)', ...(d > 0 ? driftVars : {}) }}
+      className={`absolute inset-0 h-full w-full object-cover blur-[72px] saturate-[1.6] ${d > 0 ? 'drift' : ''}`}
+    />
+  );
+
   return (
     <div className="pointer-events-none absolute inset-0">
-      {url && level > 0 && (
-        <img
-          src={url}
-          alt=""
-          // tailwind's scale utility sets the separate scale property, which would compound with the
-          // keyframes' own transform, so the zoom is owned by one of them and never both
-          style={{ opacity: level, transform: d > 0 ? undefined : 'scale(1.5)', ...(d > 0 ? driftVars : {}) }}
-          className={`absolute inset-0 h-full w-full object-cover blur-[72px] saturate-[1.6] transition-opacity duration-500 ${
-            d > 0 ? 'drift' : ''
-          }`}
-        />
+      {level > 0 && under && art(under)}
+      {level > 0 && shown && (
+        <div key={shown} className="backdrop-in absolute inset-0">
+          {art(shown)}
+        </div>
       )}
       <div
         className="absolute inset-0"
