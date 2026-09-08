@@ -78,13 +78,7 @@ export default function App() {
   // Cover is drawn after a lock screen, which has a plain line and no room for a wave, so it keeps
   // one whatever the seek setting says; every other style honours the choice
   const seekStyle =
-    prefs.theme === 'widget'
-      ? 'bar'
-      : prefs.seek === 'auto'
-        ? prefs.theme === 'poster' || prefs.theme === 'card'
-          ? 'wave'
-          : 'bar'
-        : prefs.seek;
+    prefs.theme === 'widget' ? 'bar' : prefs.seek === 'auto' ? (prefs.theme === 'poster' ? 'wave' : 'bar') : prefs.seek;
   const seekDot = prefs.seekDot === 'auto' ? prefs.theme !== 'widget' : prefs.seekDot === 'on';
   // a quarter turn lays the player out portrait, where a square cover cannot sit beside the track
   const upright = prefs.rotate === 90 || prefs.rotate === 270;
@@ -287,7 +281,7 @@ export default function App() {
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
       else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        const order: Prefs['theme'][] = ['card', 'vinyl', 'cd', 'poster', 'widget'];
+        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'poster'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
@@ -342,7 +336,7 @@ export default function App() {
     );
 
   // the cover only runs to the edge in the style that draws a cover at all
-  const edge = prefs.theme === 'card' && prefs.coverEdge;
+  const edge = prefs.theme === 'widget' && prefs.coverEdge;
 
   return (
     <Stage rotate={prefs.rotate}>
@@ -393,6 +387,9 @@ export default function App() {
             rotate={prefs.rotate}
             dot={seekDot}
             showTransport={prefs.transport}
+            edge={edge}
+            pulse={prefs.motion && prefs.pulse}
+            pulseMs={Math.round(60000 / (prefs.pulseBpm || AUTO_PULSE_BPM))}
             upright={upright}
             progress={progress}
             elapsed={elapsed}
@@ -450,38 +447,7 @@ export default function App() {
                   ? 'py-0 pr-7 pl-0'
                   : 'p-7'
             }`}>
-            {prefs.theme === 'vinyl' ? (
-              <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} upright={upright} />
-            ) : (
-              <div className={`relative aspect-square ${upright ? 'w-full min-h-0 shrink' : 'h-full shrink-0'}`}>
-                {!edge && <div className="absolute inset-x-4 bottom-0 h-10 rounded-full bg-black/70 blur-2xl" />}
-                {accentOn && prefs.motion && prefs.pulse && (
-                  <div
-                    className={`cover-pulse pointer-events-none absolute inset-0 ${edge ? '' : 'rounded-2xl'}`}
-                    style={{
-                      boxShadow: `0 0 0 1.5px ${accentOn.soft}, 0 0 38px 5px ${accentOn.fill}`,
-                      ['--pulse-duration' as string]: `${Math.round(60000 / (prefs.pulseBpm || AUTO_PULSE_BPM))}ms`,
-                    }}
-                  />
-                )}
-                {artUrl ? (
-                  <img
-                    src={artUrl}
-                    alt=""
-                    className={`relative h-full w-full object-cover ${
-                      edge ? '' : 'rounded-2xl shadow-2xl ring-1 ring-white/12'
-                    }`}
-                  />
-                ) : (
-                  <div
-                    className={`relative grid h-full w-full place-items-center bg-white/6 ${
-                      edge ? '' : 'rounded-2xl ring-1 ring-white/12'
-                    }`}>
-                    <Disc className="h-16 w-16 text-off-white/25" />
-                  </div>
-                )}
-              </div>
-            )}
+            <Turntable artUrl={artUrl} playing={playing} spin={prefs.motion} upright={upright} />
 
             <div
               className={`flex min-w-0 flex-1 flex-col justify-between gap-2 ${upright ? 'w-full' : 'h-full'} ${
@@ -601,7 +567,7 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 }
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
-  theme: { values: ['card', 'vinyl', 'cd', 'poster', 'widget'], labels: ['Classic', 'Vinyl', 'CD', 'Poster', 'Cover'] },
+  theme: { values: ['widget', 'vinyl', 'cd', 'poster'], labels: ['Cover', 'Vinyl', 'CD', 'Poster'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
@@ -627,11 +593,11 @@ const GROUPS: { title: string; rows: Row[] }[] = [
     title: 'Player',
     rows: [
       { key: 'theme', label: 'Player style' },
-      { key: 'coverEdge', label: 'Art to the edge', only: ['card'] },
+      { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
       { key: 'accent', label: 'Accent colour' },
       { key: 'hdArt', label: 'HD album art' },
-      { key: 'pulse', label: 'Art pulse', only: ['card'] },
-      { key: 'pulseBpm', label: 'Pulse tempo', only: ['card'] },
+      { key: 'pulse', label: 'Art pulse', only: ['widget'] },
+      { key: 'pulseBpm', label: 'Pulse tempo', only: ['widget'] },
     ],
   },
   {
@@ -647,8 +613,8 @@ const GROUPS: { title: string; rows: Row[] }[] = [
   {
     title: 'Backdrop',
     rows: [
-      { key: 'backdrop', label: 'Intensity', only: ['card', 'vinyl', 'cd', 'widget'] },
-      { key: 'drift', label: 'Drift', only: ['card', 'vinyl', 'cd', 'widget'] },
+      { key: 'backdrop', label: 'Intensity', only: ['widget', 'vinyl', 'cd'] },
+      { key: 'drift', label: 'Drift', only: ['widget', 'vinyl', 'cd'] },
     ],
   },
   {
@@ -657,7 +623,7 @@ const GROUPS: { title: string; rows: Row[] }[] = [
       { key: 'motion', label: 'Animations' },
       { key: 'notes', label: 'Floating notes' },
       { key: 'rotate', label: 'Screen rotation' },
-      { key: 'remaining', label: 'Show time remaining', only: ['card', 'vinyl', 'cd', 'widget'] },
+      { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd'] },
     ],
   },
   {
@@ -1410,6 +1376,9 @@ function Widget({
   seekStyle,
   dot,
   showTransport,
+  edge,
+  pulse,
+  pulseMs,
   rotate,
   upright,
   progress,
@@ -1436,6 +1405,9 @@ function Widget({
   seekStyle: 'bar' | 'wave';
   dot: boolean;
   showTransport: boolean;
+  edge: boolean;
+  pulse: boolean;
+  pulseMs: number;
   rotate: Prefs['rotate'];
   upright: boolean;
   progress: number;
@@ -1458,15 +1430,26 @@ function Widget({
   // the card is 280px wide against a 480px tall screen, so every row it holds has to come down a size
   const small = !upright;
 
+  const round = small ? 'rounded-2xl' : 'rounded-[22px]';
   const cover = (
     <div
-      className={`relative aspect-square overflow-hidden bg-white/6 shadow-2xl ring-1 ring-white/10 ${
-        small ? 'h-full shrink-0 rounded-2xl' : 'w-full min-h-0 shrink rounded-[22px]'
+      className={`relative aspect-square bg-white/6 ${small ? 'h-full shrink-0' : 'w-full min-h-0 shrink'} ${
+        edge ? '' : `overflow-hidden shadow-2xl ring-1 ring-white/10 ${round}`
       }`}>
+      {/* the glow sits outside the art rather than over it, so it never veils the cover */}
+      {accent && pulse && (
+        <div
+          className={`cover-pulse pointer-events-none absolute inset-0 ${edge ? '' : round}`}
+          style={{
+            boxShadow: `0 0 0 1.5px ${accent.soft}, 0 0 38px 5px ${accent.fill}`,
+            ['--pulse-duration' as string]: `${pulseMs}ms`,
+          }}
+        />
+      )}
       {artUrl ? (
-        <img src={artUrl} alt="" className="h-full w-full object-cover" />
+        <img src={artUrl} alt="" className={`relative h-full w-full object-cover ${edge ? '' : round}`} />
       ) : (
-        <div className="grid h-full w-full place-items-center">
+        <div className={`relative grid h-full w-full place-items-center ${edge ? '' : round}`}>
           <Disc className={`text-off-white/25 ${small ? 'h-12 w-12' : 'h-16 w-16'}`} />
         </div>
       )}
@@ -1572,13 +1555,18 @@ function Widget({
     </>
   );
 
-  if (upright) return <div className="relative flex h-full w-full flex-col justify-between gap-4 p-7">{stack}</div>;
+  if (upright)
+    return (
+      <div className={`relative flex h-full w-full flex-col justify-between gap-4 ${edge ? 'px-0 pt-0 pb-7' : 'p-7'}`}>
+        {stack}
+      </div>
+    );
 
   return (
     // one surface: no panel of its own, so the blurred artwork behind runs the whole screen and the
     // content sits straight on it. inset-0 also keeps the box definite, which the cover's aspect
     // ratio needs or a content-sized track grows to fit it
-    <div className="absolute inset-0 flex items-stretch gap-7 overflow-hidden p-7">
+    <div className={`absolute inset-0 flex items-stretch gap-7 overflow-hidden ${edge ? 'py-0 pr-7 pl-0' : 'p-7'}`}>
       {cover}
       <div className="flex min-w-0 flex-1 flex-col gap-5">
         {/* the track takes the space above; the controls hold the bottom edge whatever is left */}

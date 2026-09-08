@@ -5,11 +5,10 @@ import './style.css';
 
 // the enum keys are terse on purpose so they read well in the manifest; spell them out for a person
 const CHOICE_LABELS: Record<string, string> = {
-  card: 'Classic',
+  widget: 'Cover',
   vinyl: 'Vinyl record',
   cd: 'Compact disc',
   poster: 'Full bleed artwork',
-  widget: 'Cover',
   auto: 'Match the player style',
   on: 'Always show it',
   off: 'Never show it',
@@ -24,9 +23,9 @@ const CHOICE_LABELS: Record<string, string> = {
 const HINTS: Record<string, string> = {
   wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',
   seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
-  theme: 'Classic sets the album art square beside the track. Vinyl puts it on a spinning record and CD prints it on a spinning disc. Poster fills the screen with it. Cover is the phone lock screen layout, with the progress times either side of the bar and a volume slider of its own.',
+  theme: 'Cover sets the album art beside the track with a volume slider of its own, after a phone lock screen. Vinyl puts the art on a spinning record and CD prints it on a spinning disc. Poster fills the screen with it.',
   rotate: 'Turns the whole screen, for a device mounted on its side or upside down. Preset button 4 also steps through it. At 90 and 270 the player is a tall column with a bar down each side, because the screen itself never changes shape.',
-  coverEdge: 'Drops the padding around the album art so it runs to the top, bottom and left edges with square corners. Classic style only.',
+  coverEdge: 'Drops the padding around the album art so it runs to the edges with square corners. Cover style only.',
   transport: 'The previous, play and next buttons drawn on screen. The four preset buttons do the same job, so turning these off gives the artwork more room; a small legend takes their place showing which preset does what.',
   seekDot: 'The marker that rides the progress bar at the playhead: a dot on the line, a tick on the wave. Auto draws it everywhere except Cover, which reads cleaner without it. The bar still scrubs by dragging either way.',
   seek: 'Auto gives Classic and Poster the wave, and Vinyl and Cover a line. Pick one to use it everywhere.',
@@ -35,7 +34,7 @@ const HINTS: Record<string, string> = {
   clock: 'Shows the time from your phone, in its own timezone.',
   clockSize: 'Scales the clock relative to its normal size.',
   hdArt: 'The device only receives 512px artwork. This looks the album up on Apple\u2019s public search and uses the 1000px cover instead, which matters most in the Poster style. When the phone sends no artist for a track, the same lookup supplies one, so turning this off can leave the artist line blank. Off keeps the player entirely offline.',
-  pulse: 'A glow that beats around the album art. Classic style only.',
+  pulse: 'A glow that beats around the album art. Cover style only.',
   pulseBpm: 'How fast the glow beats, in BPM. 0 means auto, which is simply a steady 90: the app never receives the audio, so it cannot know the song\u2019s own tempo.',
   accent: 'The progress bar, play button and header take this colour.',
   notes: 'Music notes drifting up the screen while a track plays, each tinted a little differently from the album art. Drawn over whichever player style you are using. It follows Animations: with those off, nothing floats.',

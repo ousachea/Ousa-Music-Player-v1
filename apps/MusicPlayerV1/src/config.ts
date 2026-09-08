@@ -3,7 +3,7 @@ import type { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Prefs = {
-  theme: 'card' | 'vinyl' | 'cd' | 'poster' | 'widget';
+  theme: 'widget' | 'vinyl' | 'cd' | 'poster';
   rotate: 0 | 90 | 180 | 270;
   coverEdge: boolean;
   wheel: 'volume' | 'seek';
@@ -27,7 +27,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'card', rotate: 0, coverEdge: false, wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, transport: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, coverEdge: false, wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, drift: 100, transport: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -45,7 +45,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'theme':
       return {
         ...prefs,
-        theme: value === 'vinyl' || value === 'cd' || value === 'poster' || value === 'widget' ? value : 'card',
+        theme: value === 'vinyl' || value === 'cd' || value === 'poster' ? value : 'widget',
       };
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };

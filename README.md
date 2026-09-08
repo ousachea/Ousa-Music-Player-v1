@@ -3,11 +3,11 @@
 Five apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
 source once and all of them are available.
 
-![Classic style](apps/MusicPlayerV1/screenshots/01-classic.jpg)
+![Cover style](apps/MusicPlayerV1/screenshots/01-cover.jpg)
 
 | App | What it does |
 | --- | --- |
-| **Music Player** | Now playing, in five styles, coloured by the album art |
+| **Music Player** | Now playing, in four styles, coloured by the album art |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -42,23 +42,9 @@ settings on the device and press **Check** under *Software update*.
 Music notes drift up over whichever style you pick, each one tinted a little differently from the
 album art. They pause with the music, and **Display → Floating notes** turns them off.
 
-### The five player styles
+### The four player styles
 
 Switch between them in the settings, under **Player style**.
-
-### Classic
-
-![Classic style](apps/MusicPlayerV1/screenshots/01-classic.jpg)
-
-The album at full height with the track beside it. The clock, the track, the progress bar and the
-transport share the height between them rather than bunching, at every rotation. The transport is
-bare white glyphs, no circles: two solid triangles for skip, two bars for pause. The artwork's own colour drives the
-play/pause glyph and the seek bar, and a glow pulses around the cover's edge. The blurred cover
-sits behind everything, and both its strength and its slow drift are adjustable.
-
-**Art to the edge** drops the padding around the art, along with its rounded corners, ring and
-shadow, so the cover runs flush to the top, bottom and left of the screen. The track keeps its own
-padding on the right.
 
 ### Vinyl
 
@@ -70,7 +56,7 @@ when the music stops.
 
 ### CD
 
-![CD style](apps/MusicPlayerV1/screenshots/05-cd.jpg)
+![CD style](apps/MusicPlayerV1/screenshots/03-cd.jpg)
 
 The album printed across a disc, with the clamping ring and the hole punched through the middle of
 it and a sheen sweeping over the print. The disc sits centred in a tray washed with a dark version
@@ -83,7 +69,7 @@ whole thing stacks the way a phone would.
 
 ### Poster
 
-![Poster style](apps/MusicPlayerV1/screenshots/03-poster.jpg)
+![Poster style](apps/MusicPlayerV1/screenshots/04-poster.jpg)
 
 The artwork fills the whole screen with the track laid over it, and a long title wraps onto as many
 rows as it needs rather than scrolling past. The play button's rounded square turns slowly while the
@@ -93,21 +79,23 @@ This is the style that benefits most from the sharper artwork lookup.
 
 ### Cover
 
-![Cover style](apps/MusicPlayerV1/screenshots/04-cover.jpg)
+![Cover style](apps/MusicPlayerV1/screenshots/01-cover.jpg)
 
-The phone lock screen, near enough. Rounded artwork, the track, a progress bar with the elapsed and
-remaining times, the transport, and a volume slider of its own. Dragging that slider sets the volume
-on the device, and unmutes it first if it was muted. The output picker a phone puts beside the
-transport is not here, because a Car Thing has nowhere else to send audio.
+The album art beside the track, after a phone lock screen: the artwork, the track, a progress bar
+with the elapsed and remaining times, the transport, and a volume slider of its own. Dragging that
+slider sets the volume on the device, and unmutes it first if it was muted. The output picker a
+phone puts beside the transport is not here, because a Car Thing has nowhere else to send audio.
 
-Landscape sets the cover at full height on the left. To the right the clock, the track and the
+Landscape sets the artwork at full height on the left. To the right the clock, the track and the
 progress bar space themselves down the same height, and the transport and volume slider hold the
-bottom edge. There is no panel behind any of it: the
-blurred artwork runs the whole screen, so the album's colour carries under the controls instead of
-stopping at an edge. Turned to 90 or 270 the same rows stack into a column and fill the screen, with
-the times either side of the bar because the column is too tall to put them under it. Left in landscape it floats as a narrow card over the blurred artwork, sized so the cover
-lands square and uncropped, because stacking the six rows is the whole look and a full width version
-of it would only be the Classic style again.
+bottom edge. Nothing is layered over anything: the blurred artwork runs the whole screen, so the
+album's colour carries under the controls instead of stopping at an edge. Turned to 90 or 270 the
+same rows stack into a column and fill the screen, with the times either side of the bar because the
+column is too tall to put them under it.
+
+**Art to the edge** drops the padding around the art, along with its rounded corners, ring and
+shadow, so it runs flush to the edges of the screen. **Art pulse** beats a glow around it, at a
+tempo you set.
 
 ### Controls
 
@@ -117,7 +105,7 @@ of it would only be the Classic style again.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Classic, Vinyl, CD, Poster, Cover |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Poster |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -138,7 +126,7 @@ needs, so the transport always keeps its margin from the bottom edge. The rotati
 
 ### Settings
 
-![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
+![Settings](apps/MusicPlayerV1/screenshots/05-settings.jpg)
 
 Press the button under the wheel to open them on the device. The list only shows what the style you
 picked can actually use, so switching to Poster hides the backdrop and pulse rows it does not draw.

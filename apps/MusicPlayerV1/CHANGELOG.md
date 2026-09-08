@@ -2,6 +2,11 @@
 
 ## 0.25.3
 
+**Classic and Cover are one style now, called Cover.** They were two takes on the same idea, art
+beside the track, and Cover had grown the better one. It keeps its own layout and gains what Classic
+owned: **Art to the edge** and **Art pulse**. Anything set to Classic moves to Cover on its own,
+since the two are no longer distinguishable. Four styles remain: Cover, Vinyl, CD and Poster.
+
 Skipping a track slides the new one in from the side it came from, in every style. The animation
 sits on the one element all five share, so it is the same movement whichever player you are using,
 and because that element is inside the turned stage the slide follows the direction you actually
