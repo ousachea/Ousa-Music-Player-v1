@@ -1,5 +1,17 @@
 # Music Player
 
+## 0.33.0
+
+The Lyrics screen lays its controls out again. The elapsed time against the length reads in the
+middle of the top edge, under the hairline that draws the progress. The transport is one row along
+the bottom: previous and next at the ends, play and pause a rounded square in the album's colour in
+the middle, where a thumb lands. The button that puts the words away takes the top corner opposite
+the track.
+
+The play button stops turning. Rotating it under a page of moving words was one thing too many on
+the screen; it flips its glyph and nothing else. A track corner along the bottom now sits above the
+transport rather than under it.
+
 ## 0.32.0
 
 The phone's queue, pulled up from the bottom edge of the screen. It shows what is playing at the

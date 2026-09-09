@@ -84,6 +84,8 @@ whole thing stacks the way a phone would.
 
 ### Cassette
 
+![Cassette style](apps/MusicPlayerV1/screenshots/07-cassette.jpg)
+
 A tape sitting in a deck, in three designs. **Written** is a blank label somebody filled in: the title
 across the cream card, the rainbow band every tape wore under it, and a window below that showing
 the two spools. **Printed** is a pressed release: the cover itself is the label, printed as a
@@ -193,21 +195,25 @@ lines.
 
 How far through the song is runs along the top edge of the screen: a hairline the width of the
 display that fills as the track plays, and dims while it is paused. Nothing is drawn for it to sit
-in, which is the point.
+in, which is the point. The elapsed time against the length reads in the middle of that edge, under
+the line that draws it.
+
+The transport is one row along the bottom: previous and next at the ends of it, play and pause a
+rounded square in the album's colour in the middle, where a thumb lands. The button flips its glyph
+rather than turning, since a page of words has enough moving on it already. All of it goes away when
+the on-screen buttons do, and the line along the top does not.
 
 The artwork and the track sit in whichever corner you pick, under **Track corner**. On the right the
-artwork leads and the track reads back towards it. The other end of that same edge carries play and
-pause, a rounded square in the album's colour that turns slowly while the track plays and holds
-where it is when you pause, with the glyph upright on top of it and the elapsed time against the
-length underneath. Previous and next take the far ends of the other edge, so the four sit one to a
-corner. All of them go away when the on-screen buttons do.
+artwork leads and the track reads back towards it, and a corner along the bottom sits above the
+transport rather than under it. The button that puts the words away takes the top corner opposite
+the track.
 
 Touching a line plays from it: each line knows the moment it belongs to, so the words are also the
 scrubber. The wheel reads rather than scrubs, moving the words a line a click while the song carries
 on, and the view returns to the line being sung a few seconds after you stop.
 
-A button on the left puts the words away and brings them back, and **Show the words** does the same
-from the settings. With them off, or on a track that has none, the style shows the artwork, title
+The button in the top corner puts the words away and brings them back, and **Show the words** does
+the same from the settings. With them off, or on a track that has none, the style shows the artwork, title
 and artist down the middle instead, with the transport under them.
 
 What you get depends on what the phone has. Timed lyrics get the moving column. Lyrics without
@@ -215,6 +221,8 @@ timings are laid out as a page, which the wheel scrolls. A track with neither sa
 title rather than leaving the screen blank.
 
 ### The queue
+
+![The queue](apps/MusicPlayerV1/screenshots/08-queue.jpg)
 
 Pull up from the bottom edge of the screen and the phone's queue comes with it: what is playing at
 the top, everything lined up after it, and what has just been played under that, each row with its

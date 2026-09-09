@@ -2723,9 +2723,8 @@ function Lyrics({
   const has = lyrics.state === 'timed' || lyrics.state === 'plain';
   const right = corner === 'tr' || corner === 'br';
   const bottom = corner === 'bl' || corner === 'br';
-  const edge = `${bottom ? 'bottom-5' : 'top-5'} ${right ? 'right-6' : 'left-6'}`;
-  // play and pause take the other end of the same edge, which is the end previous and next leave free
-  const other = `${bottom ? 'bottom-5' : 'top-5'} ${right ? 'left-6' : 'right-6'}`;
+  // a bottom corner clears the transport row that now runs along that edge
+  const edge = `${bottom ? 'bottom-20' : 'top-5'} ${right ? 'right-6' : 'left-6'}`;
 
   const done = Math.min(1, Math.max(0, duration > 0 ? elapsed / duration : 0));
   // the screen's own top edge is the progress bar: nothing is drawn for it to live in
@@ -2742,8 +2741,9 @@ function Lyrics({
     <>
       {edgeBar}
       {/* on the right the artwork leads and the track reads back towards it, so the pair stays
-          anchored to its own corner rather than pointing out of the screen */}
-      <div className={`pointer-events-none absolute z-[3] flex max-w-[46%] items-center gap-3 ${edge} ${right ? 'flex-row-reverse' : ''}`}>
+          anchored to its own corner rather than pointing out of the screen. a corner along the
+          bottom sits above the transport rather than under it */}
+      <div className={`pointer-events-none absolute z-[3] flex max-w-[38%] items-center gap-3 ${edge} ${right ? 'flex-row-reverse' : ''}`}>
         {artUrl ? (
           <img src={artUrl} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover shadow-lg ring-1 ring-white/15" />
         ) : (
@@ -2757,64 +2757,50 @@ function Lyrics({
         </div>
       </div>
 
+      {/* the time reads under the line that draws it, in the middle of the top edge */}
+      <div className="pointer-events-none absolute top-3.5 left-1/2 z-[3] -translate-x-1/2 font-mono text-hint tabular-nums text-off-white/75">
+        {clock(elapsed)}
+        <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
+      </div>
+
       {has && (
         <button
           aria-label={words ? 'hide the words' : 'show the words'}
           onClick={onWords}
           style={{ color: words ? tint : undefined }}
-          className={`absolute top-1/2 left-6 z-[3] -m-3 -translate-y-1/2 p-3 transition-[transform,color,opacity] duration-300 ease-spring active:scale-90 ${
-            words ? '' : 'text-off-white/50'
-          }`}>
-          <Words className="h-7 w-7" off={!words} />
+          className={`absolute top-4 z-[3] -m-3 p-3 transition-[transform,color,opacity] duration-300 ease-spring active:scale-90 ${
+            corner === 'tr' ? 'left-5' : 'right-5'
+          } ${words ? '' : 'text-off-white/50'}`}>
+          <Words className="h-6 w-6" off={!words} />
         </button>
       )}
 
       {showTransport && (
         <>
-          {/* play and pause, with the time under it; how far through the track is runs along the
-              top edge of the screen instead of round a dial in this corner */}
-          <div className={`absolute z-[3] flex flex-col items-center gap-3 ${other}`}>
-            <button
-              aria-label={playing ? 'pause' : 'play'}
-              onClick={onToggle}
-              style={accent ? { color: accent.ink } : undefined}
-              className="grid h-10 w-10 place-items-center text-screen transition active:scale-90">
-              {/* the shape turns on its own layer; the glyph sits above it and stays upright */}
-              <span
-                className={`absolute inset-0 rounded-[13px] shadow-lg ${motion ? 'animate-platter' : ''}`}
-                style={{
-                  backgroundColor: tint,
-                  animationDuration: '9s',
-                  animationPlayState: playing && motion ? 'running' : 'paused',
-                }}
-              />
-              <span key={playing ? 'pause' : 'play'} className="relative grid animate-pop place-items-center">
-                {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-              </span>
-            </button>
-            <span className="font-mono text-hint tabular-nums text-off-white/80">
-              {clock(elapsed)}
-              <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
+          {/* the transport reads as one row along the bottom: the skips at the ends of it and play
+              in the middle, which is where a thumb lands */}
+          <button
+            aria-label={playing ? 'pause' : 'play'}
+            onClick={onToggle}
+            style={{ backgroundColor: tint, color: accent?.ink ?? '#101214' }}
+            className="absolute bottom-8 left-1/2 z-[3] grid h-12 w-12 -translate-x-1/2 place-items-center rounded-2xl shadow-lg transition active:scale-90">
+            <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+              {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
             </span>
-          </div>
+          </button>
 
-          {/* the skips take the far ends of the edge the track is not on, so nothing shares a corner */}
           <button
             aria-label="previous"
             onClick={onPrev}
             style={{ color: tint }}
-            className={`absolute left-6 z-[3] -m-3 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90 ${
-              bottom ? 'top-7' : 'bottom-7'
-            }`}>
+            className="absolute bottom-6 left-6 z-[3] -m-3 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90">
             <Skip className="h-9 w-9 -scale-x-100" />
           </button>
           <button
             aria-label="next"
             onClick={onNext}
             style={{ color: tint }}
-            className={`absolute right-6 z-[3] -m-3 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90 ${
-              bottom ? 'top-7' : 'bottom-7'
-            }`}>
+            className="absolute right-6 bottom-6 z-[3] -m-3 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90">
             <Skip className="h-9 w-9" />
           </button>
         </>
