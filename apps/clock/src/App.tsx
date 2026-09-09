@@ -173,8 +173,9 @@ export default function App() {
     <div className="absolute inset-0 overflow-hidden bg-screen text-off-white">
       <Wash pal={screenPal} />
       {/* whatever the screen is, it keeps clear of the strip the music sits in */}
-      <div className={`absolute inset-0 ${playing ? 'pb-12' : ''}`}>
-      {view === 'clock' && <ClockFace prefs={prefs} zone={zone} at={at} pal={pal} />}
+      {/* the clock keeps the whole screen, since Border draws on its edge; it makes its own room */}
+      <div className={`absolute inset-0 ${playing && view !== 'clock' ? 'pb-12' : ''}`}>
+      {view === 'clock' && <ClockFace prefs={prefs} zone={zone} at={at} pal={pal} music={!!playing} />}
       {view === 'timer' && timer.render(screenPal)}
       {view === 'stopwatch' && (
         <Stopwatch
@@ -637,17 +638,18 @@ function NowPlayingBar({
   return (
     <div className="absolute inset-x-0 bottom-0 z-[4] flex h-12 items-center justify-between px-3">
       {key('previous', onPrev, <path d="M18 5v14l-9-7 9-7ZM7 5h2v14H7V5Z" />)}
-      <span className="flex min-w-0 items-center gap-3">
-        <span className="max-w-[26rem] truncate text-hint text-dim">
-          {now.title}
-          {now.artist ? ` · ${now.artist}` : ''}
-        </span>
-        {key(
-          now.playing ? 'pause' : 'play',
-          onToggle,
-          now.playing ? <path d="M8 5h3v14H8V5Zm5 0h3v14h-3V5Z" /> : <path d="M8 5l11 7-11 7V5Z" />,
-        )}
-      </span>
+      {/* the track is the play button: lit and held while it runs, flat and grey while it does not */}
+      <button
+        aria-label={now.playing ? 'pause' : 'play'}
+        onClick={onToggle}
+        className="max-w-[26rem] min-w-0 truncate rounded-full px-4 py-1.5 text-hint transition active:scale-95"
+        style={{
+          color: now.playing ? pal.main : 'rgba(167,173,181,0.7)',
+          background: now.playing ? 'rgba(255,255,255,0.07)' : 'transparent',
+        }}>
+        {now.title}
+        {now.artist ? ` · ${now.artist}` : ''}
+      </button>
       {key('next', onNext, <path d="M6 5l9 7-9 7V5ZM15 5h2v14h-2V5Z" />)}
     </div>
   );

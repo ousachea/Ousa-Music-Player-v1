@@ -8,8 +8,9 @@ inside it carries no seconds of its own. With the seconds off the frame takes th
 second rather than sixty times a minute.
 
 **What is playing** runs along the bottom of every screen while a track is on: previous at one edge
-of the screen and next at the other, with the title and artist between them beside play and pause,
-in whatever colour the clock is wearing.
+of the screen and next at the other, and the track between them. The title is the play button
+itself, lit in the clock's colour on a soft pill while the music runs and grey and flat while it
+does not, rather than a label with a button next to it.
 They work the phone's player through the daemon, so a track can be changed from the clock. The strip
 is only there when something is playing, and the screens are laid out inside what it leaves.
 

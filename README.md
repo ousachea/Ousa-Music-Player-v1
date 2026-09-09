@@ -401,10 +401,11 @@ mounted on its side. The four preset bumps follow the buttons round to whichever
 physically on, so they still point at the hardware that works them.
 
 **What is playing** sits along the bottom of every screen while there is a track: previous at one
-edge and next at the other, with the title and artist between them beside play and pause, all in the
-clock's own colour. The buttons work the phone's player, so a track can be changed without leaving
-the clock for the player. The strip appears only when something is on, and every screen keeps clear
-of the room it takes.
+edge and next at the other, and the track itself between them. The title is the play button rather
+than a button beside one, lit in the clock's colour and held on a soft pill while the music runs,
+grey and flat while it does not. It all works the phone's player, so a track can be changed without
+leaving the clock. The strip appears only when something is on, and every screen keeps clear of the
+room it takes, the clock making its own room so Border can still draw on the screen's edge.
 
 **Follow the album art** hands the colour to whatever is playing: the daemon says which track is on,
 the cover comes back as bytes, and the two strongest hues in it become the pair the clock is drawn

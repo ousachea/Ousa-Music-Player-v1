@@ -3,7 +3,20 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import { CITIES, ink, type Palette, type Prefs } from './config';
 import { dayShift, fields, readClock, readIn, type Zone } from './time';
 
-export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; at: Date; pal: Palette }) {
+export function ClockFace({
+  prefs,
+  zone,
+  at,
+  pal,
+  music,
+}: {
+  prefs: Prefs;
+  zone: Zone;
+  at: Date;
+  pal: Palette;
+  // the strip of what is playing takes the bottom of the screen when there is something on
+  music: boolean;
+}) {
   const parts = readClock(at, zone, prefs.format);
   const { h, m, s } = fields(at, zone);
   // a colon that blinks is how a clock says it is running; it is lit for the first half of a second
@@ -15,7 +28,7 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
   const foot =
     prefs.style === 'world' ? null : (
       <div
-        className="absolute inset-x-0 bottom-7 flex flex-col items-center gap-1 text-dim"
+        className={`absolute inset-x-0 flex flex-col items-center gap-1 text-dim ${music ? 'bottom-16' : 'bottom-7'}`}
         style={{ fontSize: FOOT_SIZE[prefs.size] }}>
         {prefs.date && prefs.style !== 'digital-date' && <span>{parts.date}</span>}
         {!zone.synced && <span className="opacity-70">waiting for the phone's clock</span>}
@@ -23,7 +36,7 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
     );
 
   const stage = (children: React.ReactNode) => (
-    <div className="grid h-full w-full place-items-center pt-7 pb-14">
+    <div className={`grid h-full w-full place-items-center pt-7 ${music ? 'pb-28' : 'pb-14'}`}>
       <Fit mode={prefs.size}>{children}</Fit>
       {foot}
     </div>
