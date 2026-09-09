@@ -2751,14 +2751,14 @@ function Lyrics({
             <Disc className="h-6 w-6 text-off-white/30" />
           </div>
         )}
-        <div className={`min-w-0 ${right ? 'text-right' : ''} [text-shadow:0_1px_2px_rgba(0,0,0,0.6),0_2px_14px_rgba(0,0,0,0.5)]`}>
+        <div className={`min-w-0 ${right ? 'text-right' : ''} [text-shadow:0_1px_1px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)]`}>
           <div className="line-clamp-2 text-row-lg leading-tight font-semibold text-off-white">{title}</div>
           <div className="truncate text-hint text-soft">{artist}</div>
         </div>
       </div>
 
       {/* the time reads under the line that draws it, on the same band as the track */}
-      <div className="pointer-events-none absolute top-5 left-1/2 z-[3] flex h-14 -translate-x-1/2 items-center font-mono text-hint tabular-nums text-off-white/75 [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
+      <div className="pointer-events-none absolute top-5 left-1/2 z-[3] flex h-14 -translate-x-1/2 items-center font-mono text-hint tabular-nums text-off-white/80 [text-shadow:0_1px_1px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)]">
         {clock(elapsed)}
         <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
       </div>
@@ -2783,7 +2783,7 @@ function Lyrics({
             aria-label={playing ? 'pause' : 'play'}
             onClick={onToggle}
             style={{ color: tint }}
-            className="absolute bottom-6 left-1/2 z-[3] -m-3 -translate-x-1/2 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90">
+            className="absolute bottom-3 left-1/2 z-[3] -translate-x-1/2 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90">
             <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
               {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
             </span>
@@ -2834,26 +2834,26 @@ function Lyrics({
                 }`}
                 style={{
                   height: LYRIC_LINE_PX,
-                  color: i === at ? tint : '#f4f4f4',
-                  opacity: i === at ? 1 : Math.max(0.16, 0.62 - away * 0.12),
+                  color: i === at ? tint : '#ffffff',
+                  opacity: i === at ? 1 : Math.max(0.2, 0.7 - away * 0.13),
                   transform: `scale(${i === at ? 1 : 0.9})`,
                 }}>
                 <span
-                  className={`truncate font-display leading-tight font-semibold tracking-display [text-shadow:0_1px_2px_rgba(0,0,0,0.6),0_2px_16px_rgba(0,0,0,0.5)] ${
+                  className={`relative inline-block max-w-full truncate align-middle font-display leading-tight font-semibold tracking-display [text-shadow:0_1px_1px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.75),0_3px_22px_rgba(0,0,0,0.6)] ${
                     upright ? 'text-[1.5rem]' : 'text-[1.75rem]'
                   }`}
-                  style={
-                    i === at
-                      ? {
-                          // the sung part is filled and the rest waits behind it, clipped to the glyphs
-                          backgroundImage: `linear-gradient(90deg, ${tint} ${sung * 100}%, rgba(244,244,244,0.55) ${sung * 100}%)`,
-                          WebkitBackgroundClip: 'text',
-                          backgroundClip: 'text',
-                          color: 'transparent',
-                        }
-                      : undefined
-                  }>
+                  style={i === at ? { color: 'rgba(255,255,255,0.6)' } : undefined}>
                   {line.text || '\u00b7 \u00b7 \u00b7'}
+                  {/* the sung part is a second copy of the line, clipped to how far into it the song
+                      is. a width transition slides between the phone's ticks rather than stepping */}
+                  {i === at && (
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 overflow-hidden whitespace-nowrap"
+                      style={{ width: `${sung * 100}%`, color: tint, transition: motion ? 'width 0.45s linear' : undefined }}>
+                      {line.text || '\u00b7 \u00b7 \u00b7'}
+                    </span>
+                  )}
                 </span>
               </button>
             );
@@ -2872,7 +2872,7 @@ function Lyrics({
         <div
           data-lyric-page
           className="absolute inset-0 overflow-y-auto overscroll-contain px-24 py-24 [scrollbar-width:none]">
-          <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft [text-shadow:0_1px_2px_rgba(0,0,0,0.6),0_2px_14px_rgba(0,0,0,0.5)]">
+          <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft [text-shadow:0_1px_1px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)]">
             {lyrics.text}
           </div>
         </div>
@@ -3628,8 +3628,8 @@ function Cassette({
   onNext: () => void;
 }) {
   const skin = tapeSkin(accent);
-  // the clear tape keeps its keys in a column beside it, on the side the tape is read from
-  const column = tape === 'clear' && !quarter;
+  // in landscape every tape stands its keys in a column down the left, the way a deck wears them
+  const column = !quarter;
   const face: Face = {
     title,
     artist,
