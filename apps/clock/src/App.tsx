@@ -19,7 +19,7 @@ import {
   type Palette,
   type Prefs,
 } from './config';
-import { useArtPalette } from './art';
+import { useArtPalette, useNowPlaying, type NowPlaying } from './art';
 import { ClockFace } from './faces';
 import { useTimer } from './timers';
 import { clockText, fields, useTick, useZone } from './time';
@@ -49,7 +49,8 @@ export default function App() {
   const now = useTick(50);
   const at = useMemo(() => new Date(now + zone.offsetMs), [now, zone.offsetMs]);
   // the album's colour when there is one and the app is asked to follow it, the chosen pair otherwise
-  const artPal = useArtPalette(client, prefs.artColour);
+  const playing = useNowPlaying(client);
+  const artPal = useArtPalette(client, prefs.artColour, playing?.artworkId ?? null);
   const pal = artPal ?? PALETTES[prefs.tint];
 
   // --- stopwatch -----------------------------------------------------------
@@ -171,6 +172,8 @@ export default function App() {
     <Stage rotate={turn}>
     <div className="absolute inset-0 overflow-hidden bg-screen text-off-white">
       <Wash pal={screenPal} />
+      {/* whatever the screen is, it keeps clear of the strip the music sits in */}
+      <div className={`absolute inset-0 ${playing ? 'pb-9' : ''}`}>
       {view === 'clock' && <ClockFace prefs={prefs} zone={zone} at={at} pal={pal} />}
       {view === 'timer' && timer.render(screenPal)}
       {view === 'stopwatch' && (
@@ -188,6 +191,17 @@ export default function App() {
       )}
       {view === 'alarm' && (
         <AlarmView alarm={alarm} pal={pal} zone={zone} at={at} format={prefs.format} onSet={setAlarm} />
+      )}
+      </div>
+
+      {playing && (
+        <NowPlayingBar
+          now={playing}
+          pal={pal}
+          onPrev={() => client.player.skipPrev({ allowSeeking: true })}
+          onNext={() => client.player.skipNext()}
+          onToggle={() => (playing.playing ? client.player.pause() : client.player.resume())}
+        />
       )}
 
       <Presets
@@ -586,6 +600,52 @@ function Settings({
         ])}
       </div>
       <div className="mt-2 text-hint text-dim">Changing a setting in the companion app overrides it here.</div>
+    </div>
+  );
+}
+
+// what is playing, along the bottom of whichever screen you are on: enough to know the track and
+// change it without leaving the clock for the player
+function NowPlayingBar({
+  now,
+  pal,
+  onPrev,
+  onToggle,
+  onNext,
+}: {
+  now: NowPlaying;
+  pal: Palette;
+  onPrev: () => void;
+  onToggle: () => void;
+  onNext: () => void;
+}) {
+  const key = (label: string, onClick: () => void, path: ReactNode) => (
+    <button
+      key={label}
+      aria-label={label}
+      onClick={onClick}
+      className="grid h-8 w-8 place-items-center rounded-full text-off-white/70 transition active:scale-90">
+      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+        {path}
+      </svg>
+    </button>
+  );
+
+  return (
+    <div className="absolute inset-x-0 bottom-0 z-[4] flex h-9 items-center justify-center gap-3 px-4">
+      <span className="max-w-[46%] truncate text-hint text-dim">
+        {now.title}
+        {now.artist ? ` · ${now.artist}` : ''}
+      </span>
+      <span className="flex items-center gap-1" style={{ color: pal.main }}>
+        {key('previous', onPrev, <path d="M18 5v14l-9-7 9-7ZM7 5h2v14H7V5Z" />)}
+        {key(
+          now.playing ? 'pause' : 'play',
+          onToggle,
+          now.playing ? <path d="M8 5h3v14H8V5Zm5 0h3v14h-3V5Z" /> : <path d="M8 5l11 7-11 7V5Z" />,
+        )}
+        {key('next', onNext, <path d="M6 5l9 7-9 7V5ZM15 5h2v14h-2V5Z" />)}
+      </span>
     </div>
   );
 }

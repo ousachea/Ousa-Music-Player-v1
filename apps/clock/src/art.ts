@@ -1,38 +1,53 @@
-// the clock can take its colour from whatever is playing: the daemon says which track is on, the
-// artwork comes back as bytes, and the pair of hues pulled off it becomes the palette
+// the clock can take its colour from whatever is playing, and carry the transport for it: the daemon
+// says which track is on, and the artwork comes back as bytes to pull a pair of hues from
 import type { BridgethingClient } from '@bridgething/client';
 import { useEffect, useState } from 'react';
 
 import { accentFrom } from './artwork-color';
 import type { Palette } from './config';
 
+export type NowPlaying = { title: string; artist: string | null; artworkId: string | null; playing: boolean };
+
 function shade(css: string, light: number) {
   const m = /hsl\(\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%/.exec(css);
   return m ? `hsl(${m[1]} ${Math.min(60, Number(m[2]))}% ${light}%)` : css;
 }
 
-export function useArtPalette(client: BridgethingClient, on: boolean): Palette | null {
-  const [artworkId, setArtworkId] = useState<string | null>(null);
-  const [pal, setPal] = useState<Palette | null>(null);
+export function useNowPlaying(client: BridgethingClient): NowPlaying | null {
+  const [now, setNow] = useState<NowPlaying | null>(null);
 
   useEffect(() => {
-    if (!on) {
-      setArtworkId(null);
-      setPal(null);
-      return;
-    }
     let stale = false;
-    const take = (id: string | null) => !stale && setArtworkId(id);
-    client.player.stateGet().then(r => r.ok && take(r.response.state.track?.artworkId ?? null));
-    const off = client.player.onSnapshot(msg => take(msg.state.track?.artworkId ?? null));
+    const take = (state: { track?: { title?: string | null; artist?: string | null; artworkId?: string | null } | null; playback?: { state?: string } | null }) => {
+      const track = state.track;
+      if (stale) return;
+      setNow(
+        track
+          ? {
+              title: track.title ?? 'unknown',
+              artist: track.artist ?? null,
+              artworkId: track.artworkId ?? null,
+              playing: state.playback?.state === 'playing',
+            }
+          : null,
+      );
+    };
+    client.player.stateGet().then(r => r.ok && take(r.response.state));
+    const off = client.player.onSnapshot(msg => take(msg.state));
     return () => {
       stale = true;
       off();
     };
-  }, [client, on]);
+  }, [client]);
+
+  return now;
+}
+
+export function useArtPalette(client: BridgethingClient, on: boolean, artworkId: string | null): Palette | null {
+  const [pal, setPal] = useState<Palette | null>(null);
 
   useEffect(() => {
-    if (!on || !artworkId) return;
+    if (!on || !artworkId) return setPal(null);
     let stale = false;
     (async () => {
       const result = await client.asset.get({ id: artworkId, requestId: crypto.randomUUID() });

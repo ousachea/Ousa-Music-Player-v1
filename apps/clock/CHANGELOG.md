@@ -7,6 +7,11 @@ sides, square into the corners, and fills from the top clockwise, one lap a minu
 inside it carries no seconds of its own. With the seconds off the frame takes the minute of the hour instead, and steps once a
 second rather than sixty times a minute.
 
+**What is playing** runs along the bottom of every screen while a track is on: the title and artist
+in small type with previous, play and next beside them, in whatever colour the clock is wearing.
+They work the phone's player through the daemon, so a track can be changed from the clock. The strip
+is only there when something is playing, and the screens are laid out inside what it leaves.
+
 **Follow the album art**, off by default: the clock takes its pair of colours from the cover of
 whatever is playing, and changes with the track. The daemon gives the artwork id, the bytes come
 back through the asset surface, and the same reading the music player uses pulls the two strongest

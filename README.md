@@ -400,6 +400,11 @@ taken out of the screen before the face is measured, so the two never sit on eac
 mounted on its side. The four preset bumps follow the buttons round to whichever edge they are
 physically on, so they still point at the hardware that works them.
 
+**What is playing** sits along the bottom of every screen while there is a track: its title and
+artist in small type, with previous, play and next beside them in the clock's own colour. The
+buttons work the phone's player, so a track can be changed without leaving the clock for the player.
+The strip appears only when something is on, and every screen keeps clear of the room it takes.
+
 **Follow the album art** hands the colour to whatever is playing: the daemon says which track is on,
 the cover comes back as bytes, and the two strongest hues in it become the pair the clock is drawn
 from, changing with the track. A cover with no usable hue in it, a black and white one say, leaves
