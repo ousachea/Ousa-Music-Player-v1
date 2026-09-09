@@ -102,8 +102,7 @@ spools of brown tape filling the face, hubs in the album's colour with the crown
 grips, the guide assembly and its pressure pad showing through the plastic along the bottom, the
 cover behind the square window between the spools, COMPACT CASSETTE moulded into it, and a white
 label strip across the top carrying the track, TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO and
-the time. In landscape its keys stand in a column down the left of the tape, with previous and next
-turned a quarter to point along it.
+the time.
 
 A new track is a new tape, not the same one relabelled: one of eight patterns is picked from the
 track itself, so the same song always comes back on the same tape while the next one arrives on
@@ -113,8 +112,10 @@ printed shell it is machined into the metal.
 The transport is a tape deck's: light plastic caps with black glyphs, bevelled at the top and shaded
 at the bottom, sunk in a dark strip that they press into. The play key latches: while the track is
 playing it stays down, its shading inverted the way a depressed key catches the light, and it comes
-back up when you pause. A fourth key sits with them and switches
-between the two designs, and **Tape design** does the same from the settings.
+back up when you pause. In landscape the keys stand in a column down the left of the tape, with
+previous and next turned a quarter to point along it; turned a quarter themselves they go back to a
+row underneath. A fourth key sits with them and switches between the designs, and **Tape design**
+does the same from the settings.
 
 The spools are the progress bar in both: the left one starts full and empties as the song plays
 while the right one fills, and both turn while the music runs and hold where they are when you
@@ -188,8 +189,9 @@ around it, at a tempo you set.
 ![Lyrics style](apps/MusicPlayerV1/screenshots/05-lyrics.jpg)
 
 The words, with the line being sung held on the middle of the screen and filling with the album's
-colour as it is sung: the phone's timings say how far into the line the song is, and the colour is
-clipped to the letters up to that point with the rest of the line waiting behind it.
+colour as it is sung: the phone's timings say how far into the line the song is, and a second copy
+of the line clipped to that point slides across the one underneath rather than stepping with each
+tick.
 
 Every line, the track and the time carry a soft dark halo, so the words hold their contrast over a
 pale cover instead of dissolving into it. Nothing is darkened to do it: the halo is on the glyphs,
