@@ -8,6 +8,11 @@ Touching a row skips to it, which is the only thing the daemon lets a webapp do 
 belongs to the phone. The wheel scrolls the list, a push back down or the Back button puts it away,
 and the sheet is read fresh each time it opens rather than held.
 
+The Lyrics style stops reporting the progress on a dial. A ring with a time in the middle of it
+belonged to a different screen than a page of words; it is now the elapsed time against the length,
+set in the same type as the track, with a hairline rule under it filled to where you are. The fill
+dims while the track is paused, and the whole thing still plays and pauses on a tap.
+
 The swipe now reads in the layout the viewer is looking at rather than the one the screen is wired
 in. Every pointer is turned back through the screen rotation before it is measured, so the pull that
 opens the queue comes off whichever edge is the bottom for you, and the track swipe drops the

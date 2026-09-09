@@ -2735,14 +2735,28 @@ function Lyrics({
       {showTransport && (
         <>
           {/* the corner reports how far through the track is rather than repeating a button the
-              presets already carry; it still takes a tap, so nothing is lost by the change */}
+              presets already carry; it still takes a tap, so nothing is lost by the change. it is
+              set in the same type as the track, with a rule under it, because a dial in a corner
+              belonged to a different screen than this one */}
           <button
             aria-label={playing ? 'pause' : 'play'}
             onClick={onToggle}
-            className={`absolute z-[3] grid h-14 w-14 place-items-center transition active:scale-90 ${other}`}>
-            <Ring progress={duration > 0 ? elapsed / duration : 0} tint={tint} />
-            <span className="absolute font-mono text-[0.625rem] tabular-nums text-off-white/85">
+            className={`absolute z-[3] flex w-28 flex-col gap-2 py-2 transition active:scale-95 ${other} ${
+              right ? 'items-start' : 'items-end'
+            }`}>
+            <span className="font-mono text-hint tabular-nums text-off-white/85">
               {clock(elapsed)}
+              <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
+            </span>
+            <span className="relative block h-px w-full bg-white/20">
+              <span
+                className="absolute inset-y-0 left-0 transition-[width] duration-300 ease-linear"
+                style={{
+                  width: `${Math.round(Math.min(1, Math.max(0, duration > 0 ? elapsed / duration : 0)) * 100)}%`,
+                  backgroundColor: tint,
+                  opacity: playing ? 1 : 0.5,
+                }}
+              />
             </span>
           </button>
 
@@ -2897,29 +2911,6 @@ function Lyrics({
 }
 
 // lines of text, struck through when the words are off
-// a ring drawn from the top, the way a progress arc is read
-function Ring({ progress, tint }: { progress: number; tint: string }) {
-  const r = 25;
-  const circumference = 2 * Math.PI * r;
-  const done = Math.min(1, Math.max(0, progress));
-  return (
-    <svg viewBox="0 0 56 56" className="absolute inset-0 h-full w-full -rotate-90">
-      <circle cx="28" cy="28" r={r} fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.18)" strokeWidth="4" />
-      <circle
-        cx="28"
-        cy="28"
-        r={r}
-        fill="none"
-        stroke={tint}
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeDasharray={circumference}
-        strokeDashoffset={circumference * (1 - done)}
-      />
-    </svg>
-  );
-}
-
 function Words({ className, off }: { className?: string; off?: boolean }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

@@ -190,10 +190,11 @@ masked, and the artwork behind them keeps its full strength. The column is what 
 lines.
 
 The artwork and the track sit in whichever corner you pick, under **Track corner**. On the right the
-artwork leads and the track reads back towards it. The other end of that same edge carries a ring
-showing how far through the song is, with the elapsed time in the middle of it; tapping it plays or
-pauses. Previous and next take the far ends of the other edge, so the four sit one to a corner. All of them go away when the on-screen
-buttons do.
+artwork leads and the track reads back towards it. The other end of that same edge reports how far
+through the song is, set in the same type as the track: the elapsed time against the length, with a
+hairline rule under it filled to where you are. Tapping it plays or pauses, and the fill dims while
+the track is paused. Previous and next take the far ends of the other edge, so the four sit one to a
+corner. All of them go away when the on-screen buttons do.
 
 Touching a line plays from it: each line knows the moment it belongs to, so the words are also the
 scrubber. The wheel reads rather than scrubs, moving the words a line a click while the song carries
