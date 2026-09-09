@@ -2854,9 +2854,9 @@ function Lyrics({
                   height: LYRIC_LINE_PX,
                   color: i === at ? tint : '#ffffff',
                   // a line steps down in weight as it gets further from the one being sung: full,
-                  // then middling, then faint, and the same three sizes with it
-                  opacity: [1, 0.62, 0.38, 0.22][Math.min(3, away)],
-                  transform: `scale(${[1, 0.94, 0.87, 0.82][Math.min(3, away)]})`,
+                  // then middling, then faint, and a clear step down in size with each
+                  opacity: [1, 0.6, 0.38, 0.22][Math.min(3, away)],
+                  transform: `scale(${[1, 0.78, 0.68, 0.62][Math.min(3, away)]})`,
                 }}>
                 <span
                   className="relative inline-block align-middle font-display leading-tight font-semibold tracking-display whitespace-nowrap"
