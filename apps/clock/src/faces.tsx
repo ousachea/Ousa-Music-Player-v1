@@ -25,19 +25,23 @@ export function ClockFace({
   // the world clock fills the screen with its own rows, so it keeps the date out of the way itself
   // the date belongs to the face, so it takes the same setting rather than staying small under a
   // clock that has grown to the screen
-  const foot =
-    prefs.style === 'world' ? null : (
-      <div
-        className={`absolute inset-x-0 flex flex-col items-center gap-1 text-dim ${music ? 'bottom-16' : 'bottom-7'}`}
-        style={{ fontSize: FOOT_SIZE[prefs.size] }}>
-        {prefs.date && prefs.style !== 'digital-date' && <span>{parts.date}</span>}
-        {!zone.synced && <span className="opacity-70">waiting for the phone's clock</span>}
-      </div>
-    );
+  // the date sits under the clock rather than against the bottom of the screen, so the two read as
+  // one block however large the face has grown and whatever is below it
+  const shows = prefs.style !== 'world' && ((prefs.date && prefs.style !== 'digital-date') || !zone.synced);
+  const foot = shows ? (
+    <div
+      className="flex shrink-0 flex-col items-center gap-1 pt-5 text-dim"
+      style={{ fontSize: FOOT_SIZE[prefs.size] }}>
+      {prefs.date && prefs.style !== 'digital-date' && <span>{parts.date}</span>}
+      {!zone.synced && <span className="opacity-70">waiting for the phone's clock</span>}
+    </div>
+  ) : null;
 
   const stage = (children: React.ReactNode) => (
-    <div className={`grid h-full w-full place-items-center pt-7 ${music ? 'pb-28' : 'pb-14'}`}>
-      <Fit mode={prefs.size}>{children}</Fit>
+    <div className={`flex h-full w-full flex-col items-center justify-center pt-7 ${music ? 'pb-14' : 'pb-7'}`}>
+      <div className="grid min-h-0 w-full flex-1 place-items-center">
+        <Fit mode={prefs.size}>{children}</Fit>
+      </div>
       {foot}
     </div>
   );

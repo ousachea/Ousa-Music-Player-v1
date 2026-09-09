@@ -24,6 +24,10 @@ in place, and the settings row says so by naming that palette as the one for whe
 the second half, on every face that draws one. It blinks against the phone's clock rather than the
 browser's, so it is in step with the numerals beside it.
 
+The date is laid out under the face rather than pinned to the bottom of the screen. The face takes
+the room that is left over and is centred in it, so the clock and its date sit as one block and the
+gap between them does not change with what is playing.
+
 **Face size** scales whichever face is on: Small, Medium, Large, or Fill, which measures the face
 before it is scaled and takes the largest scale the screen has room for. The date goes with it, so
 it is not left small under a clock that has grown to fill the screen, and the room the date needs is

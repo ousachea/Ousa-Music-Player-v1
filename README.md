@@ -392,9 +392,10 @@ still. Digital, Digital + Date, Minimal and Border draw a colon; Flip, Analogue,
 have none to blink.
 
 **Face size** scales whichever face you are on: Small, Medium, Large, or Fill, which measures the
-face and takes the largest scale the screen has room for. The date under the clock is scaled with
-it, rather than staying small under a clock that has grown to the screen, and the room it needs is
-taken out of the screen before the face is measured, so the two never sit on each other.
+face and takes the largest scale the screen has room for. The date is scaled with it, rather than
+staying small under a clock that has grown to the screen, and sits under the face as part of the
+same block rather than pinned to the bottom of the screen, so the clock and its date read together
+whatever else is on the screen.
 
 **Screen rotation** turns the whole app a quarter at a time, 0 to 90 to 180 to 270, for a device
 mounted on its side. The four preset bumps follow the buttons round to whichever edge they are
