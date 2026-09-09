@@ -309,9 +309,9 @@ outside the list, because it decides what the rest of the list holds, and everyt
 applies to the style you are in is gathered under that style's name. Poster has no such group: it
 has no settings of its own. A rail down the left edge shows where you are in the list.
 
-- **Player** — style, accent colour, HD album art, the art pulse with its tempo, whether the
-  Classic style's art runs to the edge of the screen, and which cassette design is on, with or
-  without the cover on its label
+- **Player** — style, accent colour, HD album art, the art pulse with its tempo, whether Cover's art
+  runs to the edge of the screen, the colour the Vinyl record is pressed in, and which cassette
+  design is on, with or without the cover on its label
 - **Controls** — what the wheel does, how far each click seeks, the seek bar and its playhead dot,
   and whether the on-screen transport buttons are drawn at all
 - **Backdrop** — how strongly the blurred art tints the screen, how far out of focus it is, and how
@@ -321,8 +321,8 @@ has no settings of its own. A rail down the left edge shows where you are in the
 - **Clock** — position, size, 12 or 24 hour, and seconds
 - **About** — check whether a newer version has been published
 
-Both seek settings sit on **Auto**, which gives Classic and Poster the wave and Vinyl a line, and
-draws the playhead dot everywhere except Cover. Cover always draws a line whatever you pick.
+Both seek settings sit on **Auto**, which gives Poster the wave and Vinyl a line, and draws the
+playhead dot everywhere except Cover. Cover always draws a line whatever you pick.
 
 A few seconds into a track the player offers to hide the on-screen buttons, since the presets do the
 same job. The note has a box to stop it asking again, and **Controls → Offer to hide them** turns it
