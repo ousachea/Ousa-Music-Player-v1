@@ -109,7 +109,7 @@ function Settings() {
 
   return (
     <main>
-      <h1>{ctx?.name ?? 'Music Player'}</h1>
+      <h1>{ctx?.name ?? 'O-Music Player'}</h1>
       <p className="hint">{ctx ? `${ctx.webappId} on ${ctx.deviceId}` : 'connecting to the companion host...'}</p>
 
       <form onSubmit={save}>

@@ -1,7 +1,7 @@
 {
   "id": "01a07c16-be12-7003-91aa-482b107fdccb",
-  "name": "Network Monitor",
-  "version": "0.1.1",
+  "name": "O-Network Monitor",
+  "version": "0.1.2",
   "description": "Live link status, latency and throughput for the Car Thing.",
   "icon": "icon.png",
   "settings": "settings.html",

@@ -1,4 +1,10 @@
-# network-monitor
+# O-Network Monitor
+
+## 0.1.2
+
+The app is called **O-Network Monitor** now, on the store card, on the device and in the tab it
+opens in. Nothing else about it changes: same id, same settings, same data, so an installed copy
+updates in place and simply reads O-Network Monitor afterwards.
 
 ## 0.1.1
 

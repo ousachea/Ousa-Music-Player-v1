@@ -1,7 +1,7 @@
 {
   "id": "01a07c31-5053-72cd-a790-a2be27c8bc79",
-  "name": "Quote Flow",
-  "version": "0.6.4",
+  "name": "O-Quote Flow",
+  "version": "0.6.5",
   "description": "A quote of the moment, rotating quietly on the dashboard.",
   "icon": "icon.png",
   "settings": "settings.html",

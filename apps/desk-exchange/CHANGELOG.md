@@ -1,4 +1,10 @@
-# desk-exchange
+# O-Desk Exchange
+
+## 0.1.3
+
+The app is called **O-Desk Exchange** now, on the store card, on the device and in the tab it opens
+in. Nothing else about it changes: same id, same settings, same data, so an installed copy updates
+in place and simply reads O-Desk Exchange afterwards.
 
 ## 0.1.2
 

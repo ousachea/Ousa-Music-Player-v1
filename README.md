@@ -7,12 +7,12 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **Music Player** | Now playing, in six styles, coloured by the album art, on a screen that turns |
-| **Clock** | A clock in nine faces, seven timers, a stopwatch and an alarm |
-| **Network Monitor** | Link status, latency and measured throughput |
-| **Quote Flow** | A quote of the moment, with favourites and your own lines |
-| **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
-| **Gold Tracker** | Live gold spot, Khmer weight conversion and a private purchase ledger |
+| **O-Music Player** | Now playing, in six styles, coloured by the album art, on a screen that turns |
+| **O-Clock** | A clock in nine faces, seven timers, a stopwatch and an alarm |
+| **O-Network Monitor** | Link status, latency and measured throughput |
+| **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
+| **O-Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
+| **O-Gold Tracker** | Live gold spot, Khmer weight conversion and a private purchase ledger |
 
 ## Put it on your Car Thing
 
@@ -39,7 +39,7 @@ settings on the device and press **Check** under *Software update*.
 > settings;
 > Network Monitor uses it to time the requests it measures with.
 
-## Music Player
+## O-Music Player
 
 Music notes drift up over whichever style you pick, each one tinted a little differently from the
 album art. They pause with the music, and **Display → Floating notes** turns them off.
@@ -339,7 +339,7 @@ artist wrap onto as many rows as they need instead of scrolling past on one line
 Everything is also editable from the companion app, which has room for longer explanations. Whichever
 one you changed last wins.
 
-## Clock
+## O-Clock
 
 A clock, and the three things that usually sit beside one.
 
@@ -429,7 +429,7 @@ The time itself comes from the daemon, which carries the phone's wall clock, tim
 The kiosk's own clock is not set from anything, so the face says it is waiting rather than showing a
 time it cannot stand behind.
 
-## Network Monitor
+## O-Network Monitor
 
 A second app in this source: a live view of the device's connection.
 
@@ -454,7 +454,7 @@ unavailable rather than estimated.
 The app already routes everything through a provider in `src/net.ts`, so an extension-backed provider
 drops in beside the probe one without touching the dashboard.
 
-## Quote Flow
+## O-Quote Flow
 
 A quote on the dashboard, changing on its own.
 
@@ -473,7 +473,7 @@ after a dash or a pipe, because that is the only place with a real keyboard.
 Favourites are kept in the app's own storage on the device, so they survive a restart. Narrowing to
 a set with nothing in it falls back to the wider one rather than leaving the screen blank.
 
-## Desk Exchange
+## O-Desk Exchange
 
 A stock market that does not exist, running on your desk.
 
@@ -520,7 +520,7 @@ on the device, so it survives a restart.
 
 Every symbol, price and headline in this app is invented. None of it is a quote for anything real.
 
-## Gold Tracker
+## O-Gold Tracker
 
 The live gold price, in the units gold is actually bought in here.
 
@@ -590,12 +590,12 @@ Each app has a port of its own, so they can all run at once and a bookmark keeps
 
 | App | Dev server |
 | --- | --- |
-| Music Player | http://localhost:5173 |
-| Clock | http://localhost:5174 |
-| Desk Exchange | http://localhost:5175 |
-| Gold Tracker | http://localhost:5176 |
-| Network Monitor | http://localhost:5177 |
-| Quote Flow | http://localhost:5178 |
+| O-Music Player | http://localhost:5173 |
+| O-Clock | http://localhost:5174 |
+| O-Desk Exchange | http://localhost:5175 |
+| O-Gold Tracker | http://localhost:5176 |
+| O-Network Monitor | http://localhost:5177 |
+| O-Quote Flow | http://localhost:5178 |
 
 Nothing links one to another: each is its own page, so switching between them means changing the
 address. On the device that job belongs to the launcher, which five fast presses of Mode returns you

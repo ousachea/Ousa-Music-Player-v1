@@ -1,4 +1,10 @@
-# gold-tracker
+# O-Gold Tracker
+
+## 0.3.3
+
+The app is called **O-Gold Tracker** now, on the store card, on the device and in the tab it opens
+in. Nothing else about it changes: same id, same settings, same data, so an installed copy updates
+in place and simply reads O-Gold Tracker afterwards.
 
 ## 0.3.2
 

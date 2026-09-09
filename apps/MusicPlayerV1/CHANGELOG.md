@@ -1,4 +1,10 @@
-# Music Player
+# O-Music Player
+
+## 0.33.1
+
+The app is called **O-Music Player** now, on the store card, on the device and in the tab it opens
+in. Nothing else about it changes: same id, same settings, same data, so an installed copy updates
+in place and simply reads O-Music Player afterwards.
 
 ## 0.33.0
 

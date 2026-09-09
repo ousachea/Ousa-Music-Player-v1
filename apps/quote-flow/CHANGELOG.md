@@ -1,4 +1,10 @@
-# quote-flow
+# O-Quote Flow
+
+## 0.6.5
+
+The app is called **O-Quote Flow** now, on the store card, on the device and in the tab it opens in.
+Nothing else about it changes: same id, same settings, same data, so an installed copy updates in
+place and simply reads O-Quote Flow afterwards.
 
 ## 0.6.4
 

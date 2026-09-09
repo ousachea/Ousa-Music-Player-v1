@@ -286,7 +286,7 @@ function Header({
           className={`h-1.5 w-1.5 rounded-full ${held ? '' : 'animate-pulse'}`}
           style={{ backgroundColor: held ? '#ffb066' : colour }}
         />
-        <span className="font-display text-row font-semibold tracking-display">Desk Exchange</span>
+        <span className="font-display text-row font-semibold tracking-display">O-Desk Exchange</span>
       </div>
 
       <div className="flex items-baseline gap-2">
