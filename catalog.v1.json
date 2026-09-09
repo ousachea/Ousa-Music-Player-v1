@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-09T00:30:21.092Z",
+  "updated_at": "2026-09-09T14:10:51.020Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -277,6 +277,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.32.0",
+          "released_at": "2026-09-09T14:10:51.017Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.32.0.zip",
+            "size": 987233,
+            "sha256": "263cd836628c80bfdd79a650e0b8a163f425bd933dae38a368b2f646d954e631"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.32.0.html",
+            "size": 32725,
+            "sha256": "5058ea42d24be10c7966261b60df9208e50212276544920a988527c3a6260d3e"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The phone's queue, pulled up from the bottom edge of the screen. It shows what is playing at the\ntop, everything lined up after it, and the recently played under that, each with its own artwork.\nTouching a row skips to it, which is the only thing the daemon lets a webapp do to a queue that\nbelongs to the phone. What has already been played reads back rather than acting as buttons: the\nphone refuses to play one of its own history uris on a webapp's say-so, whether asked plainly or\nqueued and skipped into, so a row that cannot do anything does not pretend to. The wheel scrolls the\nlist, a push back down or the Back button puts it away, and the sheet is read fresh each time it\nopens rather than held.\n\nA short bar sits at the bottom of the screen, above the style tag, to say the edge is worth pulling\non.\n\nThe Vinyl record's colour comes off and on with a touch on its label. The middle of a turning record\nis the one part of it you can put a finger on, so it carries the pressing: a tap takes the colour\nback to black and another returns the one that was on, Album or Marble, rather than a default. The\nspindle stops swallowing the tap that was meant for the label under it.\n\nThe clear cassette's cover no longer lies on its side. The mechanism is drawn standing and turned a\nquarter into place, and the artwork was taking that turn with it; it is drawn in the landscape space\ninstead, where the window lands. Its keys move to a column down the left of the tape in landscape,\nwith previous and next turned a quarter to point along the bar.\n\nThe Lyrics style stops reporting the progress on a dial. A ring with a time in the middle of it\nbelonged to a different screen than a page of words. How far through the song is now runs along the\ntop edge of the screen itself, a hairline the width of the display that fills as the track plays and\ndims while it is paused, with nothing drawn for it to sit in. The corner it left carries play and\npause instead: a rounded square in the album's colour that turns while the track plays, the way the\nPoster style's does, with the elapsed time against the length under it.\n\nThe swipe now reads in the layout the viewer is looking at rather than the one the screen is wired\nin. Every pointer is turned back through the screen rotation before it is measured, so the pull that\nopens the queue comes off whichever edge is the bottom for you, and the track swipe drops the\nspecial cases it used to carry for 90, 180 and 270."
+        },
         {
           "version": "0.31.0",
           "released_at": "2026-09-09T00:30:21.089Z",
