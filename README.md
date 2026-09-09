@@ -189,9 +189,10 @@ around it, at a tempo you set.
 ![Lyrics style](apps/MusicPlayerV1/screenshots/05-lyrics.jpg)
 
 The words, with the line being sung held on the middle of the screen and filling with the album's
-colour as it is sung: the phone's timings say how far into the line the song is, and a second copy
-of the line clipped to that point slides across the one underneath rather than stepping with each
-tick.
+colour as it is sung: a second copy of the line, clipped to how far into it the song is, sweeps
+across the one underneath. The phone's timings say when the line starts and when the next one does,
+and the fill runs the whole way between them in one move, so it reaches the end of the line as the
+next one takes over rather than stepping along a quarter second at a time.
 
 The words carry no shadow of their own. They hold their contrast by sitting brighter than they used
 to, and the track and the time in the corners keep a light halo, since they are small type over the

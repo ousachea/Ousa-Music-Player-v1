@@ -10,10 +10,12 @@ not the same colour lying on the same edge.
 The button that puts the words away keeps its corner. It sat in the middle of the left edge with the
 words off and in the top corner with them on, so it moved every time it was pressed.
 
-The line being sung fills with the album's colour as it is sung. The phone's timings give the start
-of each line, so the gap to the next one says how far through this one the song is, and the colour
-is clipped to the letters up to that point with the rest of the line waiting behind it at half
-strength.
+The line being sung fills with the album's colour as it is sung. The fill is a second copy of the
+line clipped by width, and it runs as one animation across what is left of the line rather than
+being nudged on every tick, so it moves evenly and lands on the end of the line as the next one
+takes over. The player's clock only moves four times a second, which is what made a per-tick fill
+step, and what left it short of the end when the line changed. A gradient clipped to the glyphs was
+tried first and would not paint at all on an inline box with a sized background.
 
 The words hold their contrast by being brighter rather than by being outlined: the lines either side
 of the sung one sit up from where they were, and no shadow is drawn under any of them. The track and

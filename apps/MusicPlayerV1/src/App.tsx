@@ -2730,6 +2730,7 @@ function Lyrics({
   onSeekMs: (ms: number) => void;
 }) {
   const tint = accent?.fill ?? '#efefef';
+  const fill = useRef({ at: -1, started: 0 });
   // there is only something to hide when the phone actually gave us words
   const has = lyrics.state === 'timed' || lyrics.state === 'plain';
   const right = corner === 'tr' || corner === 'br';
@@ -2823,7 +2824,13 @@ function Lyrics({
     const at = activeIndex(lyrics.lines, elapsed);
     const from = lyrics.lines[at]?.startMs ?? 0;
     const to = lyrics.lines[at + 1]?.startMs ?? (duration || from + 4000);
-    const sung = Math.min(1, Math.max(0, (elapsed - from) / Math.max(500, to - from)));
+    const lineMs = Math.max(300, to - from);
+    // the fill runs as one animation over what is left of the line rather than a step per tick, so
+    // it moves evenly and arrives at the end of the line as the next one takes over. the point it
+    // starts from is taken once, when the line becomes the sung one, and held for the rest of it
+    if (fill.current.at !== at || elapsed < fill.current.started) fill.current = { at, started: elapsed };
+    const into = Math.min(lineMs, Math.max(0, fill.current.started - from));
+    const sung = Math.min(1, Math.max(0, (elapsed - from) / lineMs));
     // the line the column is parked on, which is the sung one unless the wheel has moved away
     const shown = Math.min(lyrics.lines.length - 1, Math.max(0, at + offset));
     return (
@@ -2859,9 +2866,17 @@ function Lyrics({
                       is. a width transition slides between the phone's ticks rather than stepping */}
                   {i === at && (
                     <span
+                      key={at}
                       aria-hidden
                       className="pointer-events-none absolute inset-0 overflow-hidden whitespace-nowrap"
-                      style={{ width: `${sung * 100}%`, color: tint, transition: motion ? 'width 0.45s linear' : undefined }}>
+                      style={
+                        {
+                          color: tint,
+                          width: motion ? undefined : `${sung * 100}%`,
+                          animation: motion ? `lyric-fill ${lineMs - into}ms linear forwards` : undefined,
+                          '--fill-from': `${(into / lineMs) * 100}%`,
+                        } as CSSProperties
+                      }>
                       {line.text || '\u00b7 \u00b7 \u00b7'}
                     </span>
                   )}

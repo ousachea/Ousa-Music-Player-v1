@@ -409,3 +409,13 @@ img {
 .sheet-up {
   animation: sheet-up 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+
+/* the sung part of a lyric line sweeps to the end of it in one run rather than a step per tick */
+@keyframes lyric-fill {
+  from {
+    width: var(--fill-from, 0%);
+  }
+  to {
+    width: 100%;
+  }
+}
