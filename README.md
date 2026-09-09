@@ -187,7 +187,13 @@ around it, at a tempo you set.
 
 ![Lyrics style](apps/MusicPlayerV1/screenshots/05-lyrics.jpg)
 
-The words, with the line being sung held on the middle of the screen and lit in the album's colour.
+The words, with the line being sung held on the middle of the screen and filling with the album's
+colour as it is sung: the phone's timings say how far into the line the song is, and the colour is
+clipped to the letters up to that point with the rest of the line waiting behind it.
+
+Every line, the track and the time carry a soft dark halo, so the words hold their contrast over a
+pale cover instead of dissolving into it. Nothing is darkened to do it: the halo is on the glyphs,
+not on the artwork.
 The rest fade away above and below it, and the words thin to nothing at the top and bottom so a line
 leaves rather than stopping at an edge. Nothing is darkened to do it: the words themselves are
 masked, and the artwork behind them keeps its full strength. The column is what moves, not the
@@ -206,7 +212,7 @@ not.
 
 The artwork and the track sit in whichever corner you pick, under **Track corner**. On the right the
 artwork leads and the track reads back towards it, and a corner along the bottom sits above the
-transport rather than under it. The button that puts the words away takes the top corner opposite
+transport rather than under it. A long title takes two lines there rather than being cut off. The button that puts the words away takes the top corner opposite
 the track.
 
 Touching a line plays from it: each line knows the moment it belongs to, so the words are also the

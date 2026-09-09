@@ -2751,14 +2751,14 @@ function Lyrics({
             <Disc className="h-6 w-6 text-off-white/30" />
           </div>
         )}
-        <div className={`min-w-0 ${right ? 'text-right' : ''}`}>
-          <div className="truncate text-row-lg font-semibold text-off-white">{title}</div>
+        <div className={`min-w-0 ${right ? 'text-right' : ''} [text-shadow:0_1px_2px_rgba(0,0,0,0.6),0_2px_14px_rgba(0,0,0,0.5)]`}>
+          <div className="line-clamp-2 text-row-lg leading-tight font-semibold text-off-white">{title}</div>
           <div className="truncate text-hint text-soft">{artist}</div>
         </div>
       </div>
 
       {/* the time reads under the line that draws it, on the same band as the track */}
-      <div className="pointer-events-none absolute top-5 left-1/2 z-[3] flex h-14 -translate-x-1/2 items-center font-mono text-hint tabular-nums text-off-white/75">
+      <div className="pointer-events-none absolute top-5 left-1/2 z-[3] flex h-14 -translate-x-1/2 items-center font-mono text-hint tabular-nums text-off-white/75 [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
         {clock(elapsed)}
         <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
       </div>
@@ -2810,6 +2810,9 @@ function Lyrics({
 
   if (words && lyrics.state === 'timed') {
     const at = activeIndex(lyrics.lines, elapsed);
+    const from = lyrics.lines[at]?.startMs ?? 0;
+    const to = lyrics.lines[at + 1]?.startMs ?? (duration || from + 4000);
+    const sung = Math.min(1, Math.max(0, (elapsed - from) / Math.max(500, to - from)));
     // the line the column is parked on, which is the sung one unless the wheel has moved away
     const shown = Math.min(lyrics.lines.length - 1, Math.max(0, at + offset));
     return (
@@ -2831,14 +2834,25 @@ function Lyrics({
                 }`}
                 style={{
                   height: LYRIC_LINE_PX,
-                  color: i === at ? tint : '#efefef',
-                  opacity: i === at ? 1 : Math.max(0.12, 0.5 - away * 0.11),
+                  color: i === at ? tint : '#f4f4f4',
+                  opacity: i === at ? 1 : Math.max(0.16, 0.62 - away * 0.12),
                   transform: `scale(${i === at ? 1 : 0.9})`,
                 }}>
                 <span
-                  className={`truncate font-display leading-tight font-semibold tracking-display ${
+                  className={`truncate font-display leading-tight font-semibold tracking-display [text-shadow:0_1px_2px_rgba(0,0,0,0.6),0_2px_16px_rgba(0,0,0,0.5)] ${
                     upright ? 'text-[1.5rem]' : 'text-[1.75rem]'
-                  }`}>
+                  }`}
+                  style={
+                    i === at
+                      ? {
+                          // the sung part is filled and the rest waits behind it, clipped to the glyphs
+                          backgroundImage: `linear-gradient(90deg, ${tint} ${sung * 100}%, rgba(244,244,244,0.55) ${sung * 100}%)`,
+                          WebkitBackgroundClip: 'text',
+                          backgroundClip: 'text',
+                          color: 'transparent',
+                        }
+                      : undefined
+                  }>
                   {line.text || '\u00b7 \u00b7 \u00b7'}
                 </span>
               </button>
@@ -2858,7 +2872,7 @@ function Lyrics({
         <div
           data-lyric-page
           className="absolute inset-0 overflow-y-auto overscroll-contain px-24 py-24 [scrollbar-width:none]">
-          <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft">
+          <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft [text-shadow:0_1px_2px_rgba(0,0,0,0.6),0_2px_14px_rgba(0,0,0,0.5)]">
             {lyrics.text}
           </div>
         </div>
