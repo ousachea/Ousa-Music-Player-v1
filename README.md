@@ -196,12 +196,13 @@ lines.
 How far through the song is runs along the top edge of the screen: a hairline the width of the
 display that fills as the track plays, and dims while it is paused. Nothing is drawn for it to sit
 in, which is the point. The elapsed time against the length reads in the middle of that edge, under
-the line that draws it.
+the line that draws it, level with the track in the corner; the button that puts the words away sits
+on that same line at the other end, so the top of the screen reads as one row.
 
-The transport is one row along the bottom: previous and next at the ends of it, play and pause a
-rounded square in the album's colour in the middle, where a thumb lands. The button flips its glyph
-rather than turning, since a page of words has enough moving on it already. All of it goes away when
-the on-screen buttons do, and the line along the top does not.
+The transport is one row along the bottom: previous and next at the ends of it and play and pause in
+the middle, where a thumb lands, all three bare glyphs in the album's colour with nothing drawn
+behind them. All of it goes away when the on-screen buttons do, and the line along the top does
+not.
 
 The artwork and the track sit in whichever corner you pick, under **Track corner**. On the right the
 artwork leads and the track reads back towards it, and a corner along the bottom sits above the

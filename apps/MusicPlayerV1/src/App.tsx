@@ -2757,8 +2757,8 @@ function Lyrics({
         </div>
       </div>
 
-      {/* the time reads under the line that draws it, in the middle of the top edge */}
-      <div className="pointer-events-none absolute top-3.5 left-1/2 z-[3] -translate-x-1/2 font-mono text-hint tabular-nums text-off-white/75">
+      {/* the time reads under the line that draws it, on the same band as the track */}
+      <div className="pointer-events-none absolute top-5 left-1/2 z-[3] flex h-14 -translate-x-1/2 items-center font-mono text-hint tabular-nums text-off-white/75">
         {clock(elapsed)}
         <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
       </div>
@@ -2768,8 +2768,8 @@ function Lyrics({
           aria-label={words ? 'hide the words' : 'show the words'}
           onClick={onWords}
           style={{ color: words ? tint : undefined }}
-          className={`absolute top-4 z-[3] -m-3 p-3 transition-[transform,color,opacity] duration-300 ease-spring active:scale-90 ${
-            corner === 'tr' ? 'left-5' : 'right-5'
+          className={`absolute top-5 z-[3] grid h-14 place-items-center px-3 transition-[transform,color,opacity] duration-300 ease-spring active:scale-90 ${
+            corner === 'tr' ? 'left-3' : 'right-3'
           } ${words ? '' : 'text-off-white/50'}`}>
           <Words className="h-6 w-6" off={!words} />
         </button>
@@ -2782,10 +2782,10 @@ function Lyrics({
           <button
             aria-label={playing ? 'pause' : 'play'}
             onClick={onToggle}
-            style={{ backgroundColor: tint, color: accent?.ink ?? '#101214' }}
-            className="absolute bottom-8 left-1/2 z-[3] grid h-12 w-12 -translate-x-1/2 place-items-center rounded-2xl shadow-lg transition active:scale-90">
+            style={{ color: tint }}
+            className="absolute bottom-6 left-1/2 z-[3] -m-3 -translate-x-1/2 p-3 transition-[transform,color] duration-300 ease-spring active:scale-90">
             <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-              {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+              {playing ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9" />}
             </span>
           </button>
 

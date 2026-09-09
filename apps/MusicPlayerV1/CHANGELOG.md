@@ -3,14 +3,14 @@
 ## 0.33.0
 
 The Lyrics screen lays its controls out again. The elapsed time against the length reads in the
-middle of the top edge, under the hairline that draws the progress. The transport is one row along
-the bottom: previous and next at the ends, play and pause a rounded square in the album's colour in
-the middle, where a thumb lands. The button that puts the words away takes the top corner opposite
-the track.
+middle of the top edge, under the hairline that draws the progress, and the button that puts the
+words away takes the other end of that edge; both sit level with the track in its corner, so the top
+of the screen reads as one row rather than three things at three heights.
 
-The play button stops turning. Rotating it under a page of moving words was one thing too many on
-the screen; it flips its glyph and nothing else. A track corner along the bottom now sits above the
-transport rather than under it.
+The transport is one row along the bottom: previous and next at the ends and play and pause in the
+middle, where a thumb lands. Play is a bare glyph like the other two now, in the album's colour with
+nothing drawn behind it: a filled square rotating under a page of moving words was one thing too
+many on the screen. A track corner along the bottom is raised to clear that row.
 
 ## 0.32.0
 
