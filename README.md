@@ -194,9 +194,8 @@ across the one underneath. The phone's timings say when the line starts and when
 and the fill runs the whole way between them in one move, so it reaches the end of the line as the
 next one takes over rather than stepping along a quarter second at a time.
 
-The words carry no shadow of their own. They hold their contrast by sitting brighter than they used
-to, and the track and the time in the corners keep a light halo, since they are small type over the
-artwork rather than the thing being read.
+Nothing on this screen is outlined. The words, the track and the time are all drawn plain over the
+artwork and hold their contrast by weight and brightness alone.
 The rest step back from it in three grades: the lines either side are set at about four fifths and
 softer, the pair beyond them at two thirds and fainter again, and everything past that smaller and
 faint. The line being sung is plainly the largest thing on the screen. The words also

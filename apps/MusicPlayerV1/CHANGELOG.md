@@ -26,10 +26,9 @@ A lyric line is never truncated. A long one is set smaller instead, in four step
 half size, so it reads whole rather than ending in an ellipsis; the widest line measured on the
 device came out 110px inside the space it has.
 
-The words hold their contrast by being brighter rather than by being outlined: the lines either side
-of the sung one sit up from where they were, and no shadow is drawn under any of them. The track and
-the time in the corners keep a light halo, being small type laid over the artwork. A long title in
-the corner takes two lines instead of being cut off.
+Nothing on the Lyrics screen is outlined any more: no shadow under the words, the track or the time.
+They hold their contrast by weight and brightness instead, which is what the grading of the lines is
+for. A long title in the corner takes two lines instead of being cut off.
 
 The Lyrics screen lays its controls out again. The elapsed time against the length reads in the
 middle of the top edge, under the hairline that draws the progress, and the button that puts the

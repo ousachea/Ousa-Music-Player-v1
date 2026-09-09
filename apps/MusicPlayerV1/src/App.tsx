@@ -2763,14 +2763,14 @@ function Lyrics({
             <Disc className="h-6 w-6 text-off-white/30" />
           </div>
         )}
-        <div className={`min-w-0 ${right ? 'text-right' : ''} [text-shadow:0_1px_1px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)]`}>
+        <div className={`min-w-0 ${right ? 'text-right' : ''}`}>
           <div className="line-clamp-2 text-row-lg leading-tight font-semibold text-off-white">{title}</div>
           <div className="truncate text-hint text-soft">{artist}</div>
         </div>
       </div>
 
       {/* the time reads under the line that draws it, on the same band as the track */}
-      <div className="pointer-events-none absolute top-5 left-1/2 z-[3] flex h-14 -translate-x-1/2 items-center font-mono text-hint tabular-nums text-off-white/80 [text-shadow:0_1px_1px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)]">
+      <div className="pointer-events-none absolute top-5 left-1/2 z-[3] flex h-14 -translate-x-1/2 items-center font-mono text-hint tabular-nums text-off-white/80">
         {clock(elapsed)}
         <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
       </div>
