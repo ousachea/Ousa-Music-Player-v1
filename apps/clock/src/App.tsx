@@ -516,6 +516,7 @@ function Settings({
     row('Face size', seg(CHOICES.size, ['Small', 'Medium', 'Large', 'Fill'], prefs.size, v => setPref('size', v))),
     hours(),
     flag('Show seconds', 'seconds', prefs.seconds),
+    flag('Flashing colon', 'blink', prefs.blink),
     ...(prefs.style === 'digital-date' ? [] : [flag('Show the date', 'date', prefs.date)]),
   ];
 

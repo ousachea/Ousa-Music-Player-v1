@@ -386,6 +386,11 @@ long it rings, what one click of the wheel is worth. Stopwatch has hundredths an
 laps. Alarm has how long it rings, and the hour format it reads its own time back in. Each of the
 two that ring has its own sound setting.
 
+**Flashing colon** blinks the colon once a second, lit for the first half of each one, the way a
+clock says it is running. It is on by default and off in one tap, for a face you would rather held
+still. Digital, Digital + Date, Minimal and Border draw a colon; Flip, Analogue, Binary and Word
+have none to blink.
+
 **Face size** scales whichever face you are on: Small, Medium, Large, or Fill, which measures the
 face and takes the largest scale the screen has room for. The date under the clock is scaled with
 it, rather than staying small under a clock that has grown to the screen, and the room it needs is

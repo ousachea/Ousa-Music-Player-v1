@@ -94,6 +94,14 @@
     {
       "type": "boolean",
       "data": {
+        "key": "blink",
+        "label": "Flashing colon",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
         "key": "date",
         "label": "Clock: show the date",
         "default": true

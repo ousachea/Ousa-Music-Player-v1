@@ -7,6 +7,10 @@ sides, square into the corners, and fills from the top clockwise, one lap a minu
 inside it carries no seconds of its own. With the seconds off the frame takes the minute of the hour instead, and steps once a
 second rather than sixty times a minute.
 
+**Flashing colon**, on by default: the colon is lit for the first half of each second and dim for
+the second half, on every face that draws one. It blinks against the phone's clock rather than the
+browser's, so it is in step with the numerals beside it.
+
 **Face size** scales whichever face is on: Small, Medium, Large, or Fill, which measures the face
 before it is scaled and takes the largest scale the screen has room for. The date goes with it, so
 it is not left small under a clock that has grown to fill the screen, and the room the date needs is

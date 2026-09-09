@@ -71,6 +71,7 @@ export type Prefs = {
   size: 'small' | 'medium' | 'large' | 'fill';
   format: 'auto' | 'h12' | 'h24';
   seconds: boolean;
+  blink: boolean;
   date: boolean;
   world1: string;
   world2: string;
@@ -97,6 +98,7 @@ const DEFAULTS: Prefs = {
   size: 'medium',
   format: 'auto',
   seconds: true,
+  blink: true,
   date: true,
   world1: 'london',
   world2: 'newyork',
@@ -138,7 +140,7 @@ export const CHOICES = {
   intervalRounds: ['4', '6', '8', '12'],
 } as const satisfies Partial<Record<keyof Prefs, readonly string[]>>;
 
-const FLAGS = ['seconds', 'date', 'timerSound', 'swHundredths', 'swLaps', 'alarmSound'] as const;
+const FLAGS = ['seconds', 'blink', 'date', 'timerSound', 'swHundredths', 'swLaps', 'alarmSound'] as const;
 
 // every colour is a pair, not one value: the numerals run a gradient between them and the screen
 // behind takes a wash of the same pair, so the app has a temperature rather than one lit shape

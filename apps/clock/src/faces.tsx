@@ -6,6 +6,8 @@ import { dayShift, fields, readClock, readIn, type Zone } from './time';
 export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; at: Date; pal: Palette }) {
   const parts = readClock(at, zone, prefs.format);
   const { h, m, s } = fields(at, zone);
+  // a colon that blinks is how a clock says it is running; it is lit for the first half of a second
+  const lit = !prefs.blink || at.getMilliseconds() < 500;
 
   // the world clock fills the screen with its own rows, so it keeps the date out of the way itself
   // the date belongs to the face, so it takes the same setting rather than staying small under a
@@ -49,7 +51,7 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
             quarter={prefs.rotate === '90' || prefs.rotate === '270'}
             pal={pal}
           />
-          {stage(<Digits parts={parts} pal={pal} seconds={false} size="4.5rem" />)}
+          {stage(<Digits parts={parts} pal={pal} seconds={false} size="4.5rem" lit={lit} />)}
         </>
       );
     case 'minimal':
@@ -58,7 +60,11 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
           <span className="text-[7rem] leading-none font-light tabular-nums" style={{ color: pal.main }}>
             {parts.hour}
           </span>
-          <span className="text-[7rem] leading-none font-light text-dim">:</span>
+          <span
+            className="text-[7rem] leading-none font-light text-dim transition-opacity duration-150"
+            style={{ opacity: lit ? 1 : 0.12 }}>
+            :
+          </span>
           <span className="text-[7rem] leading-none font-light tabular-nums" style={{ color: pal.second }}>
             {parts.minute}
           </span>
@@ -67,7 +73,7 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
     case 'digital-date':
       return stage(
         <div className="flex flex-col items-center gap-4">
-          <Digits parts={parts} pal={pal} seconds={prefs.seconds} size="6rem" />
+          <Digits parts={parts} pal={pal} seconds={prefs.seconds} size="6rem" lit={lit} />
           <span className="rounded-full bg-white/6 px-5 py-1.5 text-title text-near">{parts.date}</span>
         </div>,
       );
@@ -78,7 +84,7 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
     case 'word':
       return stage(<Word h={h} m={m} pal={pal} />);
     default:
-      return stage(<Digits parts={parts} pal={pal} seconds={prefs.seconds} size="8rem" />);
+      return stage(<Digits parts={parts} pal={pal} seconds={prefs.seconds} size="8rem" lit={lit} />);
   }
 }
 
@@ -87,13 +93,27 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
 type Parts = ReturnType<typeof readClock>;
 
 // the hour takes the first colour and the minute the second, so the two are told apart at a glance
-function Digits({ parts, pal, seconds, size }: { parts: Parts; pal: Palette; seconds: boolean; size: string }) {
+function Digits({
+  parts,
+  pal,
+  seconds,
+  size,
+  lit = true,
+}: {
+  parts: Parts;
+  pal: Palette;
+  seconds: boolean;
+  size: string;
+  lit?: boolean;
+}) {
   return (
     <div className="flex items-baseline gap-1 font-mono tabular-nums" style={{ fontSize: size }}>
       <span className="leading-none" style={{ color: pal.main }}>
         {parts.hour}
       </span>
-      <span className="leading-none opacity-40" style={{ color: pal.main }}>
+      <span
+        className="leading-none transition-opacity duration-150"
+        style={{ color: pal.main, opacity: lit ? 0.4 : 0.05 }}>
         :
       </span>
       <span className="leading-none" style={{ color: pal.second }}>
