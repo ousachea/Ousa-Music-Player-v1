@@ -207,6 +207,20 @@ What you get depends on what the phone has. Timed lyrics get the moving column. 
 timings are laid out as a page, which the wheel scrolls. A track with neither says so under its
 title rather than leaving the screen blank.
 
+### The queue
+
+Pull up from the bottom edge of the screen and the phone's queue comes with it: what is playing at
+the top, everything lined up after it, and what has just been played under that, each row with its
+own artwork and length. Touching a row skips to it. The wheel scrolls the list, and a push back down
+or the Back button puts it away.
+
+It is the phone's queue, so the player only reads it: skipping to a row is the one thing the daemon
+lets a webapp do to a queue it does not own. A phone playing from a radio or an autoplay context
+often reports nothing lined up, and the sheet says so rather than showing an empty list.
+
+The pull works off whichever edge is the bottom for you. Every swipe is turned back through the
+screen rotation before it is measured, so a quarter turn moves the gesture with the picture.
+
 ### Controls
 
 | What you do | What happens |
@@ -225,6 +239,8 @@ title rather than leaving the screen blank.
 | Tap the play button | Play or pause |
 | Drag the progress bar | Seek |
 | Swipe across the screen | Next track, or previous if you swipe the other way |
+| Swipe up from the bottom edge | Open the queue |
+| Swipe it back down, or Back | Close the queue |
 
 A press waits a moment to see whether another one follows, so play/pause from the wheel is very
 slightly delayed. The on-screen button is instant.

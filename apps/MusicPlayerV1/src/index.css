@@ -396,3 +396,16 @@ img {
     color 420ms ease,
     transform 420ms cubic-bezier(0.22, 0.68, 0.15, 1);
 }
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheet-up {
+  animation: sheet-up 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}

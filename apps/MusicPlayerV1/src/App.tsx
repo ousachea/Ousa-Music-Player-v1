@@ -13,6 +13,7 @@ import {
 import { accentFrom, type Accent } from './artwork-color';
 import { explicitFor, hdArtwork } from './hd-art';
 import { activeIndex, useLyrics } from './lyrics';
+import { useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
 import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
@@ -38,6 +39,10 @@ const LYRIC_BROWSE_MS = 5000;
 const BACKDROP_FADE_MS = 700;
 // a swipe has to travel this far, and stay flat enough, to count as one rather than a stray drag
 const SWIPE_MIN_PX = 70;
+// a pull up from the bottom edge opens the queue, which is a shorter throw than a track swipe
+const SHEET_EDGE_PX = 110;
+const QUEUE_MAX = 60;
+const SHEET_PULL_PX = 55;
 const SWIPE_MAX_DRIFT = 0.7;
 
 type Volume = { level: number; muted: boolean };
@@ -58,6 +63,7 @@ export default function App() {
   const { prefs, setPref } = usePrefs(client);
   const wallClock = useClock(client, prefs.clock, prefs.clockSeconds, prefs.clockFormat);
   const [panel, setPanel] = useState(false);
+  const [sheet, setSheet] = useState(false);
   const [hint, setHint] = useState(false);
   const [tip, setTip] = useState(false);
   const [tipAgain, setTipAgain] = useState(true);
@@ -97,6 +103,8 @@ export default function App() {
   const [explicit, setExplicit] = useState(false);
   const artistName = track?.artist ?? foundArtist;
   const lyrics = useLyrics(client, prefs.theme === 'lyrics' ? (track?.persistentId ?? track?.title ?? null) : null);
+  // the queue is only read while the sheet is up: it is the phone's, and nothing else here wants it
+  const queue = useQueue(client, sheet, track?.persistentId ?? track?.title ?? null);
   const playback = state?.playback ?? null;
   const artworkId = track?.artworkId ?? null;
   const playing = playback?.state === 'playing';
@@ -250,7 +258,7 @@ export default function App() {
 
   // the daemon owns the step size and the clamping, and its level cannot be read back, so nudge rather than compute one
   const detents = useRef(0);
-  const swipeFrom = useRef<{ x: number; y: number } | null>(null);
+  const swipeFrom = useRef<{ x: number; y: number; inList: boolean } | null>(null);
   // lines away from the one being sung, while the wheel is being used to read ahead or back
   const [browse, setBrowse] = useState(0);
   const browseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -297,6 +305,11 @@ export default function App() {
 
       // in Lyrics the wheel belongs to the words: a detent is a line, and landing on one plays from
       // it. that is worth more than volume here, so it takes the wheel whatever the setting says
+      if (sheet) {
+        const list = document.querySelector<HTMLElement>('[data-queue-list]');
+        if (list) list.scrollTop += e.deltaX * WHEEL_SCROLL_PX;
+        return;
+      }
       if (prefs.theme === 'lyrics' && lyrics.state === 'timed') {
         // the wheel reads, it does not scrub: the song keeps playing and the view comes back on its own
         const at = Math.max(0, activeIndex(lyrics.lines, scrub ?? live));
@@ -329,7 +342,10 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
       if (e.key === ' ' || e.key === 'Enter') press();
-      else if (e.key === 'Escape') setPanel(open => !open);
+      else if (e.key === 'Escape') {
+        if (sheet) setSheet(false);
+        else setPanel(open => !open);
+      }
       else if (e.key === 'ArrowLeft' || e.key === '1') goPrev(true);
       else if (e.key === '2') toggle();
       else if (e.key === 'ArrowRight' || e.key === '3') goNext();
@@ -347,22 +363,38 @@ export default function App() {
     // local would be wiped between the press and the release
     const onDown = (e: globalThis.PointerEvent) => {
       if (panel) return;
-      swipeFrom.current = { x: e.clientX, y: e.clientY };
+      const target = e.target instanceof Element ? e.target : null;
+      swipeFrom.current = { x: e.clientX, y: e.clientY, inList: !!target?.closest('[data-queue-list]') };
     };
     const onUp = (e: globalThis.PointerEvent) => {
       const from = swipeFrom.current;
       if (!from) return;
-      const dx = e.clientX - from.x;
-      const dy = e.clientY - from.y;
       swipeFrom.current = null;
-      // upright the screen is turned, so the swipe the viewer makes arrives on the other axis
-      const along = upright ? dy : dx;
-      const across = upright ? dx : dy;
-      if (Math.abs(along) < SWIPE_MIN_PX) return;
-      if (Math.abs(across) > Math.abs(along) * SWIPE_MAX_DRIFT) return;
+      const start = toLayout(from.x, from.y, prefs.rotate);
+      const end = toLayout(e.clientX, e.clientY, prefs.rotate);
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+
+      // a pull up off the bottom edge brings the queue in, and a push back down sends it away
+      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > SHEET_PULL_PX) {
+        // dragging the list itself is how it scrolls, so only a pull on the sheet, or one from the
+        // top of a list already at its top, puts it away
+        const list = document.querySelector<HTMLElement>('[data-queue-list]');
+        if (sheet && dy > 0 && (!from.inList || (list?.scrollTop ?? 0) <= 0)) {
+          setSheet(false);
+          return;
+        }
+        if (!sheet && dy < 0 && start.y > start.height - SHEET_EDGE_PX) {
+          setSheet(true);
+          return;
+        }
+      }
+      if (sheet) return;
+
+      if (Math.abs(dx) < SWIPE_MIN_PX) return;
+      if (Math.abs(dy) > Math.abs(dx) * SWIPE_MAX_DRIFT) return;
       // swiping the artwork away to the left brings the next track in behind it, as on a phone
-      const back = prefs.rotate === 180 || prefs.rotate === 270 ? along < 0 : along > 0;
-      if (back) goPrev(true);
+      if (dx > 0) goPrev(true);
       else goNext();
     };
 
@@ -381,7 +413,7 @@ export default function App() {
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
     };
-  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, toggle, upright]);
+  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, sheet, toggle]);
 
   if (!track)
     return (
@@ -680,9 +712,136 @@ export default function App() {
           }}
         />
       )}
+      {sheet && (
+        <QueueSheet
+          client={client}
+          queue={queue}
+          accent={accentOn}
+          onClose={() => setSheet(false)}
+          onPick={index => {
+            client.player.skipToIndex({ index });
+            setSheet(false);
+          }}
+        />
+      )}
       {panel && <Panel client={client} prefs={prefs} setPref={setPref} accent={accentOn} artUrl={artUrl} />}
     </div>
     </Stage>
+  );
+}
+
+// the phone's queue, pulled up from the bottom edge. it is read only, as the queue belongs to the
+// phone: tapping a row is a skip to it, which is the one thing the daemon lets a webapp do to it
+function QueueSheet({
+  client,
+  queue,
+  accent,
+  onPick,
+  onClose,
+}: {
+  client: BridgethingClient;
+  queue: Queue | null;
+  accent: Accent | null;
+  onPick: (index: number) => void;
+  onClose: () => void;
+}) {
+  const items = (queue?.items ?? []).slice(0, QUEUE_MAX);
+  // newest first, the way a history reads back from where you are
+  const played = (queue?.previous ?? []).slice(-QUEUE_MAX).reverse();
+  const art = [queue?.current?.artworkId, ...items.map(item => item.artworkId), ...played.map(item => item.artworkId)].filter(
+    (id): id is string => !!id,
+  );
+  const thumbs = useThumbs(client, art);
+  const tint = accent?.fill ?? '#efefef';
+
+  const cover = (item: QueueTrack, size: string) => (
+    <div className={`shrink-0 overflow-hidden rounded-md bg-white/8 ring-1 ring-white/10 ${size}`}>
+      {item.artworkId && thumbs[item.artworkId] ? (
+        <img src={thumbs[item.artworkId]} alt="" className="h-full w-full object-cover" />
+      ) : null}
+    </div>
+  );
+
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col justify-end">
+      <div className="absolute inset-0 bg-screen/72 backdrop-blur-sm" onClick={onClose} />
+
+      <div className="sheet-up relative flex h-[88%] flex-col rounded-t-[22px] bg-screen/97 ring-1 ring-white/10">
+        <div className="flex shrink-0 justify-center pt-2 pb-1">
+          <span className="h-1 w-10 rounded-full bg-white/25" />
+        </div>
+
+        <div className="flex shrink-0 items-baseline justify-between px-5 pb-2">
+          <h2 className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Up next</h2>
+          <span className="font-mono text-hint text-dim tabular-nums">
+            {queue ? `${queue.items.length}` : '--'}
+          </span>
+        </div>
+
+        {queue?.current && (
+          <div className="mx-4 mb-2 flex shrink-0 items-center gap-3 rounded-2xl bg-white/6 px-3 py-2">
+            {cover(queue.current, 'h-11 w-11')}
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-title text-near">{queue.current.title ?? 'unknown'}</div>
+              <div className="truncate text-hint text-dim">{queue.current.artist ?? '—'}</div>
+            </div>
+            <span className="font-mono text-eyebrow tracking-[0.22em] uppercase" style={{ color: tint }}>
+              playing
+            </span>
+          </div>
+        )}
+
+        <div data-queue-list className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 [scrollbar-width:none]">
+          {!queue && <p className="px-1 py-6 text-center text-hint text-dim">Asking the phone for the queue…</p>}
+          {queue && items.length === 0 && (
+            <p className="px-1 py-6 text-center text-hint text-dim">
+              {played.length > 0 ? 'Nothing lined up after this one.' : 'The phone has not sent a queue.'}
+            </p>
+          )}
+          {items.map((item, i) => (
+            <button
+              key={`${item.uri}-${i}`}
+              onClick={() => onPick(i)}
+              className="flex w-full items-center gap-3 rounded-xl px-1 py-2 text-left transition active:scale-[0.99] active:bg-white/8">
+              <span className="w-5 shrink-0 text-center font-mono text-hint text-dim tabular-nums">{i + 1}</span>
+              {cover(item, 'h-9 w-9')}
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-row text-near">{item.title ?? 'unknown'}</span>
+                <span className="block truncate text-hint text-dim">{item.artist ?? '—'}</span>
+              </span>
+              {item.queued && (
+                <span className="shrink-0 font-mono text-eyebrow tracking-[0.2em] text-dim uppercase">queued</span>
+              )}
+              <span className="w-10 shrink-0 text-right font-mono text-hint text-dim tabular-nums">
+                {item.durationMs ? clock(item.durationMs) : ''}
+              </span>
+            </button>
+          ))}
+
+          {/* what the phone has already played, which is all a webapp can do with history: read it */}
+          {played.length > 0 && (
+            <>
+              <h3 className="mt-4 mb-1 px-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase opacity-70">
+                Played
+              </h3>
+              {played.map((item, i) => (
+                <div key={`${item.uri}-p${i}`} className="flex items-center gap-3 px-1 py-2 opacity-45">
+                  <span className="w-5 shrink-0" />
+                  {cover(item, 'h-9 w-9')}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-row text-near">{item.title ?? 'unknown'}</span>
+                    <span className="block truncate text-hint text-dim">{item.artist ?? '—'}</span>
+                  </span>
+                  <span className="w-10 shrink-0 text-right font-mono text-hint text-dim tabular-nums">
+                    {item.durationMs ? clock(item.durationMs) : ''}
+                  </span>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -703,6 +862,18 @@ function Stage({ rotate, children }: { rotate: Prefs['rotate']; children: ReactN
       </div>
     </div>
   );
+}
+
+// the stage is turned with a css transform, so a pointer lands where the viewer sees it only after
+// the same turn is undone. width and height swap on a quarter, which is why the box comes back too
+function toLayout(x: number, y: number, rotate: Prefs['rotate']) {
+  const quarter = rotate === 90 || rotate === 270;
+  const dx = x - window.innerWidth / 2;
+  const dy = y - window.innerHeight / 2;
+  const [ax, ay] = rotate === 90 ? [dy, -dx] : rotate === 180 ? [-dx, -dy] : rotate === 270 ? [-dy, dx] : [dx, dy];
+  const width = quarter ? window.innerHeight : window.innerWidth;
+  const height = quarter ? window.innerWidth : window.innerHeight;
+  return { x: ax + width / 2, y: ay + height / 2, width, height };
 }
 
 // the stage is turned with a css transform, so a drag reads along the axis the bar lies on for the

@@ -1,5 +1,18 @@
 # Music Player
 
+## 0.32.0
+
+The phone's queue, pulled up from the bottom edge of the screen. It shows what is playing at the
+top, everything lined up after it, and the recently played under that, each with its own artwork.
+Touching a row skips to it, which is the only thing the daemon lets a webapp do to a queue that
+belongs to the phone. The wheel scrolls the list, a push back down or the Back button puts it away,
+and the sheet is read fresh each time it opens rather than held.
+
+The swipe now reads in the layout the viewer is looking at rather than the one the screen is wired
+in. Every pointer is turned back through the screen rotation before it is measured, so the pull that
+opens the queue comes off whichever edge is the bottom for you, and the track swipe drops the
+special cases it used to carry for 90, 180 and 270.
+
 ## 0.31.0
 
 A sixth player style: **Cassette**. A tape in a deck, with the title written across a cream label,
