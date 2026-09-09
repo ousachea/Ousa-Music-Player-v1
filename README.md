@@ -193,9 +193,9 @@ colour as it is sung: the phone's timings say how far into the line the song is,
 of the line clipped to that point slides across the one underneath rather than stepping with each
 tick.
 
-Every line, the track and the time carry a soft dark halo, so the words hold their contrast over a
-pale cover instead of dissolving into it. Nothing is darkened to do it: the halo is on the glyphs,
-not on the artwork.
+The words carry no shadow of their own. They hold their contrast by sitting brighter than they used
+to, and the track and the time in the corners keep a light halo, since they are small type over the
+artwork rather than the thing being read.
 The rest fade away above and below it, and the words thin to nothing at the top and bottom so a line
 leaves rather than stopping at an edge. Nothing is darkened to do it: the words themselves are
 masked, and the artwork behind them keeps its full strength. The column is what moves, not the

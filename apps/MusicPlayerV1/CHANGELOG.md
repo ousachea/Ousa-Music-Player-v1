@@ -15,10 +15,10 @@ of each line, so the gap to the next one says how far through this one the song 
 is clipped to the letters up to that point with the rest of the line waiting behind it at half
 strength.
 
-The words hold their contrast over a pale cover. Every line, the track and the time carry a soft
-dark halo, and the lines either side of the sung one sit a little brighter than they did. The halo
-is on the glyphs rather than over the artwork, so nothing behind the words is dimmed to get it. A
-long title in the corner takes two lines instead of being cut off.
+The words hold their contrast by being brighter rather than by being outlined: the lines either side
+of the sung one sit up from where they were, and no shadow is drawn under any of them. The track and
+the time in the corners keep a light halo, being small type laid over the artwork. A long title in
+the corner takes two lines instead of being cut off.
 
 The Lyrics screen lays its controls out again. The elapsed time against the length reads in the
 middle of the top edge, under the hairline that draws the progress, and the button that puts the

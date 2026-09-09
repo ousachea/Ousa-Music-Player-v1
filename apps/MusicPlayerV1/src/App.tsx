@@ -2850,7 +2850,7 @@ function Lyrics({
                   transform: `scale(${i === at ? 1 : 0.9})`,
                 }}>
                 <span
-                  className={`relative inline-block max-w-full truncate align-middle font-display leading-tight font-semibold tracking-display [text-shadow:0_1px_1px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.75),0_3px_22px_rgba(0,0,0,0.6)] ${
+                  className={`relative inline-block max-w-full truncate align-middle font-display leading-tight font-semibold tracking-display ${
                     upright ? 'text-[1.5rem]' : 'text-[1.75rem]'
                   }`}
                   style={i === at ? { color: 'rgba(255,255,255,0.6)' } : undefined}>
@@ -2883,7 +2883,7 @@ function Lyrics({
         <div
           data-lyric-page
           className="absolute inset-0 overflow-y-auto overscroll-contain px-24 py-24 [scrollbar-width:none]">
-          <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft [text-shadow:0_1px_1px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)]">
+          <div className="whitespace-pre-line text-center font-display text-title leading-relaxed text-soft">
             {lyrics.text}
           </div>
         </div>
