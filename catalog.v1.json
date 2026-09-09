@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-09T14:10:51.020Z",
+  "updated_at": "2026-09-09T14:54:44.111Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -277,6 +277,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.33.0",
+          "released_at": "2026-09-09T14:54:44.103Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.33.0.zip",
+            "size": 988484,
+            "sha256": "245ae870a17a8036b94debd07e8deaa913858589c01f3278cbfd990a6772a8b6"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.33.0.html",
+            "size": 32725,
+            "sha256": "5058ea42d24be10c7966261b60df9208e50212276544920a988527c3a6260d3e"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The preset bumps sit over whatever the player draws along their edge, rather than under it, which\nmatters on the Lyrics screen where the progress line runs along the top. On that style they are\ndrawn in plain white instead of the album's colour, so the hardware marker and the progress line are\nnot the same colour lying on the same edge.\n\nThe button that puts the words away keeps its corner. It sat in the middle of the left edge with the\nwords off and in the top corner with them on, so it moved every time it was pressed.\n\nThe line being sung fills with the album's colour as it is sung. The fill is a second copy of the\nline clipped by width, and it runs as one animation across what is left of the line rather than\nbeing nudged on every tick, so it moves evenly and lands on the end of the line as the next one\ntakes over. The player's clock only moves four times a second, which is what made a per-tick fill\nstep, and what left it short of the end when the line changed. A gradient clipped to the glyphs was\ntried first and would not paint at all on an inline box with a sized background.\n\nLines step back from the one being sung in three grades rather than all sitting at one size and a\ndistance-faded opacity: full, then about four fifths, then two thirds, then smaller again, with the\nopacity stepping with them. The first pass moved the size by six per cent a step, which read as no\nstep at all.\n\nA lyric line is never truncated. A long one is set smaller instead, in four steps down to just over\nhalf size, so it reads whole rather than ending in an ellipsis; the widest line measured on the\ndevice came out 110px inside the space it has.\n\nNothing on the Lyrics screen is outlined any more: no shadow under the words, the track or the time.\nThey hold their contrast by weight and brightness instead, which is what the grading of the lines is\nfor. A long title in the corner takes two lines instead of being cut off.\n\nThe Lyrics screen lays its controls out again. The elapsed time against the length reads in the\nmiddle of the top edge, under the hairline that draws the progress, and the button that puts the\nwords away takes the other end of that edge; both sit level with the track in its corner, so the top\nof the screen reads as one row rather than three things at three heights.\n\nThe transport is one row along the bottom: previous and next at the ends and play and pause in the\nmiddle, where a thumb lands. Play is a bare glyph like the other two now, in the album's colour with\nnothing drawn behind it: a filled square rotating under a page of moving words was one thing too\nmany on the screen. A track corner along the bottom is raised to clear that row."
+        },
         {
           "version": "0.32.0",
           "released_at": "2026-09-09T14:10:51.017Z",
