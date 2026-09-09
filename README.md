@@ -345,8 +345,11 @@ A clock, and the three things that usually sit beside one.
 
 ![Digital face](apps/clock/screenshots/01-digital.jpg)
 
-**Eight faces.** Digital, Digital + Date, Minimal, Flip, Analogue, World, Binary and Word. Flip is a
-real split-flap: the top leaf falls away to uncover the digit behind it, then the new bottom leaf
+**Nine faces.** Digital, Digital + Date, Minimal, Border, Flip, Analogue, World, Binary and Word.
+Border makes the frame the second hand: a square drawn round the middle of the screen that fills
+from the top clockwise, one lap a minute, so the time inside it needs no seconds of its own. With
+the seconds turned off it takes the minute of the hour instead, and moves once a second rather than
+sixty times. Flip is a real split-flap: the top leaf falls away to uncover the digit behind it, then the new bottom leaf
 swings up over the old one. World reads three cities beside the local time, picked from eighteen,
 and says when one of them is already on tomorrow. Binary is four rows of 8-4-2-1, one column per
 digit, with the decimal under each. Word spells it out, on a twelve hour dial, because "seventeen
@@ -381,6 +384,14 @@ and whatever that style runs on — pomodoro's work and break, interval's work, 
 long it rings, what one click of the wheel is worth. Stopwatch has hundredths and whether to keep
 laps. Alarm has how long it rings, and the hour format it reads its own time back in. Each of the
 two that ring has its own sound setting.
+
+**Face size** scales whichever face you are on: Small, Medium, Large, or Fill, which measures the
+face and takes the largest scale the screen has room for. Border fills its own square rather than
+the screen, since that is the frame it is drawn in.
+
+**Screen rotation** turns the whole app a quarter at a time, 0 to 90 to 180 to 270, for a device
+mounted on its side. The four preset bumps follow the buttons round to whichever edge they are
+physically on, so they still point at the hardware that works them.
 
 Colour is a pair rather than a single tint. The hour takes the first and the minute the second, the
 countdowns and the stopwatch run a gradient across the numerals, the dials and their hands are drawn

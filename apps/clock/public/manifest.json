@@ -1,11 +1,25 @@
 {
   "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
   "name": "Clock",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A clock in eight faces, seven timers, a stopwatch and an alarm.",
   "icon": "icon.png",
   "settings": "settings.html",
   "config": [
+    {
+      "type": "enum",
+      "data": {
+        "key": "rotate",
+        "label": "Screen rotation",
+        "choices": [
+          "0",
+          "90",
+          "180",
+          "270"
+        ],
+        "default": "0"
+      }
+    },
     {
       "type": "enum",
       "data": {
@@ -40,6 +54,20 @@
           "word"
         ],
         "default": "digital"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "size",
+        "label": "Clock face size",
+        "choices": [
+          "small",
+          "medium",
+          "large",
+          "fill"
+        ],
+        "default": "medium"
       }
     },
     {

@@ -3,14 +3,15 @@ import type { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 // every screen keeps its own settings; only the colour is shared, because it paints all of them
-export type Face = 'digital' | 'digital-date' | 'minimal' | 'flip' | 'analogue' | 'world' | 'binary' | 'word';
+export type Face = 'digital' | 'digital-date' | 'minimal' | 'border' | 'flip' | 'analogue' | 'world' | 'binary' | 'word';
 export type TimerMode = 'countdown' | 'circular' | 'pomodoro' | 'interval' | 'kitchen' | 'preset' | 'multi';
 
-export const FACES: Face[] = ['digital', 'digital-date', 'minimal', 'flip', 'analogue', 'world', 'binary', 'word'];
+export const FACES: Face[] = ['digital', 'digital-date', 'minimal', 'border', 'flip', 'analogue', 'world', 'binary', 'word'];
 export const FACE_LABELS: Record<Face, string> = {
   digital: 'Digital',
   'digital-date': 'Digital + Date',
   minimal: 'Minimal',
+  border: 'Border',
   flip: 'Flip',
   analogue: 'Analogue',
   world: 'World',
@@ -63,8 +64,11 @@ const SPANS = ['30s', '1m', '5m'] as const;
 const STEPS = ['10s', '1m', '5m'] as const;
 
 export type Prefs = {
+  // held as a string like every other choice, so one table checks them all
+  rotate: '0' | '90' | '180' | '270';
   tint: 'white' | 'amber' | 'cyan' | 'green' | 'magenta' | 'sunset' | 'aurora' | 'ember';
   style: Face;
+  size: 'small' | 'medium' | 'large' | 'fill';
   format: 'auto' | 'h12' | 'h24';
   seconds: boolean;
   date: boolean;
@@ -87,8 +91,10 @@ export type Prefs = {
 };
 
 const DEFAULTS: Prefs = {
+  rotate: '0',
   tint: 'white',
   style: 'digital',
+  size: 'medium',
   format: 'auto',
   seconds: true,
   date: true,
@@ -113,8 +119,10 @@ const DEFAULTS: Prefs = {
 // one table of what each key may hold, so a value from the daemon is checked in one place rather
 // than in a case per setting
 export const CHOICES = {
+  rotate: ['0', '90', '180', '270'],
   tint: ['white', 'amber', 'cyan', 'green', 'magenta', 'sunset', 'aurora', 'ember'],
   style: FACES,
+  size: ['small', 'medium', 'large', 'fill'],
   format: ['auto', 'h12', 'h24'],
   world1: CITY_KEYS,
   world2: CITY_KEYS,

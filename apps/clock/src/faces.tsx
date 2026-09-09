@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 import { CITIES, ink, type Palette, type Prefs } from './config';
 import { dayShift, fields, readClock, readIn, type Zone } from './time';
@@ -18,7 +18,7 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
 
   const stage = (children: React.ReactNode) => (
     <div className="grid h-full w-full place-items-center pt-6">
-      {children}
+      <Fit mode={prefs.size}>{children}</Fit>
       {foot}
     </div>
   );
@@ -34,6 +34,25 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
           {prefs.seconds && <Flip value={parts.second} pal={pal} small />}
           {parts.dayPeriod && <span className="ml-1 self-end pb-3 font-mono text-title text-dim">{parts.dayPeriod}</span>}
         </div>,
+      );
+    case 'border':
+      return (
+        <div className="grid h-full w-full place-items-center pt-6">
+          <div className="relative aspect-square h-[76%] max-h-full max-w-full">
+            <Border
+              // with the seconds off there is nothing for a second hand to say, so the border takes
+              // the minute of the hour instead and moves once a second rather than sixty times
+              fraction={prefs.seconds ? (s + at.getMilliseconds() / 1000) / 60 : (m * 60 + s) / 3600}
+              pal={pal}
+            />
+            <div className="grid h-full w-full place-items-center px-[9%]">
+              <Fit mode={prefs.size}>
+                <Digits parts={parts} pal={pal} seconds={false} size="4.5rem" />
+              </Fit>
+            </div>
+          </div>
+          {foot}
+        </div>
       );
     case 'minimal':
       return stage(
@@ -89,6 +108,77 @@ function Digits({ parts, pal, seconds, size }: { parts: Parts; pal: Palette; sec
       )}
       {parts.dayPeriod && <span className="ml-2 self-end pb-[0.45em] text-[0.16em] leading-none text-dim">{parts.dayPeriod}</span>}
     </div>
+  );
+}
+
+const SIZES: Record<Exclude<Prefs['size'], 'fill'>, number> = { small: 0.78, medium: 1, large: 1.24 };
+
+// a face is drawn at the size it reads best and then scaled, so every one of them takes the same
+// setting. fill measures what the face actually is and takes the largest scale the screen allows
+function Fit({ mode, children }: { mode: Prefs['size']; children: React.ReactNode }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [grown, setGrown] = useState(1);
+
+  useEffect(() => {
+    if (mode !== 'fill') return;
+    const node = box.current;
+    const parent = node?.parentElement;
+    if (!node || !parent) return;
+    // offsetWidth is the size before the transform, so measuring it here cannot chase its own tail
+    const measure = () => {
+      const w = node.offsetWidth;
+      const h = node.offsetHeight;
+      if (!w || !h) return;
+      setGrown(Math.max(0.4, Math.min((parent.clientWidth * 0.94) / w, (parent.clientHeight * 0.82) / h)));
+    };
+    measure();
+    const watch = new ResizeObserver(measure);
+    watch.observe(node);
+    watch.observe(parent);
+    return () => watch.disconnect();
+  }, [mode]);
+
+  const scale = mode === 'fill' ? grown : SIZES[mode];
+  return (
+    <div
+      ref={box}
+      className="transition-transform duration-500"
+      style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
+      {children}
+    </div>
+  );
+}
+
+// the seconds run round a square frame: the frame is the second hand, drawn from the top and
+// filling clockwise, so the time inside it needs no second of its own
+function Border({ fraction, pal }: { fraction: number; pal: Palette }) {
+  const i = 2;
+  const r = 7;
+  const [x0, y0, x1, y1] = [i, i, 100 - i, 100 - i];
+  const ring =
+    `M 50 ${y0} H ${x1 - r} A ${r} ${r} 0 0 1 ${x1} ${y0 + r} V ${y1 - r} A ${r} ${r} 0 0 1 ${x1 - r} ${y1} ` +
+    `H ${x0 + r} A ${r} ${r} 0 0 1 ${x0} ${y1 - r} V ${y0 + r} A ${r} ${r} 0 0 1 ${x0 + r} ${y0} Z`;
+  const done = Math.min(1, Math.max(0, fraction));
+
+  return (
+    <svg viewBox="0 0 100 100" className="pointer-events-none absolute inset-0 h-full w-full">
+      <defs>
+        <linearGradient id="border-run" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor={pal.main} />
+          <stop offset="1" stopColor={pal.second} />
+        </linearGradient>
+      </defs>
+      <path d={ring} fill="none" stroke="#ffffff" strokeOpacity="0.08" strokeWidth="0.9" />
+      <path
+        d={ring}
+        fill="none"
+        stroke="url(#border-run)"
+        strokeWidth="0.9"
+        strokeLinecap="round"
+        pathLength={1}
+        strokeDasharray={`${done} 1`}
+      />
+    </svg>
   );
 }
 

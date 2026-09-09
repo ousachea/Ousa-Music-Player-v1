@@ -162,9 +162,11 @@ export default function App() {
   }, [alarm, cycleFace, panel, ringing, setAlarm, stopRinging, swToggle, timer, view]);
 
   const screenPal = view === 'timer' && timer.urgent ? URGENT : pal;
+  const turn = Number(prefs.rotate);
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-screen text-off-white">
+    <Stage rotate={turn}>
+    <div className="absolute inset-0 overflow-hidden bg-screen text-off-white">
       <Wash pal={screenPal} />
       {view === 'clock' && <ClockFace prefs={prefs} zone={zone} at={at} pal={pal} />}
       {view === 'timer' && timer.render(screenPal)}
@@ -189,11 +191,32 @@ export default function App() {
         view={view}
         prefs={prefs}
         pal={screenPal}
+        rotate={turn}
         onPick={v => (v === 'clock' && view === 'clock' ? cycleFace(1) : setView(v))}
       />
 
       {ringing && <Ringing kind={ringing.kind} pal={ringing.kind === 'timer' ? URGENT : pal} onStop={stopRinging} />}
       {panel && <Settings view={view} prefs={prefs} setPref={setPref} pal={pal} />}
+    </div>
+    </Stage>
+  );
+}
+
+// the screen never resizes, so a quarter turn is laid out at the swapped size and rotated into
+// place; the strip left either side is dead space, which is what a turn costs
+function Stage({ rotate, children }: { rotate: number; children: ReactNode }) {
+  const quarter = rotate === 90 || rotate === 270;
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-screen">
+      <div
+        className="absolute top-1/2 left-1/2"
+        style={{
+          width: quarter ? '100vh' : '100vw',
+          height: quarter ? '100vw' : '100vh',
+          transform: `translate(-50%, -50%) rotate(${rotate}deg)`,
+        }}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -219,6 +242,13 @@ function Wash({ pal }: { pal: Palette }) {
 // each end. the marker is a bump under each one rather than a tab somewhere else, so the thing on
 // screen is where the finger already is
 const PRESET_AT = [12.5, 37.5, 62.5, 87.5];
+// the buttons stay where the hardware is, so a turned screen puts them along a different edge
+const PRESET_EDGE: Record<number, { edge: 'top' | 'bottom' | 'left' | 'right'; mirror: boolean }> = {
+  0: { edge: 'top', mirror: false },
+  90: { edge: 'left', mirror: true },
+  180: { edge: 'bottom', mirror: true },
+  270: { edge: 'right', mirror: false },
+};
 // the names are there to teach the mapping, not to sit over a clock forever
 const PRESET_LABEL_MS = 4200;
 
@@ -226,11 +256,13 @@ function Presets({
   view,
   prefs,
   pal,
+  rotate,
   onPick,
 }: {
   view: View;
   prefs: Prefs;
   pal: Palette;
+  rotate: number;
   onPick: (v: View) => void;
 }) {
   // a screen with a list of its own names the one it is showing, so the preset explains itself
@@ -242,21 +274,37 @@ function Presets({
     return () => clearTimeout(id);
   }, [view, here]);
 
+  const { edge, mirror } = PRESET_EDGE[rotate] ?? PRESET_EDGE[0];
+  const vertical = edge === 'left' || edge === 'right';
+  const scrim = { top: 'bg-gradient-to-b', bottom: 'bg-gradient-to-t', left: 'bg-gradient-to-r', right: 'bg-gradient-to-l' }[edge];
+
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-[6]">
+    <div className="pointer-events-none absolute inset-0 z-[6]">
       {/* one band along the whole edge rather than a chip behind each name: four dark patches read
           as stuck on top of the clock, a single fade reads as part of the edge they point at */}
-      <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/55 via-black/15 to-transparent" />
+      <div
+        className={`absolute ${scrim} from-black/55 via-black/15 to-transparent ${vertical ? 'inset-y-0 w-16' : 'inset-x-0 h-16'}`}
+        style={{ [edge]: 0 }}
+      />
       {VIEWS.map((v, i) => {
         const on = v === view;
+        const along = `${mirror ? 100 - PRESET_AT[i] : PRESET_AT[i]}%`;
         return (
           <button
             key={v}
             onClick={() => onPick(v)}
-            className="pointer-events-auto absolute top-0 flex -translate-x-1/2 flex-col items-center gap-1.5 px-5 pb-3"
-            style={{ left: `${PRESET_AT[i]}%` }}>
+            className={`pointer-events-auto absolute flex items-center gap-1.5 ${
+              vertical ? '-translate-y-1/2 flex-row py-5 pr-3' : '-translate-x-1/2 flex-col px-5 pb-3'
+            } ${edge === 'bottom' ? 'flex-col-reverse' : ''} ${edge === 'right' ? 'flex-row-reverse pr-0 pl-3' : ''}`}
+            style={{ [vertical ? 'top' : 'left']: along, [edge]: 0 }}>
             <span
-              className={`w-[61px] shrink-0 rounded-b-full transition-all duration-700 ${on || named ? 'h-[2px]' : 'h-px'}`}
+              className={`shrink-0 transition-all duration-700 ${
+                vertical
+                  ? `h-[61px] rounded-r-full ${on || named ? 'w-[2px]' : 'w-px'}`
+                  : `w-[61px] rounded-b-full ${on || named ? 'h-[2px]' : 'h-px'}`
+              } ${edge === 'bottom' ? 'rounded-t-full rounded-b-none' : ''} ${
+                edge === 'right' ? 'rounded-l-full rounded-r-none' : ''
+              }`}
               style={{ background: on ? fill(pal) : '#efefef', opacity: on ? 0.95 : named ? 0.45 : 0.22 }}
             />
             <span
@@ -465,6 +513,7 @@ function Settings({
     ...(prefs.style === 'world'
       ? ([1, 2, 3] as const).map(n => row(`City ${n}`, stepper(`world${n}` as 'world1')))
       : []),
+    row('Face size', seg(CHOICES.size, ['Small', 'Medium', 'Large', 'Fill'], prefs.size, v => setPref('size', v))),
     hours(),
     flag('Show seconds', 'seconds', prefs.seconds),
     ...(prefs.style === 'digital-date' ? [] : [flag('Show the date', 'date', prefs.date)]),
@@ -507,6 +556,10 @@ function Settings({
       <div className="mt-3 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [scrollbar-width:none]">
         {group(rows[view])}
         {group([
+          row(
+            'Screen rotation',
+            seg(CHOICES.rotate, ['0°', '90°', '180°', '270°'], prefs.rotate, v => setPref('rotate', v)),
+          ),
           row(
             'Colour, on every screen',
             <div className="flex shrink-0 items-center gap-2">
