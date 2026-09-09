@@ -19,6 +19,7 @@ import {
   type Palette,
   type Prefs,
 } from './config';
+import { useArtPalette } from './art';
 import { ClockFace } from './faces';
 import { useTimer } from './timers';
 import { clockText, fields, useTick, useZone } from './time';
@@ -47,7 +48,9 @@ export default function App() {
   // the whole app runs off one ticker; 50ms is what the stopwatch's hundredths need
   const now = useTick(50);
   const at = useMemo(() => new Date(now + zone.offsetMs), [now, zone.offsetMs]);
-  const pal = PALETTES[prefs.tint];
+  // the album's colour when there is one and the app is asked to follow it, the chosen pair otherwise
+  const artPal = useArtPalette(client, prefs.artColour);
+  const pal = artPal ?? PALETTES[prefs.tint];
 
   // --- stopwatch -----------------------------------------------------------
   const [swFrom, setSwFrom] = useState<number | null>(null);
@@ -561,8 +564,9 @@ function Settings({
             'Screen rotation',
             seg(CHOICES.rotate, ['0°', '90°', '180°', '270°'], prefs.rotate, v => setPref('rotate', v)),
           ),
+          row('Follow the album art', toggle(prefs.artColour, () => setPref('artColour', prefs.artColour ? 'false' : 'true'))),
           row(
-            'Colour, on every screen',
+            prefs.artColour ? 'Colour, when nothing is playing' : 'Colour, on every screen',
             <div className="flex shrink-0 items-center gap-2">
               {(Object.keys(PALETTES) as Prefs['tint'][]).map(k => (
                 <button

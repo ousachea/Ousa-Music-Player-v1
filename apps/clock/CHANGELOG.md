@@ -7,6 +7,12 @@ sides, square into the corners, and fills from the top clockwise, one lap a minu
 inside it carries no seconds of its own. With the seconds off the frame takes the minute of the hour instead, and steps once a
 second rather than sixty times a minute.
 
+**Follow the album art**, off by default: the clock takes its pair of colours from the cover of
+whatever is playing, and changes with the track. The daemon gives the artwork id, the bytes come
+back through the asset surface, and the same reading the music player uses pulls the two strongest
+hues out of them. A cover with no usable hue, or nothing playing at all, leaves the chosen palette
+in place, and the settings row says so by naming that palette as the one for when nothing is on.
+
 **Flashing colon**, on by default: the colon is lit for the first half of each second and dim for
 the second half, on every face that draws one. It blinks against the phone's clock rather than the
 browser's, so it is in step with the numerals beside it.

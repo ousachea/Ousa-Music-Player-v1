@@ -400,6 +400,11 @@ taken out of the screen before the face is measured, so the two never sit on eac
 mounted on its side. The four preset bumps follow the buttons round to whichever edge they are
 physically on, so they still point at the hardware that works them.
 
+**Follow the album art** hands the colour to whatever is playing: the daemon says which track is on,
+the cover comes back as bytes, and the two strongest hues in it become the pair the clock is drawn
+from, changing with the track. A cover with no usable hue in it, a black and white one say, leaves
+the colour you picked alone rather than washing the clock grey, and so does having nothing playing.
+
 Colour is a pair rather than a single tint. The hour takes the first and the minute the second, the
 countdowns and the stopwatch run a gradient across the numerals, the dials and their hands are drawn
 from the same two, and the screen behind carries a soft wash of them, so the empty half of a clock

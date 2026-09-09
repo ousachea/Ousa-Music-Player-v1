@@ -21,6 +21,14 @@
       }
     },
     {
+      "type": "boolean",
+      "data": {
+        "key": "artColour",
+        "label": "Follow the album art",
+        "default": false
+      }
+    },
+    {
       "type": "enum",
       "data": {
         "key": "tint",
