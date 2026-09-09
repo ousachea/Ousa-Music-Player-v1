@@ -173,7 +173,7 @@ export default function App() {
     <div className="absolute inset-0 overflow-hidden bg-screen text-off-white">
       <Wash pal={screenPal} />
       {/* whatever the screen is, it keeps clear of the strip the music sits in */}
-      <div className={`absolute inset-0 ${playing ? 'pb-9' : ''}`}>
+      <div className={`absolute inset-0 ${playing ? 'pb-12' : ''}`}>
       {view === 'clock' && <ClockFace prefs={prefs} zone={zone} at={at} pal={pal} />}
       {view === 'timer' && timer.render(screenPal)}
       {view === 'stopwatch' && (
@@ -624,28 +624,31 @@ function NowPlayingBar({
       key={label}
       aria-label={label}
       onClick={onClick}
-      className="grid h-8 w-8 place-items-center rounded-full text-off-white/70 transition active:scale-90">
-      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+      className="grid h-11 w-11 shrink-0 place-items-center rounded-full transition active:scale-90"
+      style={{ color: pal.main }}>
+      <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
         {path}
       </svg>
     </button>
   );
 
+  // the skips take an edge each, the way a transport is reached with a thumb at either side, and
+  // the track reads between them with play in the middle
   return (
-    <div className="absolute inset-x-0 bottom-0 z-[4] flex h-9 items-center justify-center gap-3 px-4">
-      <span className="max-w-[46%] truncate text-hint text-dim">
-        {now.title}
-        {now.artist ? ` · ${now.artist}` : ''}
-      </span>
-      <span className="flex items-center gap-1" style={{ color: pal.main }}>
-        {key('previous', onPrev, <path d="M18 5v14l-9-7 9-7ZM7 5h2v14H7V5Z" />)}
+    <div className="absolute inset-x-0 bottom-0 z-[4] flex h-12 items-center justify-between px-3">
+      {key('previous', onPrev, <path d="M18 5v14l-9-7 9-7ZM7 5h2v14H7V5Z" />)}
+      <span className="flex min-w-0 items-center gap-3">
+        <span className="max-w-[26rem] truncate text-hint text-dim">
+          {now.title}
+          {now.artist ? ` · ${now.artist}` : ''}
+        </span>
         {key(
           now.playing ? 'pause' : 'play',
           onToggle,
           now.playing ? <path d="M8 5h3v14H8V5Zm5 0h3v14h-3V5Z" /> : <path d="M8 5l11 7-11 7V5Z" />,
         )}
-        {key('next', onNext, <path d="M6 5l9 7-9 7V5ZM15 5h2v14h-2V5Z" />)}
       </span>
+      {key('next', onNext, <path d="M6 5l9 7-9 7V5ZM15 5h2v14h-2V5Z" />)}
     </div>
   );
 }

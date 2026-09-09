@@ -7,8 +7,9 @@ sides, square into the corners, and fills from the top clockwise, one lap a minu
 inside it carries no seconds of its own. With the seconds off the frame takes the minute of the hour instead, and steps once a
 second rather than sixty times a minute.
 
-**What is playing** runs along the bottom of every screen while a track is on: the title and artist
-in small type with previous, play and next beside them, in whatever colour the clock is wearing.
+**What is playing** runs along the bottom of every screen while a track is on: previous at one edge
+of the screen and next at the other, with the title and artist between them beside play and pause,
+in whatever colour the clock is wearing.
 They work the phone's player through the daemon, so a track can be changed from the clock. The strip
 is only there when something is playing, and the screens are laid out inside what it leaves.
 
