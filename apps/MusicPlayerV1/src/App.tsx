@@ -680,8 +680,15 @@ export default function App() {
 
       {prefs.notes && prefs.motion && <Notes accent={accentOn} playing={playing} />}
 
+      {/* the handle for the queue: enough of a bar to say the bottom edge is worth pulling on */}
+      {!sheet && !panel && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-[3px] z-[2] flex justify-center">
+          <span className="h-[3px] w-16 rounded-full bg-white/22" />
+        </div>
+      )}
+
       {/* which style is on, small enough to ignore and low enough to clear the settings hint */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-1 z-[2] flex justify-center">
+      <div className="pointer-events-none absolute inset-x-0 bottom-3 z-[2] flex justify-center">
         <span className="font-mono text-[0.5625rem] tracking-[0.28em] text-dim uppercase opacity-60">
           {ENUMS.theme.labels[ENUMS.theme.values.indexOf(prefs.theme)]}
         </span>
@@ -824,8 +831,10 @@ function QueueSheet({
               <h3 className="mt-4 mb-1 px-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase opacity-70">
                 Played
               </h3>
+      {/* history carries no queue index, and the phone refuses to play one of its uris on request,
+          so these read back rather than pretending to be buttons */}
               {played.map((item, i) => (
-                <div key={`${item.uri}-p${i}`} className="flex items-center gap-3 px-1 py-2 opacity-45">
+                <div key={`${item.uri}-p${i}`} className="flex w-full items-center gap-3 px-1 py-2 opacity-45">
                   <span className="w-5 shrink-0" />
                   {cover(item, 'h-9 w-9')}
                   <span className="min-w-0 flex-1">
@@ -2702,8 +2711,20 @@ function Lyrics({
   // play and pause take the other end of the same edge, which is the end previous and next leave free
   const other = `${bottom ? 'bottom-5' : 'top-5'} ${right ? 'left-6' : 'right-6'}`;
 
+  const done = Math.min(1, Math.max(0, duration > 0 ? elapsed / duration : 0));
+  // the screen's own top edge is the progress bar: nothing is drawn for it to live in
+  const edgeBar = (
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-[4] h-[2px] bg-white/10">
+      <div
+        className="h-full transition-[width] duration-300 ease-linear"
+        style={{ width: `${done * 100}%`, backgroundColor: tint, opacity: playing ? 1 : 0.55 }}
+      />
+    </div>
+  );
+
   const chrome = (
     <>
+      {edgeBar}
       {/* on the right the artwork leads and the track reads back towards it, so the pair stays
           anchored to its own corner rather than pointing out of the screen */}
       <div className={`pointer-events-none absolute z-[3] flex max-w-[46%] items-center gap-3 ${edge} ${right ? 'flex-row-reverse' : ''}`}>
@@ -2734,31 +2755,32 @@ function Lyrics({
 
       {showTransport && (
         <>
-          {/* the corner reports how far through the track is rather than repeating a button the
-              presets already carry; it still takes a tap, so nothing is lost by the change. it is
-              set in the same type as the track, with a rule under it, because a dial in a corner
-              belonged to a different screen than this one */}
-          <button
-            aria-label={playing ? 'pause' : 'play'}
-            onClick={onToggle}
-            className={`absolute z-[3] flex w-28 flex-col gap-2 py-2 transition active:scale-95 ${other} ${
-              right ? 'items-start' : 'items-end'
-            }`}>
-            <span className="font-mono text-hint tabular-nums text-off-white/85">
+          {/* play and pause, with the time under it; how far through the track is runs along the
+              top edge of the screen instead of round a dial in this corner */}
+          <div className={`absolute z-[3] flex flex-col items-center gap-3 ${other}`}>
+            <button
+              aria-label={playing ? 'pause' : 'play'}
+              onClick={onToggle}
+              style={accent ? { color: accent.ink } : undefined}
+              className="grid h-10 w-10 place-items-center text-screen transition active:scale-90">
+              {/* the shape turns on its own layer; the glyph sits above it and stays upright */}
+              <span
+                className={`absolute inset-0 rounded-[13px] shadow-lg ${motion ? 'animate-platter' : ''}`}
+                style={{
+                  backgroundColor: tint,
+                  animationDuration: '9s',
+                  animationPlayState: playing && motion ? 'running' : 'paused',
+                }}
+              />
+              <span key={playing ? 'pause' : 'play'} className="relative grid animate-pop place-items-center">
+                {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </span>
+            </button>
+            <span className="font-mono text-hint tabular-nums text-off-white/80">
               {clock(elapsed)}
               <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
             </span>
-            <span className="relative block h-px w-full bg-white/20">
-              <span
-                className="absolute inset-y-0 left-0 transition-[width] duration-300 ease-linear"
-                style={{
-                  width: `${Math.round(Math.min(1, Math.max(0, duration > 0 ? elapsed / duration : 0)) * 100)}%`,
-                  backgroundColor: tint,
-                  opacity: playing ? 1 : 0.5,
-                }}
-              />
-            </span>
-          </button>
+          </div>
 
           {/* the skips take the far ends of the edge the track is not on, so nothing shares a corner */}
           <button
@@ -2846,6 +2868,7 @@ function Lyrics({
   // to the middle and brings the transport with it
   return (
     <div className="absolute inset-0 grid place-items-center px-16 text-center">
+      {edgeBar}
       <div className="flex flex-col items-center gap-4">
         {artUrl ? (
           <img src={artUrl} alt="" className="h-36 w-36 rounded-2xl object-cover shadow-2xl ring-1 ring-white/12" />

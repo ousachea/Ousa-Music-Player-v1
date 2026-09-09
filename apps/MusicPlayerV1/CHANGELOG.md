@@ -5,13 +5,21 @@
 The phone's queue, pulled up from the bottom edge of the screen. It shows what is playing at the
 top, everything lined up after it, and the recently played under that, each with its own artwork.
 Touching a row skips to it, which is the only thing the daemon lets a webapp do to a queue that
-belongs to the phone. The wheel scrolls the list, a push back down or the Back button puts it away,
-and the sheet is read fresh each time it opens rather than held.
+belongs to the phone. What has already been played reads back rather than acting as buttons: the
+phone refuses to play one of its own history uris on a webapp's say-so, whether asked plainly or
+queued and skipped into, so a row that cannot do anything does not pretend to. The wheel scrolls the
+list, a push back down or the Back button puts it away, and the sheet is read fresh each time it
+opens rather than held.
+
+A short bar sits at the bottom of the screen, above the style tag, to say the edge is worth pulling
+on.
 
 The Lyrics style stops reporting the progress on a dial. A ring with a time in the middle of it
-belonged to a different screen than a page of words; it is now the elapsed time against the length,
-set in the same type as the track, with a hairline rule under it filled to where you are. The fill
-dims while the track is paused, and the whole thing still plays and pauses on a tap.
+belonged to a different screen than a page of words. How far through the song is now runs along the
+top edge of the screen itself, a hairline the width of the display that fills as the track plays and
+dims while it is paused, with nothing drawn for it to sit in. The corner it left carries play and
+pause instead: a rounded square in the album's colour that turns while the track plays, the way the
+Poster style's does, with the elapsed time against the length under it.
 
 The swipe now reads in the layout the viewer is looking at rather than the one the screen is wired
 in. Every pointer is turned back through the screen rotation before it is measured, so the pull that

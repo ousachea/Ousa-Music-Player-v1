@@ -189,11 +189,15 @@ leaves rather than stopping at an edge. Nothing is darkened to do it: the words 
 masked, and the artwork behind them keeps its full strength. The column is what moves, not the
 lines.
 
+How far through the song is runs along the top edge of the screen: a hairline the width of the
+display that fills as the track plays, and dims while it is paused. Nothing is drawn for it to sit
+in, which is the point.
+
 The artwork and the track sit in whichever corner you pick, under **Track corner**. On the right the
-artwork leads and the track reads back towards it. The other end of that same edge reports how far
-through the song is, set in the same type as the track: the elapsed time against the length, with a
-hairline rule under it filled to where you are. Tapping it plays or pauses, and the fill dims while
-the track is paused. Previous and next take the far ends of the other edge, so the four sit one to a
+artwork leads and the track reads back towards it. The other end of that same edge carries play and
+pause, a rounded square in the album's colour that turns slowly while the track plays and holds
+where it is when you pause, with the glyph upright on top of it and the elapsed time against the
+length underneath. Previous and next take the far ends of the other edge, so the four sit one to a
 corner. All of them go away when the on-screen buttons do.
 
 Touching a line plays from it: each line knows the moment it belongs to, so the words are also the
@@ -212,12 +216,15 @@ title rather than leaving the screen blank.
 
 Pull up from the bottom edge of the screen and the phone's queue comes with it: what is playing at
 the top, everything lined up after it, and what has just been played under that, each row with its
-own artwork and length. Touching a row skips to it. The wheel scrolls the list, and a push back down
-or the Back button puts it away.
+own artwork and length. Touching a row in the queue skips to it. The wheel scrolls the list, and a
+push back down or the Back button puts it away. A short bar at the bottom of the screen says the
+edge is worth pulling on.
 
 It is the phone's queue, so the player only reads it: skipping to a row is the one thing the daemon
-lets a webapp do to a queue it does not own. A phone playing from a radio or an autoplay context
-often reports nothing lined up, and the sheet says so rather than showing an empty list.
+lets a webapp do to a queue it does not own. What has already been played reads back rather than
+acting as buttons, because a phone will not play one of its own history uris on a webapp's say-so.
+A phone playing from a radio or an autoplay context often reports nothing lined up, and the sheet
+says so rather than showing an empty list.
 
 The pull works off whichever edge is the bottom for you. Every swipe is turned back through the
 screen rotation before it is measured, so a quarter turn moves the gesture with the picture.
