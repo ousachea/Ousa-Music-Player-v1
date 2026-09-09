@@ -346,8 +346,9 @@ A clock, and the three things that usually sit beside one.
 ![Digital face](apps/clock/screenshots/01-digital.jpg)
 
 **Nine faces.** Digital, Digital + Date, Minimal, Border, Flip, Analogue, World, Binary and Word.
-Border makes the frame the second hand: a square drawn round the middle of the screen that fills
-from the top clockwise, one lap a minute, so the time inside it needs no seconds of its own. With
+Border makes the frame the second hand: a square running from the top edge of the screen to the
+bottom one, filling from the top clockwise, one lap a minute, so the time inside it needs no seconds
+of its own. With
 the seconds turned off it takes the minute of the hour instead, and moves once a second rather than
 sixty times. Flip is a real split-flap: the top leaf falls away to uncover the digit behind it, then the new bottom leaf
 swings up over the old one. World reads three cities beside the local time, picked from eighteen,
@@ -386,8 +387,9 @@ laps. Alarm has how long it rings, and the hour format it reads its own time bac
 two that ring has its own sound setting.
 
 **Face size** scales whichever face you are on: Small, Medium, Large, or Fill, which measures the
-face and takes the largest scale the screen has room for. Border fills its own square rather than
-the screen, since that is the frame it is drawn in.
+face and takes the largest scale the screen has room for. The date under the clock is scaled with
+it, rather than staying small under a clock that has grown to the screen. Border fills its own
+square rather than the screen, since that is the frame it is drawn in.
 
 **Screen rotation** turns the whole app a quarter at a time, 0 to 90 to 180 to 270, for a device
 mounted on its side. The four preset bumps follow the buttons round to whichever edge they are

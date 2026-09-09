@@ -2,13 +2,14 @@
 
 ## 0.3.0
 
-**Border**, a ninth face: the frame is the second hand. A square is drawn round the middle of the
-screen and fills from the top clockwise, one lap a minute, so the time inside it carries no seconds
-of its own. With the seconds off the frame takes the minute of the hour instead, and steps once a
+**Border**, a ninth face: the frame is the second hand. A square runs from the top edge of the
+screen to the bottom one and fills from the top clockwise, one lap a minute, so the time inside it
+carries no seconds of its own. With the seconds off the frame takes the minute of the hour instead, and steps once a
 second rather than sixty times a minute.
 
 **Face size** scales whichever face is on: Small, Medium, Large, or Fill, which measures the face
-before it is scaled and takes the largest scale the screen has room for. Border fills the square it
+before it is scaled and takes the largest scale the screen has room for. The date goes with it, so
+it is not left small under a clock that has grown to fill the screen. Border fills the square it
 is drawn in rather than the screen.
 
 **Screen rotation**, 0 to 90 to 180 to 270, for a device that is not sitting the way it was

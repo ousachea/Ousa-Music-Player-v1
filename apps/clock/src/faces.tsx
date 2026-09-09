@@ -8,9 +8,13 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
   const { h, m, s } = fields(at, zone);
 
   // the world clock fills the screen with its own rows, so it keeps the date out of the way itself
+  // the date belongs to the face, so it takes the same setting rather than staying small under a
+  // clock that has grown to the screen
   const foot =
     prefs.style === 'world' ? null : (
-      <div className="absolute inset-x-0 bottom-7 flex flex-col items-center gap-1 text-hint text-dim">
+      <div
+        className="absolute inset-x-0 bottom-7 flex flex-col items-center gap-1 text-dim"
+        style={{ fontSize: FOOT_SIZE[prefs.size] }}>
         {prefs.date && prefs.style !== 'digital-date' && <span>{parts.date}</span>}
         {!zone.synced && <span className="opacity-70">waiting for the phone's clock</span>}
       </div>
@@ -37,15 +41,17 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
       );
     case 'border':
       return (
-        <div className="grid h-full w-full place-items-center pt-6">
-          <div className="relative aspect-square h-[76%] max-h-full max-w-full">
+        <div className="absolute inset-0">
+          {/* the frame runs along the top and bottom edges of the screen, as square as an 800 by 480
+              screen lets a square be */}
+          <div className="absolute inset-y-1.5 left-1/2 aspect-square max-w-full -translate-x-1/2">
             <Border
               // with the seconds off there is nothing for a second hand to say, so the border takes
               // the minute of the hour instead and moves once a second rather than sixty times
               fraction={prefs.seconds ? (s + at.getMilliseconds() / 1000) / 60 : (m * 60 + s) / 3600}
               pal={pal}
             />
-            <div className="grid h-full w-full place-items-center px-[9%]">
+            <div className="grid h-full w-full place-items-center px-[8%] pb-10">
               <Fit mode={prefs.size}>
                 <Digits parts={parts} pal={pal} seconds={false} size="4.5rem" />
               </Fit>
@@ -112,6 +118,12 @@ function Digits({ parts, pal, seconds, size }: { parts: Parts; pal: Palette; sec
 }
 
 const SIZES: Record<Exclude<Prefs['size'], 'fill'>, number> = { small: 0.78, medium: 1, large: 1.24 };
+const FOOT_SIZE: Record<Prefs['size'], string> = {
+  small: '0.75rem',
+  medium: '0.875rem',
+  large: '1.1rem',
+  fill: '1.4rem',
+};
 
 // a face is drawn at the size it reads best and then scaled, so every one of them takes the same
 // setting. fill measures what the face actually is and takes the largest scale the screen allows
@@ -129,7 +141,7 @@ function Fit({ mode, children }: { mode: Prefs['size']; children: React.ReactNod
       const w = node.offsetWidth;
       const h = node.offsetHeight;
       if (!w || !h) return;
-      setGrown(Math.max(0.4, Math.min((parent.clientWidth * 0.94) / w, (parent.clientHeight * 0.82) / h)));
+      setGrown(Math.max(0.4, Math.min((parent.clientWidth * 0.94) / w, (parent.clientHeight * 0.78) / h)));
     };
     measure();
     const watch = new ResizeObserver(measure);
