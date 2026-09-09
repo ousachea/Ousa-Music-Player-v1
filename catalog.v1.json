@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-09T14:54:44.111Z",
+  "updated_at": "2026-09-09T15:39:55.330Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -12,7 +12,7 @@
     {
       "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
       "name": "Clock",
-      "description": "A clock in eight faces, seven timers, a stopwatch and an alarm.",
+      "description": "A clock in nine faces, seven timers, a stopwatch and an alarm.",
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a08085-a3c5-73fc-a3f9-1532161d74d2.png",
       "screenshots": [
@@ -26,6 +26,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.3.0",
+          "released_at": "2026-09-09T15:39:55.327Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.3.0.zip",
+            "size": 955056,
+            "sha256": "beca597ab735818e0fd33bf7a405a8e04cf1bb8526c75ff78d8d606facd318e4"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.3.0.html",
+            "size": 26913,
+            "sha256": "cbef5c091173324a481315005bd165c6177f6409633cee7bf35b35a552ea588c"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Border**, a ninth face: the screen's own edge is the second hand. A line runs round all four\nsides, square into the corners, and fills from the top clockwise, one lap a minute, so the time\ninside it carries no seconds of its own. With the seconds off the frame takes the minute of the hour instead, and steps once a\nsecond rather than sixty times a minute.\n\n**What is playing** runs along the bottom of every screen while a track is on: previous at one edge\nof the screen and next at the other, and the track between them. The title is the play button\nitself, lit in the clock's colour on a soft pill while the music runs and grey and flat while it\ndoes not, rather than a label with a button next to it.\nThey work the phone's player through the daemon, so a track can be changed from the clock. The strip\nis only there when something is playing, and the screens are laid out inside what it leaves.\n\n**Follow the album art**, off by default: the clock takes its pair of colours from the cover of\nwhatever is playing, and changes with the track. The daemon gives the artwork id, the bytes come\nback through the asset surface, and the same reading the music player uses pulls the two strongest\nhues out of them. A cover with no usable hue, or nothing playing at all, leaves the chosen palette\nin place, and the settings row says so by naming that palette as the one for when nothing is on.\n\n**Flashing colon**, on by default: the colon is lit for the first half of each second and dim for\nthe second half, on every face that draws one. It blinks against the phone's clock rather than the\nbrowser's, so it is in step with the numerals beside it.\n\nThe date is laid out under the face rather than pinned to the bottom of the screen. The face takes\nthe room that is left over and is centred in it, so the clock and its date sit as one block and the\ngap between them does not change with what is playing.\n\n**Face size** scales whichever face is on: Small, Medium, Large, or Fill, which measures the face\nbefore it is scaled and takes the largest scale the screen has room for. The date goes with it, so\nit is not left small under a clock that has grown to fill the screen, and the room the date needs is\nsubtracted from the screen before the face is measured rather than left to chance: a filled Digital\nface now clears it by 92px. Border fills the square it\nis drawn in rather than the screen.\n\n**Screen rotation**, 0 to 90 to 180 to 270, for a device that is not sitting the way it was\ndesigned to. The app is laid out at the swapped size and turned into place, and the four preset\nbumps follow the buttons round to whichever edge they are physically on, so a turned screen still\npoints at the hardware that works it."
+        },
         {
           "version": "0.2.0",
           "released_at": "2026-09-08T14:48:07.598Z",
