@@ -8,7 +8,7 @@ source once and all of them are available.
 | App | What it does |
 | --- | --- |
 | **Music Player** | Now playing, in six styles, coloured by the album art, on a screen that turns |
-| **Clock** | A clock in eight faces, seven timers, a stopwatch and an alarm |
+| **Clock** | A clock in nine faces, seven timers, a stopwatch and an alarm |
 | **Network Monitor** | Link status, latency and measured throughput |
 | **Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -355,6 +355,8 @@ swings up over the old one. World reads three cities beside the local time, pick
 and says when one of them is already on tomorrow. Binary is four rows of 8-4-2-1, one column per
 digit, with the decimal under each. Word spells it out, on a twelve hour dial, because "seventeen
 forty-five" is not how anyone says it.
+
+![Border face](apps/clock/screenshots/07-border.jpg)
 
 ![Analogue face](apps/clock/screenshots/02-analogue.jpg)
 
