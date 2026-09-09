@@ -17,6 +17,13 @@ takes over. The player's clock only moves four times a second, which is what mad
 step, and what left it short of the end when the line changed. A gradient clipped to the glyphs was
 tried first and would not paint at all on an inline box with a sized background.
 
+Lines step back from the one being sung in three grades rather than all sitting at one size and a
+distance-faded opacity: full, middling and faint, with a smaller size at each step.
+
+A lyric line is never truncated. A long one is set smaller instead, in four steps down to just over
+half size, so it reads whole rather than ending in an ellipsis; the widest line measured on the
+device came out 110px inside the space it has.
+
 The words hold their contrast by being brighter rather than by being outlined: the lines either side
 of the sung one sit up from where they were, and no shadow is drawn under any of them. The track and
 the time in the corners keep a light halo, being small type laid over the artwork. A long title in

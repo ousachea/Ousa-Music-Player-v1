@@ -2853,14 +2853,18 @@ function Lyrics({
                 style={{
                   height: LYRIC_LINE_PX,
                   color: i === at ? tint : '#ffffff',
-                  opacity: i === at ? 1 : Math.max(0.2, 0.7 - away * 0.13),
-                  transform: `scale(${i === at ? 1 : 0.9})`,
+                  // a line steps down in weight as it gets further from the one being sung: full,
+                  // then middling, then faint, and the same three sizes with it
+                  opacity: [1, 0.62, 0.38, 0.22][Math.min(3, away)],
+                  transform: `scale(${[1, 0.94, 0.87, 0.82][Math.min(3, away)]})`,
                 }}>
                 <span
-                  className={`relative inline-block max-w-full truncate align-middle font-display leading-tight font-semibold tracking-display ${
-                    upright ? 'text-[1.5rem]' : 'text-[1.75rem]'
-                  }`}
-                  style={i === at ? { color: 'rgba(255,255,255,0.6)' } : undefined}>
+                  className="relative inline-block align-middle font-display leading-tight font-semibold tracking-display whitespace-nowrap"
+                  style={{
+                    // a long line is set smaller rather than cut off: nothing here is ever truncated
+                    fontSize: `${(upright ? 1.5 : 1.75) * fitted(line.text.length)}rem`,
+                    ...(i === at ? { color: 'rgba(255,255,255,0.6)' } : null),
+                  }}>
                   {line.text || '\u00b7 \u00b7 \u00b7'}
                   {/* the sung part is a second copy of the line, clipped to how far into it the song
                       is. a width transition slides between the phone's ticks rather than stepping */}
@@ -2975,6 +2979,15 @@ function Lyrics({
       )}
     </div>
   );
+}
+
+// a line is never cut short: past a certain length it is set smaller until it fits the screen
+function fitted(length: number) {
+  if (length > 74) return 0.56;
+  if (length > 62) return 0.64;
+  if (length > 50) return 0.74;
+  if (length > 38) return 0.86;
+  return 1;
 }
 
 // lines of text, struck through when the words are off
