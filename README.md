@@ -66,7 +66,8 @@ when the music stops.
 **Record colour** presses the disc in something other than black. Album gives it the cover's own
 colour and Marble swirls the cover's two colours through it, both dark enough that the grooves and
 the sheen still read, since a coloured pressing is what the resin is rather than a light shone on
-it.
+it. Touching the label in the middle of the record takes the colour off and another touch brings
+back the one that was on, so the setting is there without going to the settings.
 
 ### CD
 
@@ -99,7 +100,8 @@ spools of brown tape filling the face, hubs in the album's colour with the crown
 grips, the guide assembly and its pressure pad showing through the plastic along the bottom, the
 cover behind the square window between the spools, COMPACT CASSETTE moulded into it, and a white
 label strip across the top carrying the track, TAPE TYPE: HIGH BIAS / CHROME, the artist, STEREO and
-the time.
+the time. In landscape its keys stand in a column down the left of the tape, with previous and next
+turned a quarter to point along it.
 
 A new track is a new tape, not the same one relabelled: one of eight patterns is picked from the
 track itself, so the same song always comes back on the same tape while the next one arrives on

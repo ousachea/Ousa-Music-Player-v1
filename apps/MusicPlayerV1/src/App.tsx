@@ -259,6 +259,7 @@ export default function App() {
   // the daemon owns the step size and the clamping, and its level cannot be read back, so nudge rather than compute one
   const detents = useRef(0);
   const swipeFrom = useRef<{ x: number; y: number; inList: boolean } | null>(null);
+  const lastTint = useRef<Exclude<Prefs['vinylTint'], 'black'>>('album');
   // lines away from the one being sung, while the wheel is being used to read ahead or back
   const [browse, setBrowse] = useState(0);
   const browseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -600,6 +601,14 @@ export default function App() {
               artUrl={artUrl}
               accent={accentOn}
               tint={prefs.vinylTint}
+              onTint={() => {
+                // black is off; turning it back on returns the colour that was on before, not a default
+                if (prefs.vinylTint === 'black') setPref('vinylTint', lastTint.current);
+                else {
+                  lastTint.current = prefs.vinylTint;
+                  setPref('vinylTint', 'black');
+                }
+              }}
               playing={playing}
               spin={prefs.motion}
               upright={upright}
@@ -1355,6 +1364,7 @@ function Turntable({
   artUrl,
   accent,
   tint,
+  onTint,
   playing,
   spin,
   upright,
@@ -1363,6 +1373,7 @@ function Turntable({
   artUrl: string | null;
   accent: Accent | null;
   tint: Prefs['vinylTint'];
+  onTint: () => void;
   playing: boolean;
   spin: boolean;
   upright: boolean;
@@ -1403,14 +1414,19 @@ function Turntable({
         />
         <div className="absolute inset-0 rounded-full ring-1 ring-white/10" />
 
-        <div className="absolute left-1/2 top-1/2 h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full ring-1 ring-black/40">
+        {/* the label is the one part of a turning record you can put a finger on, so it carries the
+            colour of the pressing: a tap takes it back to black and another brings the colour back */}
+        <button
+          aria-label="record colour"
+          onClick={onTint}
+          className="absolute top-1/2 left-1/2 h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full ring-1 ring-black/40 transition active:scale-95">
           {artUrl ? (
             <img src={artUrl} alt="" className="h-full w-full scale-[1.6] object-cover" />
           ) : (
             <div className="h-full w-full bg-white/12" />
           )}
-        </div>
-        <div className="absolute left-1/2 top-1/2 h-[4.5%] w-[4.5%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-screen ring-1 ring-white/25" />
+        </button>
+        <div className="pointer-events-none absolute top-1/2 left-1/2 h-[4.5%] w-[4.5%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-screen ring-1 ring-white/25" />
       </div>
 
       <Tonearm playing={playing} />
@@ -3389,7 +3405,7 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
             <stop offset="1" stopColor="#5b4130" />
           </radialGradient>
           <clipPath id="clear-art">
-            <rect x="255" y="428" width="150" height="144" rx="6" />
+            <rect x="428" y="248" width="144" height="150" rx="6" />
           </clipPath>
           <linearGradient id="clear-plastic" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stopColor="rgba(255,255,255,0.30)" />
@@ -3408,12 +3424,6 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
 
         {/* the tape path, and the window the head reads through, with the cover behind the plastic */}
         <rect x="255" y="428" width="150" height="144" rx="6" fill="rgba(255,255,255,0.06)" />
-        {artUrl && (
-          <g clipPath="url(#clear-art)">
-            <image href={artUrl} x="255" y="428" width="150" height="144" preserveAspectRatio="xMidYMid slice" />
-            <rect x="255" y="428" width="150" height="144" fill="rgba(10,12,15,0.12)" />
-          </g>
-        )}
         <rect x="255" y="428" width="150" height="144" rx="6" fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="2" />
         {!artUrl && (
           <>
@@ -3446,6 +3456,14 @@ function ClearTape({ title, artist, album, playing, motion, progress, elapsed, d
         <rect x="18" y="16" width="617" height="968" rx="14" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="3" />
         <rect x="30" y="28" width="593" height="944" rx="10" fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="2" />
         </g>
+
+        {/* outside the turn: a cover that took it would be lying on its side */}
+        {artUrl && (
+          <g clipPath="url(#clear-art)">
+            <image href={artUrl} x="428" y="248" width="144" height="150" preserveAspectRatio="xMidYMid slice" />
+            <rect x="428" y="248" width="144" height="150" fill="rgba(10,12,15,0.18)" />
+          </g>
+        )}
       </svg>
 
       {/* COMPACT CASSETTE, moulded into the plastic rather than printed on it */}
@@ -3610,6 +3628,8 @@ function Cassette({
   onNext: () => void;
 }) {
   const skin = tapeSkin(accent);
+  // the clear tape keeps its keys in a column beside it, on the side the tape is read from
+  const column = tape === 'clear' && !quarter;
   const face: Face = {
     title,
     artist,
@@ -3637,32 +3657,49 @@ function Cassette({
           ? `linear-gradient(180deg, color-mix(in oklab, ${skin.tint} 10%, #a4a4a0), color-mix(in oklab, ${skin.tint} 10%, #c0c0bc) 55%, color-mix(in oklab, ${skin.tint} 10%, #d2d2ce))`
           : `linear-gradient(180deg, color-mix(in oklab, ${skin.tint} 6%, #f9f9f7), color-mix(in oklab, ${skin.tint} 8%, #e3e3e0) 48%, color-mix(in oklab, ${skin.tint} 10%, #bebeba))`,
       }}
-      className={`grid h-full place-items-center rounded-[3px] text-[#191715] ring-1 ring-black/40 transition active:translate-y-[2px] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.45)] ${
+      className={`grid place-items-center rounded-[3px] text-[#191715] ring-1 ring-black/40 transition active:translate-y-[2px] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.45)] ${
         held
           ? 'translate-y-[2px] shadow-[inset_0_3px_6px_rgba(0,0,0,0.55),inset_0_-1px_0_rgba(255,255,255,0.5)]'
           : 'shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(0,0,0,0.2),0_2px_0_rgba(0,0,0,0.6),0_4px_5px_-2px_rgba(0,0,0,0.55)]'
-      } h-full ${wide ? 'w-[4.6rem]' : 'w-16'}`}>
+      } ${column ? `w-full ${wide ? 'h-[4.2rem]' : 'h-14'}` : `h-full ${wide ? 'w-[4.6rem]' : 'w-16'}`}`}>
       {children}
     </button>
   );
 
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-5">
-      {tape === 'clear' ? <ClearTape {...face} /> : tape === 'printed' ? <PrintedTape {...face} /> : <WrittenTape {...face} />}
+  const deck = showTransport && (
+    <div
+      className={`flex shrink-0 items-stretch gap-[3px] rounded-[6px] bg-black/55 p-[3px] shadow-[inset_0_2px_7px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/8 ${
+        column ? 'w-11 flex-col' : 'h-11'
+      }`}>
+      {key('tape design', onTape, <TapeGlyph className="h-4 w-4" />)}
+      {/* a column of keys runs the tape up and down, so the arrows point along the bar they sit in */}
+      {key('previous', onPrev, <Skip className={`h-4 w-4 -scale-x-100 ${column ? 'rotate-90' : ''}`} />)}
+      {key(
+        playing ? 'pause' : 'play',
+        onToggle,
+        playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />,
+        true,
+        playing,
+      )}
+      {key('next', onNext, <Skip className={`h-4 w-4 ${column ? 'rotate-90' : ''}`} />)}
+    </div>
+  );
 
-      {showTransport && (
-        <div className="flex h-11 shrink-0 items-stretch gap-[3px] rounded-[6px] bg-black/55 p-[3px] shadow-[inset_0_2px_7px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/8">
-          {key('tape design', onTape, <TapeGlyph className="h-4 w-4" />)}
-          {key('previous', onPrev, <Skip className="h-4 w-4 -scale-x-100" />)}
-          {key(
-            playing ? 'pause' : 'play',
-            onToggle,
-            playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />,
-            true,
-            playing,
-          )}
-          {key('next', onNext, <Skip className="h-4 w-4" />)}
-        </div>
+  const shell =
+    tape === 'clear' ? <ClearTape {...face} /> : tape === 'printed' ? <PrintedTape {...face} /> : <WrittenTape {...face} />;
+
+  return (
+    <div className={`absolute inset-0 flex items-center justify-center gap-4 p-5 ${column ? 'flex-row' : 'flex-col'}`}>
+      {column ? (
+        <>
+          {deck}
+          {shell}
+        </>
+      ) : (
+        <>
+          {shell}
+          {deck}
+        </>
       )}
     </div>
   );

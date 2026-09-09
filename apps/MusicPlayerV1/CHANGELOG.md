@@ -14,6 +14,16 @@ opens rather than held.
 A short bar sits at the bottom of the screen, above the style tag, to say the edge is worth pulling
 on.
 
+The Vinyl record's colour comes off and on with a touch on its label. The middle of a turning record
+is the one part of it you can put a finger on, so it carries the pressing: a tap takes the colour
+back to black and another returns the one that was on, Album or Marble, rather than a default. The
+spindle stops swallowing the tap that was meant for the label under it.
+
+The clear cassette's cover no longer lies on its side. The mechanism is drawn standing and turned a
+quarter into place, and the artwork was taking that turn with it; it is drawn in the landscape space
+instead, where the window lands. Its keys move to a column down the left of the tape in landscape,
+with previous and next turned a quarter to point along the bar.
+
 The Lyrics style stops reporting the progress on a dial. A ring with a time in the middle of it
 belonged to a different screen than a page of words. How far through the song is now runs along the
 top edge of the screen itself, a hairline the width of the display that fills as the track plays and
