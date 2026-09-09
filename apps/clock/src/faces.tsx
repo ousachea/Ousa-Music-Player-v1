@@ -21,7 +21,7 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
     );
 
   const stage = (children: React.ReactNode) => (
-    <div className="grid h-full w-full place-items-center pt-6">
+    <div className="grid h-full w-full place-items-center pt-7 pb-14">
       <Fit mode={prefs.size}>{children}</Fit>
       {foot}
     </div>
@@ -41,24 +41,16 @@ export function ClockFace({ prefs, zone, at, pal }: { prefs: Prefs; zone: Zone; 
       );
     case 'border':
       return (
-        <div className="absolute inset-0">
-          {/* the frame runs along the top and bottom edges of the screen, as square as an 800 by 480
-              screen lets a square be */}
-          <div className="absolute inset-y-1.5 left-1/2 aspect-square max-w-full -translate-x-1/2">
-            <Border
-              // with the seconds off there is nothing for a second hand to say, so the border takes
-              // the minute of the hour instead and moves once a second rather than sixty times
-              fraction={prefs.seconds ? (s + at.getMilliseconds() / 1000) / 60 : (m * 60 + s) / 3600}
-              pal={pal}
-            />
-            <div className="grid h-full w-full place-items-center px-[8%] pb-10">
-              <Fit mode={prefs.size}>
-                <Digits parts={parts} pal={pal} seconds={false} size="4.5rem" />
-              </Fit>
-            </div>
-          </div>
-          {foot}
-        </div>
+        <>
+          <Border
+            // with the seconds off there is nothing for a second hand to say, so the border takes
+            // the minute of the hour instead and moves once a second rather than sixty times
+            fraction={prefs.seconds ? (s + at.getMilliseconds() / 1000) / 60 : (m * 60 + s) / 3600}
+            quarter={prefs.rotate === '90' || prefs.rotate === '270'}
+            pal={pal}
+          />
+          {stage(<Digits parts={parts} pal={pal} seconds={false} size="4.5rem" />)}
+        </>
       );
     case 'minimal':
       return stage(
@@ -141,7 +133,13 @@ function Fit({ mode, children }: { mode: Prefs['size']; children: React.ReactNod
       const w = node.offsetWidth;
       const h = node.offsetHeight;
       if (!w || !h) return;
-      setGrown(Math.max(0.4, Math.min((parent.clientWidth * 0.94) / w, (parent.clientHeight * 0.78) / h)));
+      // clientHeight counts the padding that keeps the date clear, so the box is measured without it
+      const pad = getComputedStyle(parent);
+      const room = {
+        w: parent.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight),
+        h: parent.clientHeight - parseFloat(pad.paddingTop) - parseFloat(pad.paddingBottom),
+      };
+      setGrown(Math.max(0.4, Math.min((room.w * 0.96) / w, (room.h * 0.96) / h)));
     };
     measure();
     const watch = new ResizeObserver(measure);
@@ -161,35 +159,25 @@ function Fit({ mode, children }: { mode: Prefs['size']; children: React.ReactNod
   );
 }
 
-// the seconds run round a square frame: the frame is the second hand, drawn from the top and
-// filling clockwise, so the time inside it needs no second of its own
-function Border({ fraction, pal }: { fraction: number; pal: Palette }) {
-  const i = 2;
-  const r = 7;
-  const [x0, y0, x1, y1] = [i, i, 100 - i, 100 - i];
-  const ring =
-    `M 50 ${y0} H ${x1 - r} A ${r} ${r} 0 0 1 ${x1} ${y0 + r} V ${y1 - r} A ${r} ${r} 0 0 1 ${x1 - r} ${y1} ` +
-    `H ${x0 + r} A ${r} ${r} 0 0 1 ${x0} ${y1 - r} V ${y0 + r} A ${r} ${r} 0 0 1 ${x0 + r} ${y0} Z`;
+// the seconds run round the edge of the screen itself, square into the corners: the frame is the
+// second hand, drawn from the top and filling clockwise, so the time needs no second of its own
+function Border({ fraction, quarter, pal }: { fraction: number; quarter: boolean; pal: Palette }) {
+  const w = quarter ? 480 : 800;
+  const h = quarter ? 800 : 480;
+  const i = 3;
+  const ring = `M ${w / 2} ${i} H ${w - i} V ${h - i} H ${i} V ${i} Z`;
   const done = Math.min(1, Math.max(0, fraction));
 
   return (
-    <svg viewBox="0 0 100 100" className="pointer-events-none absolute inset-0 h-full w-full">
+    <svg viewBox={`0 0 ${w} ${h}`} className="pointer-events-none absolute inset-0 z-[1] h-full w-full">
       <defs>
         <linearGradient id="border-run" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor={pal.main} />
           <stop offset="1" stopColor={pal.second} />
         </linearGradient>
       </defs>
-      <path d={ring} fill="none" stroke="#ffffff" strokeOpacity="0.08" strokeWidth="0.9" />
-      <path
-        d={ring}
-        fill="none"
-        stroke="url(#border-run)"
-        strokeWidth="0.9"
-        strokeLinecap="round"
-        pathLength={1}
-        strokeDasharray={`${done} 1`}
-      />
+      <path d={ring} fill="none" stroke="#ffffff" strokeOpacity="0.08" strokeWidth="6" />
+      <path d={ring} fill="none" stroke="url(#border-run)" strokeWidth="6" pathLength={1} strokeDasharray={`${done} 1`} />
     </svg>
   );
 }
