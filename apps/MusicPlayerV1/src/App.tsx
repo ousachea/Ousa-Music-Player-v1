@@ -702,7 +702,15 @@ export default function App() {
           {ENUMS.theme.labels[ENUMS.theme.values.indexOf(prefs.theme)]}
         </span>
       </div>
-      {!prefs.transport && <PresetHint playing={playing} rotate={prefs.rotate} accent={accentOn} cue={track.persistentId ?? track.title ?? ''} />}
+      {!prefs.transport && (
+        <PresetHint
+          playing={playing}
+          rotate={prefs.rotate}
+          accent={accentOn}
+          neutral={prefs.theme === 'lyrics'}
+          cue={track.persistentId ?? track.title ?? ''}
+        />
+      )}
 
       <VolumeHud show={hud && !ownsVolume} volume={volume} accent={accentOn} />
       <div
@@ -2517,11 +2525,14 @@ function PresetHint({
   playing,
   rotate,
   accent,
+  neutral,
   cue,
 }: {
   playing: boolean;
   rotate: Prefs['rotate'];
   accent: Accent | null;
+  // the album's colour is already drawn along an edge in some styles, so the bump takes plain white
+  neutral: boolean;
   cue: string;
 }) {
   // the glyphs are there to teach the mapping, not to sit on the artwork forever. they show
@@ -2544,7 +2555,7 @@ function PresetHint({
     <Turn key="r" className="h-4 w-4" />,
   ];
   return (
-    <div key={rotate} className="preset-settle pointer-events-none absolute inset-0 z-[2]">
+    <div key={rotate} className="preset-settle pointer-events-none absolute inset-0 z-[5]">
       <div
         className={`absolute ${scrim} from-black/55 via-black/20 to-transparent ${
           vertical ? 'inset-y-0 w-16' : 'inset-x-0 h-16'
@@ -2576,7 +2587,7 @@ function PresetHint({
               } ${edge === 'bottom' ? 'rounded-t-full rounded-b-none' : ''} ${
                 edge === 'right' ? 'rounded-l-full rounded-r-none' : ''
               }`}
-              style={{ backgroundColor: accent?.soft ?? 'rgba(239,239,239,0.7)' }}
+              style={{ backgroundColor: neutral ? 'rgba(244,244,244,0.9)' : (accent?.soft ?? 'rgba(239,239,239,0.7)') }}
             />
             {/* the stage turns the interface; these describe hardware, so they turn back and stay
                 square to the device however the player around them is laid out */}
@@ -2941,8 +2952,10 @@ function Lyrics({
         <button
           aria-label="show the words"
           onClick={onWords}
-          className="absolute top-1/2 left-6 z-[3] -m-3 -translate-y-1/2 p-3 text-off-white/50 transition-[transform,color] duration-300 ease-spring active:scale-90">
-          <Words className="h-7 w-7" off />
+          className={`absolute top-5 z-[3] grid h-14 place-items-center px-3 text-off-white/50 transition-[transform,color] duration-300 ease-spring active:scale-90 ${
+            corner === 'tr' ? 'left-3' : 'right-3'
+          }`}>
+          <Words className="h-6 w-6" off />
         </button>
       )}
     </div>

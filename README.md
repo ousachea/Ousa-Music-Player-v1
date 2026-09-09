@@ -205,7 +205,12 @@ How far through the song is runs along the top edge of the screen: a hairline th
 display that fills as the track plays, and dims while it is paused. Nothing is drawn for it to sit
 in, which is the point. The elapsed time against the length reads in the middle of that edge, under
 the line that draws it, level with the track in the corner; the button that puts the words away sits
-on that same line at the other end, so the top of the screen reads as one row.
+on that same line at the other end, and stays there whether the words are showing or not, so the top
+of the screen reads as one row.
+
+With the on-screen buttons off, the preset bumps share that edge. They are drawn over the progress
+line rather than under it, and in plain white rather than the album's colour, so the hardware marker
+and the progress do not read as the same thing.
 
 The transport is one row along the bottom: previous and next at the ends of it and play and pause in
 the middle, where a thumb lands, all three bare glyphs in the album's colour with nothing drawn

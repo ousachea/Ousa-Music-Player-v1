@@ -2,6 +2,14 @@
 
 ## 0.33.0
 
+The preset bumps sit over whatever the player draws along their edge, rather than under it, which
+matters on the Lyrics screen where the progress line runs along the top. On that style they are
+drawn in plain white instead of the album's colour, so the hardware marker and the progress line are
+not the same colour lying on the same edge.
+
+The button that puts the words away keeps its corner. It sat in the middle of the left edge with the
+words off and in the top corner with them on, so it moved every time it was pressed.
+
 The line being sung fills with the album's colour as it is sung. The phone's timings give the start
 of each line, so the gap to the next one says how far through this one the song is, and the colour
 is clipped to the letters up to that point with the rest of the line waiting behind it at half
