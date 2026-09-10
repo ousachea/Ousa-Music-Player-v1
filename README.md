@@ -673,6 +673,9 @@ the daemon's tunnel, the API key in a header and never in a url, and the browser
 enter into it, because the browser is not the one asking. The server address and the key are typed
 in the companion app under O-Photos, since a Car Thing has nowhere to type a url.
 
+The navigation is a rail of glyphs down one edge, no wider than the icons: a grid, a heart, a
+folder, a lens, a gear and a play triangle. Everything the screen has goes to the pictures.
+
 **Recent, Loved and Albums** are the first three presets, and **preset 4 turns the screen** a
 quarter at a time for a frame stood on its side: the app is laid out at the swapped size and rotated
 into place, so the navigation moves to the edge the buttons are on, the grid drops from five columns

@@ -323,13 +323,11 @@ export default function App() {
   return (
     <Stage rotate={turn}>
     <div className={`flex h-full w-full bg-screen text-off-white ${quarter ? 'flex-col' : ''}`}>
+      {/* a rail of glyphs and nothing else: the pictures are what the screen is for */}
       <nav
-        className={`flex shrink-0 gap-1 border-rule ${
-          quarter ? 'w-full flex-row items-center overflow-x-auto border-b px-2 py-2' : 'w-[104px] flex-col border-r px-2 py-3'
+        className={`flex shrink-0 items-center gap-1 border-rule ${
+          quarter ? 'w-full flex-row justify-center border-b px-2 py-2' : 'w-14 flex-col border-r px-2 py-3'
         }`}>
-        {!quarter && (
-          <span className="px-2 pb-2 font-mono text-eyebrow tracking-[0.18em] text-dim uppercase">O-Photos</span>
-        )}
         {(
           [
             ['photos', 'Photos', 'grid', '1'],
@@ -348,18 +346,13 @@ export default function App() {
                 setAlbum(null);
                 setView(key);
               }}
-              className={`flex items-center gap-2 rounded-xl px-2.5 py-2 text-left text-hint whitespace-nowrap transition ${
-                quarter ? '' : 'justify-between'
-              }`}
+              title={hint ? `${label} · ${hint}` : label}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl transition"
               style={{
-                backgroundColor: on ? 'rgba(255,255,255,0.10)' : 'transparent',
+                backgroundColor: on ? 'rgba(255,255,255,0.12)' : 'transparent',
                 color: on ? '#efefef' : '#a7adb5',
               }}>
-              <span className="flex items-center gap-2">
-                <Glyph name={icon} className="h-[18px] w-[18px] shrink-0" />
-                {label}
-              </span>
-              {!quarter && <span className="font-mono text-eyebrow opacity-40">{hint}</span>}
+              <Glyph name={icon} className="h-5 w-5" />
             </button>
           );
         })}
@@ -371,11 +364,11 @@ export default function App() {
             }
           }}
           aria-label="slideshow"
-          className={`flex items-center gap-2 rounded-xl bg-white/10 px-2.5 py-2 text-left text-hint whitespace-nowrap text-off-white transition ${
+          title="Slideshow"
+          className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 text-off-white transition ${
             quarter ? '' : 'mt-auto'
           }`}>
-          <Glyph name="play" className="h-[18px] w-[18px] shrink-0" />
-          Slideshow
+          <Glyph name="play" className="h-5 w-5" />
         </button>
       </nav>
 

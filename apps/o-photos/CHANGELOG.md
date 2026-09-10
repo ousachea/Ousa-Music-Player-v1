@@ -17,9 +17,9 @@ The shape is also a key in the viewer, beside the heart, reading All, Wide or Ta
 cycles the three without leaving the picture. The picture you were looking at stays under your eye
 when the shape changes, if it still fits, and the nearest one takes over when it does not.
 
-The navigation is drawn rather than typed: a grid, a heart, a folder, a lens, a gear and a play
-triangle beside their names, which is what makes the rail readable from across a room and what the
-turned strip shows when the names are tight.
+The navigation is a rail of glyphs and nothing else: a grid, a heart, a folder, a lens, a gear and a
+play triangle, no names beside them and no wordmark above them. It costs 40px of width, which the
+pictures take, and every key still says what it is to a screen reader and on a long press.
 
 Search moves off preset 4, which now turns the screen; it is still a touch away in the navigation.
 The demo library grows portraits, a third of it, so the shape filter has something to sift.
