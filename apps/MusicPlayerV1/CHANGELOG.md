@@ -11,7 +11,12 @@ restart either way.
 
 **Sleeve** is a copy half out of its cover: the artwork square and flat on one side, the record
 pulled out on the other with the paper label showing in the album's colour and the spindle hole
-through it. It takes the pressing colour like the other one, and the label is the button for it.
+through it. It takes the pressing colour like the other one.
+
+The label in the middle of the record switches between the two layouts: a tap pulls the record out
+of its sleeve, another puts it back on the platter. It used to turn the pressing colour on and off,
+which is now a settings choice alone, since the middle of a record is the obvious place to reach for
+and only one thing can live there.
 
 ## 0.34.1
 

@@ -259,15 +259,7 @@ export default function App() {
   // the daemon owns the step size and the clamping, and its level cannot be read back, so nudge rather than compute one
   const detents = useRef(0);
   const swipeFrom = useRef<{ x: number; y: number; inList: boolean } | null>(null);
-  const lastTint = useRef<Exclude<Prefs['vinylTint'], 'black'>>('album');
-  // black is off; turning it back on returns the colour that was on before, not a default
-  const swapTint = useCallback(() => {
-    if (prefs.vinylTint === 'black') setPref('vinylTint', lastTint.current);
-    else {
-      lastTint.current = prefs.vinylTint;
-      setPref('vinylTint', 'black');
-    }
-  }, [prefs.vinylTint, setPref]);
+
   // lines away from the one being sung, while the wheel is being used to read ahead or back
   const [browse, setBrowse] = useState(0);
   const browseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -614,7 +606,7 @@ export default function App() {
                 artUrl={artUrl}
                 accent={accentOn}
                 tint={prefs.vinylTint}
-                onTint={() => swapTint()}
+                onLayout={() => setPref('vinylStyle', 'turntable')}
                 playing={playing}
                 spin={prefs.motion}
                 upright={upright}
@@ -627,7 +619,7 @@ export default function App() {
               tint={prefs.vinylTint}
               front={prefs.vinylFront}
               onSwap={() => setPref('vinylFront', prefs.vinylFront === 'sleeve' ? 'record' : 'sleeve')}
-              onTint={() => swapTint()}
+              onLayout={() => setPref('vinylStyle', 'sleeve')}
               playing={playing}
               spin={prefs.motion}
               upright={upright}
@@ -1400,7 +1392,7 @@ function SleeveOut({
   artUrl,
   accent,
   tint,
-  onTint,
+  onLayout,
   playing,
   spin,
   upright,
@@ -1409,7 +1401,7 @@ function SleeveOut({
   artUrl: string | null;
   accent: Accent | null;
   tint: Prefs['vinylTint'];
-  onTint: () => void;
+  onLayout: () => void;
   playing: boolean;
   spin: boolean;
   upright: boolean;
@@ -1442,8 +1434,8 @@ function SleeveOut({
 
         {/* the paper label, in the album's colour the way a pressing wears its own */}
         <button
-          aria-label="record colour"
-          onClick={onTint}
+          aria-label="record layout"
+          onClick={onLayout}
           className="absolute top-1/2 left-1/2 grid h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full ring-1 ring-black/40 transition active:scale-95"
           style={{ backgroundColor: accent?.fill ?? '#c0453f' }}>
           <span className="h-[13%] w-[13%] rounded-full bg-screen ring-1 ring-black/30" />
@@ -1469,7 +1461,7 @@ function Turntable({
   artUrl,
   accent,
   tint,
-  onTint,
+  onLayout,
   front,
   onSwap,
   playing,
@@ -1480,7 +1472,7 @@ function Turntable({
   artUrl: string | null;
   accent: Accent | null;
   tint: Prefs['vinylTint'];
-  onTint: () => void;
+  onLayout: () => void;
   // which of the two is on top; touching the sleeve trades their places
   front: Prefs['vinylFront'];
   onSwap: () => void;
@@ -1534,10 +1526,10 @@ function Turntable({
         <div className="absolute inset-0 rounded-full ring-1 ring-white/10" />
 
         {/* the label is the one part of a turning record you can put a finger on, so it carries the
-            colour of the pressing: a tap takes it back to black and another brings the colour back */}
+            choice between the two layouts: a tap takes the record out of its sleeve and back again */}
         <button
-          aria-label="record colour"
-          onClick={onTint}
+          aria-label="record layout"
+          onClick={onLayout}
           className="absolute top-1/2 left-1/2 h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full ring-1 ring-black/40 transition active:scale-95">
           {artUrl ? (
             <img src={artUrl} alt="" className="h-full w-full scale-[1.6] object-cover" />
