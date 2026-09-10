@@ -2788,14 +2788,14 @@ function Lyrics({
       </div>
 
       {showTransport && has && words && (
-        <div className="absolute top-1/2 left-3 z-[3] flex -translate-y-1/2 flex-col items-center gap-1">
+        <div className="absolute top-1/2 left-2 z-[4] flex -translate-y-1/2 flex-col items-center gap-2">
           {([1, -1] as const).map(step => (
             <button
               key={step}
               aria-label={step > 0 ? 'larger words' : 'smaller words'}
               onClick={() => onSize(step * 10)}
               disabled={step > 0 ? size >= LYRIC_SIZE_MAX : size <= LYRIC_SIZE_MIN}
-              className="grid h-9 w-9 place-items-center rounded-full text-[1.25rem] leading-none transition active:scale-90 disabled:opacity-25"
+              className="grid h-12 w-12 place-items-center rounded-full bg-black/35 text-[1.4rem] leading-none ring-1 ring-white/12 backdrop-blur-sm transition active:scale-90 disabled:opacity-20"
               style={{ color: tint }}>
               {step > 0 ? '+' : '\u2212'}
             </button>
@@ -2875,7 +2875,7 @@ function Lyrics({
                 key={i}
                 onClick={() => onSeekMs(line.startMs)}
                 aria-label={`play from ${line.text}`}
-                className={`flex w-full cursor-pointer items-center justify-center px-20 text-center ${
+                className={`mx-auto flex w-[84%] cursor-pointer items-center justify-center px-6 text-center ${
                   motion ? 'lyric-line' : ''
                 }`}
                 style={{

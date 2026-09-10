@@ -1,5 +1,12 @@
 # O-Music Player
 
+## 0.34.1
+
+The keys that size the lyrics are easy to hit. They were 36px circles with no edge, sitting over
+lines whose own hit area ran the full width of the screen, so a tap that missed the key seeked the
+song instead. The keys are 48px on a dark chip now, and the lines stop short of the screen at 84% of
+its width, which leaves the strip they sit in to them alone.
+
 ## 0.34.0
 
 The Lyrics style sets its words at whatever size suits the reader. A pair of keys down the left edge
