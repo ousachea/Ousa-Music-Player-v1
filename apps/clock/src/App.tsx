@@ -49,8 +49,10 @@ export default function App() {
   const now = useTick(50);
   const at = useMemo(() => new Date(now + zone.offsetMs), [now, zone.offsetMs]);
   // the album's colour when there is one and the app is asked to follow it, the chosen pair otherwise
-  const playing = useNowPlaying(client);
-  const artPal = useArtPalette(client, prefs.artColour, playing?.artworkId ?? null);
+  const track = useNowPlaying(client);
+  const playing = prefs.music ? track : null;
+  // the colour follows the track whether or not the strip that names it is showing
+  const artPal = useArtPalette(client, prefs.artColour, track?.artworkId ?? null);
   const pal = artPal ?? PALETTES[prefs.tint];
 
   // --- stopwatch -----------------------------------------------------------
@@ -84,7 +86,7 @@ export default function App() {
   // on, because a screen you have to dismiss is no use to someone halfway through a set
   const timerChime = useCallback(() => prefs.timerSound && earcon(), [prefs.timerSound, earcon]);
 
-  const timer = useTimer({ prefs, now, onRing: timerRing, onChime: timerChime });
+  const timer = useTimer({ prefs, now, zone, onRing: timerRing, onChime: timerChime });
 
   const { h: nowH, m: nowM } = fields(at, zone);
   useEffect(() => {
@@ -579,6 +581,7 @@ function Settings({
             'Screen rotation',
             seg(CHOICES.rotate, ['0°', '90°', '180°', '270°'], prefs.rotate, v => setPref('rotate', v)),
           ),
+          row('What is playing', toggle(prefs.music, () => setPref('music', prefs.music ? 'false' : 'true'))),
           row('Follow the album art', toggle(prefs.artColour, () => setPref('artColour', prefs.artColour ? 'false' : 'true'))),
           row(
             prefs.artColour ? 'Colour, when nothing is playing' : 'Colour, on every screen',

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 // every screen keeps its own settings; only the colour is shared, because it paints all of them
 export type Face = 'digital' | 'digital-date' | 'minimal' | 'border' | 'flip' | 'analogue' | 'world' | 'binary' | 'word';
-export type TimerMode = 'countdown' | 'circular' | 'pomodoro' | 'interval' | 'kitchen' | 'preset' | 'multi';
+export type TimerMode = 'countdown' | 'circular' | 'bezel' | 'pomodoro' | 'interval' | 'kitchen' | 'preset' | 'multi';
 
 export const FACES: Face[] = ['digital', 'digital-date', 'minimal', 'border', 'flip', 'analogue', 'world', 'binary', 'word'];
 export const FACE_LABELS: Record<Face, string> = {
@@ -19,10 +19,11 @@ export const FACE_LABELS: Record<Face, string> = {
   word: 'Word',
 };
 
-export const TIMER_MODES: TimerMode[] = ['countdown', 'circular', 'pomodoro', 'interval', 'kitchen', 'preset', 'multi'];
+export const TIMER_MODES: TimerMode[] = ['countdown', 'circular', 'bezel', 'pomodoro', 'interval', 'kitchen', 'preset', 'multi'];
 export const TIMER_LABELS: Record<TimerMode, string> = {
   countdown: 'Countdown',
   circular: 'Circular',
+  bezel: 'Bezel',
   pomodoro: 'Pomodoro',
   interval: 'Interval',
   kitchen: 'Kitchen',
@@ -64,6 +65,7 @@ const SPANS = ['30s', '1m', '5m'] as const;
 const STEPS = ['10s', '1m', '5m'] as const;
 
 export type Prefs = {
+  music: boolean;
   artColour: boolean;
   // held as a string like every other choice, so one table checks them all
   rotate: '0' | '90' | '180' | '270';
@@ -93,6 +95,7 @@ export type Prefs = {
 };
 
 const DEFAULTS: Prefs = {
+  music: true,
   artColour: false,
   rotate: '0',
   tint: 'white',
@@ -142,7 +145,7 @@ export const CHOICES = {
   intervalRounds: ['4', '6', '8', '12'],
 } as const satisfies Partial<Record<keyof Prefs, readonly string[]>>;
 
-const FLAGS = ['artColour', 'seconds', 'blink', 'date', 'timerSound', 'swHundredths', 'swLaps', 'alarmSound'] as const;
+const FLAGS = ['music', 'artColour', 'seconds', 'blink', 'date', 'timerSound', 'swHundredths', 'swLaps', 'alarmSound'] as const;
 
 // every colour is a pair, not one value: the numerals run a gradient between them and the screen
 // behind takes a wash of the same pair, so the app has a temperature rather than one lit shape

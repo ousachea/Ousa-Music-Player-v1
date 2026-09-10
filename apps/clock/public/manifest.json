@@ -1,8 +1,8 @@
 {
   "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
   "name": "O-Clock",
-  "version": "0.3.1",
-  "description": "A clock in nine faces, seven timers, a stopwatch and an alarm.",
+  "version": "0.4.0",
+  "description": "A clock in nine faces, eight timers, a stopwatch and an alarm.",
   "icon": "icon.png",
   "settings": "settings.html",
   "config": [
@@ -18,6 +18,14 @@
           "270"
         ],
         "default": "0"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "music",
+        "label": "Show what is playing",
+        "default": true
       }
     },
     {

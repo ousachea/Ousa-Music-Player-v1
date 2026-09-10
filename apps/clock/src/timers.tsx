@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { fill, ms, type Palette, type Prefs, type TimerMode } from './config';
-import { clockText } from './time';
+import { clockText, readClock, type Zone } from './time';
 import { Big, Key, Ring } from './ui';
 
 // a countdown that has to be dialled starts somewhere, and five minutes is the length people reach
@@ -31,11 +31,13 @@ const single = (mode: TimerMode) => mode !== 'pomodoro' && mode !== 'interval' &
 export function useTimer({
   prefs,
   now,
+  zone,
   onRing,
   onChime,
 }: {
   prefs: Prefs;
   now: number;
+  zone: Zone;
   onRing: () => void;
   onChime: () => void;
 }): TimerApi {
@@ -203,6 +205,20 @@ export function useTimer({
       switch (mode) {
         case 'circular':
           return <Circular {...common} whole={len || 1} onStep={nudge} step={step} />;
+        case 'bezel':
+          return (
+            <Bezel
+              {...common}
+              whole={len || 1}
+              onStep={nudge}
+              step={step}
+              // what it says on the bell: the wall clock time this one comes due
+              finish={(() => {
+                const parts = readClock(new Date(now + remaining + zone.offsetMs), zone, prefs.format);
+                return `${parts.hour}:${parts.minute}${parts.dayPeriod ? ` ${parts.dayPeriod}` : ''}`;
+              })()}
+            />
+          );
         case 'kitchen':
           return <Kitchen {...common} onStep={nudge} />;
         case 'preset':
@@ -229,7 +245,7 @@ export function useTimer({
           return <Countdown {...common} onStep={nudge} step={step} />;
       }
     },
-    [mode, remaining, end, toggle, reset, nudge, step, len, startAt, phase, round, rounds, work, rest, slots, now, pick, addSlot, dropSlot],
+    [mode, remaining, end, toggle, reset, nudge, step, len, startAt, phase, round, rounds, work, rest, slots, now, pick, addSlot, dropSlot, zone, prefs.format],
   );
 
   return { render, toggle, reset, wheel, running, urgent: single(mode) && end !== null && remaining <= 10000 };
@@ -294,6 +310,102 @@ function Circular(props: Common & { whole: number; onStep: (ms: number) => void;
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// the border of the card is the countdown: it starts a full lap and empties clockwise from the top,
+// with the transport on the two ends and the time in the middle, the way a watch shows a timer
+function Bezel(props: Common & { whole: number; finish: string; onStep: (ms: number) => void; step: number }) {
+  const { pal, remaining, whole, running, finish, onToggle, onReset, onStep, step } = props;
+  const left = Math.min(1, Math.max(0, whole ? remaining / whole : 0));
+  const i = 3;
+  const r = 46;
+  const [x0, y0, x1, y1] = [i, i, 600 - i, 260 - i];
+  const band =
+    `M 300 ${y0} H ${x1 - r} A ${r} ${r} 0 0 1 ${x1} ${y0 + r} V ${y1 - r} A ${r} ${r} 0 0 1 ${x1 - r} ${y1} ` +
+    `H ${x0 + r} A ${r} ${r} 0 0 1 ${x0} ${y1 - r} V ${y0 + r} A ${r} ${r} 0 0 1 ${x0 + r} ${y0} Z`;
+
+  const round = (label: string, onClick: () => void, tone: string, glyph: ReactNode) => (
+    <button
+      aria-label={label}
+      onClick={onClick}
+      className="grid h-[4.5rem] w-[4.5rem] shrink-0 place-items-center rounded-full transition active:scale-95"
+      style={{ backgroundColor: tone }}>
+      {glyph}
+    </button>
+  );
+
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center gap-4 pt-8">
+      <div className="relative aspect-[600/260] w-[75%]">
+        <svg viewBox="0 0 600 260" className="absolute inset-0 h-full w-full">
+          <defs>
+            {/* the css gradient the rest of the app fills with is not a stroke a path can take */}
+            <linearGradient id="bezel-band" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor={pal.main} />
+              <stop offset="100%" stopColor={pal.second} />
+            </linearGradient>
+          </defs>
+          <path d={band} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
+          <path
+            d={band}
+            fill="none"
+            stroke="url(#bezel-band)"
+            strokeWidth="6"
+            strokeLinecap="round"
+            pathLength={1}
+            strokeDasharray={`${left} 1`}
+          />
+        </svg>
+
+        <div className="absolute inset-0 flex items-center justify-between px-[7%]">
+          {round(
+            running ? 'pause' : 'start',
+            onToggle,
+            'rgba(255,255,255,0.12)',
+            running ? (
+              <svg viewBox="0 0 24 24" className="h-8 w-8" fill="#f4f6f8">
+                <rect x="7" y="5" width="3.6" height="14" rx="1.4" />
+                <rect x="13.4" y="5" width="3.6" height="14" rx="1.4" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" className="h-8 w-8" fill="#f4f6f8">
+                <path d="M8 5.5 19 12 8 18.5V5.5Z" />
+              </svg>
+            ),
+          )}
+
+          <div className="flex min-w-0 flex-col items-center">
+            <span className="flex items-center gap-1.5 text-hint text-dim tabular-nums">
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor">
+                <path d="M12 3a1.4 1.4 0 0 1 1.4 1.4v.5A5.6 5.6 0 0 1 17.6 10v3.4l1.4 2.2v1H5v-1l1.4-2.2V10a5.6 5.6 0 0 1 4.2-5.1v-.5A1.4 1.4 0 0 1 12 3Zm0 18a2.2 2.2 0 0 1-2.1-1.6h4.2A2.2 2.2 0 0 1 12 21Z" />
+              </svg>
+              {finish}
+            </span>
+            <span className="font-mono text-[3.75rem] leading-none font-medium tabular-nums" style={{ color: pal.main }}>
+              {clockText(remaining)}
+            </span>
+            <span className="mt-1 text-hint text-dim">Timer</span>
+          </div>
+
+          {round(
+            'reset',
+            onReset,
+            'rgba(255,107,107,0.16)',
+            <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="#ff7a70" strokeWidth="2.6" strokeLinecap="round">
+              <path d="M7 7l10 10M17 7 7 17" />
+            </svg>,
+          )}
+        </div>
+      </div>
+
+      {!running && (
+        <div className="flex items-center gap-3">
+          <Key label={`−${stepLabel(step)}`} onClick={() => onStep(-step)} small />
+          <Key label={`+${stepLabel(step)}`} onClick={() => onStep(step)} small />
+        </div>
+      )}
     </div>
   );
 }

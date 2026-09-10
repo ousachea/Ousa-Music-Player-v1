@@ -1,5 +1,16 @@
 # O-Clock
 
+## 0.4.0
+
+**Bezel**, an eighth timer, after the one a watch shows: a rounded card whose own border is the
+countdown, a full lap at the start and emptying clockwise from the top. Pause sits on one end and a
+red cross on the other, with the wall clock time it comes due above the figures and the word Timer
+under them. The wheel and the two keys under the card set it, as they do on the other dialled ones.
+
+**What is playing** can be turned off. The strip along the bottom is on by default; with it off every
+screen keeps the whole height, and the colour carries on following the album art if that is on,
+since it reads the track either way.
+
 ## 0.3.1
 
 The app is called **O-Clock** now, on the store card, on the device and in the tab it opens in.

@@ -8,7 +8,7 @@ source once and all of them are available.
 | App | What it does |
 | --- | --- |
 | **O-Music Player** | Now playing, in six styles, coloured by the album art, on a screen that turns |
-| **O-Clock** | A clock in nine faces, seven timers, a stopwatch and an alarm |
+| **O-Clock** | A clock in nine faces, eight timers, a stopwatch and an alarm |
 | **O-Network Monitor** | Link status, latency and measured throughput |
 | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **O-Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -363,10 +363,13 @@ forty-five" is not how anyone says it.
 
 ![Analogue face](apps/clock/screenshots/02-analogue.jpg)
 
-**Seven timers.** Countdown is the plain one; Circular puts a ring around it that empties as the
-time does; Pomodoro runs work and break and moves itself between them; Interval runs work and rest
-for a number of rounds; Kitchen is a real dial, one turn an hour, whole minutes; Preset is 1, 5, 10
-and 30 minutes and picking one starts it; Multi runs up to four at once. A phase ending inside a
+**Eight timers.** Countdown is the plain one; Circular puts a ring around it that empties as the
+time does; Bezel is a watch's timer, a card whose own border is the countdown, emptying clockwise
+from the top, with pause on one end, a red cross on the other, the time it comes due above the
+figures and the word Timer under them; Pomodoro runs work and break and moves itself between them;
+Interval runs work and rest for a number of rounds; Kitchen is a real dial, one turn an hour, whole
+minutes; Preset is 1, 5, 10 and 30 minutes and picking one starts it; Multi runs up to four at
+once. A phase ending inside a
 pomodoro or an interval chimes once and carries on rather than taking the screen, since a countdown
 you have to dismiss is no use halfway through a set.
 
@@ -406,12 +409,14 @@ whatever else is on the screen.
 mounted on its side. The four preset bumps follow the buttons round to whichever edge they are
 physically on, so they still point at the hardware that works them.
 
-**What is playing** sits along the bottom of every screen while there is a track: previous at one
-edge and next at the other, and the track itself between them. The title is the play button rather
+**What is playing** sits along the bottom of every screen while there is a track, unless you turn it
+off: previous at one edge and next at the other, and the track itself between them. The title is the play button rather
 than a button beside one, lit in the clock's colour and held on a soft pill while the music runs,
 grey and flat while it does not. It all works the phone's player, so a track can be changed without
 leaving the clock. The strip appears only when something is on, and every screen keeps clear of the
-room it takes, the clock making its own room so Border can still draw on the screen's edge.
+room it takes, the clock making its own room so Border can still draw on the screen's edge. **What
+is playing** in the settings takes the strip away for a screen that is only ever a clock; the colour
+carries on following the album art if you have asked it to.
 
 **Follow the album art** hands the colour to whatever is playing: the daemon says which track is on,
 the cover comes back as bytes, and the two strongest hues in it become the pair the clock is drawn
