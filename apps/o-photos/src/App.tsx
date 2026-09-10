@@ -12,6 +12,31 @@ import { FAILURE_TEXT, type Album, type Asset, type Failure } from './types';
 type View = 'photos' | 'favourites' | 'albums' | 'album' | 'search' | 'settings';
 const PAGE = 40;
 
+// the screen never resizes, so a quarter turn is laid out at the swapped size and rotated into place
+function Stage({ rotate, children }: { rotate: number; children: React.ReactNode }) {
+  const quarter = rotate === 90 || rotate === 270;
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-screen">
+      <div
+        className="absolute top-1/2 left-1/2"
+        style={{
+          width: quarter ? '100vh' : '100vw',
+          height: quarter ? '100vw' : '100vh',
+          transform: `translate(-50%, -50%) rotate(${rotate}deg)`,
+        }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/** a picture with no size in its exif is neither, so it stays out of the strict two */
+function fits(asset: Asset, shape: Prefs['shape']) {
+  if (shape === 'all') return true;
+  if (!asset.width || !asset.height) return false;
+  return shape === 'landscape' ? asset.width >= asset.height : asset.height > asset.width;
+}
+
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
   const { prefs, setPref } = usePrefs(client);
@@ -120,7 +145,10 @@ export default function App() {
 
   useEffect(() => () => forget(), []);
 
-  const shown = assets;
+  const turn = Number(prefs.rotate);
+  const quarter = turn === 90 || turn === 270;
+  // the shape filter runs here rather than at the server, which has no such search
+  const shown = useMemo(() => assets.filter(a => fits(a, prefs.shape)), [assets, prefs.shape]);
   const current = open !== null ? shown[open] ?? null : null;
 
   const step = useCallback(
@@ -182,7 +210,7 @@ export default function App() {
         case '3':
           return setView('albums');
         case '4':
-          return setView('search');
+          return setPref('rotate', String((Number(prefs.rotate) + 90) % 360));
         case 'm':
         case 'M':
         case '5':
@@ -211,7 +239,7 @@ export default function App() {
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('wheel', onWheel);
     };
-  }, [open, show, shown.length, step]);
+  }, [open, show, shown.length, step, prefs.rotate, setPref]);
 
   const onScroll = () => {
     const box = list.current;
@@ -237,6 +265,7 @@ export default function App() {
 
   if (open !== null && current) {
     return (
+      <Stage rotate={turn}>
       <Viewer
         asset={current}
         url={held(current.id, 'preview') ?? held(current.id, 'thumbnail')}
@@ -263,19 +292,26 @@ export default function App() {
           setAssets(list => list.map(a => (a.id === current.id ? { ...a, favourite: next } : a)));
         }}
       />
+      </Stage>
     );
   }
 
   return (
-    <div className="flex h-full w-full bg-screen text-off-white">
-      <nav className="flex w-[104px] shrink-0 flex-col gap-1 border-r border-rule px-2 py-3">
-        <span className="px-2 pb-2 font-mono text-eyebrow tracking-[0.18em] text-dim uppercase">O-Photos</span>
+    <Stage rotate={turn}>
+    <div className={`flex h-full w-full bg-screen text-off-white ${quarter ? 'flex-col' : ''}`}>
+      <nav
+        className={`flex shrink-0 gap-1 border-rule ${
+          quarter ? 'w-full flex-row items-center overflow-x-auto border-b px-2 py-2' : 'w-[104px] flex-col border-r px-2 py-3'
+        }`}>
+        {!quarter && (
+          <span className="px-2 pb-2 font-mono text-eyebrow tracking-[0.18em] text-dim uppercase">O-Photos</span>
+        )}
         {(
           [
             ['photos', 'Photos', '1'],
             ['favourites', 'Loved', '2'],
             ['albums', 'Albums', '3'],
-            ['search', 'Search', '4'],
+            ['search', 'Search', ''],
             ['settings', 'Settings', ''],
           ] as const
         ).map(([key, label, hint]) => (
@@ -285,7 +321,9 @@ export default function App() {
               setAlbum(null);
               setView(key);
             }}
-            className="flex items-center justify-between rounded-xl px-3 py-2 text-left text-hint transition"
+            className={`flex items-center gap-2 rounded-xl px-3 py-2 text-left text-hint whitespace-nowrap transition ${
+              quarter ? '' : 'justify-between'
+            }`}
             style={{
               backgroundColor: view === key || (key === 'albums' && view === 'album') ? 'rgba(255,255,255,0.10)' : 'transparent',
               color: view === key || (key === 'albums' && view === 'album') ? '#efefef' : '#a7adb5',
@@ -301,7 +339,9 @@ export default function App() {
               setShow(true);
             }
           }}
-          className="mt-auto rounded-xl bg-white/10 px-3 py-2 text-left text-hint text-off-white transition">
+          className={`rounded-xl bg-white/10 px-3 py-2 text-left text-hint whitespace-nowrap text-off-white transition ${
+            quarter ? '' : 'mt-auto'
+          }`}>
           Slideshow
         </button>
       </nav>
@@ -331,7 +371,7 @@ export default function App() {
             {albums.length === 0 ? (
               <Nothing text={trouble ? FAILURE_TEXT[trouble.kind] : 'No albums here yet'} />
             ) : (
-              <div className="grid grid-cols-4 gap-3">
+              <div className={`grid gap-3 ${quarter ? 'grid-cols-2' : 'grid-cols-4'}`}>
                 {albums.map(a => (
                   <button
                     key={a.id}
@@ -365,7 +405,7 @@ export default function App() {
                 }
               />
             ) : (
-              <div className="grid grid-cols-5 gap-2">
+              <div className={`grid gap-2 ${quarter ? 'grid-cols-3' : 'grid-cols-5'}`}>
                 {shown.map((asset, i) => (
                   <button
                     key={asset.id}
@@ -387,6 +427,7 @@ export default function App() {
         )}
       </div>
     </div>
+    </Stage>
   );
 }
 
@@ -720,10 +761,26 @@ function SettingsView({
           {chip(prefs.date, 'date', () => setPref('date', prefs.date ? 'false' : 'true'), 'da')}
           {chip(prefs.hour24, '24 hour', () => setPref('hour24', prefs.hour24 ? 'false' : 'true'), 'h24')}
         </div>
+        <div className="mt-3 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Screen</div>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {(['0', '90', '180', '270'] as const).map(turn =>
+            chip(prefs.rotate === turn, `${turn}°`, () => setPref('rotate', turn), `r${turn}`),
+          )}
+        </div>
+        <div className="mt-3 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Which photos</div>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {(['all', 'landscape', 'portrait'] as const).map(shape =>
+            chip(prefs.shape === shape, shape, () => setPref('shape', shape), `s${shape}`),
+          )}
+        </div>
+        <p className="mt-2 text-hint text-dim">
+          Immich cannot search by shape, so this sifts what comes back: a page of portraits on a
+          landscape screen may arrive nearly empty and the next page fills it.
+        </p>
       </div>
 
       <p className="mt-3 font-mono text-hint text-dim">
-        1 photos · 2 loved · 3 albums · 4 search · Mode slideshow · Esc back
+        1 photos · 2 loved · 3 albums · 4 turn the screen · Mode slideshow · Esc back
       </p>
     </div>
   );

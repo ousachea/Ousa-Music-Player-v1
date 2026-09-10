@@ -1,5 +1,21 @@
 # O-Photos
 
+## 0.2.0
+
+**Preset 4 turns the screen**, a quarter at a time, 0 to 90 to 180 to 270 and round again, for a
+frame stood on its side. The app is laid out at the swapped size and rotated into place, so a turned
+screen is a real portrait layout rather than a squashed landscape one: the navigation becomes a
+strip along the edge the buttons are on, the grid drops from five columns to three and the albums
+from four to two. It is also **Screen** in the settings.
+
+**Which photos** sifts the library by shape: all, landscape only, or portrait only, which is what a
+frame on its side wants. Immich cannot search by shape, so it sifts what comes back rather than
+asking for it, and a page can arrive nearly empty before the next one fills the screen. A picture
+with no size in its exif is neither shape, so it stays out of the strict two.
+
+Search moves off preset 4, which now turns the screen; it is still a touch away in the navigation.
+The demo library grows portraits, a third of it, so the shape filter has something to sift.
+
 ## 0.1.0
 
 An Immich library on the dash, as a photo frame rather than a web client.

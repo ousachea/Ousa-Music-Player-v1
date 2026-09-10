@@ -22,8 +22,9 @@ function asset(n: number): Asset {
     takenAt: day,
     favourite: n % 5 === 0,
     durationMs: n % 11 === 0 ? 12_000 + (n % 7) * 4000 : null,
-    width: 4032,
-    height: 3024,
+    // a third of them stand up, so the shape filter has something to sift
+    width: n % 3 === 0 ? 3024 : 4032,
+    height: n % 3 === 0 ? 4032 : 3024,
     city: place[0]!,
     country: place[1]!,
     camera: CAMERAS[n % CAMERAS.length] ?? null,
@@ -65,8 +66,9 @@ export function inAlbum(albumId: string, page: number, size: number): Page<Asset
 /** a picture drawn rather than downloaded, so demo mode needs nothing at all */
 export function picture(id: string, size: 'thumbnail' | 'preview'): Promise<Blob> {
   const n = Number(id.replace('demo-', '')) || 0;
-  const w = size === 'preview' ? 960 : 320;
-  const h = size === 'preview' ? 640 : 320;
+  const tall = n % 3 === 0;
+  const w = size === 'preview' ? (tall ? 640 : 960) : 320;
+  const h = size === 'preview' ? (tall ? 960 : 640) : 320;
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;

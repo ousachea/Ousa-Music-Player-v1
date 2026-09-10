@@ -18,6 +18,9 @@ export type Prefs = {
   date: boolean;
   hour24: boolean;
   motion: boolean;
+  // held as a string like every other choice, so one table checks them all
+  rotate: '0' | '90' | '180' | '270';
+  shape: 'all' | 'landscape' | 'portrait';
 };
 
 export const INTERVALS = [5, 10, 15, 30, 60, 300];
@@ -38,6 +41,8 @@ const DEFAULTS: Prefs = {
   date: true,
   hour24: true,
   motion: true,
+  rotate: '0',
+  shape: 'all',
 };
 
 const FLAGS = ['shuffle', 'loop', 'ambient', 'clock', 'date', 'hour24', 'motion'] as const;
@@ -60,6 +65,10 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, transition: (TRANSITIONS as string[]).includes(value) ? (value as Prefs['transition']) : DEFAULTS.transition };
     case 'source':
       return { ...prefs, source: value === 'favourites' || value === 'album' ? value : 'recent' };
+    case 'rotate':
+      return { ...prefs, rotate: value === '90' || value === '180' || value === '270' ? value : '0' };
+    case 'shape':
+      return { ...prefs, shape: value === 'landscape' || value === 'portrait' ? value : 'all' };
     default:
       return { ...prefs, [k]: value };
   }

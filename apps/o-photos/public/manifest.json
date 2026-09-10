@@ -1,7 +1,7 @@
 {
   "id": "01a08be9-18e7-70a4-991d-5cb92145210f",
   "name": "O-Photos",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Your Immich library on the dash, as a photo frame.",
   "settings": "settings.html",
   "config": [
@@ -126,6 +126,33 @@
         "key": "motion",
         "label": "Animations",
         "default": true
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "rotate",
+        "label": "Screen rotation",
+        "choices": [
+          "0",
+          "90",
+          "180",
+          "270"
+        ],
+        "default": "0"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "shape",
+        "label": "Which photos to show",
+        "choices": [
+          "all",
+          "landscape",
+          "portrait"
+        ],
+        "default": "all"
       }
     }
   ],

@@ -673,7 +673,14 @@ the daemon's tunnel, the API key in a header and never in a url, and the browser
 enter into it, because the browser is not the one asking. The server address and the key are typed
 in the companion app under O-Photos, since a Car Thing has nowhere to type a url.
 
-**Recent, Loved, Albums and Search** are the four presets. Pictures come back thumbnail first, forty
+**Recent, Loved and Albums** are the first three presets, and **preset 4 turns the screen** a
+quarter at a time for a frame stood on its side: the app is laid out at the swapped size and rotated
+into place, so the navigation moves to the edge the buttons are on, the grid drops from five columns
+to three and the albums from four to two. Search is a touch away in the navigation.
+
+**Which photos** sifts the library by shape: all, landscape only, or portrait only, which is what a
+turned screen wants. Immich cannot search by shape, so this sifts what comes back rather than asking
+for it, and a page can arrive nearly empty before the next fills the screen. Pictures come back thumbnail first, forty
 at a time, and the next page loads as the grid nears its end. No more than four requests are in
 flight at once, and the one you are looking at goes to the front of the queue.
 
@@ -709,7 +716,7 @@ length and opens their still, and leaves playing them to Immich itself.
 | Preset button 1 | Recent |
 | Preset button 2 | Loved |
 | Preset button 3 | Albums |
-| Preset button 4 | Search |
+| Preset button 4 | Turn the screen a quarter |
 | Mode | Start or stop the slideshow |
 | Turn the wheel | Scroll the grid, or move through the viewer |
 | Space | Pause or resume the slideshow |
