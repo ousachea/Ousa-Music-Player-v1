@@ -5,7 +5,9 @@
 A seventh player style, **Dial**: a jog wheel beside a card, both on a wash of the album's colour.
 The track runs round a black disc as a thick arc from twelve o'clock in that colour, over a ring of
 machined ticks with the grooves faint beneath and the cover turning in the middle as the label. Ten
-seconds either way sit beside it, with the elapsed time and the length under it.
+seconds either way sit beside it, drawn as a loop with a solid head and the number set inside it,
+turning for the direction it jumps while the number stays the right way up, and the elapsed time and
+the length read under the label.
 
 The card is filled with the same colour and stands off the screen: a light edge along its top, a
 shadow under it, and the words in a well cut into it, darker than the card with a shadow along the

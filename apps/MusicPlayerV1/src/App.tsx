@@ -3275,13 +3275,13 @@ function Dial({
           aria-label="back ten seconds"
           onClick={() => onSeekMs(elapsed - 10000)}
           className="absolute top-1/2 left-[16%] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full text-off-white/75 transition active:scale-90">
-          <Ten className="h-9 w-9" />
+          <Ten className="h-9 w-9" back />
         </button>
         <button
           aria-label="forward ten seconds"
           onClick={() => onSeekMs(elapsed + 10000)}
           className="absolute top-1/2 right-[16%] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full text-off-white/75 transition active:scale-90">
-          <Ten className="h-9 w-9 -scale-x-100" />
+          <Ten className="h-9 w-9" />
         </button>
 
         <div className="absolute inset-x-0 top-[67%] flex flex-col items-center gap-0.5">
@@ -3397,13 +3397,28 @@ function Dial({
   );
 }
 
-// ten seconds, drawn as the arrow that goes round a clock and comes back
-function Ten({ className }: { className?: string }) {
+// ten seconds: a loop with a head on it and the number inside. the loop turns for the direction it
+// jumps, but the number cannot be mirrored with it, so only the loop is flipped
+function Ten({ className, back }: { className?: string; back?: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
-      <path d="M12 5.6a6.4 6.4 0 1 1-6.1 4.5" strokeWidth="1.9" />
-      <path d="M9.1 2.2 13.2 5.6 9.1 9V2.2Z" fill="currentColor" stroke="none" />
-      <text x="12" y="16.2" textAnchor="middle" fontSize="7.6" fontWeight="700" fill="currentColor" stroke="none">
+    <svg viewBox="0 0 24 24" className={className} fill="none">
+      <g transform={back ? 'translate(24 0) scale(-1 1)' : undefined}>
+        <path
+          d="M14.9 4.1 A 8.5 8.5 0 1 1 9.1 4.1"
+          stroke="currentColor"
+          strokeWidth="1.9"
+          strokeLinecap="round"
+        />
+        <path d="M13 1.1 17.9 4.1 13 7.1Z" fill="currentColor" />
+      </g>
+      <text
+        x="12"
+        y="15.9"
+        textAnchor="middle"
+        fontSize="9"
+        fontWeight="700"
+        letterSpacing="-0.4"
+        fill="currentColor">
         10
       </text>
     </svg>
