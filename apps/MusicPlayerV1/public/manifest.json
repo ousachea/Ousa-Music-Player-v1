@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "O-Music Player",
-  "version": "0.33.1",
+  "version": "0.34.0",
   "description": "Now playing from your phone, in five styles coloured by the album art, and turnable to any mounting.",
   "icon": "icon.jpg",
   "settings": "settings.html",
@@ -56,6 +56,17 @@
         "key": "words",
         "label": "Show the words in Lyrics",
         "default": true
+      }
+    },
+    {
+      "type": "number",
+      "data": {
+        "key": "lyricSize",
+        "label": "Lyrics text size (%)",
+        "min": 70,
+        "max": 160,
+        "step": 10,
+        "default": 100
       }
     },
     {

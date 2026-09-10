@@ -232,7 +232,9 @@ scrubber. The wheel reads rather than scrubs, moving the words a line a click wh
 on, and the view returns to the line being sung a few seconds after you stop.
 
 The button in the top corner puts the words away and brings them back, and **Show the words** does
-the same from the settings. With them off, or on a track that has none, the style shows the artwork, title
+the same from the settings. Plus and minus down the left edge set how large the words are, from 70%
+to 160% in tens; the rows grow with the type, so nothing runs into anything. **Text size** in the
+settings sets the same thing by number. With them off, or on a track that has none, the style shows the artwork, title
 and artist down the middle instead, with the transport under them.
 
 What you get depends on what the phone has. Timed lyrics get the moving column. Lyrics without

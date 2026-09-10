@@ -15,7 +15,7 @@ import { explicitFor, hdArtwork } from './hd-art';
 import { activeIndex, useLyrics } from './lyrics';
 import { useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
 import { useClock, type ClockParts } from './clock';
-import { AUTO_PULSE_BPM, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
+import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 
@@ -479,6 +479,10 @@ export default function App() {
           upright={upright}
           offset={browse}
           words={prefs.words}
+          size={prefs.lyricSize}
+          onSize={step =>
+            setPref('lyricSize', String(Math.min(LYRIC_SIZE_MAX, Math.max(LYRIC_SIZE_MIN, prefs.lyricSize + step))))
+          }
           onWords={() => setPref('words', prefs.words ? 'false' : 'true')}
           corner={prefs.lyricsInfo}
           playing={playing}
@@ -940,6 +944,7 @@ const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: 
   blur: { min: 0, max: 100, step: 10, suffix: '%' },
   drift: { min: 0, max: 100, step: 10, suffix: '%' },
   clockSize: { min: 70, max: 200, step: 10, suffix: '%' },
+  lyricSize: { min: LYRIC_SIZE_MIN, max: LYRIC_SIZE_MAX, step: 10, suffix: '%' },
   pulseBpm: { min: PULSE_BPM_MIN, max: PULSE_BPM_MAX, step: 5, suffix: '', auto: 0 },
 };
 
@@ -950,6 +955,7 @@ type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
 const STYLE_ROWS: Row[] = [
   { key: 'lyricsInfo', label: 'Track corner', only: ['lyrics'] },
   { key: 'words', label: 'Show the words', only: ['lyrics'] },
+  { key: 'lyricSize', label: 'Text size', only: ['lyrics'] },
   { key: 'vinylTint', label: 'Record colour', only: ['vinyl'] },
   { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
@@ -2701,6 +2707,8 @@ function Lyrics({
   offset,
   words,
   onWords,
+  size,
+  onSize,
   corner,
   playing,
   showTransport,
@@ -2721,6 +2729,8 @@ function Lyrics({
   offset: number;
   words: boolean;
   onWords: () => void;
+  size: number;
+  onSize: (step: number) => void;
   corner: Prefs['lyricsInfo'];
   playing: boolean;
   showTransport: boolean;
@@ -2731,6 +2741,8 @@ function Lyrics({
 }) {
   const tint = accent?.fill ?? '#efefef';
   const fill = useRef({ at: -1, started: 0 });
+  const zoom = size / 100;
+  const linePx = Math.round(LYRIC_LINE_PX * zoom);
   // there is only something to hide when the phone actually gave us words
   const has = lyrics.state === 'timed' || lyrics.state === 'plain';
   const right = corner === 'tr' || corner === 'br';
@@ -2774,6 +2786,22 @@ function Lyrics({
         {clock(elapsed)}
         <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
       </div>
+
+      {showTransport && has && words && (
+        <div className="absolute top-1/2 left-3 z-[3] flex -translate-y-1/2 flex-col items-center gap-1">
+          {([1, -1] as const).map(step => (
+            <button
+              key={step}
+              aria-label={step > 0 ? 'larger words' : 'smaller words'}
+              onClick={() => onSize(step * 10)}
+              disabled={step > 0 ? size >= LYRIC_SIZE_MAX : size <= LYRIC_SIZE_MIN}
+              className="grid h-9 w-9 place-items-center rounded-full text-[1.25rem] leading-none transition active:scale-90 disabled:opacity-25"
+              style={{ color: tint }}>
+              {step > 0 ? '+' : '\u2212'}
+            </button>
+          ))}
+        </div>
+      )}
 
       {has && (
         <button
@@ -2839,7 +2867,7 @@ function Lyrics({
         <div className="absolute inset-0" style={{ maskImage: LYRIC_MASK, WebkitMaskImage: LYRIC_MASK }}>
         <div
           className={`absolute inset-x-0 top-1/2 ${motion ? 'lyric-scroll' : ''}`}
-          style={{ transform: `translate3d(0, ${-(shown + 0.5) * LYRIC_LINE_PX}px, 0)` }}>
+          style={{ transform: `translate3d(0, ${-(shown + 0.5) * linePx}px, 0)` }}>
           {lyrics.lines.map((line, i) => {
             const away = Math.abs(i - at);
             return (
@@ -2851,7 +2879,7 @@ function Lyrics({
                   motion ? 'lyric-line' : ''
                 }`}
                 style={{
-                  height: LYRIC_LINE_PX,
+                  height: linePx,
                   color: i === at ? tint : '#ffffff',
                   // a line steps down in weight as it gets further from the one being sung: full,
                   // then middling, then faint, and a clear step down in size with each
@@ -2862,7 +2890,7 @@ function Lyrics({
                   className="relative inline-block align-middle font-display leading-tight font-semibold tracking-display whitespace-nowrap"
                   style={{
                     // a long line is set smaller rather than cut off: nothing here is ever truncated
-                    fontSize: `${(upright ? 1.5 : 1.75) * fitted(line.text.length)}rem`,
+                    fontSize: `${(upright ? 1.5 : 1.75) * fitted(line.text.length) * zoom}rem`,
                     ...(i === at ? { color: 'rgba(255,255,255,0.6)' } : null),
                   }}>
                   {line.text || '\u00b7 \u00b7 \u00b7'}

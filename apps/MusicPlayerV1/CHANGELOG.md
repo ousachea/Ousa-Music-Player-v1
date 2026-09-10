@@ -1,5 +1,12 @@
 # O-Music Player
 
+## 0.34.0
+
+The Lyrics style sets its words at whatever size suits the reader. A pair of keys down the left edge
+of the screen, plus and minus, take it from 70% to 160% in tens, and **Text size** in the Lyrics
+settings does the same. The rows grow with the type rather than the lines running into each other,
+since the height a line is laid out in is scaled by the same amount as the text in it.
+
 ## 0.33.1
 
 The app is called **O-Music Player** now, on the store card, on the device and in the tab it opens

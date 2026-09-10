@@ -7,6 +7,7 @@ export type Prefs = {
   rotate: 0 | 90 | 180 | 270;
   lyricsInfo: 'tl' | 'bl' | 'tr' | 'br';
   words: boolean;
+  lyricSize: number;
   coverEdge: boolean;
   coverPanel: boolean;
   coverVolume: boolean;
@@ -36,12 +37,15 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', vinylTint: 'black', wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, lyricSize: 100, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', vinylTint: 'black', wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
 export const PULSE_BPM_MIN = 40;
 export const PULSE_BPM_MAX = 180;
+
+export const LYRIC_SIZE_MIN = 70;
+export const LYRIC_SIZE_MAX = 160;
 
 const SEEK_MIN = 1;
 const SEEK_MAX = 30;
@@ -110,6 +114,11 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       const size = Number(value);
       if (!Number.isFinite(size)) return { ...prefs, clockSize: DEFAULTS.clockSize };
       return { ...prefs, clockSize: Math.min(200, Math.max(70, size)) };
+    }
+    case 'lyricSize': {
+      const size = Number(value);
+      if (!Number.isFinite(size)) return { ...prefs, lyricSize: DEFAULTS.lyricSize };
+      return { ...prefs, lyricSize: Math.min(LYRIC_SIZE_MAX, Math.max(LYRIC_SIZE_MIN, size)) };
     }
     case 'clockPos':
       return { ...prefs, clockPos: value === 'left' || value === 'center' ? value : 'right' };
