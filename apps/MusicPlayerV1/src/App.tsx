@@ -260,6 +260,14 @@ export default function App() {
   const detents = useRef(0);
   const swipeFrom = useRef<{ x: number; y: number; inList: boolean } | null>(null);
   const lastTint = useRef<Exclude<Prefs['vinylTint'], 'black'>>('album');
+  // black is off; turning it back on returns the colour that was on before, not a default
+  const swapTint = useCallback(() => {
+    if (prefs.vinylTint === 'black') setPref('vinylTint', lastTint.current);
+    else {
+      lastTint.current = prefs.vinylTint;
+      setPref('vinylTint', 'black');
+    }
+  }, [prefs.vinylTint, setPref]);
   // lines away from the one being sung, while the wheel is being used to read ahead or back
   const [browse, setBrowse] = useState(0);
   const browseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -601,23 +609,31 @@ export default function App() {
                   ? 'py-0 pr-7 pl-0'
                   : 'p-7'
             }`}>
+            {prefs.vinylStyle === 'sleeve' ? (
+              <SleeveOut
+                artUrl={artUrl}
+                accent={accentOn}
+                tint={prefs.vinylTint}
+                onTint={() => swapTint()}
+                playing={playing}
+                spin={prefs.motion}
+                upright={upright}
+                roomy={!prefs.transport}
+              />
+            ) : (
             <Turntable
               artUrl={artUrl}
               accent={accentOn}
               tint={prefs.vinylTint}
-              onTint={() => {
-                // black is off; turning it back on returns the colour that was on before, not a default
-                if (prefs.vinylTint === 'black') setPref('vinylTint', lastTint.current);
-                else {
-                  lastTint.current = prefs.vinylTint;
-                  setPref('vinylTint', 'black');
-                }
-              }}
+              front={prefs.vinylFront}
+              onSwap={() => setPref('vinylFront', prefs.vinylFront === 'sleeve' ? 'record' : 'sleeve')}
+              onTint={() => swapTint()}
               playing={playing}
               spin={prefs.motion}
               upright={upright}
               roomy={!prefs.transport}
             />
+            )}
 
             <div
               className={`flex min-w-0 flex-1 flex-col justify-between gap-2 ${upright ? 'w-full' : 'h-full'} ${
@@ -928,6 +944,8 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
+  vinylStyle: { values: ['turntable', 'sleeve'], labels: ['Turntable', 'Sleeve'] },
+  vinylFront: { values: ['record', 'sleeve'], labels: ['Record', 'Sleeve'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
@@ -956,6 +974,8 @@ const STYLE_ROWS: Row[] = [
   { key: 'lyricsInfo', label: 'Track corner', only: ['lyrics'] },
   { key: 'words', label: 'Show the words', only: ['lyrics'] },
   { key: 'lyricSize', label: 'Text size', only: ['lyrics'] },
+  { key: 'vinylStyle', label: 'Layout', only: ['vinyl'] },
+  { key: 'vinylFront', label: 'In front', only: ['vinyl'] },
   { key: 'vinylTint', label: 'Record colour', only: ['vinyl'] },
   { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
@@ -1374,7 +1394,9 @@ function pressing(tint: Prefs['vinylTint'], accent: Accent | null) {
   return `radial-gradient(circle at 50% 50%, ${shade(base.h, 29)} 0 33%, ${shade(base.h, 19)} 33.4% 100%)`;
 }
 
-function Turntable({
+// the record half out of its sleeve, the way a copy looks when someone has just pulled it: the
+// sleeve square on one side and the disc showing past its edge on the other
+function SleeveOut({
   artUrl,
   accent,
   tint,
@@ -1391,7 +1413,6 @@ function Turntable({
   playing: boolean;
   spin: boolean;
   upright: boolean;
-  // with the transport hidden there is a row's worth of height going spare, and the record takes it
   roomy: boolean;
 }) {
   return (
@@ -1399,18 +1420,102 @@ function Turntable({
       className={`relative aspect-square shrink-0 ${spin ? 'disc-swap' : ''} ${
         upright ? `self-center ${roomy ? 'h-[56%]' : 'h-[52%]'}` : 'h-full'
       }`}>
-      <div className="absolute bottom-3 left-6 right-6 h-8 rounded-full bg-black/75 blur-2xl" />
+      <div className="absolute right-6 bottom-4 left-6 h-8 rounded-full bg-black/70 blur-2xl" />
 
-      <div className="absolute left-0 top-[3%] h-[62%] w-[62%] -rotate-6 overflow-hidden rounded shadow-2xl ring-1 ring-white/10">
+      <div
+        className="absolute top-1/2 left-[36%] h-[64%] w-[64%] animate-platter -translate-y-1/2 rounded-full shadow-2xl"
+        style={{
+          animationPlayState: playing && spin ? 'running' : 'paused',
+          background: [
+            'repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.055) 0 1px, rgba(0,0,0,0) 1px 4px)',
+            pressing(tint, accent),
+          ].join(','),
+        }}>
+        <div
+          className="absolute inset-0 rounded-full opacity-70"
+          style={{
+            background:
+              'conic-gradient(from 210deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.16) 38deg, rgba(255,255,255,0) 92deg, rgba(255,255,255,0) 180deg, rgba(255,255,255,0.11) 220deg, rgba(255,255,255,0) 275deg)',
+          }}
+        />
+        <div className="absolute inset-0 rounded-full ring-1 ring-white/10" />
+
+        {/* the paper label, in the album's colour the way a pressing wears its own */}
+        <button
+          aria-label="record colour"
+          onClick={onTint}
+          className="absolute top-1/2 left-1/2 grid h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full ring-1 ring-black/40 transition active:scale-95"
+          style={{ backgroundColor: accent?.fill ?? '#c0453f' }}>
+          <span className="h-[13%] w-[13%] rounded-full bg-screen ring-1 ring-black/30" />
+        </button>
+      </div>
+
+      {/* the sleeve, square and flat, over the half of the record still inside it */}
+      <div className="absolute top-1/2 left-0 aspect-square h-[64%] -translate-y-1/2 overflow-hidden rounded-[3px] shadow-[0_18px_40px_rgba(0,0,0,0.6)] ring-1 ring-white/12">
         {artUrl ? (
           <img src={artUrl} alt="" className="h-full w-full object-cover" />
         ) : (
           <div className="h-full w-full bg-white/8" />
         )}
+        {/* the opening the record came out of, and the light along the spine */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-[6%] bg-gradient-to-l from-black/45 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-[3%] bg-gradient-to-r from-white/12 to-transparent" />
       </div>
+    </div>
+  );
+}
+
+function Turntable({
+  artUrl,
+  accent,
+  tint,
+  onTint,
+  front,
+  onSwap,
+  playing,
+  spin,
+  upright,
+  roomy,
+}: {
+  artUrl: string | null;
+  accent: Accent | null;
+  tint: Prefs['vinylTint'];
+  onTint: () => void;
+  // which of the two is on top; touching the sleeve trades their places
+  front: Prefs['vinylFront'];
+  onSwap: () => void;
+  playing: boolean;
+  spin: boolean;
+  upright: boolean;
+  // with the transport hidden there is a row's worth of height going spare, and the record takes it
+  roomy: boolean;
+}) {
+  const sleeveFront = front === 'sleeve';
+  return (
+    <div
+      className={`relative aspect-square shrink-0 ${spin ? 'disc-swap' : ''} ${
+        upright ? `self-center ${roomy ? 'h-[56%]' : 'h-[52%]'}` : 'h-full'
+      }`}>
+      <div className="absolute bottom-3 left-6 right-6 h-8 rounded-full bg-black/75 blur-2xl" />
+
+      {/* the sleeve: tucked behind the record, or pulled out over it and larger, on a touch */}
+      <button
+        aria-label="swap the record and the sleeve"
+        onClick={onSwap}
+        className={`absolute overflow-hidden rounded shadow-2xl ring-1 ring-white/10 transition-all duration-500 ease-spring ${
+          sleeveFront ? 'bottom-0 left-0 z-[2] h-[88%] w-[88%] -rotate-2' : 'top-[3%] left-0 h-[62%] w-[62%] -rotate-6'
+        }`}>
+        {artUrl ? (
+          <img src={artUrl} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full bg-white/8" />
+        )}
+      </button>
 
       <div
-        className="absolute bottom-0 right-0 h-[88%] w-[88%] animate-platter rounded-full shadow-2xl"
+        className={`absolute animate-platter rounded-full shadow-2xl transition-all duration-500 ease-spring ${
+          sleeveFront ? 'top-[3%] right-0 h-[62%] w-[62%]' : 'right-0 bottom-0 h-[88%] w-[88%]'
+        }`}
         style={{
           animationPlayState: playing && spin ? 'running' : 'paused',
           background: [

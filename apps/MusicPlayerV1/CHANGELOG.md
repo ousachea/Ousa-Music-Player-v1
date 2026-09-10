@@ -1,5 +1,18 @@
 # O-Music Player
 
+## 0.35.0
+
+Vinyl gets two layouts rather than one, under **Layout**.
+
+**Turntable** is what it always was, the record on the platter with the sleeve behind it, except that
+the sleeve is now a button: touch it and the two trade places, the sleeve coming forward and growing
+while the record drops behind it. The same swap is **In front** in the settings, so it survives a
+restart either way.
+
+**Sleeve** is a copy half out of its cover: the artwork square and flat on one side, the record
+pulled out on the other with the paper label showing in the album's colour and the spindle hole
+through it. It takes the pressing colour like the other one, and the label is the button for it.
+
 ## 0.34.1
 
 The keys that size the lyrics are easy to hit. They were 36px circles sitting over lines whose own

@@ -59,9 +59,14 @@ from, which is the side you swiped.
 ![Vinyl style](apps/MusicPlayerV1/screenshots/02-vinyl.jpg)
 
 A new track brings a new record: the turntable drops in and settles, and the disc does the same in
-the CD style. The sleeve tucked behind a record that carries the artwork as its label. The platter turns while the
-track plays and holds its angle when you pause; the tonearm rests on the outer grooves and lifts off
-when the music stops.
+the CD style. The platter turns while the track plays and holds its angle when you pause; the
+tonearm rests on the outer grooves and lifts off when the music stops.
+
+**Layout** gives the style two arrangements. **Turntable** is the record on the platter with the
+sleeve tucked behind it, and touching the sleeve trades their places: the sleeve comes forward and
+grows, and the record drops behind it, which is also **In front** in the settings. **Sleeve** is the
+copy someone has just pulled: the cover square and flat on one side, the record half out of it on
+the other with its paper label showing in the album's colour.
 
 **Record colour** presses the disc in something other than black. Album gives it the cover's own
 colour and Marble swirls the cover's two colours through it, both dark enough that the grooves and
