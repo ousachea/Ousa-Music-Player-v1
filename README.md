@@ -7,7 +7,7 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **O-Music Player** | Now playing, in six styles, coloured by the album art, on a screen that turns |
+| **O-Music Player** | Now playing, in seven styles, coloured by the album art, on a screen that turns |
 | **O-Clock** | A clock in nine faces, eight timers, a stopwatch and an alarm |
 | **O-Network Monitor** | Link status, latency and measured throughput |
 | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -44,7 +44,7 @@ settings on the device and press **Check** under *Software update*.
 Music notes drift up over whichever style you pick, each one tinted a little differently from the
 album art. They pause with the music, and **Display → Floating notes** turns them off.
 
-### The six player styles
+### The seven player styles
 
 Switch between them in the settings, under **Player style**. A small tag along the bottom of the
 screen names the one you are in.
@@ -152,6 +152,22 @@ SIDE A and TYPE II like the tape it is copying.
 Three small keys sit in a sunken deck bar under the tape and go down and dark when you touch them. With the on-screen buttons off
 the tape takes the whole screen instead. Turned a quarter the tape is sized by the width it has
 rather than the height, so it keeps its shape rather than stretching into the taller box.
+
+### Dial
+
+A jog wheel beside a card. The track runs round the outside of a black disc as a thick white arc
+from twelve o'clock, with a machined ring of ticks inside it, the grooves faint under that, and the
+cover turning slowly in the middle as the record's label. Ten seconds back and ten forward sit
+either side of it, the elapsed time and the length under it, and x0.5, x1 and x2 above: the speed
+the phone is asked to play at, which it honours if its source can.
+
+The card beside it is filled with the album's colour. It carries the words when the phone has them,
+the line being sung between the one before and the one after, and the album, title and artist when
+it does not. Under that the track reads again with the cover as a small round badge, and under that
+the transport: repeat, which walks off, all and one; previous and next; play and pause as a white
+circle in the middle; and a heart that likes the track with the phone's own favourites.
+
+Turned a quarter the wheel goes above the card rather than beside it.
 
 ### Poster
 
@@ -275,7 +291,7 @@ screen rotation before it is measured, so a quarter turn moves the gesture with 
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Poster, Lyrics |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Poster, Lyrics |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |

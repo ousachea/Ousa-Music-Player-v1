@@ -3,7 +3,7 @@ import type { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Prefs = {
-  theme: 'widget' | 'vinyl' | 'cd' | 'cassette' | 'poster' | 'lyrics';
+  theme: 'widget' | 'vinyl' | 'cd' | 'cassette' | 'dial' | 'poster' | 'lyrics';
   rotate: 0 | 90 | 180 | 270;
   lyricsInfo: 'tl' | 'bl' | 'tr' | 'br';
   words: boolean;
@@ -61,7 +61,12 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return {
         ...prefs,
         theme:
-          value === 'vinyl' || value === 'cd' || value === 'cassette' || value === 'poster' || value === 'lyrics'
+          value === 'vinyl' ||
+          value === 'cd' ||
+          value === 'cassette' ||
+          value === 'dial' ||
+          value === 'poster' ||
+          value === 'lyrics'
             ? value
             : 'widget',
       };

@@ -63,6 +63,8 @@ export default function App() {
   const { prefs, setPref } = usePrefs(client);
   const wallClock = useClock(client, prefs.clock, prefs.clockSeconds, prefs.clockFormat);
   const [panel, setPanel] = useState(false);
+  // the rate the phone was asked for, which it may or may not honour; not worth keeping across a restart
+  const [speed, setSpeed] = useState(1);
   const [sheet, setSheet] = useState(false);
   const [hint, setHint] = useState(false);
   const [tip, setTip] = useState(false);
@@ -102,7 +104,10 @@ export default function App() {
   const [foundArtist, setFoundArtist] = useState<string | null>(null);
   const [explicit, setExplicit] = useState(false);
   const artistName = track?.artist ?? foundArtist;
-  const lyrics = useLyrics(client, prefs.theme === 'lyrics' ? (track?.persistentId ?? track?.title ?? null) : null);
+  const lyrics = useLyrics(
+    client,
+    prefs.theme === 'lyrics' || prefs.theme === 'dial' ? (track?.persistentId ?? track?.title ?? null) : null,
+  );
   // the queue is only read while the sheet is up: it is the phone's, and nothing else here wants it
   const queue = useQueue(client, sheet, track?.persistentId ?? track?.title ?? null);
   const playback = state?.playback ?? null;
@@ -354,7 +359,7 @@ export default function App() {
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
       else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'poster', 'lyrics'];
+        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'poster', 'lyrics'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
@@ -445,7 +450,43 @@ export default function App() {
                 ? 'skip-prev'
                 : 'skip-next'
         }`}>
-      {prefs.theme === 'cassette' ? (
+      {prefs.theme === 'dial' ? (
+        <Dial
+          lyrics={lyrics}
+          artUrl={artUrl}
+          title={track.title ?? 'unknown'}
+          artist={artistName ?? '—'}
+          album={track.album ?? null}
+          accent={accentOn}
+          playing={playing}
+          motion={prefs.motion}
+          upright={upright}
+          speed={speed}
+          repeat={state?.playback?.repeat ?? 'off'}
+          liked={track.liked ?? null}
+          showTransport={prefs.transport}
+          progress={progress}
+          elapsed={elapsed}
+          duration={duration}
+          remaining={prefs.remaining}
+          onToggle={toggle}
+          onPrev={() => goPrev(true)}
+          onNext={() => goNext()}
+          onSeekMs={ms => seek(ms)}
+          onSpeed={rate => {
+            setSpeed(rate);
+            client.player.setSpeed({ speed: rate });
+          }}
+          onRepeat={() => {
+            const order = ['off', 'all', 'one'] as const;
+            const next = order[(order.indexOf(state?.playback?.repeat ?? 'off') + 1) % order.length];
+            client.player.setRepeat({ mode: next });
+          }}
+          onLike={() => {
+            if (track.uri) client.library.favoritesToggle({ item: { uri: track.uri, kind: 'track', persistentId: track.persistentId ?? null } });
+          }}
+        />
+      ) : prefs.theme === 'cassette' ? (
         <Cassette
           title={track.title ?? 'unknown'}
           artist={artistName ?? '—'}
@@ -931,8 +972,8 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
-    values: ['widget', 'vinyl', 'cd', 'cassette', 'poster', 'lyrics'],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Poster', 'Lyrics'],
+    values: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'poster', 'lyrics'],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Poster', 'Lyrics'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
@@ -976,10 +1017,10 @@ const STYLE_ROWS: Row[] = [
   { key: 'coverVolume', label: 'Volume slider', only: ['widget'] },
   { key: 'pulse', label: 'Art pulse', only: ['widget'] },
   { key: 'pulseBpm', label: 'Pulse tempo', only: ['widget'] },
-  { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd', 'cassette', 'lyrics'] },
-  { key: 'blur', label: 'Backdrop blur', only: ['widget', 'vinyl', 'cd', 'cassette', 'lyrics'] },
-  { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd', 'cassette', 'lyrics'] },
-  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette'] },
+  { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
+  { key: 'blur', label: 'Backdrop blur', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
+  { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
+  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial'] },
 ];
 
 const GROUPS: { title: string; rows: Row[] }[] = [
@@ -3121,6 +3162,284 @@ function Words({ className, off }: { className?: string; off?: boolean }) {
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <path d="M4 6h16M4 11h11M4 16h14M4 21h8" />
       {off && <path d="M3 21 21 3" strokeWidth="2.2" />}
+    </svg>
+  );
+}
+
+const SPEEDS = [0.5, 1, 2] as const;
+
+// a jog wheel and a card: the track runs round the outside of a black disc with the cover as its
+// label, and everything you read or press sits on a panel beside it in the album's colour
+function Dial({
+  lyrics,
+  artUrl,
+  title,
+  artist,
+  album,
+  accent,
+  playing,
+  motion,
+  upright,
+  speed,
+  repeat,
+  liked,
+  showTransport,
+  progress,
+  elapsed,
+  duration,
+  remaining,
+  onToggle,
+  onPrev,
+  onNext,
+  onSeekMs,
+  onSpeed,
+  onRepeat,
+  onLike,
+}: {
+  lyrics: ReturnType<typeof useLyrics>;
+  artUrl: string | null;
+  title: string;
+  artist: string;
+  album: string | null;
+  accent: Accent | null;
+  playing: boolean;
+  motion: boolean;
+  upright: boolean;
+  speed: number;
+  repeat: 'off' | 'all' | 'one';
+  liked: boolean | null;
+  showTransport: boolean;
+  progress: number;
+  elapsed: number;
+  duration: number;
+  remaining: boolean;
+  onToggle: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onSeekMs: (ms: number) => void;
+  onSpeed: (rate: number) => void;
+  onRepeat: () => void;
+  onLike: () => void;
+}) {
+  const tint = accent?.fill ?? '#3b5bff';
+  const ink = accent?.ink ?? '#0a0c0e';
+  const done = Math.min(1, Math.max(0, progress));
+  const at = lyrics.state === 'timed' ? activeIndex(lyrics.lines, elapsed) : -1;
+  const line = (n: number) => (lyrics.state === 'timed' ? (lyrics.lines[at + n]?.text ?? '') : '');
+
+  return (
+    <div className={`flex h-full w-full items-stretch gap-5 p-5 ${upright ? 'flex-col' : ''}`}>
+      {/* the wheel */}
+      <div className={`relative aspect-square shrink-0 self-center ${upright ? 'h-[46%]' : 'h-[88%]'}`}>
+        <svg viewBox="0 0 400 400" className="absolute inset-0 h-full w-full">
+          <defs>
+            <radialGradient id="dial-face" cx="42%" cy="34%" r="78%">
+              <stop offset="0" stopColor="#2b2b2e" />
+              <stop offset="0.55" stopColor="#161618" />
+              <stop offset="1" stopColor="#0a0a0c" />
+            </radialGradient>
+          </defs>
+          <circle cx="200" cy="200" r="186" fill="url(#dial-face)" />
+          {/* the ring the track runs round, drawn from the top */}
+          <circle cx="200" cy="200" r="186" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="13" />
+          <path
+            d="M 200 14 A 186 186 0 1 1 199.9 14"
+            fill="none"
+            stroke="#f6f7f9"
+            strokeWidth="13"
+            strokeLinecap="round"
+            pathLength={1}
+            strokeDasharray={`${done} 1`}
+          />
+          {/* the machined ticks inside it */}
+          {Array.from({ length: 96 }, (_, i) => {
+            const a = ((i * (360 / 96) - 90) * Math.PI) / 180;
+            const long = i % 8 === 0;
+            const r1 = long ? 146 : 154;
+            return (
+              <line
+                key={i}
+                x1={200 + r1 * Math.cos(a)}
+                y1={200 + r1 * Math.sin(a)}
+                x2={200 + 170 * Math.cos(a)}
+                y2={200 + 170 * Math.sin(a)}
+                stroke="#f6f7f9"
+                strokeOpacity={long ? 0.75 : 0.3}
+                strokeWidth={long ? 2.4 : 1.4}
+              />
+            );
+          })}
+          {[62, 84, 106, 128].map(r => (
+            <circle key={r} cx="200" cy="200" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+          ))}
+        </svg>
+
+        {/* the cover, turning with the record it stands in for */}
+        <div
+          className={`absolute top-1/2 left-1/2 h-[26%] w-[26%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full ring-1 ring-white/15 ${
+            motion ? 'animate-platter' : ''
+          }`}
+          style={{ animationDuration: '12s', animationPlayState: playing && motion ? 'running' : 'paused' }}>
+          {artUrl ? (
+            <img src={artUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="grid h-full w-full place-items-center bg-white/8">
+              <Disc className="h-6 w-6 text-off-white/40" />
+            </div>
+          )}
+        </div>
+
+        {/* the speed the phone is asked to play at */}
+        <div className="absolute top-[27%] left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/55 p-1 ring-1 ring-white/10">
+          {SPEEDS.map(rate => (
+            <button
+              key={rate}
+              onClick={() => onSpeed(rate)}
+              className="rounded-full px-2.5 py-1 font-mono text-eyebrow tabular-nums transition"
+              style={{
+                backgroundColor: rate === speed ? 'rgba(255,255,255,0.16)' : 'transparent',
+                color: rate === speed ? '#f6f7f9' : 'rgba(246,247,249,0.5)',
+              }}>
+              x{rate}
+            </button>
+          ))}
+        </div>
+
+        {/* ten seconds either way, which is what a wheel this size is for */}
+        <button
+          aria-label="back ten seconds"
+          onClick={() => onSeekMs(elapsed - 10000)}
+          className="absolute top-1/2 left-[16%] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full text-off-white/75 transition active:scale-90">
+          <Ten className="h-8 w-8" />
+        </button>
+        <button
+          aria-label="forward ten seconds"
+          onClick={() => onSeekMs(elapsed + 10000)}
+          className="absolute top-1/2 right-[16%] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full text-off-white/75 transition active:scale-90">
+          <Ten className="h-8 w-8 -scale-x-100" />
+        </button>
+
+        <div className="absolute inset-x-0 top-[62%] flex flex-col items-center gap-0.5">
+          <span className="font-mono text-row tabular-nums text-off-white/85">{clock(elapsed)}</span>
+          <span className="font-mono text-hint tabular-nums text-off-white/35">
+            {duration ? (remaining ? `−${clock(duration - elapsed)}` : clock(duration)) : '--:--'}
+          </span>
+        </div>
+      </div>
+
+      {/* the card */}
+      <div
+        className="flex min-w-0 flex-1 flex-col justify-between gap-4 rounded-[26px] p-5"
+        style={{ backgroundColor: tint, color: ink }}>
+        <div className="flex min-h-0 flex-1 flex-col justify-center gap-1 rounded-[18px] bg-white/12 px-5 py-4 text-center">
+          {lyrics.state === 'timed' ? (
+            <>
+              <span className="truncate text-row font-semibold opacity-45">{line(-1) || '· · ·'}</span>
+              <span className="line-clamp-2 font-display text-[1.4rem] leading-tight font-semibold tracking-display">
+                {line(0) || '· · ·'}
+              </span>
+              <span className="truncate text-row font-semibold opacity-45">{line(1) || '· · ·'}</span>
+            </>
+          ) : (
+            <>
+              <span className="truncate font-mono text-eyebrow tracking-[0.22em] uppercase opacity-60">
+                {album ?? 'now playing'}
+              </span>
+              <span className="line-clamp-2 font-display text-[1.4rem] leading-tight font-semibold tracking-display">
+                {title}
+              </span>
+              <span className="truncate text-row opacity-60">{artist}</span>
+            </>
+          )}
+        </div>
+
+        <div className="flex shrink-0 items-center gap-3">
+          <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-white/25">
+            {artUrl ? (
+              <img src={artUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full bg-white/15" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-row-lg font-semibold">{title}</div>
+            <div className="truncate text-hint opacity-60">{artist}</div>
+          </div>
+        </div>
+
+        {showTransport && (
+          <div className="flex shrink-0 items-center justify-between">
+            <button
+              aria-label="repeat"
+              onClick={onRepeat}
+              className="grid h-11 w-11 place-items-center rounded-full transition active:scale-90"
+              style={{ opacity: repeat === 'off' ? 0.45 : 1 }}>
+              <Repeat className="h-6 w-6" one={repeat === 'one'} />
+            </button>
+            <button
+              aria-label="previous"
+              onClick={onPrev}
+              className="grid h-11 w-11 place-items-center rounded-full transition active:scale-90">
+              <Skip className="h-7 w-7 -scale-x-100" />
+            </button>
+            <button
+              aria-label={playing ? 'pause' : 'play'}
+              onClick={onToggle}
+              className="grid h-16 w-16 place-items-center rounded-full bg-white shadow-lg transition active:scale-95"
+              style={{ color: tint }}>
+              <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+                {playing ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7" />}
+              </span>
+            </button>
+            <button
+              aria-label="next"
+              onClick={onNext}
+              className="grid h-11 w-11 place-items-center rounded-full transition active:scale-90">
+              <Skip className="h-7 w-7" />
+            </button>
+            <button
+              aria-label={liked ? 'unlike' : 'like'}
+              onClick={onLike}
+              className="grid h-11 w-11 place-items-center rounded-full transition active:scale-90">
+              <Heart className="h-6 w-6" filled={liked === true} />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ten seconds, drawn as the arrow that goes round a clock and comes back
+function Ten({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+      <path d="M12 5.4A6.6 6.6 0 1 1 5.4 12" strokeWidth="2" />
+      <path d="M8.6 2.4 12 5.4 8.6 8.4" strokeWidth="2" />
+      <text x="12" y="15.8" textAnchor="middle" fontSize="8" fontWeight="600" fill="currentColor" stroke="none">
+        10
+      </text>
+    </svg>
+  );
+}
+
+function Repeat({ className, one }: { className?: string; one?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 9.5A3.5 3.5 0 0 1 7.5 6H18l-2.5-2.5M20 14.5A3.5 3.5 0 0 1 16.5 18H6l2.5 2.5" />
+      {one && (
+        <text x="17.5" y="12.5" textAnchor="middle" fontSize="8" fill="currentColor" stroke="none">
+          1
+        </text>
+      )}
+    </svg>
+  );
+}
+
+function Heart({ className, filled }: { className?: string; filled?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.9">
+      <path d="M12 20s-7.2-4.5-7.2-9.4A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7.2 2.6C19.2 15.5 12 20 12 20Z" />
     </svg>
   );
 }
