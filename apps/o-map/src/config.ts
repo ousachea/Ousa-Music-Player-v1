@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Prefs = {
   place: string;
-  base: 'streets' | 'plain';
+  base: 'streets' | 'minimal' | 'night' | 'plain';
   traffic: boolean;
   trafficKey: string;
 };
@@ -17,7 +17,10 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
   if (value === null) return { ...prefs, [key]: DEFAULTS[key as keyof Prefs] };
   switch (key) {
     case 'base':
-      return { ...prefs, base: value === 'plain' ? 'plain' : 'streets' };
+      return {
+        ...prefs,
+        base: value === 'minimal' || value === 'night' || value === 'plain' ? value : 'streets',
+      };
     case 'traffic':
       return { ...prefs, traffic: value !== 'false' };
     case 'place':

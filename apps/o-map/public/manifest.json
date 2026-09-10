@@ -27,6 +27,8 @@
         "label": "Map style",
         "choices": [
           "streets",
+          "minimal",
+          "night",
           "plain"
         ],
         "default": "streets"

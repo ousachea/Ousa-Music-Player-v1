@@ -42,8 +42,35 @@ export type Source = { id: string; url: (z: number, x: number, y: number) => str
 
 export const BASE: Record<string, Source> = {
   streets: { id: 'streets', url: (z, x, y) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png` },
+  // pale roads on almost no colour: the traffic is then the only thing on the map with any in it.
+  // esri's canvas tiles are y before x, which is the one thing that differs between the sources
+  minimal: {
+    id: 'minimal',
+    url: (z, x, y) =>
+      `https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}`,
+  },
+  night: {
+    id: 'night',
+    url: (z, x, y) =>
+      `https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}`,
+  },
   // the humanitarian style is flatter and lighter, which leaves the traffic colours somewhere to sit
   plain: { id: 'plain', url: (z, x, y) => `https://tile.openstreetmap.fr/hot/${z}/${x}/${y}.png` },
+};
+
+export const BASE_LABELS: Record<string, string> = {
+  streets: 'Streets',
+  minimal: 'Minimal',
+  night: 'Night',
+  plain: 'Plain',
+};
+
+/** who to credit for what is on screen, which is not the same source for every style */
+export const CREDIT: Record<string, string> = {
+  streets: '© OpenStreetMap contributors',
+  minimal: '© Esri, HERE, Garmin, © OpenStreetMap contributors',
+  night: '© Esri, HERE, Garmin, © OpenStreetMap contributors',
+  plain: '© OpenStreetMap contributors, tiles by HOT',
 };
 
 export const trafficUrl = (key: string) => (z: number, x: number, y: number) =>

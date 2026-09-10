@@ -5,7 +5,9 @@ import { usePrefs, type Prefs } from './config';
 import { daemonUrl } from './daemon';
 import {
   BASE,
+  BASE_LABELS,
   BY_KEY,
+  CREDIT,
   MAX_ZOOM,
   MIN_ZOOM,
   PLACES,
@@ -242,7 +244,7 @@ export default function App() {
           ))}
         </div>
         <span className="shrink-0 font-mono text-hint tabular-nums opacity-80">
-          {live ? 'tomtom flow' : 'osm only'}
+          {live ? 'tomtom flow' : `${BASE_LABELS[prefs.base] ?? 'streets'} · no flow`}
         </span>
       </div>
 
@@ -298,9 +300,10 @@ function Settings({
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-2xl bg-white/4 px-4 py-3">
           <div className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Map style</div>
-          <div className="mt-2 flex gap-2">
-            {chip(prefs.base === 'streets', 'Streets', () => setPref('base', 'streets'), 'streets')}
-            {chip(prefs.base === 'plain', 'Plain', () => setPref('base', 'plain'), 'plain')}
+          <div className="mt-2 flex flex-wrap gap-2">
+            {Object.keys(BASE).map(key =>
+              chip(prefs.base === key, BASE_LABELS[key] ?? key, () => setPref('base', key), key),
+            )}
           </div>
         </div>
         <div className="rounded-2xl bg-white/4 px-4 py-3">
@@ -318,7 +321,7 @@ function Settings({
           : 'Traffic needs a TomTom key, which their free tier gives away. Put it in the companion app under O-Map; the device has nowhere to type it.'}
       </p>
       <p className="mt-auto text-hint text-dim">
-        Map tiles © OpenStreetMap contributors. Everything is fetched through the phone.
+        Map tiles {CREDIT[prefs.base] ?? CREDIT.streets}. Everything is fetched through the phone.
         {missing ? ' Some tiles did not arrive; the phone may be offline.' : ''}
       </p>
     </div>

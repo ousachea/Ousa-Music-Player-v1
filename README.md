@@ -636,8 +636,15 @@ moves, red where it does not, with the legend along the bottom. It needs a key, 
 tier gives away, and it goes in the companion app under O-Map, since a Car Thing has nowhere to type
 one. Without a key the map is still a map, and the chip in the corner says so rather than pretending.
 
+Four **map styles**. Streets is OpenStreetMap as everyone knows it. **Minimal** is pale grey roads
+on almost no colour, which leaves the traffic as the only thing on the screen with any in it, and
+**Night** is the same map dark. Plain is the flatter humanitarian style. The first two come from
+Esri's canvas basemaps, which number their tiles the other way round, y before x, and the app knows
+it.
+
 The wheel button opens the settings on the device: which city it opens at, the map style, and
-whether traffic is drawn. Map data is © OpenStreetMap contributors.
+whether traffic is drawn. Credit goes with the style: OpenStreetMap contributors throughout, Esri,
+HERE and Garmin for the two canvas ones.
 
 ### Controls
 

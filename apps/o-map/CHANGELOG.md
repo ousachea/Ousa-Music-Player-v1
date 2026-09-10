@@ -10,6 +10,11 @@ Four presets are four cities: Phnom Penh, Siem Reap, Sihanoukville and Battamban
 whole country. The card along the top says where the middle of the screen is, to four decimal
 places, and whether traffic is live.
 
+Four map styles: Streets, the OpenStreetMap everyone knows; **Minimal**, pale grey roads on almost
+no colour so the traffic is the only colour on the screen; **Night**, the same map dark; and Plain,
+the flatter humanitarian style. The two canvas styles are Esri's, which number their tiles y before
+x rather than x before y.
+
 Traffic is TomTom's flow layer, drawn over the map as a second set of tiles: green where it moves,
 red where it does not. It needs a key, which their free tier gives away, and which goes in the
 companion app since the device has nowhere to type one. Without it the map is a map, and the app
