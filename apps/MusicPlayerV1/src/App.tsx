@@ -2795,7 +2795,7 @@ function Lyrics({
               aria-label={step > 0 ? 'larger words' : 'smaller words'}
               onClick={() => onSize(step * 10)}
               disabled={step > 0 ? size >= LYRIC_SIZE_MAX : size <= LYRIC_SIZE_MIN}
-              className="grid h-12 w-12 place-items-center rounded-full bg-black/35 text-[1.4rem] leading-none ring-1 ring-white/12 backdrop-blur-sm transition active:scale-90 disabled:opacity-20"
+              className="grid h-12 w-12 place-items-center rounded-full text-[1.4rem] leading-none transition active:scale-90 disabled:opacity-20"
               style={{ color: tint }}>
               {step > 0 ? '+' : '\u2212'}
             </button>

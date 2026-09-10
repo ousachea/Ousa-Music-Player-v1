@@ -2,10 +2,11 @@
 
 ## 0.34.1
 
-The keys that size the lyrics are easy to hit. They were 36px circles with no edge, sitting over
-lines whose own hit area ran the full width of the screen, so a tap that missed the key seeked the
-song instead. The keys are 48px on a dark chip now, and the lines stop short of the screen at 84% of
-its width, which leaves the strip they sit in to them alone.
+The keys that size the lyrics are easy to hit. They were 36px circles sitting over lines whose own
+hit area ran the full width of the screen, so a tap that missed a key seeked the song instead. The
+keys take a 48px target now, and the lines stop short of the screen at 84% of its width, which
+leaves the strip they sit in to them alone. The target is the only thing that grew: they are still
+bare glyphs, like everything else on this screen.
 
 ## 0.34.0
 
