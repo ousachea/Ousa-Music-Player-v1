@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-10T14:05:27.656Z",
+  "updated_at": "2026-09-10T14:58:26.676Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -12,7 +12,7 @@
     {
       "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
       "name": "O-Clock",
-      "description": "A clock in nine faces, seven timers, a stopwatch and an alarm.",
+      "description": "A clock in nine faces, eight timers, a stopwatch and an alarm.",
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a08085-a3c5-73fc-a3f9-1532161d74d2.png",
       "screenshots": [
@@ -26,6 +26,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.4.0",
+          "released_at": "2026-09-10T14:58:25.966Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.4.0.zip",
+            "size": 957629,
+            "sha256": "f8af34648c06474a889a802d6a1849e93e3b572a758f0a13085f857547ec5498"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.4.0.html",
+            "size": 26915,
+            "sha256": "a01042926a46239c50d17b4eb87c3017b8a2c028b9532b5bfb0c5079fa44ae63"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Bezel**, an eighth timer, after the one a watch shows: a rounded card whose own border is the\ncountdown, a full lap at the start and emptying clockwise from the top. Pause sits on one end and a\nred cross on the other, with the wall clock time it comes due above the figures and the word Timer\nunder them. The wheel and the two keys under the card set it, as they do on the other dialled ones.\n\n**What is playing** can be turned off. The strip along the bottom is on by default; with it off every\nscreen keeps the whole height, and the colour carries on following the album art if that is on,\nsince it reads the track either way."
+        },
         {
           "version": "0.3.1",
           "released_at": "2026-09-09T15:47:15.249Z",
@@ -364,6 +381,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.35.0",
+          "released_at": "2026-09-10T14:58:26.673Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.35.0.zip",
+            "size": 995723,
+            "sha256": "bd764b01965cdcfd0dd74951e93bc2fdb0b0086807a3a0e656247864603238ac"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.35.0.html",
+            "size": 32802,
+            "sha256": "eb321cbdca1902a4b2f1817cd0367687b4e9e912ee3b0a87c178ac93d864bbcc"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A seventh player style, **Dial**: a jog wheel beside a card, both on a wash of the album's colour.\nThe track runs round a black disc as a thick arc from twelve o'clock in that colour, over a ring of\nmachined ticks with the grooves faint beneath and the cover turning in the middle as the label. Ten\nseconds either way sit beside it, drawn as a loop with a solid head and the number set inside it,\nturning for the direction it jumps while the number stays the right way up, and the elapsed time and\nthe length read under the label.\n\nThe card is that colour taken down to something white type sits on, rather than the accent at full\nstrength, which lit half the screen. It stands off the screen: a light edge along its top, a shadow\nunder it, and the words in a well cut into it, darker than the card with a shadow along the\ntop lip and a catch of light along the bottom. They roll through that well, the sung line in the\nmiddle and larger, the rest fading out at the window's edges, the column sliding rather than\nstepping as the line changes and a long line set smaller rather than cut. The fade is on the window\nrather than the column, which was fading its own far ends where nobody could see them. With no words it shows the album, title and artist. Under it the track\nreads again with a round badge of the cover, and under that previous, a white play circle and next.\nTurned a quarter the wheel sits above the card instead of beside it.\n\nVinyl gets two layouts rather than one, under **Layout**.\n\n**Turntable** is what it always was, the record on the platter with the sleeve behind it, except that\nthe sleeve is now a button: touch it and the two trade places, the sleeve coming forward and growing\nwhile the record drops behind it. The same swap is **In front** in the settings, so it survives a\nrestart either way.\n\n**Sleeve** is a copy half out of its cover: the artwork square and flat on one side, the record\npulled out on the other with the paper label showing in the album's colour and the spindle hole\nthrough it. It takes the pressing colour like the other one.\n\nThe label in the middle of the record switches between the two layouts: a tap pulls the record out\nof its sleeve, another puts it back on the platter. It used to turn the pressing colour on and off,\nwhich is now a settings choice alone, since the middle of a record is the obvious place to reach for\nand only one thing can live there."
+        },
         {
           "version": "0.34.1",
           "released_at": "2026-09-10T14:05:27.652Z",

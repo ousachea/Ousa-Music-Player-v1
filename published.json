@@ -725,6 +725,17 @@
         "size": 32729,
         "sha256": "0dcaa2dcfd9ddaacae57465bbfc2d62a132812dd505399643e5ff6bf6c1f6cd3"
       }
+    },
+    "0.35.0": {
+      "released_at": "2026-09-10T14:58:26.673Z",
+      "sha256": "bd764b01965cdcfd0dd74951e93bc2fdb0b0086807a3a0e656247864603238ac",
+      "size": 995723,
+      "file": "r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.35.0.zip",
+      "settings": {
+        "file": "s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.35.0.html",
+        "size": 32802,
+        "sha256": "eb321cbdca1902a4b2f1817cd0367687b4e9e912ee3b0a87c178ac93d864bbcc"
+      }
     }
   },
   "01a07c16-be12-7003-91aa-482b107fdccb": {
@@ -1119,6 +1130,17 @@
       "file": "r/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.3.1.zip",
       "settings": {
         "file": "s/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.3.1.html",
+        "size": 26915,
+        "sha256": "a01042926a46239c50d17b4eb87c3017b8a2c028b9532b5bfb0c5079fa44ae63"
+      }
+    },
+    "0.4.0": {
+      "released_at": "2026-09-10T14:58:25.966Z",
+      "sha256": "f8af34648c06474a889a802d6a1849e93e3b572a758f0a13085f857547ec5498",
+      "size": 957629,
+      "file": "r/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.4.0.zip",
+      "settings": {
+        "file": "s/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.4.0.html",
         "size": 26915,
         "sha256": "a01042926a46239c50d17b4eb87c3017b8a2c028b9532b5bfb0c5079fa44ae63"
       }
