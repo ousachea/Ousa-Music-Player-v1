@@ -1,0 +1,59 @@
+{
+  "id": "01a08bd6-9df2-70c3-ab08-cac2951ebcb6",
+  "name": "O-Map",
+  "version": "0.1.0",
+  "description": "Cambodia on the dash, with live traffic when you bring a key.",
+  "settings": "settings.html",
+  "config": [
+    {
+      "type": "enum",
+      "data": {
+        "key": "place",
+        "label": "Opens at",
+        "choices": [
+          "phnom-penh",
+          "siem-reap",
+          "sihanoukville",
+          "battambang",
+          "cambodia"
+        ],
+        "default": "phnom-penh"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "base",
+        "label": "Map style",
+        "choices": [
+          "streets",
+          "plain"
+        ],
+        "default": "streets"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "traffic",
+        "label": "Show traffic",
+        "default": true
+      }
+    },
+    {
+      "type": "secret",
+      "data": {
+        "key": "trafficKey",
+        "label": "TomTom API key (free tier gives live traffic)",
+        "default": ""
+      }
+    }
+  ],
+  "permissions": [
+    "net.proxy"
+  ],
+  "art": {
+    "heroPx": 248,
+    "thumbPx": 96
+  }
+}

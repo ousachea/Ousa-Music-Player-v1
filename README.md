@@ -13,6 +13,7 @@ source once and all of them are available.
 | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **O-Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
 | **O-Gold Tracker** | Live gold spot, Khmer weight conversion and a private purchase ledger |
+| **O-Map** | Cambodia on the dash, with live traffic when you bring a key |
 
 ## Put it on your Car Thing
 
@@ -614,6 +615,40 @@ purchase ledger itself.
 Everything shown is a spot-metal estimate. Dealer premiums, workmanship and the buy/sell spread are
 not included.
 
+## O-Map
+
+![O-Map](apps/o-map/screenshots/01-map.jpg)
+
+Cambodia on the dash.
+
+The map is OpenStreetMap, a tile at a time, fetched through the phone rather than by the screen
+itself: the device has no internet of its own, so every 256 pixel square comes back as bytes over
+the same link the music does, and is kept in memory once it has arrived. The layout is the web
+mercator grid every slippy map uses, so dragging moves the country under your finger, the wheel
+steps the zoom, and the two round keys on the right do the same for a thumb.
+
+The four presets are four cities: Phnom Penh, Siem Reap, Sihanoukville and Battambang, with **Mode**
+for the whole country at once. The card along the top names where the middle of the screen is, to
+four decimal places, and says whether traffic is live.
+
+**Traffic** is TomTom's flow layer, drawn over the map as a second set of tiles: green where it
+moves, red where it does not, with the legend along the bottom. It needs a key, which TomTom's free
+tier gives away, and it goes in the companion app under O-Map, since a Car Thing has nowhere to type
+one. Without a key the map is still a map, and the chip in the corner says so rather than pretending.
+
+The wheel button opens the settings on the device: which city it opens at, the map style, and
+whether traffic is drawn. Map data is © OpenStreetMap contributors.
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Preset buttons 1-4 | Jump to Phnom Penh, Siem Reap, Sihanoukville or Battambang |
+| Mode | The whole country |
+| Turn the wheel | Zoom in and out |
+| Drag the map | Pan |
+| Button under the wheel | Opens and closes the settings |
+
 ## Working on it
 
 ```sh
@@ -634,6 +669,7 @@ Each app has a port of its own, so they can all run at once and a bookmark keeps
 | O-Gold Tracker | http://localhost:5176 |
 | O-Network Monitor | http://localhost:5177 |
 | O-Quote Flow | http://localhost:5178 |
+| O-Map | http://localhost:5179 |
 
 Nothing links one to another: each is its own page, so switching between them means changing the
 address. On the device that job belongs to the launcher, which five fast presses of Mode returns you

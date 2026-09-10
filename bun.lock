@@ -12,7 +12,7 @@
     },
     "apps/MusicPlayerV1": {
       "name": "music-player",
-      "version": "0.30.0",
+      "version": "0.35.0",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
         "preact": "^10.29.7",
@@ -35,7 +35,7 @@
     },
     "apps/clock": {
       "name": "clock",
-      "version": "0.1.0",
+      "version": "0.4.0",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
         "preact": "^10.29.7",
@@ -58,7 +58,7 @@
     },
     "apps/desk-exchange": {
       "name": "desk-exchange",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
         "preact": "^10.29.7",
@@ -81,7 +81,7 @@
     },
     "apps/gold-tracker": {
       "name": "gold-tracker",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
         "preact": "^10.29.7",
@@ -104,7 +104,30 @@
     },
     "apps/network-monitor": {
       "name": "network-monitor",
-      "version": "0.1.1",
+      "version": "0.1.2",
+      "dependencies": {
+        "@bridgething/client": "^0.12.1",
+        "preact": "^10.29.7",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+      },
+      "devDependencies": {
+        "@msgpack/msgpack": "^3.1.3",
+        "@preact/preset-vite": "^2.10.5",
+        "@tailwindcss/vite": "^4.3.3",
+        "@types/react": "^19.2.10",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.1.1",
+        "fflate": "^0.8.2",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^6.0.3",
+        "vite": "^8.2.2",
+        "vite-plugin-singlefile": "^2.3.3",
+      },
+    },
+    "apps/o-map": {
+      "name": "o-map",
+      "version": "0.1.0",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
         "preact": "^10.29.7",
@@ -127,7 +150,7 @@
     },
     "apps/quote-flow": {
       "name": "quote-flow",
-      "version": "0.6.4",
+      "version": "0.6.5",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
         "preact": "^10.29.7",
@@ -413,6 +436,8 @@
     "node-releases": ["node-releases@2.0.54", "", {}, "sha512-YHs7BmmcsdAI5Ozuf8JZo6PT0mv2GIWC9vMfvUC3dp65M8hn7Ux8CPL+2oBI7juNuj9d0ndhTcznq2ODBps9cQ=="],
 
     "nth-check": ["nth-check@2.1.1", "", { "dependencies": { "boolbase": "^1.0.0" } }, "sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w=="],
+
+    "o-map": ["o-map@workspace:apps/o-map"],
 
     "picocolors": ["picocolors@1.1.1", "", {}, "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA=="],
 
