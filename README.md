@@ -628,8 +628,10 @@ mercator grid every slippy map uses, so dragging moves the country under your fi
 steps the zoom, and the two round keys on the right do the same for a thumb.
 
 The four presets are four cities: Phnom Penh, Siem Reap, Sihanoukville and Battambang, with **Mode**
-for the whole country at once. The card along the top names where the middle of the screen is, to
-four decimal places, and says whether traffic is live.
+for the whole country at once. The screen itself stays out of the way: the cities are in the
+settings rather than as chips over the map, and the only things on it are the card along the top,
+which names where the middle of the screen is to four decimal places and says whether traffic is
+live, the two zoom keys and the recentre key.
 
 **Traffic** is TomTom's flow layer, drawn over the map as a second set of tiles: green where it
 moves, red where it does not, with the legend along the bottom. It needs a key, which TomTom's free

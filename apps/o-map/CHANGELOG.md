@@ -7,8 +7,9 @@ kept in memory once they arrive, and laid out on the web mercator grid every sli
 dragging moves the country under your finger and the wheel steps the zoom.
 
 Four presets are four cities: Phnom Penh, Siem Reap, Sihanoukville and Battambang, with Mode for the
-whole country. The card along the top says where the middle of the screen is, to four decimal
-places, and whether traffic is live.
+whole country. The cities live in the settings rather than as chips over the map, so the screen
+carries only the card along the top, which says where the middle of it is to four decimal places and
+whether traffic is live, and the keys down the right.
 
 Four map styles: Streets, the OpenStreetMap everyone knows; **Minimal**, pale grey roads on almost
 no colour so the traffic is the only colour on the screen; **Night**, the same map dark; and Plain,

@@ -196,21 +196,6 @@ export default function App() {
         </span>
       </div>
 
-      {/* the chips down the left, which on this map are the cities worth jumping to */}
-      <div className="absolute top-24 left-4 flex flex-col gap-2">
-        {PLACES.slice(0, 4).map((place, i) => (
-          <button
-            key={place.key}
-            onClick={() => goTo(place)}
-            className="flex items-center gap-2 rounded-full bg-black/70 py-2 pr-4 pl-2 text-left ring-1 ring-white/12 backdrop-blur-md transition active:scale-95">
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/12 font-mono text-eyebrow">
-              {i + 1}
-            </span>
-            <span className="text-hint whitespace-nowrap">{place.label}</span>
-          </button>
-        ))}
-      </div>
-
       <div className="absolute right-4 bottom-24 flex flex-col gap-2">
         <button
           aria-label="zoom in"
