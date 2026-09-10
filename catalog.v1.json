@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-10T14:58:26.676Z",
+  "updated_at": "2026-09-10T15:18:47.026Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -1724,6 +1724,39 @@
           ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "First release. Link status, latency, measured download and a 60 second graph.\nUpload and local IP report as unavailable: they need interface counters that the\ndaemon does not expose."
+        }
+      ]
+    },
+    {
+      "id": "01a08bd6-9df2-70c3-ab08-cac2951ebcb6",
+      "name": "O-Map",
+      "description": "Cambodia on the dash, with live traffic when you bring a key.",
+      "author": "Ousa Chea",
+      "icon": null,
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/01-map.jpg"
+      ],
+      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-09-10T15:18:47.022Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.0.zip",
+            "size": 822354,
+            "sha256": "4fa20554737a6d57c6dabfb4250e64a9d29a76ad7d2aaef6c88bd634442de5ae"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.0.html",
+            "size": 26913,
+            "sha256": "53118aeab454bd4afe9e983322ab0f2171993ceefbdab52c33f481539202f5a3"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Cambodia on the dash. The map is OpenStreetMap tiles fetched a tile at a time through the phone,\nkept in memory once they arrive, and laid out on the web mercator grid every slippy map uses, so\ndragging moves the country under your finger and the wheel steps the zoom.\n\nFour presets are four cities: Phnom Penh, Siem Reap, Sihanoukville and Battambang, with Mode for the\nwhole country. The cities live in the settings rather than as chips over the map, so the screen\ncarries only the card along the top, which says where the middle of it is to four decimal places and\nwhether traffic is live, and the keys down the right.\n\nFour map styles: Streets, the OpenStreetMap everyone knows; **Minimal**, pale grey roads on almost\nno colour so the traffic is the only colour on the screen; **Night**, the same map dark; and Plain,\nthe flatter humanitarian style. The two canvas styles are Esri's, which number their tiles y before\nx rather than x before y.\n\nTraffic is TomTom's flow layer, drawn over the map as a second set of tiles: green where it moves,\nred where it does not. It needs a key, which their free tier gives away, and which goes in the\ncompanion app since the device has nowhere to type one. Without it the map is a map, and the app\nsays so rather than pretending."
         }
       ]
     },
