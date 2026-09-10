@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-10T15:35:06.430Z",
+  "updated_at": "2026-09-10T16:03:14.830Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -1791,6 +1791,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.2.0",
+          "released_at": "2026-09-10T16:03:14.828Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.0.zip",
+            "size": 844139,
+            "sha256": "529b5b6a2106f3072dc96be9a536e0a97b3ab726b4f697b21348467de3ecaa4e"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.0.html",
+            "size": 26919,
+            "sha256": "5b622928000f24937407a8215230495ba3c808eed8dd7680286649fd57cc68fa"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Preset 4 turns the screen**, a quarter at a time, 0 to 90 to 180 to 270 and round again, for a\nframe stood on its side. The app is laid out at the swapped size and rotated into place, so a turned\nscreen is a real portrait layout rather than a squashed landscape one: the navigation becomes a\nstrip along the edge the buttons are on, the grid drops from five columns to three and the albums\nfrom four to two. It is also **Screen** in the settings.\n\n**Which photos** sifts the library by shape: all, landscape only, or portrait only, which is what a\nframe on its side wants. Immich cannot search by shape, so it sifts what comes back rather than\nasking for it, and a page can arrive nearly empty before the next one fills the screen. A picture\nwith no size in its exif is neither shape, so it stays out of the strict two.\n\nThe shape is also a key in the viewer, beside the heart, reading All, Wide or Tall: touching it\ncycles the three without leaving the picture. The picture you were looking at stays under your eye\nwhen the shape changes, if it still fits, and the nearest one takes over when it does not.\n\nThe navigation is a rail of glyphs and nothing else: a grid, a heart, a folder, a lens, a gear and a\nplay triangle, no names beside them and no wordmark above them. It costs 40px of width, which the\npictures take, and every key still says what it is to a screen reader and on a long press.\n\nSearch moves off preset 4, which now turns the screen; it is still a touch away in the navigation.\nThe demo library grows portraits, a third of it, so the shape filter has something to sift."
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-09-10T15:35:06.427Z",
