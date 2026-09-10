@@ -51,6 +51,7 @@ export default function App() {
   const [palette, setPalette] = useState<PaletteKey>('green-up');
   const [tape, setTape] = useState(true);
   const [news, setNews] = useState(true);
+  const [alerts, setAlerts] = useState(true);
   const [span, setSpan] = useState<SpanKey>('4h');
   const [watchOnly, setWatchOnly] = useState(false);
 
@@ -86,6 +87,7 @@ export default function App() {
         if (e.key === 'palette' && e.value in PALETTES) setPalette(e.value as PaletteKey);
         if (e.key === 'tape') setTape(e.value !== 'false');
         if (e.key === 'headlines') setNews(e.value !== 'false');
+        if (e.key === 'alerts') setAlerts(e.value !== 'false');
         if (e.key === 'span' && SPANS.some(s => s.key === e.value)) setSpan(e.value as SpanKey);
         if (e.key === 'watchlistOnly') setWatchOnly(e.value !== 'false');
       }
@@ -119,6 +121,7 @@ export default function App() {
     if (o.palette && o.palette in PALETTES) setPalette(o.palette as PaletteKey);
     if (o.tape !== undefined) setTape(o.tape !== 'false');
     if (o.headlines !== undefined) setNews(o.headlines !== 'false');
+    if (o.alerts !== undefined) setAlerts(o.alerts !== 'false');
     if (o.span && SPANS.some(s => s.key === o.span)) setSpan(o.span as SpanKey);
     if (o.watchlistOnly !== undefined) setWatchOnly(o.watchlistOnly !== 'false');
   }, [overrides]);
@@ -184,6 +187,7 @@ export default function App() {
   const indexPct = ((index - indexOpen) / indexOpen) * 100;
 
   const headlines = useMemo(() => (news ? recentHeadlines(t, 8) : []), [news, t]);
+  const breaking = useBreaking(t, alerts);
 
   return (
     <div className="flex h-full w-full flex-col bg-screen text-off-white">
@@ -199,6 +203,21 @@ export default function App() {
       />
 
       {news && <NewsBar headlines={headlines} colours={colours} />}
+      {breaking.item && (
+        <Breaking
+          item={breaking.item}
+          colours={colours}
+          onDismiss={breaking.dismiss}
+          onOpen={() => {
+            const i = LISTINGS.findIndex(l => l.sym === breaking.item?.sym);
+            breaking.dismiss();
+            if (i >= 0) {
+              setCursor(i);
+              setView('chart');
+            }
+          }}
+        />
+      )}
 
       <div className="relative min-h-0 flex-1">
         {view === 'board' ? (
@@ -238,6 +257,7 @@ export default function App() {
           span={span}
           tape={tape}
           news={news}
+          alerts={alerts}
           watchOnly={watchOnly}
           held={held !== null}
           watchCount={watchlist.size}
@@ -247,6 +267,7 @@ export default function App() {
           onSpan={next => setOverride('span', next)}
           onTape={next => setOverride('tape', String(next))}
           onNews={next => setOverride('headlines', String(next))}
+          onAlerts={next => setOverride('alerts', String(next))}
           onWatchOnly={next => setOverride('watchlistOnly', String(next))}
           onHold={next => setHeld(next ? Date.now() : null)}
         />
@@ -338,6 +359,77 @@ const Tape = memo(function Tape({ t, vol, colours }: { t: number; vol: number; c
     </div>
   );
 });
+
+const BREAKING_MS = 8000;
+
+// the wire is a function of the clock, so a new story is simply an id that was not there a moment
+// ago. the first one seen after a reload is history, not news, so it is swallowed
+function useBreaking(t: number, on: boolean) {
+  const [item, setItem] = useState<Headline | null>(null);
+  const seen = useRef<string | null>(null);
+  const latest = recentHeadlines(t, 1)[0] ?? null;
+  const id = latest?.id ?? null;
+
+  useEffect(() => {
+    if (!on || !id) return;
+    if (seen.current === null) {
+      seen.current = id;
+      return;
+    }
+    if (seen.current === id) return;
+    seen.current = id;
+    setItem(latest);
+    const timer = setTimeout(() => setItem(null), BREAKING_MS);
+    return () => clearTimeout(timer);
+    // latest is the story behind the id; following the id alone keeps this to one run per story
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, on]);
+
+  useEffect(() => {
+    if (!on) setItem(null);
+  }, [on]);
+
+  return { item: on ? item : null, dismiss: () => setItem(null) };
+}
+
+function Breaking({
+  item,
+  colours,
+  onDismiss,
+  onOpen,
+}: {
+  item: Headline;
+  colours: Colours;
+  onDismiss: () => void;
+  onOpen: () => void;
+}) {
+  const tone = item.up ? colours.up : colours.down;
+  return (
+    <div className="pointer-events-none absolute inset-x-0 top-14 z-20 flex justify-center px-6">
+      <div
+        key={item.id}
+        className="drop pointer-events-auto flex max-w-[34rem] items-center gap-3 rounded-2xl bg-black/85 px-4 py-3 ring-1 ring-white/12 backdrop-blur-md">
+        <span
+          className="shrink-0 rounded-sm px-1.5 py-0.5 font-mono text-eyebrow tabular-nums"
+          style={{ backgroundColor: `${tone}22`, color: tone }}>
+          {item.sym}
+        </span>
+        <button onClick={onOpen} className="min-w-0 flex-1 text-left">
+          <span className="block font-mono text-eyebrow tracking-[0.2em] uppercase" style={{ color: tone }}>
+            breaking {item.up ? '▲' : '▼'} {fmtPct(item.impact * 100)}
+          </span>
+          <span className="mt-0.5 block text-hint leading-snug text-soft">{item.text}</span>
+        </button>
+        <button
+          aria-label="dismiss"
+          onClick={onDismiss}
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-row text-dim transition active:scale-90">
+          ×
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function NewsBar({ headlines, colours }: { headlines: Headline[]; colours: Colours }) {
   const [n, setN] = useState(0);
@@ -667,6 +759,7 @@ function Panel({
   span,
   tape,
   news,
+  alerts,
   watchOnly,
   held,
   watchCount,
@@ -676,6 +769,7 @@ function Panel({
   onSpan,
   onTape,
   onNews,
+  onAlerts,
   onWatchOnly,
   onHold,
 }: {
@@ -685,6 +779,7 @@ function Panel({
   span: SpanKey;
   tape: boolean;
   news: boolean;
+  alerts: boolean;
   watchOnly: boolean;
   held: boolean;
   watchCount: number;
@@ -694,6 +789,7 @@ function Panel({
   onSpan: (next: SpanKey) => void;
   onTape: (next: boolean) => void;
   onNews: (next: boolean) => void;
+  onAlerts: (next: boolean) => void;
   onWatchOnly: (next: boolean) => void;
   onHold: (next: boolean) => void;
 }) {
@@ -747,9 +843,10 @@ function Panel({
         </Group>
       </div>
 
-      <div className="mt-3 grid grid-cols-3 gap-3">
+      <div className="mt-3 grid grid-cols-4 gap-3">
         <Toggle label="Ticker tape" on={tape} onClick={() => onTape(!tape)} />
         <Toggle label="Headline wire" on={news} onClick={() => onNews(!news)} />
+        <Toggle label="Breaking news" on={alerts} onClick={() => onAlerts(!alerts)} />
         <Toggle label="Market" on={held} onText="Held" offText="Live" warn onClick={() => onHold(!held)} />
       </div>
 

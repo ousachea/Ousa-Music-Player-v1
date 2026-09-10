@@ -482,11 +482,19 @@ A stock market that does not exist, running on your desk.
 
 ![Desk Exchange](apps/desk-exchange/screenshots/01-board.png)
 
-Twelve invented companies, each with its own price, sparkline and session move. The header carries
-the Desk Exchange Index, how many names are up against how many are down, and the clock. The wire
-under it runs headlines, and a headline is not decoration: the shock it describes is applied to that
-company's price, ramping in over seconds and bleeding off over the next half hour, so a bad story is
-visible in the chart. The tape along the bottom rolls the latest print for every name.
+Twelve invented companies, each with its own price, sparkline and session move, and none of them
+taking itself seriously: Vapourware Systems, Wheely Fast Motors, Petri & Sons, Beach Sand Semis,
+Ship Happens Freight, Big Wind Energy, Clanky Robotics, Piggy Bank Holdings, Impulse Buy Retail, One
+More Turn Games, Rock Bottom Mining and Squint Optics. The header carries the Desk Exchange Index,
+how many names are up against how many are down, and the clock. The wire under it runs headlines,
+and a headline is not decoration: the shock it describes is applied to that company's price, ramping
+in over seconds and bleeding off over the next half hour, so a bad story is visible in the chart.
+The tape along the bottom rolls the latest print for every name.
+
+**Breaking news** drops in over the board when a story actually lands, with the ticker, which way it
+moved the price and the headline itself. It clears itself after eight seconds, an × closes it early,
+and touching it opens that company's chart. A story that was already on the wire when you arrived is
+history rather than news, so it does not pop. **Breaking news** in the settings turns it off.
 
 ![Desk Exchange chart](apps/desk-exchange/screenshots/02-chart.png)
 

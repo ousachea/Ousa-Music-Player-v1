@@ -12,18 +12,18 @@ export type Listing = {
 };
 
 export const LISTINGS: Listing[] = [
-  { sym: 'NIMB', name: 'Nimbus Systems', sector: 'Cloud', base: 284.5, vol: 0.052, shares: 4.1e6 },
-  { sym: 'VOLT', name: 'Voltaic Motors', sector: 'Autos', base: 61.2, vol: 0.088, shares: 9.6e6 },
-  { sym: 'HELX', name: 'Helix Biolabs', sector: 'Biotech', base: 132.75, vol: 0.095, shares: 2.4e6 },
-  { sym: 'QRTZ', name: 'Quartz Foundry', sector: 'Semis', base: 517.3, vol: 0.061, shares: 1.7e6 },
-  { sym: 'ORBT', name: 'Orbital Freight', sector: 'Logistics', base: 88.4, vol: 0.044, shares: 5.2e6 },
-  { sym: 'TIDE', name: 'Tidewater Energy', sector: 'Energy', base: 47.9, vol: 0.058, shares: 12.3e6 },
-  { sym: 'ANVL', name: 'Anvil Robotics', sector: 'Industrial', base: 196.05, vol: 0.049, shares: 3.3e6 },
-  { sym: 'COBB', name: 'Cobblestone Bank', sector: 'Finance', base: 39.6, vol: 0.031, shares: 18.4e6 },
-  { sym: 'MRSH', name: 'Marsh & Vine', sector: 'Retail', base: 74.15, vol: 0.037, shares: 6.8e6 },
-  { sym: 'PXEL', name: 'Pixel Forge', sector: 'Games', base: 22.8, vol: 0.102, shares: 15.1e6 },
-  { sym: 'ARGO', name: 'Argonaut Mining', sector: 'Materials', base: 158.9, vol: 0.066, shares: 2.9e6 },
-  { sym: 'LUME', name: 'Lumen Optics', sector: 'Optics', base: 305.4, vol: 0.073, shares: 1.4e6 },
+  { sym: 'VAPR', name: 'Vapourware Systems', sector: 'Cloud', base: 284.5, vol: 0.052, shares: 4.1e6 },
+  { sym: 'WHEE', name: 'Wheely Fast Motors', sector: 'Autos', base: 61.2, vol: 0.088, shares: 9.6e6 },
+  { sym: 'PTRI', name: 'Petri & Sons', sector: 'Biotech', base: 132.75, vol: 0.095, shares: 2.4e6 },
+  { sym: 'SAND', name: 'Beach Sand Semis', sector: 'Semis', base: 517.3, vol: 0.061, shares: 1.7e6 },
+  { sym: 'SHIP', name: 'Ship Happens Freight', sector: 'Logistics', base: 88.4, vol: 0.044, shares: 5.2e6 },
+  { sym: 'WIND', name: 'Big Wind Energy', sector: 'Energy', base: 47.9, vol: 0.058, shares: 12.3e6 },
+  { sym: 'CLNK', name: 'Clanky Robotics', sector: 'Industrial', base: 196.05, vol: 0.049, shares: 3.3e6 },
+  { sym: 'OINK', name: 'Piggy Bank Holdings', sector: 'Finance', base: 39.6, vol: 0.031, shares: 18.4e6 },
+  { sym: 'IMPL', name: 'Impulse Buy Retail', sector: 'Retail', base: 74.15, vol: 0.037, shares: 6.8e6 },
+  { sym: 'TURN', name: 'One More Turn Games', sector: 'Games', base: 22.8, vol: 0.102, shares: 15.1e6 },
+  { sym: 'ROCK', name: 'Rock Bottom Mining', sector: 'Materials', base: 158.9, vol: 0.066, shares: 2.9e6 },
+  { sym: 'SQNT', name: 'Squint Optics', sector: 'Optics', base: 305.4, vol: 0.073, shares: 1.4e6 },
 ];
 
 export const BY_SYM: Record<string, Listing> = Object.fromEntries(LISTINGS.map(l => [l.sym, l]));
@@ -100,25 +100,29 @@ const EVENT_LOOKBACK = 16;
 export type Headline = { id: string; sym: string; at: number; text: string; up: boolean; impact: number };
 
 const UP_LINES = [
-  '{name} beats on quarterly revenue',
-  'Analysts upgrade {name} to overweight',
-  '{name} lands a multi-year supply deal',
-  '{name} raises full-year guidance',
-  'Short interest in {sym} falls sharply',
-  '{name} unveils a new product line',
-  'Institutional buyers step into {sym}',
-  '{name} settles its patent dispute',
+  '{name} beats on revenue, nobody more surprised than {name}',
+  'Analysts upgrade {name} after a very good lunch',
+  '{name} lands a supply deal it cannot possibly honour',
+  '{name} raises guidance, blames optimism',
+  'Shorts capitulate on {sym}, take up gardening',
+  '{name} unveils a product that is mostly a subscription',
+  'Institutional buyers pile into {sym} on a hunch',
+  '{name} settles its patent dispute over the word "the"',
+  '{name} names a new chief executive with excellent hair',
+  'A rumour about {name} turns out to be flattering',
 ];
 
 const DOWN_LINES = [
-  '{name} misses on margins',
-  'A regulator opens a review of {name}',
-  '{name} cuts its outlook for the quarter',
-  'A key {name} supplier halts shipments',
-  'Insiders trim their positions in {sym}',
-  '{name} delays its flagship launch',
-  'A downgrade weighs on {sym}',
-  '{name} warns on input costs',
+  '{name} misses on margins, cites weather in general',
+  'A regulator opens a review of {name}, brings snacks',
+  '{name} cuts its outlook and the coffee budget',
+  'A key {name} supplier stops answering the phone',
+  'Insiders trim {sym} for entirely personal reasons',
+  '{name} delays its flagship launch to a nicer quarter',
+  'A downgrade weighs on {sym}, as does the chairman',
+  '{name} warns on input costs, mainly the inputs',
+  '{name} restates last quarter as a work of fiction',
+  'The {name} founder discovers social media',
 ];
 
 /** an event is a property of its time bucket, so the same shock is always there when you look back */
@@ -132,8 +136,8 @@ function eventAt(sym: string, bucket: number): Headline | null {
   const impact = (0.006 + mix(seed ^ 0x3333, bucket) * 0.03) * scale * (up ? 1 : -1);
   const lines = up ? UP_LINES : DOWN_LINES;
   const text = lines[Math.floor(mix(seed ^ 0x7777, bucket) * lines.length) % lines.length]!
-    .replace('{name}', listing.name)
-    .replace('{sym}', sym);
+    .replaceAll('{name}', listing.name)
+    .replaceAll('{sym}', sym);
   return { id: `${sym}-${bucket}`, sym, at: bucket * EVENT_BUCKET, text, up, impact };
 }
 

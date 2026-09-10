@@ -125,3 +125,19 @@
     overscroll-behavior: none;
   }
 }
+
+/* a story that has just landed drops in from the wire above rather than appearing */
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.drop {
+  animation: drop 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
