@@ -7,10 +7,12 @@ The track runs round a black disc as a thick arc from twelve o'clock in that col
 machined ticks with the grooves faint beneath and the cover turning in the middle as the label. Ten
 seconds either way sit beside it, with the elapsed time and the length under it.
 
-The card is filled with the same colour and carries the words when the phone has them: they roll
-through a panel with a tinted lip at the top and bottom, the sung line in the middle and larger, the
-rest fading either side, the column sliding rather than stepping as the line changes and a long line
-set smaller rather than cut. With no words it shows the album, title and artist. Under it the track
+The card is filled with the same colour and stands off the screen: a light edge along its top, a
+shadow under it, and the words in a well cut into it, darker than the card with a shadow along the
+top lip and a catch of light along the bottom. They roll through that well, the sung line in the
+middle and larger, the rest fading out at the window's edges, the column sliding rather than
+stepping as the line changes and a long line set smaller rather than cut. The fade is on the window
+rather than the column, which was fading its own far ends where nobody could see them. With no words it shows the album, title and artist. Under it the track
 reads again with a round badge of the cover, and under that previous, a white play circle and next.
 Turned a quarter the wheel sits above the card instead of beside it.
 

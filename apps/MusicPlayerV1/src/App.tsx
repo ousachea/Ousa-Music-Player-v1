@@ -3275,16 +3275,16 @@ function Dial({
           aria-label="back ten seconds"
           onClick={() => onSeekMs(elapsed - 10000)}
           className="absolute top-1/2 left-[16%] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full text-off-white/75 transition active:scale-90">
-          <Ten className="h-8 w-8" />
+          <Ten className="h-9 w-9" />
         </button>
         <button
           aria-label="forward ten seconds"
           onClick={() => onSeekMs(elapsed + 10000)}
           className="absolute top-1/2 right-[16%] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full text-off-white/75 transition active:scale-90">
-          <Ten className="h-8 w-8 -scale-x-100" />
+          <Ten className="h-9 w-9 -scale-x-100" />
         </button>
 
-        <div className="absolute inset-x-0 top-[62%] flex flex-col items-center gap-0.5">
+        <div className="absolute inset-x-0 top-[67%] flex flex-col items-center gap-0.5">
           <span className="font-mono text-row tabular-nums text-off-white/85">{clock(elapsed)}</span>
           <span className="font-mono text-hint tabular-nums text-off-white/35">
             {duration ? (remaining ? `−${clock(duration - elapsed)}` : clock(duration)) : '--:--'}
@@ -3294,19 +3294,37 @@ function Dial({
 
       {/* the card */}
       <div
-        className="flex min-w-0 flex-1 flex-col justify-between gap-4 rounded-[26px] p-5"
-        style={{ backgroundColor: tint, color: ink }}>
+        className="relative flex min-w-0 flex-1 flex-col justify-between gap-4 rounded-[26px] p-5"
+        style={{
+          color: ink,
+          background: `linear-gradient(168deg, ${alpha('#ffffff', 16)}, ${alpha('#ffffff', 0)} 42%), ${tint}`,
+          boxShadow: `0 22px 44px -16px ${deep}, 0 2px 0 ${alpha('#ffffff', 22)} inset, 0 -18px 30px -22px ${deep} inset`,
+        }}>
         <div
-          className="relative min-h-0 flex-1 overflow-hidden rounded-[18px] bg-white/12 text-center"
-          style={{ boxShadow: `inset 0 14px 30px -8px ${deep}, inset 0 -14px 30px -8px ${deep}` }}>
+          className="relative min-h-0 flex-1 overflow-hidden rounded-[18px] text-center"
+          style={{
+            // a well: darker than the card it is cut into, a shadow along its top lip and a
+            // catch of light along the bottom one
+            background: alpha('#000000', 12),
+            boxShadow: `inset 0 10px 18px -12px ${deep}, inset 0 1px 0 ${alpha('#000000', 22)}, inset 0 -1px 0 ${alpha(
+              '#ffffff',
+              22,
+            )}`,
+          }}>
           {lyrics.state === 'timed' ? (
+            // the fade belongs to the window, not to the column: a mask on the column itself would
+            // fade its own far ends, which are nowhere near the panel
+            <div
+              className="absolute inset-0 overflow-hidden"
+              style={{
+                maskImage: 'linear-gradient(to bottom, transparent, #000 24%, #000 76%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 24%, #000 76%, transparent)',
+              }}>
             <div
               className="absolute inset-x-4 top-1/2"
               style={{
                 transform: `translate3d(0, ${-(at + 0.5) * DIAL_ROW_PX}px, 0)`,
                 transition: motion ? 'transform 520ms cubic-bezier(0.22, 0.7, 0.3, 1)' : undefined,
-                maskImage: 'linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent)',
-                WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent)',
               }}>
               {lyrics.lines.map((l, i) => (
                 <div key={i} className="flex items-center justify-center" style={{ height: DIAL_ROW_PX }}>
@@ -3320,6 +3338,7 @@ function Dial({
                   </span>
                 </div>
               ))}
+            </div>
             </div>
           ) : (
             <div className="flex h-full flex-col justify-center gap-1 px-5">
@@ -3382,9 +3401,9 @@ function Dial({
 function Ten({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
-      <path d="M12 5.4A6.6 6.6 0 1 1 5.4 12" strokeWidth="2" />
-      <path d="M8.6 2.4 12 5.4 8.6 8.4" strokeWidth="2" />
-      <text x="12" y="15.8" textAnchor="middle" fontSize="8" fontWeight="600" fill="currentColor" stroke="none">
+      <path d="M12 5.6a6.4 6.4 0 1 1-6.1 4.5" strokeWidth="1.9" />
+      <path d="M9.1 2.2 13.2 5.6 9.1 9V2.2Z" fill="currentColor" stroke="none" />
+      <text x="12" y="16.2" textAnchor="middle" fontSize="7.6" fontWeight="700" fill="currentColor" stroke="none">
         10
       </text>
     </svg>
