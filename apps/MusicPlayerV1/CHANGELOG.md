@@ -2,16 +2,17 @@
 
 ## 0.35.0
 
-A seventh player style, **Dial**: a jog wheel beside a card. The track runs round a black disc as a
-thick white arc from twelve o'clock, over a ring of machined ticks with the grooves faint beneath
-and the cover turning in the middle as the label. Ten seconds either way sit beside it, the elapsed
-time and the length under it, and x0.5, x1 and x2 above, which ask the phone for a playback rate.
+A seventh player style, **Dial**: a jog wheel beside a card, both on a wash of the album's colour.
+The track runs round a black disc as a thick arc from twelve o'clock in that colour, over a ring of
+machined ticks with the grooves faint beneath and the cover turning in the middle as the label. Ten
+seconds either way sit beside it, with the elapsed time and the length under it.
 
-The card beside it is filled with the album's colour and carries the words when the phone has them,
-the sung line between its neighbours, or the album, title and artist when it does not. Under it the
-track reads again with a round badge of the cover, and under that repeat, previous, a white play
-circle, next and a heart that likes the track through the phone's favourites. Turned a quarter the
-wheel sits above the card instead of beside it.
+The card is filled with the same colour and carries the words when the phone has them: they roll
+through a panel with a tinted lip at the top and bottom, the sung line in the middle and larger, the
+rest fading either side, the column sliding rather than stepping as the line changes and a long line
+set smaller rather than cut. With no words it shows the album, title and artist. Under it the track
+reads again with a round badge of the cover, and under that previous, a white play circle and next.
+Turned a quarter the wheel sits above the card instead of beside it.
 
 Vinyl gets two layouts rather than one, under **Layout**.
 

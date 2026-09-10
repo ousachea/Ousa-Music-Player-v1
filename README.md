@@ -155,19 +155,18 @@ rather than the height, so it keeps its shape rather than stretching into the ta
 
 ### Dial
 
-A jog wheel beside a card. The track runs round the outside of a black disc as a thick white arc
-from twelve o'clock, with a machined ring of ticks inside it, the grooves faint under that, and the
-cover turning slowly in the middle as the record's label. Ten seconds back and ten forward sit
-either side of it, the elapsed time and the length under it, and x0.5, x1 and x2 above: the speed
-the phone is asked to play at, which it honours if its source can.
+A jog wheel beside a card, on a wash of the album's own colour. The track runs round the outside of
+a black disc as a thick arc from twelve o'clock, in that colour, with a machined ring of ticks
+inside it, the grooves faint under that, and the cover turning slowly in the middle as the record's
+label. Ten seconds back and ten forward sit either side of it, with the elapsed time and the length
+underneath.
 
-The card beside it is filled with the album's colour. It carries the words when the phone has them,
-the line being sung between the one before and the one after, and the album, title and artist when
-it does not. Under that the track reads again with the cover as a small round badge, and under that
-the transport: repeat, which walks off, all and one; previous and next; play and pause as a white
-circle in the middle; and a heart that likes the track with the phone's own favourites.
-
-Turned a quarter the wheel goes above the card rather than beside it.
+The card is filled with the same colour. It carries the words when the phone has them, rolling
+through a panel with a tinted lip top and bottom: the line being sung sits in the middle, larger,
+with the lines either side of it fading away, and the whole column slides rather than stepping when
+the line changes. A long line is set smaller instead of being cut. With no words it shows the album,
+title and artist instead. Under it the track reads again with the cover as a small round badge, and
+under that previous, play and pause as a white circle, and next.
 
 ### Poster
 

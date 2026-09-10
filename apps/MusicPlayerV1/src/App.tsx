@@ -63,8 +63,6 @@ export default function App() {
   const { prefs, setPref } = usePrefs(client);
   const wallClock = useClock(client, prefs.clock, prefs.clockSeconds, prefs.clockFormat);
   const [panel, setPanel] = useState(false);
-  // the rate the phone was asked for, which it may or may not honour; not worth keeping across a restart
-  const [speed, setSpeed] = useState(1);
   const [sheet, setSheet] = useState(false);
   const [hint, setHint] = useState(false);
   const [tip, setTip] = useState(false);
@@ -461,9 +459,6 @@ export default function App() {
           playing={playing}
           motion={prefs.motion}
           upright={upright}
-          speed={speed}
-          repeat={state?.playback?.repeat ?? 'off'}
-          liked={track.liked ?? null}
           showTransport={prefs.transport}
           progress={progress}
           elapsed={elapsed}
@@ -473,18 +468,6 @@ export default function App() {
           onPrev={() => goPrev(true)}
           onNext={() => goNext()}
           onSeekMs={ms => seek(ms)}
-          onSpeed={rate => {
-            setSpeed(rate);
-            client.player.setSpeed({ speed: rate });
-          }}
-          onRepeat={() => {
-            const order = ['off', 'all', 'one'] as const;
-            const next = order[(order.indexOf(state?.playback?.repeat ?? 'off') + 1) % order.length];
-            client.player.setRepeat({ mode: next });
-          }}
-          onLike={() => {
-            if (track.uri) client.library.favoritesToggle({ item: { uri: track.uri, kind: 'track', persistentId: track.persistentId ?? null } });
-          }}
         />
       ) : prefs.theme === 'cassette' ? (
         <Cassette
@@ -3166,7 +3149,8 @@ function Words({ className, off }: { className?: string; off?: boolean }) {
   );
 }
 
-const SPEEDS = [0.5, 1, 2] as const;
+// the rows the words roll through on the card, which is three of them tall
+const DIAL_ROW_PX = 40;
 
 // a jog wheel and a card: the track runs round the outside of a black disc with the cover as its
 // label, and everything you read or press sits on a panel beside it in the album's colour
@@ -3180,9 +3164,6 @@ function Dial({
   playing,
   motion,
   upright,
-  speed,
-  repeat,
-  liked,
   showTransport,
   progress,
   elapsed,
@@ -3192,9 +3173,6 @@ function Dial({
   onPrev,
   onNext,
   onSeekMs,
-  onSpeed,
-  onRepeat,
-  onLike,
 }: {
   lyrics: ReturnType<typeof useLyrics>;
   artUrl: string | null;
@@ -3205,9 +3183,6 @@ function Dial({
   playing: boolean;
   motion: boolean;
   upright: boolean;
-  speed: number;
-  repeat: 'off' | 'all' | 'one';
-  liked: boolean | null;
   showTransport: boolean;
   progress: number;
   elapsed: number;
@@ -3217,18 +3192,24 @@ function Dial({
   onPrev: () => void;
   onNext: () => void;
   onSeekMs: (ms: number) => void;
-  onSpeed: (rate: number) => void;
-  onRepeat: () => void;
-  onLike: () => void;
 }) {
   const tint = accent?.fill ?? '#3b5bff';
   const ink = accent?.ink ?? '#0a0c0e';
+  const deep = alpha(readHsl(tint) ? `hsl(${readHsl(tint)!.h} 60% 12%)` : '#05070c', 70);
   const done = Math.min(1, Math.max(0, progress));
   const at = lyrics.state === 'timed' ? activeIndex(lyrics.lines, elapsed) : -1;
-  const line = (n: number) => (lyrics.state === 'timed' ? (lyrics.lines[at + n]?.text ?? '') : '');
 
   return (
-    <div className={`flex h-full w-full items-stretch gap-5 p-5 ${upright ? 'flex-col' : ''}`}>
+    <div className={`relative flex h-full w-full items-stretch gap-5 p-5 ${upright ? 'flex-col' : ''}`}>
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `radial-gradient(120% 90% at 22% 8%, ${alpha(tint, 26)}, transparent 62%), radial-gradient(90% 70% at 88% 96%, ${alpha(
+            accent?.fill2 ?? tint,
+            20,
+          )}, transparent 60%)`,
+        }}
+      />
       {/* the wheel */}
       <div className={`relative aspect-square shrink-0 self-center ${upright ? 'h-[46%]' : 'h-[88%]'}`}>
         <svg viewBox="0 0 400 400" className="absolute inset-0 h-full w-full">
@@ -3245,7 +3226,7 @@ function Dial({
           <path
             d="M 200 14 A 186 186 0 1 1 199.9 14"
             fill="none"
-            stroke="#f6f7f9"
+            stroke={tint}
             strokeWidth="13"
             strokeLinecap="round"
             pathLength={1}
@@ -3289,22 +3270,6 @@ function Dial({
           )}
         </div>
 
-        {/* the speed the phone is asked to play at */}
-        <div className="absolute top-[27%] left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/55 p-1 ring-1 ring-white/10">
-          {SPEEDS.map(rate => (
-            <button
-              key={rate}
-              onClick={() => onSpeed(rate)}
-              className="rounded-full px-2.5 py-1 font-mono text-eyebrow tabular-nums transition"
-              style={{
-                backgroundColor: rate === speed ? 'rgba(255,255,255,0.16)' : 'transparent',
-                color: rate === speed ? '#f6f7f9' : 'rgba(246,247,249,0.5)',
-              }}>
-              x{rate}
-            </button>
-          ))}
-        </div>
-
         {/* ten seconds either way, which is what a wheel this size is for */}
         <button
           aria-label="back ten seconds"
@@ -3331,17 +3296,33 @@ function Dial({
       <div
         className="flex min-w-0 flex-1 flex-col justify-between gap-4 rounded-[26px] p-5"
         style={{ backgroundColor: tint, color: ink }}>
-        <div className="flex min-h-0 flex-1 flex-col justify-center gap-1 rounded-[18px] bg-white/12 px-5 py-4 text-center">
+        <div
+          className="relative min-h-0 flex-1 overflow-hidden rounded-[18px] bg-white/12 text-center"
+          style={{ boxShadow: `inset 0 14px 30px -8px ${deep}, inset 0 -14px 30px -8px ${deep}` }}>
           {lyrics.state === 'timed' ? (
-            <>
-              <span className="truncate text-row font-semibold opacity-45">{line(-1) || '· · ·'}</span>
-              <span className="line-clamp-2 font-display text-[1.4rem] leading-tight font-semibold tracking-display">
-                {line(0) || '· · ·'}
-              </span>
-              <span className="truncate text-row font-semibold opacity-45">{line(1) || '· · ·'}</span>
-            </>
+            <div
+              className="absolute inset-x-4 top-1/2"
+              style={{
+                transform: `translate3d(0, ${-(at + 0.5) * DIAL_ROW_PX}px, 0)`,
+                transition: motion ? 'transform 520ms cubic-bezier(0.22, 0.7, 0.3, 1)' : undefined,
+                maskImage: 'linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent)',
+              }}>
+              {lyrics.lines.map((l, i) => (
+                <div key={i} className="flex items-center justify-center" style={{ height: DIAL_ROW_PX }}>
+                  <span
+                    className={`truncate transition-opacity duration-500 ${
+                      i === at ? 'font-display leading-tight font-semibold tracking-display' : 'text-row opacity-40'
+                    }`}
+                    // a long line is set smaller rather than cut off, the way the Lyrics style does it
+                    style={i === at ? { fontSize: `${1.4 * fitted(l.text.length + 14)}rem` } : undefined}>
+                    {l.text || '· · ·'}
+                  </span>
+                </div>
+              ))}
+            </div>
           ) : (
-            <>
+            <div className="flex h-full flex-col justify-center gap-1 px-5">
               <span className="truncate font-mono text-eyebrow tracking-[0.22em] uppercase opacity-60">
                 {album ?? 'now playing'}
               </span>
@@ -3349,7 +3330,7 @@ function Dial({
                 {title}
               </span>
               <span className="truncate text-row opacity-60">{artist}</span>
-            </>
+            </div>
           )}
         </div>
 
@@ -3368,14 +3349,7 @@ function Dial({
         </div>
 
         {showTransport && (
-          <div className="flex shrink-0 items-center justify-between">
-            <button
-              aria-label="repeat"
-              onClick={onRepeat}
-              className="grid h-11 w-11 place-items-center rounded-full transition active:scale-90"
-              style={{ opacity: repeat === 'off' ? 0.45 : 1 }}>
-              <Repeat className="h-6 w-6" one={repeat === 'one'} />
-            </button>
+          <div className="flex shrink-0 items-center justify-center gap-7">
             <button
               aria-label="previous"
               onClick={onPrev}
@@ -3397,12 +3371,6 @@ function Dial({
               className="grid h-11 w-11 place-items-center rounded-full transition active:scale-90">
               <Skip className="h-7 w-7" />
             </button>
-            <button
-              aria-label={liked ? 'unlike' : 'like'}
-              onClick={onLike}
-              className="grid h-11 w-11 place-items-center rounded-full transition active:scale-90">
-              <Heart className="h-6 w-6" filled={liked === true} />
-            </button>
           </div>
         )}
       </div>
@@ -3419,27 +3387,6 @@ function Ten({ className }: { className?: string }) {
       <text x="12" y="15.8" textAnchor="middle" fontSize="8" fontWeight="600" fill="currentColor" stroke="none">
         10
       </text>
-    </svg>
-  );
-}
-
-function Repeat({ className, one }: { className?: string; one?: boolean }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 9.5A3.5 3.5 0 0 1 7.5 6H18l-2.5-2.5M20 14.5A3.5 3.5 0 0 1 16.5 18H6l2.5 2.5" />
-      {one && (
-        <text x="17.5" y="12.5" textAnchor="middle" fontSize="8" fill="currentColor" stroke="none">
-          1
-        </text>
-      )}
-    </svg>
-  );
-}
-
-function Heart({ className, filled }: { className?: string; filled?: boolean }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.9">
-      <path d="M12 20s-7.2-4.5-7.2-9.4A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7.2 2.6C19.2 15.5 12 20 12 20Z" />
     </svg>
   );
 }
