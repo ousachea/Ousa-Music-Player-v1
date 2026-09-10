@@ -1,0 +1,139 @@
+{
+  "id": "01a08be9-18e7-70a4-991d-5cb92145210f",
+  "name": "O-Photos",
+  "version": "0.1.0",
+  "description": "Your Immich library on the dash, as a photo frame.",
+  "settings": "settings.html",
+  "config": [
+    {
+      "type": "string",
+      "data": {
+        "key": "server",
+        "label": "Immich server URL (example: http://192.168.1.100:2283)",
+        "default": ""
+      }
+    },
+    {
+      "type": "secret",
+      "data": {
+        "key": "key",
+        "label": "Immich API key",
+        "default": ""
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "source",
+        "label": "Slideshow source",
+        "choices": [
+          "recent",
+          "favourites",
+          "album"
+        ],
+        "default": "recent"
+      }
+    },
+    {
+      "type": "number",
+      "data": {
+        "key": "interval",
+        "label": "Slideshow interval (seconds)",
+        "min": 5,
+        "max": 300,
+        "step": 5,
+        "default": 10
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "transition",
+        "label": "Slideshow transition",
+        "choices": [
+          "fade",
+          "crossfade",
+          "slide",
+          "zoom",
+          "kenburns",
+          "random"
+        ],
+        "default": "kenburns"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "shuffle",
+        "label": "Shuffle the slideshow",
+        "default": false
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "loop",
+        "label": "Loop the slideshow",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "ambient",
+        "label": "Start in ambient mode",
+        "default": false
+      }
+    },
+    {
+      "type": "number",
+      "data": {
+        "key": "cacheMb",
+        "label": "Picture cache (MB)",
+        "min": 100,
+        "max": 2000,
+        "step": 100,
+        "default": 500
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "clock",
+        "label": "Show the clock",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "date",
+        "label": "Show the date",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "hour24",
+        "label": "24 hour clock",
+        "default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "motion",
+        "label": "Animations",
+        "default": true
+      }
+    }
+  ],
+  "permissions": [
+    "net.proxy"
+  ],
+  "art": {
+    "heroPx": 248,
+    "thumbPx": 96
+  }
+}

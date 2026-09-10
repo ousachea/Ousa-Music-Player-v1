@@ -14,6 +14,7 @@ source once and all of them are available.
 | **O-Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
 | **O-Gold Tracker** | Live gold spot, Khmer weight conversion and a private purchase ledger |
 | **O-Map** | Cambodia on the dash, with live traffic when you bring a key |
+| **O-Photos** | An Immich library on the dash, as a photo frame |
 
 ## Put it on your Car Thing
 
@@ -658,6 +659,60 @@ HERE and Garmin for the two canvas ones.
 | Drag the map | Pan |
 | Button under the wheel | Opens and closes the settings |
 
+## O-Photos
+
+![O-Photos](apps/o-photos/screenshots/01-grid.jpg)
+
+An Immich library on the dash, as a photo frame rather than a web client.
+
+The screen has no network of its own, so every request goes through the phone: one fetch helper over
+the daemon's tunnel, the API key in a header and never in a url, and the browser's CORS rules never
+enter into it, because the browser is not the one asking. The server address and the key are typed
+in the companion app under O-Photos, since a Car Thing has nowhere to type a url.
+
+**Recent, Loved, Albums and Search** are the four presets. Pictures come back thumbnail first, forty
+at a time, and the next page loads as the grid nears its end. No more than four requests are in
+flight at once, and the one you are looking at goes to the front of the queue.
+
+![The viewer](apps/o-photos/screenshots/02-viewer.jpg)
+
+Touching a picture opens it at preview size. The wheel and the arrow keys move through, the file,
+place, camera, size and date sit behind **Info**, and the heart writes the favourite back to Immich
+when the key is allowed to. If it is not, the app says so rather than pretending it worked.
+
+**The slideshow** runs from whichever list is open, keeping one picture ahead of itself and no
+further. Five transitions, with a Ken Burns drift as the default, and everything holds still when
+the system asks for reduced motion. Shuffle is a Fisher-Yates order taken once rather than a coin
+flip per picture; loop is a setting; the chrome fades out until a touch brings it back, which is
+ambient mode with the sidebar gone.
+
+**The cache** is IndexedDB. Every picture that arrives is kept with the time it was last wanted, and
+when the box passes its limit the oldest go until it is back under four fifths rather than the whole
+thing being emptied. The settings say what is in it and offer to clear thumbnails, previews or
+everything. Object urls are handed back as the grid moves on, so a slideshow can run for hours
+without the tab growing.
+
+A **demo library** is built in, drawn on a canvas rather than downloaded, so the app can be looked
+at before a key exists.
+
+**On video:** the tunnel hands back whole responses rather than byte ranges, so a video plays only
+by pulling the entire file through the phone first. This version shows videos in the grid with their
+length and opens their still, and leaves playing them to Immich itself.
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Preset button 1 | Recent |
+| Preset button 2 | Loved |
+| Preset button 3 | Albums |
+| Preset button 4 | Search |
+| Mode | Start or stop the slideshow |
+| Turn the wheel | Scroll the grid, or move through the viewer |
+| Space | Pause or resume the slideshow |
+| I | What is known about the picture |
+| Back | Out of the viewer, or into the settings |
+
 ## Working on it
 
 ```sh
@@ -679,6 +734,7 @@ Each app has a port of its own, so they can all run at once and a bookmark keeps
 | O-Network Monitor | http://localhost:5177 |
 | O-Quote Flow | http://localhost:5178 |
 | O-Map | http://localhost:5179 |
+| O-Photos | http://localhost:5180 |
 
 Nothing links one to another: each is its own page, so switching between them means changing the
 address. On the device that job belongs to the launcher, which five fast presses of Mode returns you
