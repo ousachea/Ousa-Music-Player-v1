@@ -161,9 +161,9 @@ inside it, the grooves faint under that, and the cover turning slowly in the mid
 label. Ten seconds back and ten forward sit either side of it, with the elapsed time and the length
 underneath.
 
-The card is filled with the same colour and stands off the screen: light along its top edge, a soft
-shadow under it, and the panel of words cut into it as a well, darker with a shadow along its top
-lip and a catch of light along the bottom one. The words roll through that well, the line being sung
+The card is the same colour taken down dark enough to read white type on, and stands off the screen:
+light along its top edge, a soft shadow under it, and the panel of words cut into it as a well,
+darker again with a shadow along its top lip and a catch of light along the bottom one. The words roll through that well, the line being sung
 in the middle and larger, the ones either side fading out at the edges, and the column slides rather
 than stepping when the line changes. A long line is set smaller instead of being cut. With no words
 it shows the album, title and artist instead. Under it the track reads again with the cover as a small round badge, and

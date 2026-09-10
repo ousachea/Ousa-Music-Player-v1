@@ -9,8 +9,9 @@ seconds either way sit beside it, drawn as a loop with a solid head and the numb
 turning for the direction it jumps while the number stays the right way up, and the elapsed time and
 the length read under the label.
 
-The card is filled with the same colour and stands off the screen: a light edge along its top, a
-shadow under it, and the words in a well cut into it, darker than the card with a shadow along the
+The card is that colour taken down to something white type sits on, rather than the accent at full
+strength, which lit half the screen. It stands off the screen: a light edge along its top, a shadow
+under it, and the words in a well cut into it, darker than the card with a shadow along the
 top lip and a catch of light along the bottom. They roll through that well, the sung line in the
 middle and larger, the rest fading out at the window's edges, the column sliding rather than
 stepping as the line changes and a long line set smaller rather than cut. The fade is on the window

@@ -3194,8 +3194,12 @@ function Dial({
   onSeekMs: (ms: number) => void;
 }) {
   const tint = accent?.fill ?? '#3b5bff';
-  const ink = accent?.ink ?? '#0a0c0e';
-  const deep = alpha(readHsl(tint) ? `hsl(${readHsl(tint)!.h} 60% 12%)` : '#05070c', 70);
+  const hue = readHsl(tint);
+  // the card is the album's colour taken down to something you can read white type on, rather than
+  // the full-strength accent, which lights the whole right half of the screen
+  const card = hue ? `hsl(${hue.h} ${Math.min(52, hue.s)}% 16%)` : '#14161c';
+  const lip = hue ? `hsl(${hue.h} ${Math.min(52, hue.s)}% 26%)` : '#20242c';
+  const deep = alpha(hue ? `hsl(${hue.h} 60% 6%)` : '#05070c', 80);
   const done = Math.min(1, Math.max(0, progress));
   const at = lyrics.state === 'timed' ? activeIndex(lyrics.lines, elapsed) : -1;
 
@@ -3296,19 +3300,19 @@ function Dial({
       <div
         className="relative flex min-w-0 flex-1 flex-col justify-between gap-4 rounded-[26px] p-5"
         style={{
-          color: ink,
-          background: `linear-gradient(168deg, ${alpha('#ffffff', 16)}, ${alpha('#ffffff', 0)} 42%), ${tint}`,
-          boxShadow: `0 22px 44px -16px ${deep}, 0 2px 0 ${alpha('#ffffff', 22)} inset, 0 -18px 30px -22px ${deep} inset`,
+          color: '#f2f4f7',
+          background: `linear-gradient(168deg, ${lip}, ${card} 46%)`,
+          boxShadow: `0 22px 44px -16px ${deep}, 0 1px 0 ${alpha('#ffffff', 14)} inset, 0 -20px 34px -24px #000 inset`,
         }}>
         <div
           className="relative min-h-0 flex-1 overflow-hidden rounded-[18px] text-center"
           style={{
             // a well: darker than the card it is cut into, a shadow along its top lip and a
             // catch of light along the bottom one
-            background: alpha('#000000', 12),
-            boxShadow: `inset 0 10px 18px -12px ${deep}, inset 0 1px 0 ${alpha('#000000', 22)}, inset 0 -1px 0 ${alpha(
+            background: alpha('#000000', 26),
+            boxShadow: `inset 0 12px 20px -12px #000, inset 0 1px 0 ${alpha('#000000', 45)}, inset 0 -1px 0 ${alpha(
               '#ffffff',
-              22,
+              12,
             )}`,
           }}>
           {lyrics.state === 'timed' ? (
