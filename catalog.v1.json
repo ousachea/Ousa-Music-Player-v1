@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-10T15:18:47.026Z",
+  "updated_at": "2026-09-10T15:35:06.430Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -12,7 +12,7 @@
     {
       "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
       "name": "O-Clock",
-      "description": "A clock in nine faces, eight timers, a stopwatch and an alarm.",
+      "description": "A clock in ten faces, eight timers, a stopwatch and an alarm.",
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a08085-a3c5-73fc-a3f9-1532161d74d2.png",
       "screenshots": [
@@ -26,6 +26,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.5.0",
+          "released_at": "2026-09-10T15:35:05.889Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.5.0.zip",
+            "size": 958887,
+            "sha256": "b5d730d9607afda1fc0f985029865b67479438bf5f27e44b447d2281aabb71a2"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.5.0.html",
+            "size": 26915,
+            "sha256": "a01042926a46239c50d17b4eb87c3017b8a2c028b9532b5bfb0c5079fa44ae63"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Calendar**, a tenth face: the month the phone thinks it is, laid out from Monday with the weekday\nletters above it and today lit in the chosen colour. The days either side of the month are drawn\nfaint rather than left out, so the grid keeps its shape whether the month needs five rows or six,\nand the date under it reads as it does on every other face."
+        },
         {
           "version": "0.4.0",
           "released_at": "2026-09-10T14:58:25.966Z",
@@ -1757,6 +1774,41 @@
           ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "Cambodia on the dash. The map is OpenStreetMap tiles fetched a tile at a time through the phone,\nkept in memory once they arrive, and laid out on the web mercator grid every slippy map uses, so\ndragging moves the country under your finger and the wheel steps the zoom.\n\nFour presets are four cities: Phnom Penh, Siem Reap, Sihanoukville and Battambang, with Mode for the\nwhole country. The cities live in the settings rather than as chips over the map, so the screen\ncarries only the card along the top, which says where the middle of it is to four decimal places and\nwhether traffic is live, and the keys down the right.\n\nFour map styles: Streets, the OpenStreetMap everyone knows; **Minimal**, pale grey roads on almost\nno colour so the traffic is the only colour on the screen; **Night**, the same map dark; and Plain,\nthe flatter humanitarian style. The two canvas styles are Esri's, which number their tiles y before\nx rather than x before y.\n\nTraffic is TomTom's flow layer, drawn over the map as a second set of tiles: green where it moves,\nred where it does not. It needs a key, which their free tier gives away, and which goes in the\ncompanion app since the device has nowhere to type one. Without it the map is a map, and the app\nsays so rather than pretending."
+        }
+      ]
+    },
+    {
+      "id": "01a08be9-18e7-70a4-991d-5cb92145210f",
+      "name": "O-Photos",
+      "description": "Your Immich library on the dash, as a photo frame.",
+      "author": "Ousa Chea",
+      "icon": null,
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08be9-18e7-70a4-991d-5cb92145210f/01-grid.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08be9-18e7-70a4-991d-5cb92145210f/02-viewer.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08be9-18e7-70a4-991d-5cb92145210f/03-albums.jpg"
+      ],
+      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-09-10T15:35:06.427Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08be9-18e7-70a4-991d-5cb92145210f/0.1.0.zip",
+            "size": 839763,
+            "sha256": "3ce420a40eeba97998cf3293db24e45dd31be3667d81cb6a9e3fa160f0d6ac6d"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08be9-18e7-70a4-991d-5cb92145210f/0.1.0.html",
+            "size": 26919,
+            "sha256": "5b622928000f24937407a8215230495ba3c808eed8dd7680286649fd57cc68fa"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "An Immich library on the dash, as a photo frame rather than a web client.\n\nThe screen has no network of its own, so every request goes through the phone: one fetch helper over\nthe daemon's tunnel, an API key in the header and never in a url, and CORS never enters into it. The\nserver address and the key are typed in the companion app, since a Car Thing has nowhere to type a\nurl.\n\nRecent, Loved, Albums and Search are the four presets. Pictures come back thumbnail first, forty at\na time, and the next page loads as the grid nears its end. Touching one opens the viewer at preview\nsize, with the wheel and the arrow keys moving through, the file, place, camera, size and date\nbehind Info, and the heart writing the favourite back to Immich when the key is allowed to.\n\nThe slideshow runs from whichever list is open, one picture ahead of itself and no further, with\nfive transitions and a Ken Burns drift that holds still under prefers-reduced-motion. Shuffle is a\nFisher-Yates order taken once rather than a coin flip a picture, loop is a setting, and the chrome\nfades out until a touch brings it back.\n\nEvery picture that arrives is kept in IndexedDB with the time it was last wanted. When the box\npasses its limit the oldest go until it is back under four fifths, rather than the whole thing being\nemptied, and the settings say what is in it and offer to clear thumbnails, previews or all of it.\nObject urls are handed back as the grid moves on, so a slideshow can run for hours.\n\nA demo library is built in, drawn on a canvas rather than downloaded, for looking around before a\nkey exists."
         }
       ]
     },
