@@ -1,8 +1,8 @@
 {
   "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
   "name": "O-Clock",
-  "version": "0.4.0",
-  "description": "A clock in nine faces, eight timers, a stopwatch and an alarm.",
+  "version": "0.5.0",
+  "description": "A clock in ten faces, eight timers, a stopwatch and an alarm.",
   "icon": "icon.png",
   "settings": "settings.html",
   "config": [
@@ -63,8 +63,10 @@
           "digital",
           "digital-date",
           "minimal",
+          "border",
           "flip",
           "analogue",
+          "calendar",
           "world",
           "binary",
           "word"

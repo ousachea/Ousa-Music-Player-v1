@@ -3,10 +3,31 @@ import type { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 // every screen keeps its own settings; only the colour is shared, because it paints all of them
-export type Face = 'digital' | 'digital-date' | 'minimal' | 'border' | 'flip' | 'analogue' | 'world' | 'binary' | 'word';
+export type Face =
+  | 'digital'
+  | 'digital-date'
+  | 'minimal'
+  | 'border'
+  | 'flip'
+  | 'analogue'
+  | 'calendar'
+  | 'world'
+  | 'binary'
+  | 'word';
 export type TimerMode = 'countdown' | 'circular' | 'bezel' | 'pomodoro' | 'interval' | 'kitchen' | 'preset' | 'multi';
 
-export const FACES: Face[] = ['digital', 'digital-date', 'minimal', 'border', 'flip', 'analogue', 'world', 'binary', 'word'];
+export const FACES: Face[] = [
+  'digital',
+  'digital-date',
+  'minimal',
+  'border',
+  'flip',
+  'analogue',
+  'calendar',
+  'world',
+  'binary',
+  'word',
+];
 export const FACE_LABELS: Record<Face, string> = {
   digital: 'Digital',
   'digital-date': 'Digital + Date',
@@ -14,6 +35,7 @@ export const FACE_LABELS: Record<Face, string> = {
   border: 'Border',
   flip: 'Flip',
   analogue: 'Analogue',
+  calendar: 'Calendar',
   world: 'World',
   binary: 'Binary',
   word: 'Word',

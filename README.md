@@ -8,7 +8,7 @@ source once and all of them are available.
 | App | What it does |
 | --- | --- |
 | **O-Music Player** | Now playing, in seven styles, coloured by the album art, on a screen that turns |
-| **O-Clock** | A clock in nine faces, eight timers, a stopwatch and an alarm |
+| **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
 | **O-Network Monitor** | Link status, latency and measured throughput |
 | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **O-Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
@@ -372,7 +372,10 @@ A clock, and the three things that usually sit beside one.
 
 ![Digital face](apps/clock/screenshots/01-digital.jpg)
 
-**Nine faces.** Digital, Digital + Date, Minimal, Border, Flip, Analogue, World, Binary and Word.
+**Ten faces.** Digital, Digital + Date, Minimal, Border, Flip, Analogue, Calendar, World, Binary and
+Word. Calendar is the month the phone thinks it is, laid out from Monday with today lit in the
+colour you picked; the days either side of the month are drawn faint rather than left out, so the
+grid keeps its shape whatever month it is.
 Border makes the screen's own edge the second hand: a line round all four sides, square into the
 corners, filling from the top clockwise, one lap a minute, so the time inside it needs no seconds of
 its own. With

@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 
-import { CITIES, ink, type Palette, type Prefs } from './config';
+import { CITIES, fill, ink, type Palette, type Prefs } from './config';
 import { dayShift, fields, readClock, readIn, type Zone } from './time';
 
 export function ClockFace({
@@ -94,6 +94,8 @@ export function ClockFace({
           <span className="rounded-full bg-white/6 px-5 py-1.5 text-title text-near">{parts.date}</span>
         </div>,
       );
+    case 'calendar':
+      return stage(<Calendar at={at} pal={pal} />);
     case 'world':
       return <World prefs={prefs} zone={zone} at={at} pal={pal} parts={parts} />;
     case 'binary':
@@ -216,6 +218,55 @@ function Border({ fraction, quarter, pal }: { fraction: number; quarter: boolean
       <path d={ring} fill="none" stroke="#ffffff" strokeOpacity="0.08" strokeWidth="6" />
       <path d={ring} fill="none" stroke="url(#border-run)" strokeWidth="6" pathLength={1} strokeDasharray={`${done} 1`} />
     </svg>
+  );
+}
+
+const WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+// the month the phone thinks it is, laid out from monday, with today lit. the days either side of
+// the month are drawn faint rather than left out, so the grid keeps its shape all year
+function Calendar({ at, pal }: { at: Date; pal: Palette }) {
+  const year = at.getFullYear();
+  const month = at.getMonth();
+  const today = at.getDate();
+  // getDay counts from sunday; this grid starts on monday, which is the whole of the shift
+  const lead = (new Date(year, month, 1).getDay() + 6) % 7;
+  const cells = Array.from({ length: 42 }, (_, i) => new Date(year, month, 1 - lead + i));
+  const rows = cells[35]!.getMonth() === month ? 6 : 5;
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div className="font-display text-title font-semibold" style={{ color: pal.main }}>
+        {at.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+      </div>
+
+      <div className="grid grid-cols-7 gap-x-5 gap-y-1">
+        {WEEK.map(day => (
+          <div key={day} className="text-center font-mono text-eyebrow tracking-[0.16em] text-dim uppercase">
+            {day}
+          </div>
+        ))}
+        {cells.slice(0, rows * 7).map((day, i) => {
+          const here = day.getMonth() === month;
+          const now = here && day.getDate() === today;
+          return (
+            <div key={i} className="grid h-8 w-8 place-items-center justify-self-center">
+              {now ? (
+                <span
+                  className="grid h-8 w-8 place-items-center rounded-full text-row-lg font-semibold text-screen"
+                  style={{ background: fill(pal) }}>
+                  {day.getDate()}
+                </span>
+              ) : (
+                <span className={`text-row-lg tabular-nums ${here ? 'text-off-white' : 'text-dim opacity-40'}`}>
+                  {day.getDate()}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

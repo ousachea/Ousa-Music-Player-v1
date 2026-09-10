@@ -1,5 +1,12 @@
 # O-Clock
 
+## 0.5.0
+
+**Calendar**, a tenth face: the month the phone thinks it is, laid out from Monday with the weekday
+letters above it and today lit in the chosen colour. The days either side of the month are drawn
+faint rather than left out, so the grid keeps its shape whether the month needs five rows or six,
+and the date under it reads as it does on every other face.
+
 ## 0.4.0
 
 **Bezel**, an eighth timer, after the one a watch shows: a rounded card whose own border is the
