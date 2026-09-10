@@ -679,7 +679,8 @@ into place, so the navigation moves to the edge the buttons are on, the grid dro
 to three and the albums from four to two. Search is a touch away in the navigation.
 
 **Which photos** sifts the library by shape: all, landscape only, or portrait only, which is what a
-turned screen wants. Immich cannot search by shape, so this sifts what comes back rather than asking
+turned screen wants. It is a key in the viewer too, beside the heart, reading All, Wide or Tall, and
+the picture under your eye stays there when the shape changes if it still fits. Immich cannot search by shape, so this sifts what comes back rather than asking
 for it, and a page can arrive nearly empty before the next fills the screen. Pictures come back thumbnail first, forty
 at a time, and the next page loads as the grid nears its end. No more than four requests are in
 flight at once, and the one you are looking at goes to the front of the queue.

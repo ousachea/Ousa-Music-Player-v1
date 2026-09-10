@@ -13,6 +13,14 @@ frame on its side wants. Immich cannot search by shape, so it sifts what comes b
 asking for it, and a page can arrive nearly empty before the next one fills the screen. A picture
 with no size in its exif is neither shape, so it stays out of the strict two.
 
+The shape is also a key in the viewer, beside the heart, reading All, Wide or Tall: touching it
+cycles the three without leaving the picture. The picture you were looking at stays under your eye
+when the shape changes, if it still fits, and the nearest one takes over when it does not.
+
+The navigation is drawn rather than typed: a grid, a heart, a folder, a lens, a gear and a play
+triangle beside their names, which is what makes the rail readable from across a room and what the
+turned strip shows when the names are tight.
+
 Search moves off preset 4, which now turns the screen; it is still a touch away in the navigation.
 The demo library grows portraits, a third of it, so the shape filter has something to sift.
 

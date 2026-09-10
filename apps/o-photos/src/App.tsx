@@ -61,6 +61,8 @@ export default function App() {
   const [usage, setUsage] = useState<{ bytes: number; count: number }>({ bytes: 0, count: 0 });
   const list = useRef<HTMLDivElement>(null);
   const order = useRef<number[]>([]);
+  const wasShape = useRef(prefs.shape);
+  const openId = useRef<string | null>(null);
 
   const repaint = useCallback(() => bump(n => n + 1), []);
 
@@ -150,6 +152,23 @@ export default function App() {
   // the shape filter runs here rather than at the server, which has no such search
   const shown = useMemo(() => assets.filter(a => fits(a, prefs.shape)), [assets, prefs.shape]);
   const current = open !== null ? shown[open] ?? null : null;
+
+  useEffect(() => {
+    openId.current = current?.id ?? null;
+  }, [current]);
+
+  // changing the shape while a picture is open keeps that picture if it still fits, and lands on
+  // the nearest one if it does not, rather than jumping to whatever now sits at the same index
+  useEffect(() => {
+    if (wasShape.current === prefs.shape) return;
+    wasShape.current = prefs.shape;
+    setOpen(at => {
+      if (at === null) return at;
+      if (shown.length === 0) return null;
+      const held = openId.current ? shown.findIndex(a => a.id === openId.current) : -1;
+      return held >= 0 ? held : Math.min(at, shown.length - 1);
+    });
+  }, [prefs.shape, shown]);
 
   const step = useCallback(
     (by: number) => {
@@ -273,6 +292,11 @@ export default function App() {
         of={shown.length}
         show={show}
         info={info}
+        shape={prefs.shape}
+        onShape={() => {
+          const next = prefs.shape === 'all' ? 'landscape' : prefs.shape === 'landscape' ? 'portrait' : 'all';
+          setPref('shape', next);
+        }}
         ambient={prefs.ambient}
         motion={prefs.motion}
         transition={prefs.transition}
@@ -308,30 +332,37 @@ export default function App() {
         )}
         {(
           [
-            ['photos', 'Photos', '1'],
-            ['favourites', 'Loved', '2'],
-            ['albums', 'Albums', '3'],
-            ['search', 'Search', ''],
-            ['settings', 'Settings', ''],
+            ['photos', 'Photos', 'grid', '1'],
+            ['favourites', 'Loved', 'heart', '2'],
+            ['albums', 'Albums', 'folder', '3'],
+            ['search', 'Search', 'search', ''],
+            ['settings', 'Settings', 'gear', ''],
           ] as const
-        ).map(([key, label, hint]) => (
-          <button
-            key={key}
-            onClick={() => {
-              setAlbum(null);
-              setView(key);
-            }}
-            className={`flex items-center gap-2 rounded-xl px-3 py-2 text-left text-hint whitespace-nowrap transition ${
-              quarter ? '' : 'justify-between'
-            }`}
-            style={{
-              backgroundColor: view === key || (key === 'albums' && view === 'album') ? 'rgba(255,255,255,0.10)' : 'transparent',
-              color: view === key || (key === 'albums' && view === 'album') ? '#efefef' : '#a7adb5',
-            }}>
-            {label}
-            <span className="font-mono text-eyebrow opacity-40">{hint}</span>
-          </button>
-        ))}
+        ).map(([key, label, icon, hint]) => {
+          const on = view === key || (key === 'albums' && view === 'album');
+          return (
+            <button
+              key={key}
+              aria-label={label}
+              onClick={() => {
+                setAlbum(null);
+                setView(key);
+              }}
+              className={`flex items-center gap-2 rounded-xl px-2.5 py-2 text-left text-hint whitespace-nowrap transition ${
+                quarter ? '' : 'justify-between'
+              }`}
+              style={{
+                backgroundColor: on ? 'rgba(255,255,255,0.10)' : 'transparent',
+                color: on ? '#efefef' : '#a7adb5',
+              }}>
+              <span className="flex items-center gap-2">
+                <Glyph name={icon} className="h-[18px] w-[18px] shrink-0" />
+                {label}
+              </span>
+              {!quarter && <span className="font-mono text-eyebrow opacity-40">{hint}</span>}
+            </button>
+          );
+        })}
         <button
           onClick={() => {
             if (shown.length) {
@@ -339,9 +370,11 @@ export default function App() {
               setShow(true);
             }
           }}
-          className={`rounded-xl bg-white/10 px-3 py-2 text-left text-hint whitespace-nowrap text-off-white transition ${
+          aria-label="slideshow"
+          className={`flex items-center gap-2 rounded-xl bg-white/10 px-2.5 py-2 text-left text-hint whitespace-nowrap text-off-white transition ${
             quarter ? '' : 'mt-auto'
           }`}>
+          <Glyph name="play" className="h-[18px] w-[18px] shrink-0" />
           Slideshow
         </button>
       </nav>
@@ -431,6 +464,54 @@ export default function App() {
   );
 }
 
+// one small set, drawn rather than typed, so the rail reads at a glance from across a room
+function Glyph({ name, className }: { name: 'grid' | 'heart' | 'folder' | 'search' | 'gear' | 'play'; className?: string }) {
+  const common = { viewBox: '0 0 24 24', className, fill: 'none', stroke: 'currentColor', strokeWidth: 1.8 } as const;
+  switch (name) {
+    case 'heart':
+      return (
+        <svg {...common} strokeLinejoin="round">
+          <path d="M12 20s-7.1-4.4-7.1-9.3A4 4 0 0 1 12 8a4 4 0 0 1 7.1 2.7C19.1 15.6 12 20 12 20Z" />
+        </svg>
+      );
+    case 'folder':
+      return (
+        <svg {...common} strokeLinejoin="round">
+          <path d="M3.5 7.2A1.7 1.7 0 0 1 5.2 5.5h3.3l1.8 2h8.5a1.7 1.7 0 0 1 1.7 1.7v8.1a1.7 1.7 0 0 1-1.7 1.7H5.2a1.7 1.7 0 0 1-1.7-1.7V7.2Z" />
+        </svg>
+      );
+    case 'search':
+      return (
+        <svg {...common} strokeLinecap="round">
+          <circle cx="11" cy="11" r="6.2" />
+          <path d="m15.6 15.6 4 4" />
+        </svg>
+      );
+    case 'gear':
+      return (
+        <svg {...common} strokeLinejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 3.6v2.2M12 18.2v2.2M20.4 12h-2.2M5.8 12H3.6M17.9 6.1l-1.6 1.6M7.7 16.3l-1.6 1.6M17.9 17.9l-1.6-1.6M7.7 7.7 6.1 6.1" />
+        </svg>
+      );
+    case 'play':
+      return (
+        <svg {...common} fill="currentColor" stroke="none">
+          <path d="M8 5.4 19 12 8 18.6V5.4Z" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...common} strokeLinejoin="round">
+          <rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.6" />
+          <rect x="13.2" y="3.6" width="7.2" height="7.2" rx="1.6" />
+          <rect x="3.6" y="13.2" width="7.2" height="7.2" rx="1.6" />
+          <rect x="13.2" y="13.2" width="7.2" height="7.2" rx="1.6" />
+        </svg>
+      );
+  }
+}
+
 function Thumb({
   client,
   conn,
@@ -504,6 +585,8 @@ function Viewer({
   of,
   show,
   info,
+  shape,
+  onShape,
   ambient,
   motion,
   transition,
@@ -521,6 +604,8 @@ function Viewer({
   of: number;
   show: boolean;
   info: boolean;
+  shape: Prefs['shape'];
+  onShape: () => void;
   ambient: boolean;
   motion: boolean;
   transition: Prefs['transition'];
@@ -583,6 +668,9 @@ function Viewer({
           <span className="min-w-0 flex-1 truncate text-hint text-soft">{asset.name}</span>
           <button onClick={onFavourite} className="rounded-full bg-black/50 px-3 py-1.5 text-hint">
             {asset.favourite ? '♥' : '♡'}
+          </button>
+          <button onClick={onShape} className="rounded-full bg-black/50 px-3 py-1.5 text-hint" aria-label="which photos">
+            {shape === 'all' ? 'All' : shape === 'landscape' ? 'Wide' : 'Tall'}
           </button>
           <button onClick={onInfo} className="rounded-full bg-black/50 px-3 py-1.5 text-hint">
             Info
