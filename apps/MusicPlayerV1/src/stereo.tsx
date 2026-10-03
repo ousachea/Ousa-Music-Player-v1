@@ -5,11 +5,13 @@ import { memo, useEffect, useId, useMemo, useRef, useState, type ReactNode } fro
 import type { Accent } from './artwork-color';
 import type { ClockParts } from './clock';
 
-export type Glow = 'album' | 'ice' | 'amber' | 'red' | 'green' | 'white';
+export type Glow = 'album' | 'rainbow' | 'ice' | 'amber' | 'red' | 'green' | 'white';
 
-export const GLOWS: Glow[] = ['album', 'ice', 'amber', 'red', 'green', 'white'];
+export const GLOWS: Glow[] = ['album', 'rainbow', 'ice', 'amber', 'red', 'green', 'white'];
 
 const GLOW_FILL: Record<Exclude<Glow, 'album'>, string> = {
+  // the hue the rainbow starts from; the layer is turned round the wheel from here
+  rainbow: '#ff3d5a',
   ice: '#62d4ff',
   amber: '#ffb238',
   red: '#ff4d4d',
@@ -441,7 +443,9 @@ export function Stereo({
   return (
     // a layer of its own, so the notes drifting over the glass do not make every glowing dot repaint
     <div
-      className={`absolute inset-0 overflow-hidden ${upright ? 'px-6 pt-8 pb-11' : 'px-8 pt-6 pb-10'}`}
+      className={`absolute inset-0 overflow-hidden ${upright ? 'px-6 pt-8 pb-11' : 'px-8 pt-6 pb-10'} ${
+        glow === 'rainbow' && motion ? 'rainbow' : ''
+      }`}
       style={{ willChange: 'transform', background: '#030405' }}>
       {/* the backlight bleeding through the glass, and a reflection across it */}
       <div className="pointer-events-none absolute inset-0" style={{ background: color, opacity: 0.05 }} />

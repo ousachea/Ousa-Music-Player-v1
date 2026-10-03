@@ -180,7 +180,9 @@ under that previous, play and pause as a white circle, and next.
 
 The dot matrix display of a car head unit, filling the screen. Every character is set in the
 classic 5x7 cells, with the unlit dots faintly visible on the glass, and the dots take the album's
-colour unless **Display colour** picks ice, amber, red, green or white instead.
+colour unless **Display colour** picks another. **Rainbow** turns the whole display slowly through
+every colour, the pixel notes with it, and holds still with **Animations** off. The others are ice,
+amber, red, green and white.
 
 Along the top sit the source, a level meter and the clock. The meter makes up its own levels, since
 the device gets no audio to measure: it bounces while the track plays and settles flat when it
@@ -357,7 +359,9 @@ one it lies on in the layout.
 ![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
 Press the button under the wheel to open them on the device. The style picker sits at the top,
-outside the list, because it decides what the rest of the list holds, and everything that only
+outside the list, as a grid of eight tiles, because it decides what the rest of the list holds. A
+setting with more choices than fit beside its name, like the Stereo display colour, lays them out
+the same way under it, and everything that only
 applies to the style you are in is gathered under that style's name. Poster has no such group: it
 has no settings of its own. A rail down the left edge shows where you are in the list.
 

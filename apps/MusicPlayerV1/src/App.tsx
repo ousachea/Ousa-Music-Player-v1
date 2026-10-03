@@ -753,6 +753,7 @@ export default function App() {
           accent={accentOn}
           playing={playing}
           pixel={prefs.theme === 'stereo' ? glowColor(prefs.deckGlow, accentOn) : null}
+          rainbow={prefs.theme === 'stereo' && prefs.deckGlow === 'rainbow'}
         />
       )}
 
@@ -991,7 +992,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
-  deckGlow: { values: GLOWS, labels: ['Album', 'Ice', 'Amber', 'Red', 'Green', 'White'] },
+  deckGlow: { values: GLOWS, labels: ['Album', 'Rainbow', 'Ice', 'Amber', 'Red', 'Green', 'White'] },
   vinylStyle: { values: ['turntable', 'sleeve'], labels: ['Turntable', 'Sleeve'] },
   vinylFront: { values: ['record', 'sleeve'], labels: ['Record', 'Sleeve'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
@@ -1233,7 +1234,14 @@ function Panel({
               </span>
             )}
           </div>
-          {control('theme')}
+          <StyleGrid
+            values={ENUMS.theme.values}
+            labels={ENUMS.theme.labels}
+            value={prefs.theme}
+            tint={tint}
+            ink={ink}
+            onPick={next => setPref('theme', next)}
+          />
         </div>
       </div>
 
@@ -1256,16 +1264,32 @@ function Panel({
                 {group.own && <span className="tracking-normal normal-case opacity-60">only in this style</span>}
               </h2>
               <div className="rounded-2xl bg-white/4">
-                {group.rows.map((row, ri) => (
-                  <div
-                    key={row.key}
-                    className={`flex items-center justify-between gap-5 px-4 py-2 ${
-                      ri === group.rows.length - 1 ? '' : 'border-b border-white/6'
-                    }`}>
-                    <span className="min-w-0 truncate text-title text-near">{row.label}</span>
-                    {control(row.key)}
-                  </div>
-                ))}
+                {group.rows.map((row, ri) => {
+                  const last = ri === group.rows.length - 1 ? '' : 'border-b border-white/6';
+                  const choices = ENUMS[row.key];
+                  // too many choices to sit beside the label as pills, so they go under it as tiles
+                  if (choices && choices.values.length > GRID_FROM) {
+                    return (
+                      <div key={row.key} className={`flex flex-col gap-2 px-4 py-3 ${last}`}>
+                        <span className="text-title text-near">{row.label}</span>
+                        <StyleGrid
+                          values={choices.values}
+                          labels={choices.labels}
+                          value={String(prefs[row.key])}
+                          tint={tint}
+                          ink={ink}
+                          onPick={next => setPref(row.key, next)}
+                        />
+                      </div>
+                    );
+                  }
+                  return (
+                    <div key={row.key} className={`flex items-center justify-between gap-5 px-4 py-2 ${last}`}>
+                      <span className="min-w-0 truncate text-title text-near">{row.label}</span>
+                      {control(row.key)}
+                    </div>
+                  );
+                })}
               </div>
             </section>
           ))}
@@ -1366,6 +1390,47 @@ function Segments({
             style={on ? { backgroundColor: tint, color: ink } : undefined}
             className={`rounded-full px-4 py-1.5 text-row font-medium transition duration-200 active:scale-95 ${
               on ? '' : 'text-dim'
+            }`}>
+            {labels[i]}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// past this many choices a row of pills crowds out its own label
+const GRID_FROM = 6;
+
+// eight styles no longer fit a single row of pills, so the picker is a grid of tiles big enough to
+// hit without aiming
+function StyleGrid({
+  values,
+  labels,
+  value,
+  tint,
+  ink,
+  onPick,
+}: {
+  values: string[];
+  labels: string[];
+  value: string;
+  tint: string;
+  ink: string;
+  onPick: (next: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-4 gap-1.5">
+      {values.map((option, i) => {
+        const on = option === value;
+        return (
+          <button
+            key={option}
+            aria-pressed={on}
+            onClick={() => onPick(option)}
+            style={on ? { backgroundColor: tint, color: ink } : undefined}
+            className={`h-11 rounded-xl text-row font-medium transition duration-200 active:scale-95 ${
+              on ? '' : 'bg-white/10 text-dim'
             }`}>
             {labels[i]}
           </button>
@@ -2632,11 +2697,21 @@ const NOTES = Array.from({ length: 14 }, (_, i) => {
 
 // over the car stereo the notes are pixel art in the display's own colour, and they sway without
 // tilting, since a turned grid of dots stops reading as one
-function Notes({ accent, playing, pixel }: { accent: Accent | null; playing: boolean; pixel: string | null }) {
+function Notes({
+  accent,
+  playing,
+  pixel,
+  rainbow,
+}: {
+  accent: Accent | null;
+  playing: boolean;
+  pixel: string | null;
+  rainbow: boolean;
+}) {
   const from = accent?.fill ?? '#efefef';
   const to = accent?.fill2 ?? accent?.soft ?? '#cfd6de';
   return (
-    <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
+    <div className={`pointer-events-none absolute inset-0 z-[1] overflow-hidden ${rainbow ? 'rainbow' : ''}`}>
       {NOTES.map((n, i) => (
         <span
           key={i}

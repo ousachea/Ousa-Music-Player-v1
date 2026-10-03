@@ -4,11 +4,16 @@
 
 An eighth player style, **Stereo**: the dot matrix display of a car head unit across the whole
 screen. Everything on it is set in 5x7 cells with the unlit dots faintly showing, in the album's
-colour, or ice, amber, red, green or white from **Display colour**. The source, a level meter and the
+colour, or from **Display colour** one of ice, amber, red, green, white, or rainbow, which turns the
+whole display slowly through every colour. The source, a level meter and the
 clock run along the top, the title runs large and scrolls a character at a time when it is too long,
 and a smaller line under it shows the artist, album or time, stepped by tapping it or **DISP**.
 Previous, play and next are drawn in the same dots, the volume reads out on the display, and a
 frame along the bottom fills as the song plays. The floating notes turn to pixel art over it.
+
+The player style in the settings is a grid of tiles now, four across, rather than a row of pills
+that eight styles no longer fit, and a setting with more than six choices lays them out the same
+way under its name.
 
 ## 0.35.2
 

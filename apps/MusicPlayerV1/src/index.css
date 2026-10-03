@@ -419,3 +419,18 @@ img {
     width: 100%;
   }
 }
+
+/* the rainbow display colour: everything on the glass is drawn in one hue and the whole layer is
+   turned round the wheel, which the compositor does without redrawing a single dot */
+@keyframes rainbow {
+  from {
+    filter: hue-rotate(0deg);
+  }
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+.rainbow {
+  animation: rainbow 9s linear infinite;
+}
