@@ -207,11 +207,14 @@ of it, and the progress runs along its bottom edge. Either side, covers stand tu
 each one further out smaller and darker than the last: to the right what is up next in the queue,
 to the left what has just played. Tapping the middle cover plays and pauses, tapping one on the right
 skips straight to it, and tapping the nearest on the left goes back to it; older history cannot be
-played on request. A swipe skips as it does everywhere else. With the on-screen buttons on, previous,
-play and next sit under the artist.
+played on request. A swipe skips as it does everywhere else.
 
-The covers either side come from the phone's queue, so a player that does not share its queue leaves
-those places as faint outlines. Turned on its side, the covers run down the screen instead.
+The covers either side come from the phone's queue. With the on-screen buttons on and nothing queued
+up next, the right side would stand empty, so previous, a large white play button and next take it
+over; once the phone has covers to put there, the buttons move back onto the cover, under the
+artist. A player that does not share its queue leaves the places it has nothing for as faint
+outlines. Turned on its side, the covers run down the screen, and the buttons take the empty space
+below the cover.
 
 ### Poster
 

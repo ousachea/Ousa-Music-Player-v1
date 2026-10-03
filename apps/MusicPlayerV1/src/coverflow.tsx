@@ -126,6 +126,28 @@ export function CoverFlow({
     });
 
   const done = Math.min(1, Math.max(0, progress));
+  // with nothing queued up next that side of the flow stands empty, so the controls move off the cover
+  // and take it over, and go back on the cover once the phone has covers to put there
+  const aside = showTransport && next.length === 0;
+
+  const transport = (large: boolean) => (
+    <div className={`flex items-center text-white ${large ? 'gap-5' : 'gap-9'}`} onClick={e => e.stopPropagation()}>
+      <button aria-label="previous" onClick={onPrev} className="p-1 transition active:scale-90">
+        <Glyph d={NEXT} className={`-scale-x-100 ${large ? 'h-8 w-8' : 'h-7 w-7'}`} />
+      </button>
+      <button
+        aria-label={playing ? 'pause' : 'play'}
+        onClick={onToggle}
+        className={`transition active:scale-90 ${large ? 'grid h-[72px] w-[72px] place-items-center rounded-full bg-white text-black shadow-[0_10px_30px_rgba(0,0,0,0.5)]' : 'p-1'}`}>
+        <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+          <Glyph d={playing ? PAUSE : PLAY} className={large ? 'h-8 w-8' : 'h-9 w-9'} />
+        </span>
+      </button>
+      <button aria-label="next" onClick={onNext} className="p-1 transition active:scale-90">
+        <Glyph d={NEXT} className={large ? 'h-8 w-8' : 'h-7 w-7'} />
+      </button>
+    </div>
+  );
 
   return (
     // isolated, so the covers' stacking order stays inside the style and never over the settings
@@ -133,7 +155,7 @@ export function CoverFlow({
       <div className="absolute inset-0">
         {/* the far covers first, so the nearer ones are laid over them */}
         {slots(-1).reverse()}
-        {slots(1).reverse()}
+        {!aside && slots(1).reverse()}
 
         <Card
           url={artUrl}
@@ -145,21 +167,7 @@ export function CoverFlow({
               {title}
             </div>
             <div className="mt-0.5 truncate text-row text-white/75">{artist}</div>
-            {showTransport && (
-              <div className="mt-3 flex items-center gap-9 text-white" onClick={e => e.stopPropagation()}>
-                <button aria-label="previous" onClick={onPrev} className="p-1 transition active:scale-90">
-                  <Glyph d={NEXT} className="h-7 w-7 -scale-x-100" />
-                </button>
-                <button aria-label={playing ? 'pause' : 'play'} onClick={onToggle} className="p-1 transition active:scale-90">
-                  <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
-                    <Glyph d={playing ? PAUSE : PLAY} className="h-9 w-9" />
-                  </span>
-                </button>
-                <button aria-label="next" onClick={onNext} className="p-1 transition active:scale-90">
-                  <Glyph d={NEXT} className="h-7 w-7" />
-                </button>
-              </div>
-            )}
+            {showTransport && !aside && <div className="mt-3">{transport(false)}</div>}
           </div>
           {/* the song's progress runs along the cover's own bottom edge */}
           <div className="absolute inset-x-0 bottom-0 h-[3px] bg-white/15">
@@ -167,6 +175,18 @@ export function CoverFlow({
           </div>
         </Card>
       </div>
+
+      {aside && (
+        <div
+          className="absolute z-30 grid place-items-center"
+          style={
+            upright
+              ? { left: 0, right: 0, bottom: 0, top: `calc(50% + ${size / 2}px)` }
+              : { top: 0, bottom: 0, right: 0, left: `calc(50% + ${size / 2}px)` }
+          }>
+          {transport(true)}
+        </div>
+      )}
     </div>
   );
 }
