@@ -64,6 +64,8 @@ export default function App() {
   const { prefs, setPref } = usePrefs(client);
   const wallClock = useClock(client, prefs.clock, prefs.clockSeconds, prefs.clockFormat);
   const [panel, setPanel] = useState(false);
+  // the settings open on the general page; a style's own settings are a page of their own under it
+  const [stylePage, setStylePage] = useState(false);
   const [sheet, setSheet] = useState(false);
   const [hint, setHint] = useState(false);
   const [tip, setTip] = useState(false);
@@ -349,7 +351,11 @@ export default function App() {
       if (e.key === ' ' || e.key === 'Enter') press();
       else if (e.key === 'Escape') {
         if (sheet) setSheet(false);
-        else setPanel(open => !open);
+        else if (panel && stylePage) setStylePage(false);
+        else {
+          setStylePage(false);
+          setPanel(open => !open);
+        }
       }
       else if (e.key === 'ArrowLeft' || e.key === '1') goPrev(true);
       else if (e.key === '2') toggle();
@@ -418,7 +424,7 @@ export default function App() {
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
     };
-  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, sheet, toggle]);
+  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, sheet, stylePage, toggle]);
 
   if (!track)
     return (
@@ -816,7 +822,17 @@ export default function App() {
           }}
         />
       )}
-      {panel && <Panel client={client} prefs={prefs} setPref={setPref} accent={accentOn} artUrl={artUrl} />}
+      {panel && (
+        <Panel
+          client={client}
+          prefs={prefs}
+          setPref={setPref}
+          accent={accentOn}
+          artUrl={artUrl}
+          stylePage={stylePage}
+          onStylePage={setStylePage}
+        />
+      )}
     </div>
     </Stage>
   );
@@ -1090,12 +1106,16 @@ function Panel({
   setPref,
   accent,
   artUrl,
+  stylePage,
+  onStylePage,
 }: {
   client: BridgethingClient;
   prefs: Prefs;
   setPref: (key: keyof Prefs, value: string) => void;
   accent: Accent | null;
   artUrl: string | null;
+  stylePage: boolean;
+  onStylePage: (open: boolean) => void;
 }) {
   // the pixel size is what tells you whether the sharper lookup actually landed
   const [artPx, setArtPx] = useState<string | null>(null);
@@ -1111,7 +1131,11 @@ function Panel({
       at: el.scrollTop / (el.scrollHeight - el.clientHeight),
     });
   }, []);
-  useEffect(onScroll, [onScroll, prefs.theme]);
+  useEffect(onScroll, [onScroll, prefs.theme, stylePage]);
+  // each page starts at its top, rather than wherever the other one had been scrolled to
+  useEffect(() => {
+    if (list.current) list.current.scrollTop = 0;
+  }, [stylePage]);
   const tint = accent?.fill ?? '#efefef';
   const ink = accent?.ink ?? '#060809';
   const { state: update, check } = useUpdateCheck(client);
@@ -1209,12 +1233,12 @@ function Panel({
         <span className="font-mono text-hint tracking-[0.22em] text-dim uppercase">Settings</span>
         <span className="flex items-center gap-2 text-hint text-dim">
           <BackGlyph className="h-3.5 w-3.5" />
-          the button under the wheel closes this
+          {stylePage ? 'the button under the wheel goes back' : 'the button under the wheel closes this'}
         </span>
       </div>
 
-      {/* the style picker decides what the rest of the list holds, so it sits above it rather than
-          scrolling away inside it */}
+      {/* the styles are tabs: a tile picks the style and opens its page, and the page's own header
+          is the way back. the grid stays out of the scrolling list so it is always in reach */}
       <div className="mt-3 flex shrink-0 items-center gap-4">
         {artUrl && (
           <img
@@ -1234,14 +1258,32 @@ function Panel({
               </span>
             )}
           </div>
-          <StyleGrid
-            values={ENUMS.theme.values}
-            labels={ENUMS.theme.labels}
-            value={prefs.theme}
-            tint={tint}
-            ink={ink}
-            onPick={next => setPref('theme', next)}
-          />
+          {stylePage ? (
+            <button
+              onClick={() => onStylePage(false)}
+              className="flex h-11 w-full items-center gap-3 rounded-xl bg-white/10 px-4 transition active:scale-[0.98]">
+              <svg viewBox="0 0 24 24" className="h-5 w-5 text-dim" fill="none" stroke="currentColor" strokeWidth="2.4">
+                <path d="M15 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="text-row text-dim">All styles</span>
+              <span className="ml-auto text-row font-semibold" style={{ color: tint }}>
+                {styleName}
+              </span>
+            </button>
+          ) : (
+            <StyleGrid
+              values={ENUMS.theme.values}
+              labels={ENUMS.theme.labels}
+              value={prefs.theme}
+              tint={tint}
+              ink={ink}
+              opens
+              onPick={next => {
+                setPref('theme', next);
+                onStylePage(true);
+              }}
+            />
+          )}
         </div>
       </div>
 
@@ -1250,18 +1292,19 @@ function Panel({
         ref={list}
         onScroll={onScroll}
         className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pl-4 [scrollbar-width:none]">
-        {[
-          { title: 'On-screen buttons', rows: BUTTON_ROWS, own: false },
-          { title: styleName, rows: STYLE_ROWS, own: true },
-          ...GROUPS.map(g => ({ ...g, own: false })),
-        ]
+        {stylePage && STYLE_ROWS.every(r => !r.only?.includes(prefs.theme)) && (
+          <p className="px-1 py-6 text-center text-row text-dim">{styleName} has no settings of its own.</p>
+        )}
+        {(stylePage
+          ? [{ title: `${styleName} settings`, rows: STYLE_ROWS, own: true }]
+          : [{ title: 'On-screen buttons', rows: BUTTON_ROWS, own: false }, ...GROUPS.map(g => ({ ...g, own: false }))]
+        )
           .map(group => ({ ...group, rows: group.rows.filter(r => !r.only || r.only.includes(prefs.theme)) }))
           .filter(group => group.rows.length > 0)
           .map((group, gi) => (
             <section key={group.title} className={gi === 0 ? '' : 'mt-6'}>
               <h2 className="mb-1 flex items-baseline gap-2 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
                 {group.title}
-                {group.own && <span className="tracking-normal normal-case opacity-60">only in this style</span>}
               </h2>
               <div className="rounded-2xl bg-white/4">
                 {group.rows.map((row, ri) => {
@@ -1294,6 +1337,7 @@ function Panel({
             </section>
           ))}
 
+        {!stylePage && (
         <section className="mt-6 mb-1">
           <h2 className="mb-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">About</h2>
           <div className="flex items-center justify-between gap-5 rounded-2xl bg-white/4 px-4 py-2">
@@ -1310,6 +1354,7 @@ function Panel({
             </button>
           </div>
         </section>
+        )}
       </div>
 
       {scroll.shown < 1 && (
@@ -1410,6 +1455,7 @@ function StyleGrid({
   value,
   tint,
   ink,
+  opens,
   onPick,
 }: {
   values: string[];
@@ -1417,6 +1463,8 @@ function StyleGrid({
   value: string;
   tint: string;
   ink: string;
+  // a tile that leads to a page of its own says so with a chevron
+  opens?: boolean;
   onPick: (next: string) => void;
 }) {
   return (
@@ -1429,10 +1477,15 @@ function StyleGrid({
             aria-pressed={on}
             onClick={() => onPick(option)}
             style={on ? { backgroundColor: tint, color: ink } : undefined}
-            className={`h-11 rounded-xl text-row font-medium transition duration-200 active:scale-95 ${
+            className={`flex h-11 items-center justify-center gap-1.5 rounded-xl text-row font-medium transition duration-200 active:scale-95 ${
               on ? '' : 'bg-white/10 text-dim'
             }`}>
             {labels[i]}
+            {opens && (
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 opacity-60" fill="none" stroke="currentColor" strokeWidth="2.6">
+                <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
           </button>
         );
       })}

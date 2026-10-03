@@ -11,9 +11,10 @@ and a smaller line under it shows the artist, album or time, stepped by tapping 
 Previous, play and next are drawn in the same dots, the volume reads out on the display, and a
 frame along the bottom fills as the song plays. The floating notes turn to pixel art over it.
 
-The player style in the settings is a grid of tiles now, four across, rather than a row of pills
-that eight styles no longer fit, and a setting with more than six choices lays them out the same
-way under its name.
+The player styles in the settings are a grid of tiles now, four across, and they work like tabs:
+tapping one switches to it and opens a page with that style's own settings, and **All styles** or
+the button under the wheel goes back. The general settings stay on the first page. A setting with
+more than six choices lays them out as tiles under its name.
 
 ## 0.35.2
 

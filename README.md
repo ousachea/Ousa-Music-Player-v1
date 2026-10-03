@@ -359,12 +359,13 @@ one it lies on in the layout.
 
 ![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
-Press the button under the wheel to open them on the device. The style picker sits at the top,
-outside the list, as a grid of eight tiles, because it decides what the rest of the list holds.
-Everything that only applies to the style you are in is gathered under that style's name. Poster
-has no such group: it has no settings of its own. A setting with more choices than fit beside its
-name, like the Stereo display colour, lays them out as tiles under it. A rail down the left edge
-shows where you are in the list.
+Press the button under the wheel to open them on the device. The styles sit at the top as a grid of
+eight tiles that work like tabs: tapping one switches to that style and opens a page of its own
+settings, such as the record colour for Vinyl or the display colour for Stereo. **All styles** at
+the top of that page, or the button under the wheel, goes back to the grid, and the button closes
+the settings from there. Poster's page says it has no settings of its own. The general settings
+below the grid apply to every style. A setting with more choices than fit beside its name lays
+them out as tiles under it. A rail down the left edge shows where you are in the list.
 
 The first group in the list is **On-screen buttons**: whether the previous, play and next buttons are
 drawn at all, and whether the player offers to hide them. The companion app lists the same two
