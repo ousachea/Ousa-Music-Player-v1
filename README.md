@@ -1,6 +1,6 @@
 # Ousa apps for the Car Thing
 
-Six apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
+Nine apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
 source once and all of them are available.
 
 ![Cover style](apps/MusicPlayerV1/screenshots/01-cover.jpg)
@@ -15,6 +15,7 @@ source once and all of them are available.
 | **O-Gold Tracker** | Live gold spot, Khmer weight conversion and a private purchase ledger |
 | **O-Map** | Cambodia on the dash, with live traffic when you bring a key |
 | **O-Photos** | An Immich library on the dash, as a photo frame |
+| **O-Pixel Art** | A glowing LED wall: animated scenes, and pixel art you draw yourself |
 
 ## Put it on your Car Thing
 
@@ -783,6 +784,51 @@ length and opens their still, and leaves playing them to Immich itself.
 | I | What is known about the picture |
 | Back | Out of the viewer, or into the settings |
 
+## O-Pixel Art
+
+![O-Pixel Art](apps/pixel-art/screenshots/01-fire.jpg)
+
+A glowing LED wall on the dash, 32 pixels across and 19 down, each one a soft rounded square that
+blooms into its neighbours, with the unlit ones still faintly there the way a real panel looks when
+it is on but dark.
+
+The wall is drawn in three passes, each a single image the size of the screen: the colours blown up
+into blocks, a mask that rounds every square and darkens the gaps between them, and the same colours
+blown up smooth and added back over the top as the glow. However busy the scene, that is all the
+device does, at a steady thirty frames a second.
+
+![The scenes](apps/pixel-art/screenshots/02-scenes.jpg)
+
+**Seven scenes.** Fire burns from the bottom row up, each cell taking the heat of the one below it,
+cooler and nudged sideways, so the flames lick and only their tips reach the top. Plasma rolls
+through every colour, Digital rain falls in green columns with bright heads, Starfield flies you
+through white points, Rain falls in blue and splashes where it lands, Life runs Conway's game with
+each cell coloured by how long it has lived and seeds itself again when it settles, and Clock reads
+the time in doubled pixel figures with the seconds running along the bottom.
+
+![Drawing](apps/pixel-art/screenshots/03-draw.jpg)
+
+**Draw your own.** **Draw**, or preset 4, opens the wall as a canvas with a sixteen colour palette
+beside it. Drag to paint; a stroke that starts on a cell already that colour rubs out instead, so a
+mistake comes off with the same finger. **Done** keeps it on the device, and it joins the scenes,
+each lit cell breathing on its own phase so the wall still looks alive. **Edit** on a drawing opens
+it again, with **Delete** beside **Clear**.
+
+A touch brings up the scene's name and the buttons, which fade out again. In the companion app,
+**Animation speed**, **Glow** (soft, strong or off) and **Change scene by itself** every one, five
+or fifteen minutes. It needs no phone: everything runs on the device.
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Turn the wheel, or swipe | Next or previous scene; while drawing, the next colour |
+| Preset button 1 / 3 | Previous / next scene; while drawing, the colour before or after |
+| Preset button 2 | Pause the scene; while drawing, the eraser |
+| Preset button 4 | Draw, or edit the drawing on screen; while drawing, done |
+| Mode, or the button under the wheel | All the scenes; while drawing, the button under the wheel is done |
+| Touch | Show the scene's name and buttons |
+
 ## Working on it
 
 ```sh
@@ -805,6 +851,7 @@ Each app has a port of its own, so they can all run at once and a bookmark keeps
 | O-Quote Flow | http://localhost:5178 |
 | O-Map | http://localhost:5179 |
 | O-Photos | http://localhost:5180 |
+| O-Pixel Art | http://localhost:5181 |
 
 Nothing links one to another: each is its own page, so switching between them means changing the
 address. On the device that job belongs to the launcher, which five fast presses of Mode returns you

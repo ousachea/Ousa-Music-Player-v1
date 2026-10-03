@@ -1,0 +1,54 @@
+{
+  "id": "01a102bb-1d76-7739-a093-ffb81f205f9b",
+  "name": "O-Pixel Art",
+  "version": "0.1.0",
+  "description": "A glowing LED wall on the dash: fire, plasma, rain and more, and pixel art you draw yourself.",
+  "settings": "settings.html",
+  "config": [
+    {
+      "type": "enum",
+      "data": {
+        "key": "speed",
+        "label": "Animation speed",
+        "choices": [
+          "slow",
+          "normal",
+          "fast"
+        ],
+        "default": "normal"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "glow",
+        "label": "Glow",
+        "choices": [
+          "soft",
+          "strong",
+          "off"
+        ],
+        "default": "soft"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "cycle",
+        "label": "Change scene by itself",
+        "choices": [
+          "0",
+          "1",
+          "5",
+          "15"
+        ],
+        "default": "0"
+      }
+    }
+  ],
+  "permissions": [],
+  "art": {
+    "heroPx": 248,
+    "thumbPx": 96
+  }
+}
