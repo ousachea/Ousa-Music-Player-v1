@@ -1,5 +1,10 @@
 # O-Music Player
 
+## 0.35.2
+
+New screenshots taken from the current build, one for every style, including Dial for the first
+time. Nothing about the player itself has changed.
+
 ## 0.35.1
 
 The Lyrics style keeps its plus and minus for the size of the words when the on-screen buttons are
