@@ -479,6 +479,7 @@ export default function App() {
           onPrev={() => goPrev(true)}
           onNext={() => goNext()}
           onSkipTo={index => client.player.skipToIndex({ index })}
+          background={prefs.flowBg}
         />
       ) : prefs.theme === 'stereo' ? (
         <Stereo
@@ -1033,6 +1034,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
+  flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
   deckGlow: { values: GLOWS, labels: ['Album', 'Rainbow', 'Ice', 'Amber', 'Red', 'Green', 'White'] },
   vinylStyle: { values: ['turntable', 'sleeve'], labels: ['Turntable', 'Sleeve'] },
   vinylFront: { values: ['record', 'sleeve'], labels: ['Record', 'Sleeve'] },
@@ -1068,6 +1070,7 @@ const STYLE_ROWS: Row[] = [
   { key: 'vinylFront', label: 'In front', only: ['vinyl'] },
   { key: 'vinylTint', label: 'Record colour', only: ['vinyl'] },
   { key: 'deckGlow', label: 'Display colour', only: ['stereo'] },
+  { key: 'flowBg', label: 'Background', only: ['flow'] },
   { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },

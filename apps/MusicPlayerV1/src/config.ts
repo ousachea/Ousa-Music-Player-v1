@@ -17,6 +17,7 @@ export type Prefs = {
   tape: 'written' | 'printed' | 'clear';
   vinylTint: 'black' | 'album' | 'marble';
   deckGlow: Glow;
+  flowBg: 'album' | 'black';
   vinylStyle: 'turntable' | 'sleeve';
   vinylFront: 'record' | 'sleeve';
   wheel: 'volume' | 'seek';
@@ -42,7 +43,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, lyricSize: 100, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', vinylTint: 'black', deckGlow: 'album', vinylStyle: 'turntable', vinylFront: 'record', wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, lyricSize: 100, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', vinylTint: 'black', deckGlow: 'album', flowBg: 'album', vinylStyle: 'turntable', vinylFront: 'record', wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -140,6 +141,8 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, vinylFront: value === 'sleeve' ? 'sleeve' : 'record' };
     case 'vinylTint':
       return { ...prefs, vinylTint: value === 'album' || value === 'marble' ? value : 'black' };
+    case 'flowBg':
+      return { ...prefs, flowBg: value === 'black' ? 'black' : 'album' };
     case 'deckGlow':
       return { ...prefs, deckGlow: GLOWS.includes(value as Glow) ? (value as Glow) : 'album' };
     case 'tape':

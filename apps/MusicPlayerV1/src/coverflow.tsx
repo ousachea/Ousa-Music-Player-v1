@@ -66,6 +66,7 @@ export function CoverFlow({
   onPrev,
   onNext,
   onSkipTo,
+  background,
 }: {
   artUrl: string | null;
   title: string;
@@ -81,6 +82,7 @@ export function CoverFlow({
   onPrev: () => void;
   onNext: () => void;
   onSkipTo: (index: number) => void;
+  background: 'album' | 'black';
 }) {
   const next = (queue?.items ?? []).slice(0, SIDE);
   // history arrives oldest first, and the one nearest the middle is the one that just finished
@@ -130,8 +132,12 @@ export function CoverFlow({
   // and take it over, and go back on the cover once the phone has covers to put there
   const aside = showTransport && next.length === 0;
 
+  // beside the cover the side is tall and narrow, so the buttons stack down it; under the cover, or
+  // under a cover turned on its side, they run across
   const transport = (large: boolean) => (
-    <div className={`flex items-center text-white ${large ? 'gap-5' : 'gap-9'}`} onClick={e => e.stopPropagation()}>
+    <div
+      className={`flex items-center text-white ${large ? (upright ? 'gap-6' : 'flex-col gap-6') : 'gap-9'}`}
+      onClick={e => e.stopPropagation()}>
       <button aria-label="previous" onClick={onPrev} className="p-1 transition active:scale-90">
         <Glyph d={NEXT} className={`-scale-x-100 ${large ? 'h-8 w-8' : 'h-7 w-7'}`} />
       </button>
@@ -152,6 +158,15 @@ export function CoverFlow({
   return (
     // isolated, so the covers' stacking order stays inside the style and never over the settings
     <div className="absolute inset-0 isolate overflow-hidden bg-black">
+      {/* the album's own colours, taken down dark so the covers still stand off it */}
+      {background === 'album' && accent && (
+        <div
+          className="absolute inset-0 transition-[background] duration-700"
+          style={{
+            background: `radial-gradient(ellipse 75% 85% at 50% 42%, color-mix(in oklab, ${accent.fill} 72%, black) 0%, color-mix(in oklab, ${accent.fill2} 46%, black) 55%, color-mix(in oklab, ${accent.fill2} 18%, black) 100%)`,
+          }}
+        />
+      )}
       <div className="absolute inset-0">
         {/* the far covers first, so the nearer ones are laid over them */}
         {slots(-1).reverse()}

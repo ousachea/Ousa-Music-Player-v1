@@ -15,7 +15,9 @@ A ninth style, **Flow**: cover flow, with the track's cover square in the middle
 artist over it and the progress along its bottom edge, and the queue fanned out either side, up next
 to the right and just played to the left, each cover turned in towards the middle. Tapping a cover
 on the right skips to it, and tapping the middle one plays and pauses. When nothing is queued up
-next, the on-screen buttons move off the cover into the empty right side, with a large play button.
+next, the on-screen buttons move off the cover into the empty right side as a column, with a large
+play button. The covers stand on a dark wash of the album's own colours, or on black, from
+**Background**.
 
 Artwork now loads when the player is served over plain http, as it is while developing on the
 device, where it had been failing for want of a secure context.

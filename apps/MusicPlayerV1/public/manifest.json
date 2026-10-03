@@ -169,6 +169,18 @@
     {
       "type": "enum",
       "data": {
+        "key": "flowBg",
+        "label": "Cover flow background",
+        "choices": [
+          "album",
+          "black"
+        ],
+        "default": "album"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
         "key": "tape",
         "label": "Cassette tape design",
         "choices": [

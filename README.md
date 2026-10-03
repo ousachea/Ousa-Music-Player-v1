@@ -56,7 +56,7 @@ When the track changes the blurred background dissolves from one cover to the ne
 cutting between them. Vinyl and CD mark the change by swapping the record or the disc, which turns
 in from a little smaller and settles; the other styles slide the new track in from the side it came
 from, which is the side you swiped. Stereo and Flow have no blurred background: Stereo's display is
-the whole screen, and Flow stands its covers on black.
+the whole screen, and Flow stands its covers on a colour of its own.
 
 ### Vinyl
 
@@ -211,10 +211,14 @@ played on request. A swipe skips as it does everywhere else.
 
 The covers either side come from the phone's queue. With the on-screen buttons on and nothing queued
 up next, the right side would stand empty, so previous, a large white play button and next take it
-over; once the phone has covers to put there, the buttons move back onto the cover, under the
+over, stacked down it as a column; once the phone has covers to put there, the buttons move back onto the cover, under the
 artist. A player that does not share its queue leaves the places it has nothing for as faint
 outlines. Turned on its side, the covers run down the screen, and the buttons take the empty space
 below the cover.
+
+**Background** on Flow's settings page picks what the covers stand on. **Album colour**, the
+default, washes the screen in a dark take on the cover's own colours, brightest behind the middle
+cover and changing with each track. **Black** is plain black, the classic look.
 
 ### Poster
 
