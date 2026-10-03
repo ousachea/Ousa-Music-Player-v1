@@ -157,6 +157,8 @@ rather than the height, so it keeps its shape rather than stretching into the ta
 
 ### Dial
 
+![Dial style](apps/MusicPlayerV1/screenshots/09-dial.jpg)
+
 A jog wheel beside a card, on a wash of the album's own colour. The track runs round the outside of
 a black disc as a thick arc from twelve o'clock, in that colour, with a machined ring of ticks
 inside it, the grooves faint under that, and the cover turning slowly in the middle as the record's
