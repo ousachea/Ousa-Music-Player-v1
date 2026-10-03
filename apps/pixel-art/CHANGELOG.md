@@ -1,5 +1,9 @@
 # O-Pixel Art
 
+## 0.1.1
+
+An icon: a pixel flame on the app's own glowing wall, hot white at its base and red at the tips.
+
 ## 0.1.0
 
 A glowing LED wall for the dash, 32 pixels by 19, each one a soft rounded square that blooms into its

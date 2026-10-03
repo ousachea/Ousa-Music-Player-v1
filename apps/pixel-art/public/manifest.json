@@ -1,8 +1,9 @@
 {
   "id": "01a102bb-1d76-7739-a093-ffb81f205f9b",
   "name": "O-Pixel Art",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A glowing LED wall on the dash: fire, plasma, rain and more, and pixel art you draw yourself.",
+  "icon": "icon.png",
   "settings": "settings.html",
   "config": [
     {
