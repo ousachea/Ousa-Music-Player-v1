@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-03T16:58:50.387Z",
+  "updated_at": "2026-10-03T17:14:38.635Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -1885,6 +1885,39 @@
           ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "An Immich library on the dash, as a photo frame rather than a web client.\n\nThe screen has no network of its own, so every request goes through the phone: one fetch helper over\nthe daemon's tunnel, an API key in the header and never in a url, and CORS never enters into it. The\nserver address and the key are typed in the companion app, since a Car Thing has nowhere to type a\nurl.\n\nRecent, Loved, Albums and Search are the four presets. Pictures come back thumbnail first, forty at\na time, and the next page loads as the grid nears its end. Touching one opens the viewer at preview\nsize, with the wheel and the arrow keys moving through, the file, place, camera, size and date\nbehind Info, and the heart writing the favourite back to Immich when the key is allowed to.\n\nThe slideshow runs from whichever list is open, one picture ahead of itself and no further, with\nfive transitions and a Ken Burns drift that holds still under prefers-reduced-motion. Shuffle is a\nFisher-Yates order taken once rather than a coin flip a picture, loop is a setting, and the chrome\nfades out until a touch brings it back.\n\nEvery picture that arrives is kept in IndexedDB with the time it was last wanted. When the box\npasses its limit the oldest go until it is back under four fifths, rather than the whole thing being\nemptied, and the settings say what is in it and offer to clear thumbnails, previews or all of it.\nObject urls are handed back as the grid moves on, so a slideshow can run for hours.\n\nA demo library is built in, drawn on a canvas rather than downloaded, for looking around before a\nkey exists."
+        }
+      ]
+    },
+    {
+      "id": "01a102bb-1d76-7739-a093-ffb81f205f9b",
+      "name": "O-Pixel Art",
+      "description": "A glowing LED wall on the dash: fire, plasma, rain and more, and pixel art you draw yourself.",
+      "author": "Ousa Chea",
+      "icon": null,
+      "screenshots": [
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a102bb-1d76-7739-a093-ffb81f205f9b/01-fire.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a102bb-1d76-7739-a093-ffb81f205f9b/02-scenes.jpg",
+        "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a102bb-1d76-7739-a093-ffb81f205f9b/03-draw.jpg"
+      ],
+      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-10-03T17:14:38.631Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a102bb-1d76-7739-a093-ffb81f205f9b/0.1.0.zip",
+            "size": 830155,
+            "sha256": "0aecde43f28b569b33d3c26239e7d26c919fd8916c6359d4d279d7997fad039b"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a102bb-1d76-7739-a093-ffb81f205f9b/0.1.0.html",
+            "size": 26777,
+            "sha256": "33fe2350021c92e188ac0440877dc64caf113c66f6acd507c1a443c1868a6de0"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A glowing LED wall for the dash, 32 pixels by 19, each one a soft rounded square that blooms into its\nneighbours. Seven animated scenes: Fire, Plasma, Digital rain, Starfield, Rain, Life and a pixel\nClock. The wheel, a swipe or presets 1 and 3 move between them, 2 pauses, and the button under the\nwheel opens them all as a gallery.\n\nDraw your own: preset 4 or **Draw** opens the wall as a canvas with a sixteen colour palette beside\nit. Drag to paint; a stroke that starts on a cell of the same colour rubs out instead. Drawings are\nkept on the device and join the scenes, twinkling gently."
         }
       ]
     },
