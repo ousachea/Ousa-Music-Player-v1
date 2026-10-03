@@ -7,7 +7,7 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **O-Music Player** | Now playing, in seven styles, coloured by the album art, on a screen that turns |
+| **O-Music Player** | Now playing, in eight styles, coloured by the album art, on a screen that turns |
 | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
 | **O-Network Monitor** | Link status, latency and measured throughput |
 | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -44,9 +44,10 @@ settings on the device and press **Check** under *Software update*.
 ## O-Music Player
 
 Music notes drift up over whichever style you pick, each one tinted a little differently from the
-album art. They pause with the music, and **Display → Floating notes** turns them off.
+album art. They pause with the music, and **Display → Floating notes** turns them off. Over the Stereo style
+they turn to pixel art in the display's own colour.
 
-### The seven player styles
+### The eight player styles
 
 Switch between them in the settings, under **Player style**. A small tag along the bottom of the
 screen names the one you are in.
@@ -173,6 +174,27 @@ than stepping when the line changes. A long line is set smaller instead of being
 it shows the album, title and artist instead. Under it the track reads again with the cover as a small round badge, and
 under that previous, play and pause as a white circle, and next.
 
+### Stereo
+
+![Stereo style](apps/MusicPlayerV1/screenshots/10-stereo.jpg)
+
+The dot matrix display of a car head unit, filling the screen. Every character is set in the
+classic 5x7 cells, with the unlit dots faintly visible on the glass, and the dots take the album's
+colour unless **Display colour** picks ice, amber, red, green or white instead.
+
+Along the top sit the source, a level meter and the clock. The meter makes up its own levels, since
+the device gets no audio to measure: it bounces while the track plays and settles flat when it
+pauses. The title runs large across the middle, and a line too long for the glass steps along a
+character at a time, the way the real ones scroll. Under it a smaller line reads the artist; tapping
+it, or the **DISP** key, steps it through the album and the time. Previous, play and next are drawn on
+the glass in the same dots. Along the bottom, a frame that rises over the middle fills as the song
+plays, between the Bluetooth badge and the RDM and RPT badges, which light up when the phone has
+shuffle or repeat on. Turning the wheel to change the volume reads out on the display itself, rather
+than over it. A title in a script the display has no characters for is set in ordinary type in the
+same colour.
+
+Turned on its side, the line is shorter and the meter gives up its room to the clock.
+
 ### Poster
 
 ![Poster style](apps/MusicPlayerV1/screenshots/04-poster.jpg)
@@ -296,7 +318,7 @@ screen rotation before it is measured, so a quarter turn moves the gesture with 
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Poster, Lyrics |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Poster, Lyrics |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |

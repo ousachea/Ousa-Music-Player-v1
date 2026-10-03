@@ -14,6 +14,7 @@ import { accentFrom, type Accent } from './artwork-color';
 import { explicitFor, hdArtwork } from './hd-art';
 import { activeIndex, useLyrics } from './lyrics';
 import { useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
+import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
@@ -95,7 +96,7 @@ export default function App() {
   const seekStyle =
     prefs.theme === 'widget' ? 'bar' : prefs.seek === 'auto' ? (prefs.theme === 'poster' ? 'wave' : 'bar') : prefs.seek;
   const seekDot = prefs.seekDot === 'auto' ? prefs.theme !== 'widget' : prefs.seekDot === 'on';
-  const ownsVolume = prefs.theme === 'widget' && prefs.coverVolume;
+  const ownsVolume = (prefs.theme === 'widget' && prefs.coverVolume) || prefs.theme === 'stereo';
   // a quarter turn lays the player out portrait, where a square cover cannot sit beside the track
   const upright = prefs.rotate === 90 || prefs.rotate === 270;
   const track = state?.track ?? null;
@@ -357,7 +358,7 @@ export default function App() {
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
       else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'poster', 'lyrics'];
+        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'poster', 'lyrics'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
@@ -435,7 +436,7 @@ export default function App() {
     <div className="relative h-full w-full overflow-hidden bg-screen">
       {/* outside the keyed wrapper: inside it, every track change tore the blurred art down and
           built it again, which showed as a flash while the new one decoded */}
-      {prefs.theme !== 'poster' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
+      {prefs.theme !== 'poster' && prefs.theme !== 'stereo' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
 
       <div
         key={track.persistentId ?? track.title ?? ''}
@@ -448,7 +449,31 @@ export default function App() {
                 ? 'skip-prev'
                 : 'skip-next'
         }`}>
-      {prefs.theme === 'dial' ? (
+      {prefs.theme === 'stereo' ? (
+        <Stereo
+          title={track.title ?? 'unknown'}
+          artist={artistName ?? '—'}
+          album={track.album ?? null}
+          glow={prefs.deckGlow}
+          accent={accentOn}
+          playing={playing}
+          motion={prefs.motion}
+          upright={upright}
+          shuffle={playback?.shuffle ?? false}
+          repeat={playback?.repeat ?? 'off'}
+          elapsed={elapsed}
+          duration={duration}
+          progress={progress}
+          remaining={prefs.remaining}
+          wallClock={wallClock}
+          volume={volume}
+          showVolume={hud}
+          showTransport={prefs.transport}
+          onToggle={toggle}
+          onPrev={() => goPrev(true)}
+          onNext={() => goNext()}
+        />
+      ) : prefs.theme === 'dial' ? (
         <Dial
           lyrics={lyrics}
           artUrl={artUrl}
@@ -723,7 +748,13 @@ export default function App() {
 
       </div>
 
-      {prefs.notes && prefs.motion && <Notes accent={accentOn} playing={playing} />}
+      {prefs.notes && prefs.motion && (
+        <Notes
+          accent={accentOn}
+          playing={playing}
+          pixel={prefs.theme === 'stereo' ? glowColor(prefs.deckGlow, accentOn) : null}
+        />
+      )}
 
       {/* the handle for the queue: enough of a bar to say the bottom edge is worth pulling on */}
       {!sheet && !panel && (
@@ -955,11 +986,12 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
-    values: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'poster', 'lyrics'],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Poster', 'Lyrics'],
+    values: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'poster', 'lyrics'],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Poster', 'Lyrics'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
+  deckGlow: { values: GLOWS, labels: ['Album', 'Ice', 'Amber', 'Red', 'Green', 'White'] },
   vinylStyle: { values: ['turntable', 'sleeve'], labels: ['Turntable', 'Sleeve'] },
   vinylFront: { values: ['record', 'sleeve'], labels: ['Record', 'Sleeve'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
@@ -993,6 +1025,7 @@ const STYLE_ROWS: Row[] = [
   { key: 'vinylStyle', label: 'Layout', only: ['vinyl'] },
   { key: 'vinylFront', label: 'In front', only: ['vinyl'] },
   { key: 'vinylTint', label: 'Record colour', only: ['vinyl'] },
+  { key: 'deckGlow', label: 'Display colour', only: ['stereo'] },
   { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
@@ -1003,7 +1036,7 @@ const STYLE_ROWS: Row[] = [
   { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
   { key: 'blur', label: 'Backdrop blur', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
   { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
-  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial'] },
+  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo'] },
 ];
 
 // the one most reached for, so it leads the list instead of sitting a few screens down under controls
@@ -2597,7 +2630,9 @@ const NOTES = Array.from({ length: 14 }, (_, i) => {
   };
 });
 
-function Notes({ accent, playing }: { accent: Accent | null; playing: boolean }) {
+// over the car stereo the notes are pixel art in the display's own colour, and they sway without
+// tilting, since a turned grid of dots stops reading as one
+function Notes({ accent, playing, pixel }: { accent: Accent | null; playing: boolean; pixel: string | null }) {
   const from = accent?.fill ?? '#efefef';
   const to = accent?.fill2 ?? accent?.soft ?? '#cfd6de';
   return (
@@ -2618,7 +2653,7 @@ function Notes({ accent, playing }: { accent: Accent | null; playing: boolean })
             className="note-sway block will-change-transform"
             style={{
               ['--note-sway' as string]: `${n.sway}px`,
-              ['--note-tilt' as string]: `${n.tilt}deg`,
+              ['--note-tilt' as string]: pixel ? '0deg' : `${n.tilt}deg`,
               ['--note-period' as string]: `${n.period}s`,
               ['--note-delay' as string]: `${n.delay}s`,
               animationPlayState: playing ? 'running' : 'paused',
@@ -2627,7 +2662,7 @@ function Notes({ accent, playing }: { accent: Accent | null; playing: boolean })
               // each note lands somewhere between the two accent tones, so no two are the same shade
               color: `color-mix(in oklab, ${from} ${Math.round(n.mix * 100)}%, ${to})`,
             }}>
-            {n.glyph}
+            {pixel ? <PixelNote kind={i} size={n.size} color={pixel} /> : n.glyph}
           </span>
         </span>
       ))}

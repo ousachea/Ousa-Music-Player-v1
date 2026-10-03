@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "O-Music Player",
-  "version": "0.35.2",
+  "version": "0.36.0",
   "description": "Now playing from your phone, in five styles coloured by the album art, and turnable to any mounting.",
   "icon": "icon.jpg",
   "settings": "settings.html",
@@ -33,6 +33,7 @@
           "cd",
           "cassette",
           "dial",
+          "stereo",
           "poster",
           "lyrics"
         ],
@@ -145,6 +146,22 @@
           "marble"
         ],
         "default": "black"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "deckGlow",
+        "label": "Display colour",
+        "choices": [
+          "album",
+          "ice",
+          "amber",
+          "red",
+          "green",
+          "white"
+        ],
+        "default": "album"
       }
     },
     {

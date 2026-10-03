@@ -1,5 +1,15 @@
 # O-Music Player
 
+## 0.36.0
+
+An eighth player style, **Stereo**: the dot matrix display of a car head unit across the whole
+screen. Everything on it is set in 5x7 cells with the unlit dots faintly showing, in the album's
+colour, or ice, amber, red, green or white from **Display colour**. The source, a level meter and the
+clock run along the top, the title runs large and scrolls a character at a time when it is too long,
+and a smaller line under it shows the artist, album or time, stepped by tapping it or **DISP**.
+Previous, play and next are drawn in the same dots, the volume reads out on the display, and a
+frame along the bottom fills as the song plays. The floating notes turn to pixel art over it.
+
 ## 0.35.2
 
 New screenshots taken from the current build, one for every style, including Dial for the first
