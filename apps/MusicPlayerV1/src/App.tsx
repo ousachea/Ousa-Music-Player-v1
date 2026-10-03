@@ -1006,6 +1006,12 @@ const STYLE_ROWS: Row[] = [
   { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial'] },
 ];
 
+// the one most reached for, so it leads the list instead of sitting a few screens down under controls
+const BUTTON_ROWS: Row[] = [
+  { key: 'transport', label: 'Show them' },
+  { key: 'tip', label: 'Offer to hide them' },
+];
+
 const GROUPS: { title: string; rows: Row[] }[] = [
   {
     title: 'Player',
@@ -1021,8 +1027,6 @@ const GROUPS: { title: string; rows: Row[] }[] = [
       { key: 'seekSeconds', label: 'Seek step' },
       { key: 'seek', label: 'Seek bar' },
       { key: 'seekDot', label: 'Dot at the playhead' },
-      { key: 'transport', label: 'On-screen buttons' },
-      { key: 'tip', label: 'Offer to hide them' },
     ],
   },
   {
@@ -1205,7 +1209,11 @@ function Panel({
         ref={list}
         onScroll={onScroll}
         className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pl-4 [scrollbar-width:none]">
-        {[{ title: styleName, rows: STYLE_ROWS, own: true }, ...GROUPS.map(g => ({ ...g, own: false }))]
+        {[
+          { title: 'On-screen buttons', rows: BUTTON_ROWS, own: false },
+          { title: styleName, rows: STYLE_ROWS, own: true },
+          ...GROUPS.map(g => ({ ...g, own: false })),
+        ]
           .map(group => ({ ...group, rows: group.rows.filter(r => !r.only || r.only.includes(prefs.theme)) }))
           .filter(group => group.rows.length > 0)
           .map((group, gi) => (
@@ -2908,7 +2916,7 @@ function Lyrics({
         <span className="text-off-white/40"> / {duration ? clock(duration) : '--:--'}</span>
       </div>
 
-      {showTransport && has && words && (
+      {has && words && (
         <div className="absolute top-1/2 left-2 z-[4] flex -translate-y-1/2 flex-col items-center gap-2">
           {([1, -1] as const).map(step => (
             <button

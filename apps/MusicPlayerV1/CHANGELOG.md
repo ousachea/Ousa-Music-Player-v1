@@ -1,5 +1,13 @@
 # O-Music Player
 
+## 0.35.1
+
+The Lyrics style keeps its plus and minus for the size of the words when the on-screen buttons are
+hidden. The presets still cover play and skip, but nothing else set the size from the screen.
+
+The on-screen buttons lead the settings now, in their own group at the top of the list on the
+device and first in the companion app, rather than a few screens down under Controls.
+
 ## 0.35.0
 
 A seventh player style, **Dial**: a jog wheel beside a card, both on a wash of the album's colour.

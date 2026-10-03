@@ -259,7 +259,8 @@ The button in the top corner puts the words away and brings them back, and **Sho
 the same from the settings. Plus and minus down the left edge set how large the words are, from 70%
 to 160% in tens; the rows grow with the type, so nothing runs into anything. **Text size** in the
 settings sets the same thing by number. The lines stop short of the edges of the screen, so the
-strip those keys sit in belongs to them and a tap that lands beside one does not seek the song. With them off, or on a track that has none, the style shows the artwork, title
+strip those keys sit in belongs to them and a tap that lands beside one does not seek the song. They stay there with the on-screen buttons off, since
+the presets cover play and skip but nothing else sets the size. With the words off, or on a track that has none, the style shows the artwork, title
 and artist down the middle instead, with the transport under them.
 
 What you get depends on what the phone has. Timed lyrics get the moving column. Lyrics without
@@ -336,11 +337,14 @@ outside the list, because it decides what the rest of the list holds, and everyt
 applies to the style you are in is gathered under that style's name. Poster has no such group: it
 has no settings of its own. A rail down the left edge shows where you are in the list.
 
+The first group in the list is **On-screen buttons**: whether the previous, play and next buttons are
+drawn at all, and whether the player offers to hide them. The companion app lists the same two
+first.
+
 - **Player** — style, accent colour, HD album art, the art pulse with its tempo, whether Cover's art
   runs to the edge of the screen, the colour the Vinyl record is pressed in, and which cassette
   design is on, with or without the cover on its label
-- **Controls** — what the wheel does, how far each click seeks, the seek bar and its playhead dot,
-  and whether the on-screen transport buttons are drawn at all
+- **Controls** — what the wheel does, how far each click seeks, and the seek bar and its playhead dot
 - **Backdrop** — how strongly the blurred art tints the screen, how far out of focus it is, and how
   far it drifts
 - **Display** — animations, floating notes, screen rotation, and whether the time counts down or
@@ -352,7 +356,7 @@ Both seek settings sit on **Auto**, which gives Poster the wave and Vinyl a line
 playhead dot everywhere except Cover. Cover always draws a line whatever you pick.
 
 A few seconds into a track the player offers to hide the on-screen buttons, since the presets do the
-same job. The note has a box to stop it asking again, and **Controls → Offer to hide them** turns it
+same job. The note has a box to stop it asking again, and **On-screen buttons → Offer to hide them** turns it
 back on if you change your mind.
 
 **With the on-screen buttons off**, Poster hands the track the full width of the screen, since the
