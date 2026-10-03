@@ -11,7 +11,15 @@ and a smaller line under it shows the artist, album or time, stepped by tapping 
 Previous, play and next are drawn in the same dots, the volume reads out on the display, and a
 frame along the bottom fills as the song plays. The floating notes turn to pixel art over it.
 
-The player styles in the settings are a grid of tiles now, four across, and they work like tabs:
+A ninth style, **Flow**: cover flow, with the track's cover square in the middle, its title and
+artist over it and the progress along its bottom edge, and the queue fanned out either side, up next
+to the right and just played to the left, each cover turned in towards the middle. Tapping a cover
+on the right skips to it, and tapping the middle one plays and pauses.
+
+Artwork now loads when the player is served over plain http, as it is while developing on the
+device, where it had been failing for want of a secure context.
+
+The player styles in the settings are a grid of tiles now, five across, and they work like tabs:
 tapping one switches to it and opens a page with that style's own settings, and **All styles** or
 the button under the wheel goes back. The general settings stay on the first page. A setting with
 more than six choices lays them out as tiles under its name.

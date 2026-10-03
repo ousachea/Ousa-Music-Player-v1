@@ -7,7 +7,7 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **O-Music Player** | Now playing, in eight styles, coloured by the album art, on a screen that turns |
+| **O-Music Player** | Now playing, in nine styles, coloured by the album art, on a screen that turns |
 | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
 | **O-Network Monitor** | Link status, latency and measured throughput |
 | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -47,7 +47,7 @@ Music notes drift up over whichever style you pick, each one tinted a little dif
 album art. They pause with the music, and **Display → Floating notes** turns them off. Over the
 Stereo style they turn to pixel art in the display's own colour.
 
-### The eight player styles
+### The nine player styles
 
 Switch between them in the settings, under **Player style**. A small tag along the bottom of the
 screen names the one you are in.
@@ -55,8 +55,8 @@ screen names the one you are in.
 When the track changes the blurred background dissolves from one cover to the next rather than
 cutting between them. Vinyl and CD mark the change by swapping the record or the disc, which turns
 in from a little smaller and settles; the other styles slide the new track in from the side it came
-from, which is the side you swiped. Stereo has no blurred background: its display is the whole
-screen.
+from, which is the side you swiped. Stereo and Flow have no blurred background: Stereo's display is
+the whole screen, and Flow stands its covers on black.
 
 ### Vinyl
 
@@ -198,6 +198,21 @@ same colour.
 
 Turned on its side, the line is shorter and the meter gives up its room to the clock.
 
+### Flow
+
+![Flow style](apps/MusicPlayerV1/screenshots/11-flow.jpg)
+
+Cover flow. The track's cover stands square in the middle with the title and artist over the bottom
+of it, and the progress runs along its bottom edge. Either side, covers stand turned in towards it,
+each one further out smaller and darker than the last: to the right what is up next in the queue,
+to the left what has just played. Tapping the middle cover plays and pauses, tapping one on the right
+skips straight to it, and tapping the nearest on the left goes back to it; older history cannot be
+played on request. A swipe skips as it does everywhere else. With the on-screen buttons on, previous,
+play and next sit under the artist.
+
+The covers either side come from the phone's queue, so a player that does not share its queue leaves
+those places as faint outlines. Turned on its side, the covers run down the screen instead.
+
 ### Poster
 
 ![Poster style](apps/MusicPlayerV1/screenshots/04-poster.jpg)
@@ -321,7 +336,7 @@ screen rotation before it is measured, so a quarter turn moves the gesture with 
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Poster, Lyrics |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Poster, Lyrics |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -360,7 +375,7 @@ one it lies on in the layout.
 ![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
 Press the button under the wheel to open them on the device. The styles sit at the top as a grid of
-eight tiles that work like tabs: tapping one switches to that style and opens a page of its own
+nine tiles that work like tabs: tapping one switches to that style and opens a page of its own
 settings, such as the record colour for Vinyl or the display colour for Stereo. **All styles** at
 the top of that page, or the button under the wheel, goes back to the grid, and the button closes
 the settings from there. Poster's page says it has no settings of its own. The general settings

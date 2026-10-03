@@ -13,7 +13,8 @@ import {
 import { accentFrom, type Accent } from './artwork-color';
 import { explicitFor, hdArtwork } from './hd-art';
 import { activeIndex, useLyrics } from './lyrics';
-import { useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
+import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
+import { CoverFlow } from './coverflow';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
@@ -110,7 +111,14 @@ export default function App() {
     prefs.theme === 'lyrics' || prefs.theme === 'dial' ? (track?.persistentId ?? track?.title ?? null) : null,
   );
   // the queue is only read while the sheet is up: it is the phone's, and nothing else here wants it
-  const queue = useQueue(client, sheet, track?.persistentId ?? track?.title ?? null);
+  // Flow fans the queue out either side of the cover, so it reads the queue the whole time it is on
+  const queue = useQueue(client, sheet || prefs.theme === 'flow', track?.persistentId ?? track?.title ?? null);
+  const flowThumbs = useThumbs(
+    client,
+    prefs.theme === 'flow'
+      ? [...(queue?.items ?? []).slice(0, 3), ...(queue?.previous ?? []).slice(-3)].flatMap(t => (t.artworkId ? [t.artworkId] : []))
+      : [],
+  );
   const playback = state?.playback ?? null;
   const artworkId = track?.artworkId ?? null;
   const playing = playback?.state === 'playing';
@@ -125,7 +133,7 @@ export default function App() {
     let revoked = false;
     let blobUrl: string | null = null;
     (async () => {
-      const result = await client.asset.get({ id: artworkId, requestId: crypto.randomUUID() });
+      const result = await client.asset.get({ id: artworkId, requestId: requestId() });
       if (revoked) return;
       if (result.ok) {
         const bytes = new Uint8Array(result.response.bytes as unknown as number[]);
@@ -364,7 +372,7 @@ export default function App() {
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
       else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'poster', 'lyrics'];
+        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'poster', 'lyrics'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
@@ -442,7 +450,7 @@ export default function App() {
     <div className="relative h-full w-full overflow-hidden bg-screen">
       {/* outside the keyed wrapper: inside it, every track change tore the blurred art down and
           built it again, which showed as a flash while the new one decoded */}
-      {prefs.theme !== 'poster' && prefs.theme !== 'stereo' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
+      {prefs.theme !== 'poster' && prefs.theme !== 'stereo' && prefs.theme !== 'flow' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
 
       <div
         key={track.persistentId ?? track.title ?? ''}
@@ -455,7 +463,24 @@ export default function App() {
                 ? 'skip-prev'
                 : 'skip-next'
         }`}>
-      {prefs.theme === 'stereo' ? (
+      {prefs.theme === 'flow' ? (
+        <CoverFlow
+          artUrl={artUrl}
+          title={track.title ?? 'unknown'}
+          artist={artistName ?? '—'}
+          queue={queue}
+          thumbs={flowThumbs}
+          accent={accentOn}
+          playing={playing}
+          progress={progress}
+          upright={upright}
+          showTransport={prefs.transport}
+          onToggle={toggle}
+          onPrev={() => goPrev(true)}
+          onNext={() => goNext()}
+          onSkipTo={index => client.player.skipToIndex({ index })}
+        />
+      ) : prefs.theme === 'stereo' ? (
         <Stereo
           title={track.title ?? 'unknown'}
           artist={artistName ?? '—'}
@@ -1003,8 +1028,8 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
-    values: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'poster', 'lyrics'],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Poster', 'Lyrics'],
+    values: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'poster', 'lyrics'],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Poster', 'Lyrics'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
@@ -1278,6 +1303,7 @@ function Panel({
               tint={tint}
               ink={ink}
               opens
+              cols={5}
               onPick={next => {
                 setPref('theme', next);
                 onStylePage(true);
@@ -1447,7 +1473,7 @@ function Segments({
 // past this many choices a row of pills crowds out its own label
 const GRID_FROM = 6;
 
-// eight styles no longer fit a single row of pills, so the picker is a grid of tiles big enough to
+// nine styles no longer fit a single row of pills, so the picker is a grid of tiles big enough to
 // hit without aiming
 function StyleGrid({
   values,
@@ -1456,6 +1482,7 @@ function StyleGrid({
   tint,
   ink,
   opens,
+  cols = 4,
   onPick,
 }: {
   values: string[];
@@ -1465,10 +1492,11 @@ function StyleGrid({
   ink: string;
   // a tile that leads to a page of its own says so with a chevron
   opens?: boolean;
+  cols?: 4 | 5;
   onPick: (next: string) => void;
 }) {
   return (
-    <div className="grid grid-cols-4 gap-1.5">
+    <div className={`grid gap-1.5 ${cols === 5 ? 'grid-cols-5' : 'grid-cols-4'}`}>
       {values.map((option, i) => {
         const on = option === value;
         return (

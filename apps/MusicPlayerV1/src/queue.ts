@@ -3,6 +3,12 @@
 import type { BridgethingClient } from '@bridgething/client';
 import { useEffect, useRef, useState } from 'react';
 
+// randomUUID only exists in a secure context, and the dev server reaches the device over plain http
+export function requestId(): string {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+}
+
 export type QueueTrack = {
   uri: string;
   title: string | null;
@@ -50,7 +56,7 @@ export function useThumbs(client: BridgethingClient, ids: string[]): Record<stri
         if (stale || cache.current.has(id)) continue;
         // held before the fetch resolves so a second pass over the same id does not fetch it twice
         cache.current.set(id, '');
-        const result = await client.asset.get({ id, requestId: crypto.randomUUID() });
+        const result = await client.asset.get({ id, requestId: requestId() });
         if (stale || !result.ok) continue;
         const bytes = new Uint8Array(result.response.bytes as unknown as number[]);
         const url = URL.createObjectURL(new Blob([bytes], { type: result.response.mime ?? 'image/jpeg' }));

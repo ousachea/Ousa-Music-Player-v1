@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { GLOWS, type Glow } from './stereo';
 
 export type Prefs = {
-  theme: 'widget' | 'vinyl' | 'cd' | 'cassette' | 'dial' | 'stereo' | 'poster' | 'lyrics';
+  theme: 'widget' | 'vinyl' | 'cd' | 'cassette' | 'dial' | 'stereo' | 'flow' | 'poster' | 'lyrics';
   rotate: 0 | 90 | 180 | 270;
   lyricsInfo: 'tl' | 'bl' | 'tr' | 'br';
   words: boolean;
@@ -69,6 +69,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
           value === 'cassette' ||
           value === 'dial' ||
           value === 'stereo' ||
+          value === 'flow' ||
           value === 'poster' ||
           value === 'lyrics'
             ? value
