@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-09-10T16:03:14.830Z",
+  "updated_at": "2026-10-03T16:01:30.074Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -398,6 +398,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.35.1",
+          "released_at": "2026-10-03T16:01:30.071Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.35.1.zip",
+            "size": 995837,
+            "sha256": "ca16adda79ea73d29067a35810487e2209f6fe0c14faa1f087010d4f95b3ff0b"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.35.1.html",
+            "size": 32802,
+            "sha256": "eb321cbdca1902a4b2f1817cd0367687b4e9e912ee3b0a87c178ac93d864bbcc"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The Lyrics style keeps its plus and minus for the size of the words when the on-screen buttons are\nhidden. The presets still cover play and skip, but nothing else set the size from the screen.\n\nThe on-screen buttons lead the settings now, in their own group at the top of the list on the\ndevice and first in the companion app, rather than a few screens down under Controls."
+        },
         {
           "version": "0.35.0",
           "released_at": "2026-09-10T14:58:26.673Z",
