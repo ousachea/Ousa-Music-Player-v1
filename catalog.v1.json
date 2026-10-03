@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-03T16:09:42.938Z",
+  "updated_at": "2026-10-03T16:58:50.387Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -398,6 +398,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.36.0",
+          "released_at": "2026-10-03T16:58:50.382Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.36.0.zip",
+            "size": 1018826,
+            "sha256": "20c322f443159856d67743f12328b4a010fec749f34f182147dc5a18a2cdb72a"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.36.0.html",
+            "size": 33596,
+            "sha256": "8e4b2bfe7d4faa28cd3184723ec8b5a6b9520db8782b4ef02ba22ada0b503436"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "An eighth player style, **Stereo**: the dot matrix display of a car head unit across the whole\nscreen. Everything on it is set in 5x7 cells with the unlit dots faintly showing, in the album's\ncolour, or from **Display colour** one of ice, amber, red, green, white, or rainbow, which turns the\nwhole display slowly through every colour. The source, a level meter and the\nclock run along the top, the title runs large and scrolls a character at a time when it is too long,\nand a smaller line under it shows the artist, album or time, stepped by tapping it or **DISP**.\nPrevious, play and next are drawn in the same dots, the volume reads out on the display, and a\nframe along the bottom fills as the song plays. The floating notes turn to pixel art over it.\n\nA ninth style, **Flow**: cover flow, with the track's cover square in the middle, its title and\nartist over it and the progress along its bottom edge, and the queue fanned out either side, up next\nto the right and just played to the left, each cover turned in towards the middle. Tapping a cover\non the right skips to it, and tapping the middle one plays and pauses. When nothing is queued up\nnext, the on-screen buttons move off the cover into the empty right side as a column, with a large\nplay button. The covers stand on a dark wash of the album's own colours, or on black, from\n**Background**.\n\nArtwork now loads when the player is served over plain http, as it is while developing on the\ndevice, where it had been failing for want of a secure context.\n\nThe player styles in the settings are a grid of tiles now, five across, and they work like tabs:\ntapping one switches to it and opens a page with that style's own settings, and **All styles** or\nthe button under the wheel goes back. The general settings stay on the first page. A setting with\nmore than six choices lays them out as tiles under its name."
+        },
         {
           "version": "0.35.2",
           "released_at": "2026-10-03T16:09:42.936Z",
