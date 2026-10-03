@@ -35,7 +35,7 @@
     },
     "apps/clock": {
       "name": "clock",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
         "preact": "^10.29.7",
@@ -150,7 +150,7 @@
     },
     "apps/o-photos": {
       "name": "o-photos",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
         "preact": "^10.29.7",
