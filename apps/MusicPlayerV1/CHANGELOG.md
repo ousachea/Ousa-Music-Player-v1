@@ -6,8 +6,9 @@
 carrying the cover, and a black hub in the middle. The disc is pressed in the cover's own colours with
 a metallic sheen (gold for a cover with none) and turns while the track plays. The shell comes in
 **White**, frosted and clear, or **Black**, smoked; tap the hub to trade them, or choose under
-**Look** in the style's settings. Tap the cover on the slider to print it across the disc instead,
-and again to bring the colours back, or choose under **Disc**. The clock now sits above the song.
+**Look** in the style's settings. Tap the cover on the slider to print it across the disc instead:
+the slider slides away and the shell takes the cover's colour. Tap the disc to bring the slider and
+the colours back, or choose under **Disc**. The clock now sits above the song.
 
 ## 0.38.5
 

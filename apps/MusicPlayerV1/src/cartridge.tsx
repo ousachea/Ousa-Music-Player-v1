@@ -84,10 +84,17 @@ export function Cartridge({
   corner?: ReactNode;
 }) {
   const k = SHELLS[shell];
+  // printed, the shell takes the cover's colour too: a pale wash of it on the white, a deep one on the black
+  const body =
+    printed && accent
+      ? shell === 'white'
+        ? `linear-gradient(150deg, color-mix(in oklab, ${accent.fill} 18%, #f5f3ec) 0%, color-mix(in oklab, ${accent.fill2 ?? accent.fill} 28%, #ddd8cc) 100%)`
+        : `linear-gradient(150deg, color-mix(in oklab, ${accent.fill} 34%, #1d1e22) 0%, color-mix(in oklab, ${accent.fill2 ?? accent.fill} 22%, #0b0c0e) 100%)`
+      : k.body;
   return (
     <div
       className="relative h-full w-full overflow-hidden rounded-[7%] shadow-[0_18px_40px_rgba(0,0,0,0.55)]"
-      style={{ background: k.body }}>
+      style={{ background: body, transition: 'background 700ms' }}>
       {/* the shell's mouldings: an inner rim, the notches and rings a cartridge is cast with, and four screws */}
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
         <rect x="2.5" y="2.5" width="95" height="95" rx="5" fill="none" stroke={k.line} strokeWidth="0.5" />
@@ -103,7 +110,10 @@ export function Cartridge({
       </svg>
 
       {/* the disc: the colour turns with it, the light on it stays put, the way light falls on a real one */}
-      <div className="absolute top-[5%] left-[7%] aspect-square w-[88%]">
+      {/* printed, the whole disc is the way back: a tap anywhere on it brings the slider and the colours back */}
+      <div
+        onClick={printed ? onPrint : undefined}
+        className={`absolute top-[5%] left-[7%] aspect-square w-[88%] ${printed ? 'cursor-pointer' : ''}`}>
         <div
           className="animate-platter absolute inset-0 overflow-hidden rounded-full"
           style={{ background: pressing(accent), transition: 'background 700ms', animationPlayState: playing && motion ? 'running' : 'paused', animationDuration: '6s' }}>
@@ -132,8 +142,11 @@ export function Cartridge({
         <div className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: `inset 0 0 0 3px ${k.frost}` }} />
       </div>
 
-      {/* the slider: black, out from the left edge to the middle, carrying the cover and a spine label */}
-      <div className="absolute top-[36%] -left-[1%] flex h-[27%] w-[54%] items-center rounded-r-[6px] shadow-[0_6px_16px_rgba(0,0,0,0.35)]" style={{ backgroundColor: k.slider }}>
+      {/* the slider: out from the left edge to the middle, carrying the cover and a spine label. printed, it slides
+          back into the shell and leaves the disc on its own */}
+      <div
+        className={`absolute top-[36%] -left-[1%] flex h-[27%] w-[54%] items-center rounded-r-[6px] shadow-[0_6px_16px_rgba(0,0,0,0.35)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${printed ? 'pointer-events-none -translate-x-[105%]' : ''}`}
+        style={{ backgroundColor: k.slider }}>
         <div className="ml-[3%] grid h-[62%] w-[9%] place-items-center rounded-[3px]" style={{ backgroundColor: k.spine[0] }}>
           <span className="font-display text-[0.5625rem] font-bold whitespace-nowrap [writing-mode:vertical-rl] rotate-180" style={{ color: k.spine[1] }}>{label}</span>
         </div>
@@ -147,8 +160,8 @@ export function Cartridge({
 
       {/* the hub: a black ring with fine grooves, the grey clamp inside it, and the spindle hole */}
       <button
-        aria-label="cd look"
-        onClick={onLook}
+        aria-label={printed ? 'disc in the cover colours' : 'cd look'}
+        onClick={printed ? onPrint : onLook}
         className="absolute top-[49%] left-[51%] grid aspect-square w-[35%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full transition active:scale-95"
         style={{ background: 'repeating-radial-gradient(circle, #121212 0 2px, #1d1d1d 2px 3px)', boxShadow: '0 4px 14px rgba(0,0,0,0.35)' }}>
         <span

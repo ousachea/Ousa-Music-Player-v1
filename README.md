@@ -73,8 +73,8 @@ arrangements, and tapping the middle of the record steps through them:
 A disc in a cartridge, like a MiniDisc: screws in the corners, a slider carrying the cover and a black
 hub. The disc takes the cover's colours with a metallic sheen (gold for a colourless cover) and turns
 while the track plays. **Look** picks a frosted **White** shell or a smoked **Black** one; tap the hub
-to switch. Tap the cover on the slider to print it across the disc instead (**Disc**: Colour or
-Artwork). The clock sits above the song, with the progress bar and a three-part transport below.
+to switch. Tap the cover on the slider to print it across the disc instead: the slider slides away
+and the shell takes the cover's colour; tap the disc to bring them back (**Disc**: Colour or Artwork). The clock sits above the song, with the progress bar and a three-part transport below.
 
 ### Cassette
 
