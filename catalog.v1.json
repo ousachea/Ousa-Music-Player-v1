@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-03T17:19:23.570Z",
+  "updated_at": "2026-10-04T02:29:29.098Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -398,6 +398,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.37.0",
+          "released_at": "2026-10-04T02:29:29.093Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.37.0.zip",
+            "size": 1023037,
+            "sha256": "4e743e4854ea647281ca98f141984e2563d36518c5cd1f9ce24264581654848c"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.37.0.html",
+            "size": 33596,
+            "sha256": "8e4b2bfe7d4faa28cd3184723ec8b5a6b9520db8782b4ef02ba22ada0b503436"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A third vinyl layout, **Picture disc**: the cover pressed into the whole face of the record, run\noff the edge of the screen with the clear ring and the hole through its middle showing the blurred\ncover behind, like the other layouts. The title sits beside it under a centred clock, over the artist\nand album, with a row of ticks to scrub along and round previous, play and next buttons under them.\nWhile the song plays the ticks pulse like a level meter and the playhead glides with a soft halo. Turned upright, the disc hangs from the top of the screen. Tapping\nthe middle of the record now steps through all three layouts."
+        },
         {
           "version": "0.36.0",
           "released_at": "2026-10-03T16:58:50.382Z",
