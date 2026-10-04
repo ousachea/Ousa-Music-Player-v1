@@ -18,7 +18,7 @@ export type Prefs = {
   vinylTint: 'black' | 'album' | 'marble';
   deckGlow: Glow;
   flowBg: 'album' | 'black';
-  vinylStyle: 'turntable' | 'sleeve';
+  vinylStyle: 'turntable' | 'sleeve' | 'picture';
   vinylFront: 'record' | 'sleeve';
   wheel: 'volume' | 'seek';
   seekSeconds: number;
@@ -136,7 +136,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'clockPos':
       return { ...prefs, clockPos: value === 'left' || value === 'center' ? value : 'right' };
     case 'vinylStyle':
-      return { ...prefs, vinylStyle: value === 'sleeve' ? 'sleeve' : 'turntable' };
+      return { ...prefs, vinylStyle: value === 'sleeve' || value === 'picture' ? value : 'turntable' };
     case 'vinylFront':
       return { ...prefs, vinylFront: value === 'sleeve' ? 'sleeve' : 'record' };
     case 'vinylTint':

@@ -1,5 +1,13 @@
 # O-Music Player
 
+## 0.37.0
+
+A third vinyl layout, **Picture disc**: the cover pressed into the whole face of the record, run
+off the edge of the screen with the clear ring and the hole through its middle showing. The title
+sits beside it over the artist and album, with a row of ticks to scrub along and round previous,
+play and next buttons under them. Turned upright, the disc hangs from the top of the screen. Tapping
+the middle of the record now steps through all three layouts.
+
 ## 0.36.0
 
 An eighth player style, **Stereo**: the dot matrix display of a car head unit across the whole

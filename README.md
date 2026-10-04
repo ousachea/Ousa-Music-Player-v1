@@ -67,13 +67,19 @@ A new track brings a new record: the turntable drops in and settles, and the dis
 the CD style. The platter turns while the track plays and holds its angle when you pause; the
 tonearm rests on the outer grooves and lifts off when the music stops.
 
-**Layout** gives the style two arrangements, and the paper label in the middle of the record is the
-switch between them: a tap pulls the record out of its sleeve, another puts it back on the platter.
+**Layout** gives the style three arrangements, and the label in the middle of the record is the
+switch between them: a tap steps from the turntable to the sleeve, to the picture disc, and back.
 **Turntable** is the record on the platter with the sleeve tucked behind it, and touching the sleeve
 trades their places, the sleeve coming forward and growing while the record drops behind it, which
 is also **In front** in the settings. **Sleeve** is the copy someone has just pulled: the cover
 square and flat on one side, the record half out of it on the other with its paper label showing in
 the album's colour.
+
+**Picture disc** presses the cover into the whole face of the record and runs it off the edge of
+the screen, so its middle shows with the clear ring and the hole through it. The track sits beside it,
+the title over the artist and album, with a row of ticks to scrub along and round buttons under them.
+Turned upright, the disc hangs from the top edge. Record colour and In front are hidden here, since a
+picture disc has neither.
 
 **Record colour** presses the disc in something other than black. Album gives it the cover's own
 colour and Marble swirls the cover's two colours through it, both dark enough that the grooves and

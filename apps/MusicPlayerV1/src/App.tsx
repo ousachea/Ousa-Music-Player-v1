@@ -670,6 +670,29 @@ export default function App() {
           onNext={() => goNext()}
           onSeek={ratio => seek(ratio * duration)}
         />
+      ) : prefs.vinylStyle === 'picture' ? (
+        <PictureDisc
+          artUrl={artUrl}
+          title={track.title ?? 'unknown'}
+          artist={artistName ?? '—'}
+          album={track.album ?? null}
+          explicit={explicit}
+          accent={accentOn}
+          playing={playing}
+          motion={prefs.motion}
+          upright={upright}
+          rotate={prefs.rotate}
+          showTransport={prefs.transport}
+          progress={progress}
+          wallClock={wallClock}
+          clockPos={prefs.clockPos}
+          clockSize={prefs.clockSize}
+          onLayout={() => setPref('vinylStyle', 'turntable')}
+          onToggle={toggle}
+          onPrev={() => goPrev(true)}
+          onNext={() => goNext()}
+          onSeek={ratio => seek(ratio * duration)}
+        />
       ) : (
         <>
 
@@ -687,7 +710,7 @@ export default function App() {
                 artUrl={artUrl}
                 accent={accentOn}
                 tint={prefs.vinylTint}
-                onLayout={() => setPref('vinylStyle', 'turntable')}
+                onLayout={() => setPref('vinylStyle', 'picture')}
                 playing={playing}
                 spin={prefs.motion}
                 upright={upright}
@@ -1036,7 +1059,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
   flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
   deckGlow: { values: GLOWS, labels: ['Album', 'Rainbow', 'Ice', 'Amber', 'Red', 'Green', 'White'] },
-  vinylStyle: { values: ['turntable', 'sleeve'], labels: ['Turntable', 'Sleeve'] },
+  vinylStyle: { values: ['turntable', 'sleeve', 'picture'], labels: ['Turntable', 'Sleeve', 'Picture disc'] },
   vinylFront: { values: ['record', 'sleeve'], labels: ['Record', 'Sleeve'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
   seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
@@ -1328,7 +1351,15 @@ function Panel({
           ? [{ title: `${styleName} settings`, rows: STYLE_ROWS, own: true }]
           : [{ title: 'On-screen buttons', rows: BUTTON_ROWS, own: false }, ...GROUPS.map(g => ({ ...g, own: false }))]
         )
-          .map(group => ({ ...group, rows: group.rows.filter(r => !r.only || r.only.includes(prefs.theme)) }))
+          .map(group => ({
+            ...group,
+            rows: group.rows.filter(
+              r =>
+                (!r.only || r.only.includes(prefs.theme)) &&
+                // a picture disc is the cover all over, with no sleeve to bring forward and no resin to colour
+                !(prefs.vinylStyle === 'picture' && (r.key === 'vinylFront' || r.key === 'vinylTint')),
+            ),
+          }))
           .filter(group => group.rows.length > 0)
           .map((group, gi) => (
             <section key={group.title} className={gi === 0 ? '' : 'mt-6'}>
@@ -1756,6 +1787,214 @@ function Turntable({
 
       <Tonearm playing={playing} />
     </div>
+  );
+}
+
+const TICKS = 64;
+
+// the ticks are a fixed pattern per track rather than real loudness, so they are seeded from its name
+function tickHeights(seed: string) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) h = Math.imul(h ^ seed.charCodeAt(i), 16777619);
+  return Array.from({ length: TICKS }, (_, i) => {
+    h = Math.imul(h ^ (h >>> 15), 2246822507) ^ i;
+    const wave = 0.5 + 0.5 * Math.sin(i * 0.37 + (h & 7));
+    return 0.28 + 0.72 * (((h >>> 8) & 255) / 255) * (0.45 + 0.55 * wave);
+  });
+}
+
+function Ticks({
+  seed,
+  rotate,
+  progress,
+  tint,
+  onSeek,
+}: {
+  seed: string;
+  rotate: Prefs['rotate'];
+  progress: number;
+  tint: string;
+  onSeek: (ratio: number) => void;
+}) {
+  const heights = useMemo(() => tickHeights(seed), [seed]);
+  const at = Math.min(1, Math.max(0, progress));
+  const pick = (e: PointerEvent<HTMLDivElement>) => onSeek(alongBar(e, rotate));
+  return (
+    <div
+      className="relative flex h-14 w-full cursor-pointer items-center justify-between"
+      onPointerDown={pick}
+      onPointerMove={e => e.buttons === 1 && pick(e)}>
+      {heights.map((h, i) => (
+        <span
+          key={i}
+          className="w-px rounded-full transition-colors duration-300"
+          style={{ height: `${h * 100}%`, backgroundColor: i / (TICKS - 1) <= at ? tint : 'rgba(255,255,255,0.28)' }}
+        />
+      ))}
+      <div className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-off-white" style={{ left: `${at * 100}%` }}>
+        <span className="absolute top-1/2 left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-off-white bg-[#24272c]" />
+      </div>
+    </div>
+  );
+}
+
+// a picture disc, the cover pressed into the whole face, run off the edge of the screen so only its
+// centre and one side show, with the track set out plainly beside it
+function PictureDisc({
+  artUrl,
+  title,
+  artist,
+  album,
+  explicit,
+  accent,
+  playing,
+  motion,
+  upright,
+  rotate,
+  showTransport,
+  progress,
+  wallClock,
+  clockPos,
+  clockSize,
+  onLayout,
+  onToggle,
+  onPrev,
+  onNext,
+  onSeek,
+}: {
+  artUrl: string | null;
+  title: string;
+  artist: string;
+  album: string | null;
+  explicit: boolean;
+  accent: Accent | null;
+  playing: boolean;
+  motion: boolean;
+  upright: boolean;
+  rotate: Prefs['rotate'];
+  showTransport: boolean;
+  progress: number;
+  wallClock: ClockParts | null;
+  clockPos: 'left' | 'center' | 'right';
+  clockSize: number;
+  onLayout: () => void;
+  onToggle: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onSeek: (ratio: number) => void;
+}) {
+  // the hole has to be the same colour as the panel or it reads as a dot rather than a hole
+  const panel = accent ? `color-mix(in oklab, ${accent.fill} 10%, #24272c)` : '#24272c';
+  const tint = accent?.soft ?? '#efefef';
+  return (
+    <div
+      className={`absolute inset-0 flex overflow-hidden ${upright ? 'flex-col' : ''}`}
+      style={{ background: panel }}>
+      <div className={`relative shrink-0 ${upright ? 'h-[44%] w-full' : 'h-full w-[46%]'}`}>
+        <div
+          className={`absolute aspect-square ${motion ? 'disc-swap' : ''} ${
+            upright ? 'bottom-0 left-1/2 w-[118%] -translate-x-1/2' : 'top-1/2 right-0 h-[118%] -translate-y-1/2'
+          }`}>
+          <div
+            className="absolute inset-0 animate-platter overflow-hidden rounded-full shadow-[0_18px_50px_rgba(0,0,0,0.55)]"
+            // a whole cover turning at record speed is a blur, so the picture disc goes round slower
+            style={{ animationDuration: '9s', animationPlayState: playing && motion ? 'running' : 'paused' }}>
+            {artUrl ? (
+              <img src={artUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full bg-white/8" />
+            )}
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background:
+                  'repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0 1px, rgba(0,0,0,0) 1px 4px)',
+              }}
+            />
+          </div>
+
+          {/* the clear ring a picture disc has around its middle, and the hole through it */}
+          <button
+            aria-label="record layout"
+            onClick={onLayout}
+            className="absolute top-1/2 left-1/2 grid h-[36%] w-[36%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[rgba(150,155,162,0.5)] ring-1 ring-white/15 backdrop-blur-sm transition active:scale-95">
+            <span className="h-[46%] w-[46%] rounded-full shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)]" style={{ background: panel }} />
+          </button>
+        </div>
+      </div>
+
+      <div className={`flex min-w-0 flex-1 flex-col items-center justify-between ${upright ? 'px-8 pt-6 pb-12' : 'py-7 pr-8 pl-10'}`}>
+        <div className={`flex min-h-5 w-full items-center ${JUSTIFY[clockPos]}`}>
+          <ClockView parts={wallClock} size={(11 * clockSize) / 100} className="text-dim" color={accent?.soft} />
+        </div>
+
+        <div className="flex w-full min-w-0 flex-col items-center text-center">
+          <div className="flex w-full min-w-0 justify-center">
+            <Roll
+              text={title}
+              className="font-display text-[2rem] leading-[1.2] font-semibold tracking-display text-off-white"
+            />
+          </div>
+          <dl className="mt-2 grid grid-cols-[auto_auto] items-baseline justify-center gap-x-2.5 gap-y-0.5 text-row-lg">
+            <dt className="text-right text-dim">artist</dt>
+            <dd className="flex min-w-0 items-center gap-2 text-left font-medium text-near">
+              {explicit && <Explicit />}
+              <span className="truncate">{artist}</span>
+            </dd>
+            {album && (
+              <>
+                <dt className="text-right text-dim">album</dt>
+                <dd className="truncate text-left font-medium text-near">{album}</dd>
+              </>
+            )}
+          </dl>
+        </div>
+
+        <Ticks seed={title + artist} rotate={rotate} progress={progress} tint={tint} onSeek={onSeek} />
+
+        {showTransport ? (
+          <div className="flex items-center gap-9">
+            <Round label="previous" size="h-14 w-14" onClick={onPrev}>
+              <Skip className="h-5 w-5 -scale-x-100" />
+            </Round>
+            <Round label={playing ? 'pause' : 'play'} size="h-[4.5rem] w-[4.5rem]" tint={accent?.fill} onClick={onToggle}>
+              <span key={playing ? 'pause' : 'play'} className="grid animate-pop place-items-center">
+                {playing ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+              </span>
+            </Round>
+            <Round label="next" size="h-14 w-14" onClick={onNext}>
+              <Skip className="h-5 w-5" />
+            </Round>
+          </div>
+        ) : (
+          <div />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Round({
+  label,
+  size,
+  tint,
+  onClick,
+  children,
+}: {
+  label: string;
+  size: string;
+  tint?: string;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      aria-label={label}
+      onClick={onClick}
+      style={tint ? { color: tint } : undefined}
+      className={`grid shrink-0 place-items-center rounded-full bg-black/22 text-off-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-white/8 transition-transform duration-300 ease-spring active:scale-90 ${size}`}>
+      {children}
+    </button>
   );
 }
 
