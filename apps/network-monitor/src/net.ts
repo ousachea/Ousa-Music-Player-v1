@@ -27,8 +27,6 @@ export type NetState = {
   history: Sample[];
 };
 
-export type Unavailable = { field: string; reason: string };
-
 // what a desktop extension would have to expose for the fields this app cannot measure
 export const EXTENSION_CAPABILITY = {
   name: 'net.interface',
@@ -147,12 +145,4 @@ export function createProbe(client: BridgethingClient, options: ProbeOptions) {
       if (downTimer) clearTimeout(downTimer);
     },
   };
-}
-
-export function unavailableFields(hasExtension: boolean): Unavailable[] {
-  if (hasExtension) return [];
-  return [
-    { field: 'Upload', reason: 'needs interface counters' },
-    { field: 'Local IP', reason: 'needs interface counters' },
-  ];
 }

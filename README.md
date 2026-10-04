@@ -225,10 +225,39 @@ with previous, play and next sits along the bottom while music plays. Time comes
 
 ![Network Monitor](apps/network-monitor/screenshots/01-dashboard.png)
 
-Link status, latency, download throughput, connection kind, public address and observed uptime, with
-a 60-second graph. Measurements time real transfers through the phone's proxy, so download is what
-the proxy delivers rather than the line's ceiling. Upload and local address need a desktop
-extension exposing interface counters, and the provider in `src/net.ts` is ready for one.
+A small hardware monitoring station: CPU, GPU, memory, network, storage and processes for the
+machines around you, one at a time, on the Car Thing.
+
+- **Home** shows the four that matter most for the device you're watching; a phone with no CPU data
+  gets battery and storage in their place.
+- **CPU, GPU, RAM, NET** each have their own screen with a live graph; CPU shows every core.
+- **More** reaches Storage, Processes (sort by CPU or memory), Devices, Settings and Debug, which
+  shows the raw telemetry.
+- A device that goes quiet shows **Offline** with how long ago it last reported, and a banner says so
+  when it comes back.
+
+**Data source** in Settings is **Mock** (four pretend machines: a Windows gaming PC, a MacBook, a
+Linux server that drops off now and then, and an Android phone) or **Live**, which measures this
+Car Thing's own link and shows any agent reporting through the desktop extension. Settings also
+choose the refresh rate, °C or °F, Mbps or MB/s, and how much history the graphs keep.
+
+Every agent speaks one telemetry format (`src/protocol`), with fixed units and a section left out
+when a platform cannot read it. Everything that arrives is validated field by field before it is
+shown. Agents for Windows, macOS, Linux, Android and iOS, pairing and alerts are still to come.
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Preset button 1 | Home |
+| Preset button 2 | CPU |
+| Preset button 3 | GPU |
+| Preset button 4 | Network |
+| Mode | More |
+| Turn the wheel | Scroll a list, or step through the screens |
+| Swipe across the screen | Next or previous screen |
+| Back | The screen before |
+| Tap the device name | Devices |
 
 ## O-Quote Flow
 
