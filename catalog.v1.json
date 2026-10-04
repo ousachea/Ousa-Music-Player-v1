@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-04T02:39:58.617Z",
+  "updated_at": "2026-10-04T02:42:45.380Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -398,6 +398,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.38.3",
+          "released_at": "2026-10-04T02:42:45.378Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.38.3.zip",
+            "size": 1033341,
+            "sha256": "66cfa15ab5aeba6dfc2dfd09a4af324015bec69c4f8d2b5de1eed285ddbe47ae"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.38.3.html",
+            "size": 33596,
+            "sha256": "8e4b2bfe7d4faa28cd3184723ec8b5a6b9520db8782b4ef02ba22ada0b503436"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Pocket**'s screen runs the full height of the display in landscape, with a larger cover and the\nwheel a little smaller beside it."
+        },
         {
           "version": "0.38.2",
           "released_at": "2026-10-04T02:39:58.614Z",
