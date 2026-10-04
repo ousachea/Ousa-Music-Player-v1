@@ -15,6 +15,7 @@ import { explicitFor, hdArtwork } from './hd-art';
 import { activeIndex, useLyrics } from './lyrics';
 import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
 import { CoverFlow } from './coverflow';
+import { Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
@@ -64,6 +65,10 @@ export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
   const { prefs, setPref } = usePrefs(client);
   const wallClock = useClock(client, prefs.clock, prefs.clockSeconds, prefs.clockFormat);
+  // a clock of its own, so auto still follows the phone's time with the on-screen clock turned off
+  const dayClock = useClock(client, prefs.theme === 'stereo' && prefs.stereoMode === 'auto', false, 'h24');
+  const stereoDay =
+    prefs.stereoMode === 'light' || (prefs.stereoMode === 'auto' && Number(dayClock?.hour ?? NaN) % 24 < 12);
   const [panel, setPanel] = useState(false);
   // the settings open on the general page; a style's own settings are a page of their own under it
   const [stylePage, setStylePage] = useState(false);
@@ -99,7 +104,7 @@ export default function App() {
   const seekStyle =
     prefs.theme === 'widget' ? 'bar' : prefs.seek === 'auto' ? (prefs.theme === 'poster' ? 'wave' : 'bar') : prefs.seek;
   const seekDot = prefs.seekDot === 'auto' ? prefs.theme !== 'widget' : prefs.seekDot === 'on';
-  const ownsVolume = (prefs.theme === 'widget' && prefs.coverVolume) || prefs.theme === 'stereo';
+  const ownsVolume = (prefs.theme === 'widget' && prefs.coverVolume) || prefs.theme === 'stereo' || prefs.theme === 'pocket';
   // a quarter turn lays the player out portrait, where a square cover cannot sit beside the track
   const upright = prefs.rotate === 90 || prefs.rotate === 270;
   const track = state?.track ?? null;
@@ -372,7 +377,7 @@ export default function App() {
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
       else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'poster', 'lyrics'];
+        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics'];
         setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
       }
     };
@@ -383,6 +388,8 @@ export default function App() {
     const onDown = (e: globalThis.PointerEvent) => {
       if (panel) return;
       const target = e.target instanceof Element ? e.target : null;
+      // a drag round a click wheel is a turn, not a flick
+      if (target?.closest('[data-no-swipe]')) return void (swipeFrom.current = null);
       swipeFrom.current = { x: e.clientX, y: e.clientY, inList: !!target?.closest('[data-queue-list]') };
     };
     const onUp = (e: globalThis.PointerEvent) => {
@@ -450,7 +457,7 @@ export default function App() {
     <div className="relative h-full w-full overflow-hidden bg-screen">
       {/* outside the keyed wrapper: inside it, every track change tore the blurred art down and
           built it again, which showed as a flash while the new one decoded */}
-      {prefs.theme !== 'poster' && prefs.theme !== 'stereo' && prefs.theme !== 'flow' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
+      {prefs.theme !== 'poster' && prefs.theme !== 'stereo' && prefs.theme !== 'flow' && prefs.theme !== 'pocket' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
 
       <div
         key={track.persistentId ?? track.title ?? ''}
@@ -481,12 +488,41 @@ export default function App() {
           onSkipTo={index => client.player.skipToIndex({ index })}
           background={prefs.flowBg}
         />
+      ) : prefs.theme === 'pocket' ? (
+        <Pocket
+          artUrl={artUrl}
+          title={track.title ?? 'unknown'}
+          artist={artistName ?? '—'}
+          accent={accentOn}
+          body={prefs.pocketBody}
+          playing={playing}
+          upright={upright}
+          rotate={prefs.rotate}
+          progress={progress}
+          elapsed={elapsed}
+          duration={duration}
+          remaining={prefs.remaining}
+          volume={volume}
+          showVolume={hud}
+          wallClock={wallClock}
+          onToggle={toggle}
+          onPrev={() => goPrev(true)}
+          onNext={() => goNext()}
+          onMenu={() => setSheet(true)}
+          onSeek={ratio => seek(ratio * duration)}
+          onVolume={level => {
+            if (volume?.muted) client.audio.muteToggle();
+            client.audio.setVolume({ level });
+            flashHud();
+          }}
+        />
       ) : prefs.theme === 'stereo' ? (
         <Stereo
           title={track.title ?? 'unknown'}
           artist={artistName ?? '—'}
           album={track.album ?? null}
           glow={prefs.deckGlow}
+          day={stereoDay}
           accent={accentOn}
           playing={playing}
           motion={prefs.motion}
@@ -1051,12 +1087,14 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
-    values: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'poster', 'lyrics'],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Poster', 'Lyrics'],
+    values: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics'],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
   flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
+  pocketBody: { values: ['silver', 'black'], labels: ['Silver', 'Black'] },
+  stereoMode: { values: ['dark', 'light', 'auto'], labels: ['Dark', 'Light', 'Auto'] },
   deckGlow: { values: GLOWS, labels: ['Album', 'Rainbow', 'Ice', 'Amber', 'Red', 'Green', 'White'] },
   vinylStyle: { values: ['turntable', 'sleeve', 'picture'], labels: ['Turntable', 'Sleeve', 'Picture disc'] },
   vinylFront: { values: ['record', 'sleeve'], labels: ['Record', 'Sleeve'] },
@@ -1092,7 +1130,9 @@ const STYLE_ROWS: Row[] = [
   { key: 'vinylFront', label: 'In front', only: ['vinyl'] },
   { key: 'vinylTint', label: 'Record colour', only: ['vinyl'] },
   { key: 'deckGlow', label: 'Display colour', only: ['stereo'] },
+  { key: 'stereoMode', label: 'Light or dark', only: ['stereo'] },
   { key: 'flowBg', label: 'Background', only: ['flow'] },
+  { key: 'pocketBody', label: 'Body colour', only: ['pocket'] },
   { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
@@ -1103,7 +1143,7 @@ const STYLE_ROWS: Row[] = [
   { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
   { key: 'blur', label: 'Backdrop blur', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
   { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
-  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo'] },
+  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'pocket'] },
 ];
 
 // the one most reached for, so it leads the list instead of sitting a few screens down under controls

@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "O-Music Player",
-  "version": "0.37.0",
+  "version": "0.38.0",
   "description": "Now playing from your phone, in five styles coloured by the album art, and turnable to any mounting.",
   "icon": "icon.jpg",
   "settings": "settings.html",
@@ -35,6 +35,7 @@
           "dial",
           "stereo",
           "flow",
+          "pocket",
           "poster",
           "lyrics"
         ],
@@ -170,6 +171,19 @@
     {
       "type": "enum",
       "data": {
+        "key": "stereoMode",
+        "label": "Stereo light or dark",
+        "choices": [
+          "dark",
+          "light",
+          "auto"
+        ],
+        "default": "dark"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
         "key": "flowBg",
         "label": "Cover flow background",
         "choices": [
@@ -177,6 +191,18 @@
           "black"
         ],
         "default": "album"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "pocketBody",
+        "label": "Pocket body colour",
+        "choices": [
+          "silver",
+          "black"
+        ],
+        "default": "silver"
       }
     },
     {

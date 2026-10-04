@@ -435,6 +435,12 @@ img {
   }
 }
 
+/* a glow on pale glass is a smudge, so the daylight display draws its dots crisp */
+.stereo-day :is(path, span, div) {
+  filter: none !important;
+  text-shadow: none !important;
+}
+
 /* the rainbow display colour: everything on the glass is drawn in one hue and the whole layer is
    turned round the wheel, which the compositor does without redrawing a single dot */
 @keyframes rainbow {

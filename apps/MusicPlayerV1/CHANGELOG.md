@@ -1,5 +1,16 @@
 # O-Music Player
 
+## 0.38.0
+
+A tenth player style, **Pocket**: a pocket music player held sideways, with the cover, track and
+progress on a small screen and a click wheel beside it. The wheel's sides are menu (the queue),
+previous, next and play/pause, its centre plays and pauses, and dragging round the ring turns the
+volume, which the screen shows while it changes. **Body colour** is silver or black, and turned
+upright the screen stands above the wheel.
+
+**Stereo** gains **Light or dark**: the glowing night display, a daylight one with crisp dark dots on
+pale glass, or **Auto**, light in the AM and dark in the PM by the phone's clock.
+
 ## 0.37.0
 
 A third vinyl layout, **Picture disc**: the cover pressed into the whole face of the record, run

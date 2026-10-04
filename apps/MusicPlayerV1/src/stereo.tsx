@@ -278,13 +278,13 @@ const Spectrum = memo(function Spectrum({
   );
 });
 
-function Badge({ on, color, children }: { on: boolean; color: string; children: ReactNode }) {
+function Badge({ on, color, ink, children }: { on: boolean; color: string; ink: string; children: ReactNode }) {
   return (
     <span
       className="rounded-[3px] px-1.5 font-mono text-[0.72rem] leading-[1.25rem] font-bold tracking-wide transition-opacity duration-300"
       style={{
         backgroundColor: on ? color : 'transparent',
-        color: on ? '#03090c' : color,
+        color: on ? ink : color,
         boxShadow: `inset 0 0 0 1.5px ${color}`,
         opacity: on ? 1 : 0.22,
         filter: on ? `drop-shadow(0 0 4px ${color})` : undefined,
@@ -364,6 +364,7 @@ export function Stereo({
   artist,
   album,
   glow,
+  day,
   accent,
   playing,
   motion,
@@ -386,6 +387,8 @@ export function Stereo({
   artist: string;
   album: string | null;
   glow: Glow;
+  // a daylight display: dark dots on pale glass with no glow, the way an lcd reads in sun
+  day: boolean;
   accent: Accent | null;
   playing: boolean;
   motion: boolean;
@@ -404,7 +407,10 @@ export function Stereo({
   onPrev: () => void;
   onNext: () => void;
 }) {
-  const color = glowColor(glow, accent);
+  const lit = glowColor(glow, accent);
+  // the hue stays, taken down far enough to read as ink on the pale glass
+  const color = day ? `color-mix(in oklab, ${lit} 58%, #0b0d0f)` : lit;
+  const paper = day ? '#dde2da' : '#030405';
   const [page, setPage] = useState<Page>('artist');
   const frame = useId().replace(/[^a-zA-Z0-9]/g, '');
   const glass = useRef<HTMLDivElement>(null);
@@ -445,10 +451,10 @@ export function Stereo({
     <div
       className={`absolute inset-0 overflow-hidden ${upright ? 'px-6 pt-8 pb-11' : 'px-8 pt-6 pb-10'} ${
         glow === 'rainbow' && motion ? 'rainbow' : ''
-      }`}
-      style={{ willChange: 'transform', background: '#030405' }}>
+      } ${day ? 'stereo-day' : ''}`}
+      style={{ willChange: 'transform', background: paper }}>
       {/* the backlight bleeding through the glass, and a reflection across it */}
-      <div className="pointer-events-none absolute inset-0" style={{ background: color, opacity: 0.05 }} />
+      <div className="pointer-events-none absolute inset-0" style={{ background: color, opacity: day ? 0.07 : 0.05 }} />
       <div
         className="pointer-events-none absolute inset-0"
         style={{ background: 'linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.012) 34%, transparent 35%)' }}
@@ -511,7 +517,7 @@ export function Stereo({
         )}
 
         <div className="relative flex h-6 items-center gap-2.5">
-          <Badge on color={color}>
+          <Badge on color={color} ink={paper}>
             BT
           </Badge>
           <span style={{ color, filter: `drop-shadow(0 0 3px ${color})` }}>
@@ -545,10 +551,10 @@ export function Stereo({
               style={{ filter: `drop-shadow(0 0 3px ${color})` }}
             />
           </svg>
-          <Badge on={shuffle} color={color}>
+          <Badge on={shuffle} color={color} ink={paper}>
             RDM
           </Badge>
-          <Badge on={repeat !== 'off'} color={color}>
+          <Badge on={repeat !== 'off'} color={color} ink={paper}>
             {repeat === 'one' ? 'RPT 1' : 'RPT'}
           </Badge>
         </div>

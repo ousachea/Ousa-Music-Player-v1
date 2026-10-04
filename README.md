@@ -7,7 +7,7 @@ source once and all of them are available.
 
 | App | What it does |
 | --- | --- |
-| **O-Music Player** | Now playing, in nine styles, coloured by the album art, on a screen that turns |
+| **O-Music Player** | Now playing, in ten styles, coloured by the album art, on a screen that turns |
 | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
 | **O-Network Monitor** | Link status, latency and measured throughput |
 | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -41,7 +41,7 @@ update**.
 
 ## O-Music Player
 
-Nine player styles, all tinted by the album art, with music notes drifting up over them (**Display →
+Ten player styles, all tinted by the album art, with music notes drifting up over them (**Display →
 Floating notes**). Switch styles with **Mode** or in the settings; a small tag at the bottom names
 the current one. Track changes cross-fade the blurred background, and Vinyl and CD swap in a new
 record or disc.
@@ -98,7 +98,9 @@ cover turning in the middle and ten-second skip keys either side. The card shows
 A car head unit's dot matrix display across the whole screen, in the album's colour or one picked
 under **Display colour** (ice, amber, red, green, white, or rainbow). It has a level meter, a
 scrolling title, a line that steps through artist, album and time (tap it or **DISP**), shuffle and
-repeat badges, and a volume readout on the display itself.
+repeat badges, and a volume readout on the display itself. **Light or dark** picks the glowing night
+display, a crisp daylight one with dark dots on pale glass, or **Auto**: light in the AM, dark in the
+PM, by the phone's clock.
 
 ### Flow
 
@@ -107,6 +109,13 @@ repeat badges, and a volume readout on the display itself.
 Cover flow: the current cover in the middle, up next to the right and just played to the left. Tap
 the middle to play or pause, or a side cover to jump to it. With nothing queued, the buttons fill the
 empty right side. **Background** is a dark wash of the album's colours, or black.
+
+### Pocket
+
+A pocket music player held sideways: a small screen with the cover, track and progress bar, and a
+click wheel beside it. Its sides are menu (opens the queue), previous, next and play/pause, the
+centre plays and pauses, and dragging round the ring turns the volume, shown on the screen. **Body
+colour** is silver or black. Turned upright it stands like the real thing, screen above wheel.
 
 ### Poster
 
@@ -148,7 +157,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Poster, Lyrics |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
