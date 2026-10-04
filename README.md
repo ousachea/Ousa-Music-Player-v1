@@ -237,14 +237,17 @@ machines around you, one at a time, on the Car Thing.
 - A device that goes quiet shows **Offline** with how long ago it last reported, and a banner says so
   when it comes back.
 
-**Data source** in Settings is **Mock** (four pretend machines: a Windows gaming PC, a MacBook, a
-Linux server that drops off now and then, and an Android phone) or **Live**, which measures this
-Car Thing's own link and shows any agent reporting through the desktop extension. Settings also
-choose the refresh rate, °C or °F, Mbps or MB/s, and how much history the graphs keep.
+**Live** in Settings shows the computer your Car Thing is plugged into. Install O-System Monitor in
+the bridgething desktop app and allow its extension: it reads the machine and reports a few times a
+second while the app is on screen, and nothing while it is not. On a Mac that is CPU per core and
+load, memory as Activity Monitor counts it, GPU load, Wi-Fi or Ethernet speed and signal, the drive
+with its read and write speed, battery health, displays and the busiest processes, all without admin
+rights. Temperatures need admin rights on macOS, so they are left out rather than guessed. Live also
+lists the Car Thing's own link. Windows and Linux are next.
 
-Every agent speaks one telemetry format (`src/protocol`), with fixed units and a section left out
-when a platform cannot read it. Everything that arrives is validated field by field before it is
-shown. Agents for Windows, macOS, Linux, Android and iOS, pairing and alerts are still to come.
+**Mock** runs four pretend machines (a Windows gaming PC, a MacBook, a Linux server that drops off
+now and then, and an Android phone). Settings also choose the refresh rate, °C or °F, Mbps or MB/s,
+and how much history the graphs keep.
 
 ### Controls
 

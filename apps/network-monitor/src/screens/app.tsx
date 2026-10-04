@@ -12,10 +12,12 @@ export const Devices = memo(function Devices({
   state,
   selected,
   onPick,
+  live,
 }: {
   state: TelemetryState;
   selected: string | null;
   onPick: (id: string) => void;
+  live: boolean;
 }) {
   const ids = state.order;
   const [focus, setFocus] = useWheelList(ids.length, i => ids[i] && onPick(ids[i]));
@@ -42,6 +44,13 @@ export const Devices = memo(function Devices({
           const d = state.devices[id];
           return <DeviceCard key={id} info={d.info} online={d.online} selected={id === selected} focused={i === focus} onPick={() => onPick(id)} />;
         })}
+        {/* with only the car thing listed, nothing on the desktop is reporting yet */}
+        {live && ids.every(id => state.devices[id].info.platform === 'carthing') && (
+          <div className="rounded-lg border border-dashed border-white/12 px-4 py-3 font-mono text-[0.875rem] leading-relaxed text-dim">
+            No computer reporting. Install O-System Monitor in the bridgething desktop app on the computer this Car
+            Thing is plugged into, and allow its extension.
+          </div>
+        )}
       </div>
     </div>
   );

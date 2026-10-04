@@ -12,10 +12,12 @@ in Settings shows the four as cards with bars, or as rings: a gradient arc round
 eases to every new reading, with network set against the speed of its link. Devices
 that go quiet show as offline with the time of their last report.
 
-Data comes from one telemetry format every future agent will speak, with each field checked before
-it is shown. **Mock** runs four pretend machines so the whole dashboard can be explored today;
-**Live** measures this Car Thing's own link as before and shows any agent reporting through the
-desktop extension.
+**Live** shows the computer the Car Thing is plugged into, through a desktop extension that ships
+with the app: install it in the bridgething desktop app and allow it. This release reads a Mac
+without admin rights: CPU per core and load, memory, GPU load, network speed and Wi-Fi signal, the
+drive and its read and write speed, battery health, displays and the busiest processes. It only
+works while the app is on screen. Live also lists the Car Thing's own link, measured as before.
+**Mock** runs four pretend machines so every screen can be explored without one.
 
 ## 0.1.2
 

@@ -295,7 +295,8 @@ export const Gpu = memo(function Gpu({ entry, caps, fmt, windowSec }: DeviceProp
           <TemperatureBadge celsius={g.temperature} text={fmt.temp(g.temperature)} />
         </div>
         <div className="mt-auto grid grid-cols-2 gap-x-4 gap-y-3">
-          <Stat label="VRAM" value={vram} />
+          {/* a gpu with no memory of its own, as on apple silicon, is reporting its share of system memory */}
+          <Stat label={g.memoryTotal !== undefined ? 'VRAM' : 'GPU memory'} value={vram} />
           <Stat label="Clock" value={g.frequency !== undefined ? `${g.frequency} MHz` : null} />
           <Stat label="Power" value={g.power !== undefined ? `${g.power} W` : null} />
           <Stat label="Fan" value={g.fan !== undefined ? `${g.fan}%` : null} />

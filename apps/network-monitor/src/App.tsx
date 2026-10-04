@@ -37,9 +37,11 @@ export default function App() {
   useTelemetrySource(client);
   useCarThingInput();
 
-  // the device shown: the one picked this session, else the saved default, else the first to report
+  // the device shown: the one picked this session, else the saved default, else the first computer to report,
+  // since the car thing's own link is the least interesting thing on the list
+  const firstComputer = telemetry.order.find(d => telemetry.devices[d].info.platform !== 'carthing');
   const id =
-    [nav.device, settings.defaultDevice].find(d => d && telemetry.devices[d]) ?? telemetry.order[0] ?? null;
+    [nav.device, settings.defaultDevice].find(d => d && telemetry.devices[d]) ?? firstComputer ?? telemetry.order[0] ?? null;
   const entry = id ? telemetry.devices[id] : null;
   const caps = entry ? capabilities(entry) : null;
 
@@ -64,7 +66,7 @@ export default function App() {
     entry && caps ? { entry, caps, fmt, windowSec: settings.historySec, onOpen: go } : null;
 
   let body: ReactNode;
-  if (nav.screen === 'devices') body = <Devices state={telemetry} selected={id} onPick={pick} />;
+  if (nav.screen === 'devices') body = <Devices state={telemetry} selected={id} onPick={pick} live={settings.source === 'live'} />;
   else if (nav.screen === 'settings') body = <SettingsScreen settings={settings} onChange={patch => updateSettings(client, patch)} />;
   else if (nav.screen === 'debug') body = <Debug daemon={daemon} source={settings.source} state={telemetry} entry={entry} />;
   else if (nav.screen === 'more') body = <More onGo={go} />;
