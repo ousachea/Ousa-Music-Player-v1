@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-04T02:36:16.589Z",
+  "updated_at": "2026-10-04T02:38:25.539Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -398,6 +398,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.38.1",
+          "released_at": "2026-10-04T02:38:25.536Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.38.1.zip",
+            "size": 1033121,
+            "sha256": "073c06d47c3d70f442984e77450e83a6931f5f0d11347fa9ec51211f40893e5b"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.38.1.html",
+            "size": 33596,
+            "sha256": "8e4b2bfe7d4faa28cd3184723ec8b5a6b9520db8782b4ef02ba22ada0b503436"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Tapping the clock on **Stereo** switches the display between light and dark."
+        },
         {
           "version": "0.38.0",
           "released_at": "2026-10-04T02:36:16.584Z",
