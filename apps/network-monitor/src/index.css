@@ -119,3 +119,153 @@
   animation: widget-drift 22s linear infinite;
   will-change: transform;
 }
+
+/* the battery: a band of light running along the charge while it fills, a slow breath while it drains */
+@keyframes battery-shimmer {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(260%);
+  }
+}
+
+.battery-shimmer {
+  animation: battery-shimmer 2.2s ease-in-out infinite;
+}
+
+@keyframes battery-breathe {
+  50% {
+    filter: brightness(0.82);
+  }
+}
+
+.battery-breathe {
+  animation: battery-breathe 3.6s ease-in-out infinite;
+}
+
+@keyframes bolt-pulse {
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.75;
+  }
+}
+
+.bolt-pulse {
+  animation: bolt-pulse 1.6s ease-in-out infinite;
+}
+
+/* the sun: its glow breathing, its rays turning slowly */
+@keyframes sun-glow {
+  50% {
+    transform: scale(1.25);
+    opacity: 0.8;
+  }
+}
+
+.sun-glow {
+  animation: sun-glow 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes sun-rays {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sun-rays {
+  animation: sun-rays 18s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* the weather card's skies */
+@keyframes weather-breathe {
+  50% {
+    transform: scale(1.06);
+    opacity: 0.7;
+  }
+}
+
+.weather-breathe {
+  animation: weather-breathe 5s ease-in-out infinite;
+}
+
+@keyframes weather-twinkle {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.weather-twinkle {
+  animation: weather-twinkle 2.8s ease-in-out infinite;
+}
+
+/* the hills are twice the card's width, so sliding one width brings the start round again */
+@keyframes weather-slide {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.weather-slide {
+  animation: weather-slide 30s linear infinite;
+}
+
+/* the streak layer is twice the card's height and repeats every 31px along its slant, so half its height loops */
+@keyframes weather-rain {
+  to {
+    transform: translate(-12%, 50%);
+  }
+}
+
+.weather-rain {
+  animation: weather-rain 0.9s linear infinite;
+}
+
+@keyframes weather-flash {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 0.35;
+  }
+  92% {
+    opacity: 0.05;
+  }
+  94% {
+    opacity: 0.25;
+  }
+}
+
+.weather-flash {
+  animation: weather-flash 7s linear infinite;
+}
+
+@keyframes weather-snow {
+  to {
+    transform: translate(18px, 200px);
+  }
+}
+
+.weather-snow {
+  animation: weather-snow 7s linear infinite;
+}
+
+/* a short light running the length of the sun's arc, one way, then round again */
+@keyframes sun-arc-run {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.sun-arc-run {
+  animation: sun-arc-run 6s ease-in-out infinite;
+}

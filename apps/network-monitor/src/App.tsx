@@ -6,7 +6,11 @@ import { OrientationContext, Stage } from './components/stage';
 import { useCarThingInput } from './composables/useCarThingInput';
 import { useMetrics } from './composables/useMetrics';
 import { useTelemetrySource } from './composables/useTelemetrySource';
+import { LocationContext, useLocation } from './composables/useLocation';
+import { ClientContext } from './composables/useNowPlaying';
 import { useWallClock } from './composables/useWallClock';
+import { WeatherContext, useWeather } from './composables/useWeather';
+import { ZoneContext, useZone } from './composables/useZone';
 import { daemonUrl } from './daemon';
 import { Debug, Devices, More, SettingsScreen } from './screens/app';
 import { HomeWidgets } from './screens/widgets';
@@ -28,6 +32,10 @@ export default function App() {
   const nav = useNav();
   const fmt = useMetrics();
   const clock = useWallClock(client);
+  const zone = useZone(client);
+  // one fix shared by the sun and the weather, rather than each asking the phone
+  const place = useLocation(client);
+  const weather = useWeather(client, place);
 
   useEffect(() => {
     void loadSettings(client);
@@ -114,6 +122,10 @@ export default function App() {
 
   return (
     <Stage rotate={settings.rotate}>
+    <ClientContext.Provider value={client}>
+    <ZoneContext.Provider value={zone}>
+    <LocationContext.Provider value={place}>
+    <WeatherContext.Provider value={weather}>
     <OrientationContext.Provider value={orientation}>
     <div className="relative flex h-full w-full flex-col bg-screen">
       {!nav.bare && <TopBar device={entry?.info.name ?? null} online={entry?.online ?? false} clock={clock} onDevice={() => go('devices')} />}
@@ -126,6 +138,10 @@ export default function App() {
       {daemon !== 'open' && <AlertBanner tone="warn" title="DAEMON" detail="reconnecting…" />}
     </div>
     </OrientationContext.Provider>
+    </WeatherContext.Provider>
+    </LocationContext.Provider>
+    </ZoneContext.Provider>
+    </ClientContext.Provider>
     </Stage>
   );
 }

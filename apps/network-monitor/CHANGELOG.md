@@ -10,8 +10,20 @@ does. A soft light and a pool of shadow drift slowly round each tile, every one 
 device without a GPU or CPU reading hands the tile to its battery, and a row with a tile to spare lets
 its neighbour stretch rather than leave a gap.
 
-Widgets run to more than one page: swipe or turn the wheel for every core, the busiest apps, uptime,
-battery, displays and any other drives, with dots marking the page.
+Widgets run to more than one page: swipe or turn the wheel, with dots marking the page.
+
+- **Weather**: the condition, temperature, time, date and city over a sky that moves: the sun's rings
+  breathing, stars twinkling, clouds and fog drifting, rain slanting down, a storm flashing, snow
+  falling. From Open-Meteo, for where the phone is, or near enough from the network when it will
+  not say.
+- **Clock**: digital, a glowing LED, or analog with a sweeping second hand; tap to change.
+- **Calendar**: the month, the week or the day, with today marked; tap to change.
+- **Music**: what the phone is playing, with its artwork, progress, and previous, play and next.
+- **Battery**: a battery that fills to its level, shimmering while it charges, with its health and
+  cycle count.
+- **Sun**: night, dawn, day or dusk over a glowing arc the sun rides by day and the moon by night,
+  with sunrise or sunset and the temperature.
+- Every core, the busiest apps, uptime, displays and any other drives.
 
 **Preset 4** turns the screen a quarter at a time, for a Car Thing mounted on its side, and so does
 **Screen rotation** in Settings. Every screen lays itself out for portrait rather than stretching, and

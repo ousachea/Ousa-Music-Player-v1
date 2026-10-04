@@ -236,8 +236,11 @@ machines around you, one at a time, on the Car Thing.
   gets battery and storage in their place. **Home style** draws them as cards with bars; as rings, a
   gradient arc round each figure that eases to every new reading; or as widgets, tiles in their own
   colours with a soft light drifting slowly across each, network wide along the bottom and the disk
-  as a row of slats. Swipe or turn the wheel for more widgets: every core, the busiest apps, uptime,
-  battery, displays and any other drives.
+  as a row of slats. Swipe or turn the wheel for more widgets: the weather with an animated sky,
+  a clock (digital, LED or analog), a calendar (month, week or day), what the phone is playing with
+  its controls, an animated battery with its health and cycle count, the sun's day as a glowing arc,
+  every core, the busiest apps, uptime, displays and any other drives. Tap the clock or the calendar
+  to change its face.
 - **CPU, GPU, RAM, NET, DISK** each have their own screen; CPU shows every core, and DISK every
   drive with its space and read and write speed.
 - **More** reaches Processes (each with a coloured share bar and a trend line, by CPU or memory), Devices, Settings and Debug, which shows the
