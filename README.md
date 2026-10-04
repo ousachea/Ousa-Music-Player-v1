@@ -115,8 +115,8 @@ empty right side. **Background** is a dark wash of the album's colours, or black
 A pocket music player held sideways: a screen the full height of the display with the cover, track
 and progress bar, and a click wheel beside it. Its sides are menu (opens the queue), previous, next and play/pause, the
 centre plays and pauses, and dragging round the ring turns the volume, shown on the screen. **Body
-colour** is silver or black. Tap the screen to show just the artwork across the whole display, and
-tap again to come back. Turned upright it stands like the real thing, screen above wheel.
+colour** is silver or black. Tap the screen to show just the artwork on it, and tap again to
+come back. Turned upright it stands like the real thing, screen above wheel.
 
 ### Poster
 

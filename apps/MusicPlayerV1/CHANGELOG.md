@@ -1,5 +1,10 @@
 # O-Music Player
 
+## 0.38.5
+
+The artwork view on **Pocket** shows on its screen, inside the bezel, rather than across the whole
+display, so the body and the wheel stay in view. A tap on the screen toggles it.
+
 ## 0.38.4
 
 Tapping **Pocket**'s screen shows just the artwork across the whole display, over a blur of

@@ -125,7 +125,8 @@ export function Pocket({
         showVolume={showVolume}
         wallClock={wallClock}
         onSeek={onSeek}
-        onArt={() => onArtOnly(true)}
+        artOnly={artOnly}
+        onArt={() => onArtOnly(!artOnly)}
       />
 
       <Wheel
@@ -140,23 +141,6 @@ export function Pocket({
         onMenu={onMenu}
         onVolume={onVolume}
       />
-
-      {/* the cover on its own across the whole display, over a blur of itself; any tap puts it away */}
-      {artOnly && (
-        <button
-          aria-label="back to the player"
-          onClick={() => onArtOnly(false)}
-          className="absolute inset-0 z-10 grid animate-pop place-items-center overflow-hidden bg-black">
-          {artUrl ? (
-            <>
-              <img src={artUrl} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
-              <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-contain" />
-            </>
-          ) : (
-            <span className="font-body text-title text-white/60">no artwork</span>
-          )}
-        </button>
-      )}
     </div>
   );
 }
@@ -177,6 +161,7 @@ function Screen({
   showVolume,
   wallClock,
   onSeek,
+  artOnly,
   onArt,
 }: {
   artUrl: string | null;
@@ -194,6 +179,7 @@ function Screen({
   showVolume: boolean;
   wallClock: ClockParts | null;
   onSeek: (ratio: number) => void;
+  artOnly: boolean;
   onArt: () => void;
 }) {
   const bar = useRef<HTMLDivElement>(null);
@@ -288,6 +274,20 @@ function Screen({
           )}
           <span className="text-[0.625rem]">{playing ? '▶' : '❚❚'}</span>
         </div>
+
+        {/* the cover alone on the glass, over a blur of itself; another tap brings the track back */}
+        {artOnly && (
+          <div className="absolute inset-0 animate-pop overflow-hidden bg-black">
+            {artUrl ? (
+              <>
+                <img src={artUrl} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
+                <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-contain" />
+              </>
+            ) : (
+              <span className="absolute inset-0 grid place-items-center font-body text-title text-white/60">no artwork</span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
