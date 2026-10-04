@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-04T03:36:41.721Z",
+  "updated_at": "2026-10-04T05:11:06.179Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -1876,20 +1876,21 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
-          "version": "0.3.0",
-          "released_at": "2026-10-04T03:36:41.718Z",
+          "version": "0.4.0",
+          "released_at": "2026-10-04T05:11:06.173Z",
           "download": {
-            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c16-be12-7003-91aa-482b107fdccb/0.3.0.zip",
-            "size": 953626,
-            "sha256": "0b70b43c171341da14f010170edc824341dfe689ea1e40950878bc0c695ec6f7"
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c16-be12-7003-91aa-482b107fdccb/0.4.0.zip",
+            "size": 1011581,
+            "sha256": "989f9d603b5f529ec8766d590d73d85601cc9d0a355c49ff64695f7aaf691397"
           },
           "settings": {
-            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c16-be12-7003-91aa-482b107fdccb/0.3.0.html",
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c16-be12-7003-91aa-482b107fdccb/0.4.0.html",
             "size": 26935,
             "sha256": "40613e2f3a9aad26b2e2687dd27ebcc57fcf5322563b72fbf68732c427e13313"
           },
           "permissions": [
-            "net.proxy"
+            "net.proxy",
+            "geo"
           ],
           "extension": {
             "desktop": true,
@@ -1915,6 +1916,63 @@
               "run:ping",
               "run:nvidia-smi",
               "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+              "read:~/.claude",
+              "read:~/.config/claude",
+              "env:HOME",
+              "env:USERPROFILE",
+              "env:CLAUDE_CONFIG_DIR",
+              "sys"
+            ]
+          },
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A third **Home style**, **Widgets**: each reading on a tile of its own colour that fades to black in\none corner. CPU in green with its usage bar and its temperature, or its load where the machine\ngives no temperature; memory in blue; the GPU in magenta with its memory bar; network wide along the\nbottom with download, upload and ping; and the disk in violet over a row of slats that fill as it\ndoes. A soft light and a pool of shadow drift slowly round each tile, every one at its own pace. A\ndevice without a GPU or CPU reading hands the tile to its battery, and a row with a tile to spare lets\nits neighbour stretch rather than leave a gap.\n\nWidgets run to more than one page: swipe or turn the wheel, with dots marking the page.\n\n- **Weather**: the condition, temperature, time, date and city over a sky that moves: the sun's rings\n  breathing, stars twinkling, clouds and fog drifting, rain slanting down, a storm flashing, snow\n  falling. From Open-Meteo, for where the phone is, or near enough from the network when it will\n  not say.\n- **Claude Code**: today's tokens with how they split, replies, sessions and the model, and the week\n  as bars, read from Claude Code's own logs on the computer the Car Thing is plugged into.\n- **Clock**: digital, a glowing LED, or analog with a sweeping second hand; tap to change.\n- **Calendar**: the month, the week or the day, with today marked; tap to change.\n- **Music**: what the phone is playing, with its artwork, progress, and previous, play and next.\n- **Battery**: a battery that fills to its level, shimmering while it charges, with its health and\n  cycle count.\n- **Sun**: night, dawn, day or dusk over a glowing arc the sun rides by day and the moon by night,\n  with sunrise or sunset and the temperature.\n- Every core, the busiest apps, uptime, displays and any other drives.\n\nCards and Rings have the same pages after their own first, in a plain dress to match. **Mode** steps\nthrough the three home styles; More stays on its tab. **Preset 1**, pressed again on Home, turns to the next page of\nwidgets.\n\n**Preset 4** turns the screen a quarter at a time, for a Car Thing mounted on its side, and so does\n**Screen rotation** in Settings. Every screen lays itself out for portrait rather than stretching, and\nswipes follow the turn. Network stays on its tab along the bottom.\n\n**Processes** opens as a radar of the busiest eight: CPU in green and memory in orange, each glowing\nand scaled to its own leader, gliding to each new reading, with every process's figures round the\nedge. **List** shows them as a breakdown instead: each process in a colour of its own, a bar for its share of a\ncore or of the machine's memory, and a small trend line of its last minute beside it.\n\n**Press the wheel** to put away the bars along the top and bottom, so a screen has the whole display,\nand press again to bring them back. On a list the press still chooses."
+        },
+        {
+          "version": "0.3.0",
+          "released_at": "2026-10-04T03:36:41.718Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c16-be12-7003-91aa-482b107fdccb/0.3.0.zip",
+            "size": 953626,
+            "sha256": "0b70b43c171341da14f010170edc824341dfe689ea1e40950878bc0c695ec6f7"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c16-be12-7003-91aa-482b107fdccb/0.3.0.html",
+            "size": 26935,
+            "sha256": "40613e2f3a9aad26b2e2687dd27ebcc57fcf5322563b72fbf68732c427e13313"
+          },
+          "permissions": [
+            "net.proxy",
+            "geo"
+          ],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/vm_stat",
+              "run:/usr/sbin/sysctl",
+              "run:/usr/sbin/ioreg",
+              "run:/usr/sbin/netstat",
+              "run:/bin/ps",
+              "run:/usr/bin/pmset",
+              "run:/bin/df",
+              "run:/sbin/ping",
+              "run:/sbin/route",
+              "run:/usr/sbin/system_profiler",
+              "run:/usr/bin/sw_vers",
+              "run:/usr/sbin/scutil",
+              "run:/sbin/ifconfig",
+              "run:/usr/sbin/networksetup",
+              "read:/proc",
+              "read:/sys",
+              "read:/etc/os-release",
+              "run:df",
+              "run:ping",
+              "run:nvidia-smi",
+              "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+              "read:~/.claude",
+              "read:~/.config/claude",
+              "env:HOME",
+              "env:USERPROFILE",
+              "env:CLAUDE_CONFIG_DIR",
               "sys"
             ]
           },
@@ -1935,7 +1993,8 @@
             "sha256": "40613e2f3a9aad26b2e2687dd27ebcc57fcf5322563b72fbf68732c427e13313"
           },
           "permissions": [
-            "net.proxy"
+            "net.proxy",
+            "geo"
           ],
           "extension": {
             "desktop": true,
@@ -1961,6 +2020,11 @@
               "run:ping",
               "run:nvidia-smi",
               "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+              "read:~/.claude",
+              "read:~/.config/claude",
+              "env:HOME",
+              "env:USERPROFILE",
+              "env:CLAUDE_CONFIG_DIR",
               "sys"
             ]
           },
@@ -1981,7 +2045,8 @@
             "sha256": "ee42d32d3edbd2f57f47ee0322de8efc814224e80fa2abade24fb475c8cfd0dd"
           },
           "permissions": [
-            "net.proxy"
+            "net.proxy",
+            "geo"
           ],
           "extension": {
             "desktop": true,
@@ -2007,6 +2072,11 @@
               "run:ping",
               "run:nvidia-smi",
               "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+              "read:~/.claude",
+              "read:~/.config/claude",
+              "env:HOME",
+              "env:USERPROFILE",
+              "env:CLAUDE_CONFIG_DIR",
               "sys"
             ]
           },
@@ -2027,7 +2097,8 @@
             "sha256": "49a1db6d5704fc351b6196e3b5979ef92a40b0f656c96af108dfb7806a0fff22"
           },
           "permissions": [
-            "net.proxy"
+            "net.proxy",
+            "geo"
           ],
           "extension": {
             "desktop": true,
@@ -2053,6 +2124,11 @@
               "run:ping",
               "run:nvidia-smi",
               "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+              "read:~/.claude",
+              "read:~/.config/claude",
+              "env:HOME",
+              "env:USERPROFILE",
+              "env:CLAUDE_CONFIG_DIR",
               "sys"
             ]
           },
@@ -2073,7 +2149,8 @@
             "sha256": "49a1db6d5704fc351b6196e3b5979ef92a40b0f656c96af108dfb7806a0fff22"
           },
           "permissions": [
-            "net.proxy"
+            "net.proxy",
+            "geo"
           ],
           "extension": {
             "desktop": true,
@@ -2099,6 +2176,11 @@
               "run:ping",
               "run:nvidia-smi",
               "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+              "read:~/.claude",
+              "read:~/.config/claude",
+              "env:HOME",
+              "env:USERPROFILE",
+              "env:CLAUDE_CONFIG_DIR",
               "sys"
             ]
           },
