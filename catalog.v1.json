@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-04T06:09:49.088Z",
+  "updated_at": "2026-10-04T06:30:11.757Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -398,6 +398,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.39.0",
+          "released_at": "2026-10-04T06:30:11.754Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.39.0.zip",
+            "size": 1039449,
+            "sha256": "5615456a9c03632f7466231222ad4861f4ada96b1eed12230218293b8756f5c2"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.39.0.html",
+            "size": 33596,
+            "sha256": "8e4b2bfe7d4faa28cd3184723ec8b5a6b9520db8782b4ef02ba22ada0b503436"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**CD** is now a cartridge, like a MiniDisc: the disc in a shell with screws in its corners, a slider\ncarrying the cover, and a black hub in the middle. The disc is pressed in the cover's own colours with\na metallic sheen (gold for a cover with none) and turns while the track plays. The shell comes in\n**White**, frosted and clear, or **Black**, smoked; tap the hub to trade them, or choose under\n**Look** in the style's settings. Tap the cover on the slider to print it across the disc instead:\nthe slider slides away and the shell takes the cover's colour. Tap the disc to bring the slider and\nthe colours back, or choose under **Disc**. The clock now sits above the song."
+        },
         {
           "version": "0.38.5",
           "released_at": "2026-10-04T02:47:24.419Z",
