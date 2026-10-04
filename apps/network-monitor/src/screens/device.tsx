@@ -11,6 +11,7 @@ import type { DeviceCapabilities } from '../protocol/types';
 import type { Screen } from '../store/navigation';
 import type { DeviceEntry } from '../store/telemetry';
 import { useOrientation } from '../components/stage';
+import { ProcessRadar } from './radar';
 
 export type DeviceProps = {
   entry: DeviceEntry;
@@ -448,7 +449,14 @@ export const Processes = memo(function Processes({
   caps,
   sort,
   onSort,
-}: DeviceProps & { sort: 'cpu' | 'memory'; onSort: (s: 'cpu' | 'memory') => void }) {
+  view,
+  onView,
+}: DeviceProps & {
+  sort: 'cpu' | 'memory';
+  onSort: (s: 'cpu' | 'memory') => void;
+  view: 'radar' | 'list';
+  onView: (v: 'radar' | 'list') => void;
+}) {
   const { upright } = useOrientation();
   const list = useRef<HTMLDivElement>(null);
   useWheelScroll(list);
@@ -497,10 +505,47 @@ export const Processes = memo(function Processes({
     </button>
   );
 
+  const views = (
+    <div className="flex items-center gap-1">
+      {(['radar', 'list'] as const).map(v => (
+        <button
+          key={v}
+          onClick={() => onView(v)}
+          className={`rounded-md px-2 py-0.5 font-mono text-[0.75rem] font-medium tracking-[0.14em] uppercase transition-colors duration-150 ${
+            view === v ? 'bg-white/12 text-off-white' : 'text-dim active:bg-white/8'
+          }`}>
+          {v}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (view === 'radar') {
+    return (
+      <div className="flex h-full flex-col">
+        <div className="flex items-center gap-4 pb-1">
+          <Label>Processes</Label>
+          {views}
+          <div className="ml-auto flex items-center gap-1">
+            <span className="mr-1 font-mono text-[0.75rem] font-medium tracking-[0.2em] text-dim">TOP 8 BY</span>
+            {tab('cpu', 'CPU')}
+            {tab('memory', 'RAM')}
+          </div>
+        </div>
+        <div className="min-h-0 flex-1">
+          <ProcessRadar procs={sorted.slice(0, 8)} ram={ram} upright={upright} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full flex-col">
       <div className={`grid ${cols} items-center gap-5 pb-2`}>
-        <Label>Processes · {procs.length}</Label>
+        <div className="flex items-center gap-3">
+          <Label>Processes · {procs.length}</Label>
+          {views}
+        </div>
         <div className="flex items-center gap-1">
           <span className="mr-1 font-mono text-[0.75rem] font-medium tracking-[0.2em] text-dim">SHARE</span>
           {tab('cpu', 'CPU')}

@@ -105,7 +105,13 @@ export default function App() {
         break;
       case 'processes':
         body = (
-          <Processes {...deviceProps} sort={settings.processSort} onSort={processSort => updateSettings(client, { processSort })} />
+          <Processes
+            {...deviceProps}
+            sort={settings.processSort}
+            onSort={processSort => updateSettings(client, { processSort })}
+            view={settings.processView}
+            onView={processView => updateSettings(client, { processView })}
+          />
         );
         break;
       default:

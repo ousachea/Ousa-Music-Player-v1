@@ -243,7 +243,7 @@ machines around you, one at a time, on the Car Thing.
   to change its face.
 - **CPU, GPU, RAM, NET, DISK** each have their own screen; CPU shows every core, and DISK every
   drive with its space and read and write speed.
-- **More** reaches Processes (each with a coloured share bar and a trend line, by CPU or memory), Devices, Settings and Debug, which shows the
+- **More** reaches Processes (a radar of the busiest eight, or a list with share bars and trends), Devices, Settings and Debug, which shows the
   raw telemetry.
 - A device that goes quiet shows **Offline** with how long ago it last reported, and a banner says so
   when it comes back.

@@ -12,6 +12,7 @@ export type Settings = {
   historySec: 30 | 60 | 120;
   defaultDevice: string | null;
   processSort: 'cpu' | 'memory';
+  processView: 'radar' | 'list';
   homeStyle: 'cards' | 'rings' | 'widgets';
   rotate: 0 | 90 | 180 | 270;
   clockStyle: 'digital' | 'led' | 'analog';
@@ -26,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   historySec: 60,
   defaultDevice: null,
   processSort: 'cpu',
+  processView: 'radar',
   homeStyle: 'cards',
   rotate: 0,
   clockStyle: 'digital',
@@ -60,6 +62,7 @@ function parse(raw: string | null | undefined): Settings {
     historySec: pick(o.historySec, [30, 60, 120] as const, d.historySec),
     defaultDevice: typeof o.defaultDevice === 'string' ? o.defaultDevice.slice(0, 64) : null,
     processSort: pick(o.processSort, ['cpu', 'memory'] as const, d.processSort),
+    processView: pick(o.processView, ['radar', 'list'] as const, d.processView),
     homeStyle: pick(o.homeStyle, ['cards', 'rings', 'widgets'] as const, d.homeStyle),
     rotate: pick(o.rotate, [0, 90, 180, 270] as const, d.rotate),
     clockStyle: pick(o.clockStyle, ['digital', 'led', 'analog'] as const, d.clockStyle),

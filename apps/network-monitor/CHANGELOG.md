@@ -29,7 +29,9 @@ Widgets run to more than one page: swipe or turn the wheel, with dots marking th
 **Screen rotation** in Settings. Every screen lays itself out for portrait rather than stretching, and
 swipes follow the turn. Network stays on its tab along the bottom.
 
-**Processes** reads as a breakdown: each process in a colour of its own, a bar for its share of a
+**Processes** opens as a radar of the busiest eight: CPU in green and memory in orange, each glowing
+and scaled to its own leader, gliding to each new reading, with every process's figures round the
+edge. **List** shows them as a breakdown instead: each process in a colour of its own, a bar for its share of a
 core or of the machine's memory, and a small trend line of its last minute beside it.
 
 **Press the wheel** to put away the bars along the top and bottom, so a screen has the whole display,
