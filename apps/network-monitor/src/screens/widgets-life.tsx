@@ -411,7 +411,10 @@ export const ClaudeWidget = memo(function ClaudeWidget({ usage }: { usage: Claud
   const total = d.input + d.output + d.cacheWrite + d.cacheRead;
   const s = usage.session ?? null;
   const used = s ? sessionShare(s) : null;
+  // the plan's own limits, when the account answered; otherwise the estimate from this computer's logs
+  const real = usage.limits?.session ? usage.limits : null;
   const at = (ms: number) => (zone ? partsIn(new Date(ms), zone).format({ hour: 'numeric', minute: '2-digit' }).format(new Date(ms)) : '');
+  const day = (ms: number) => (zone ? partsIn(new Date(ms), zone).format({ weekday: 'short', hour: 'numeric', minute: '2-digit' }).format(new Date(ms)) : '');
   const left = s && now ? Math.max(0, s.resetAt - now.getTime()) : 0;
   const peak = Math.max(1, ...usage.week);
   const days = Array.from({ length: 7 }, (_, i) => new Date(Date.now() - (6 - i) * 86_400_000));
@@ -424,9 +427,27 @@ export const ClaudeWidget = memo(function ClaudeWidget({ usage }: { usage: Claud
               <AnimatedIcon kind="claude" />
             </span>
             <span className="truncate font-display text-[1.25rem] font-semibold text-off-white">Claude Code</span>
-            {usage.models[0] && <span className="ml-auto rounded-full bg-white/14 px-2 py-0.5 font-body text-[0.75rem] whitespace-nowrap text-off-white/85">{usage.models[0].name}</span>}
+            {(usage.limits?.plan ?? usage.models[0]?.name) && (
+              <span className="ml-auto rounded-full bg-white/14 px-2 py-0.5 font-body text-[0.75rem] whitespace-nowrap text-off-white/85">{usage.limits?.plan ?? usage.models[0]?.name}</span>
+            )}
           </div>
-          {s ? (
+          {real?.session ? (
+            <div className="mt-auto">
+              <Figure value={`${Math.round(real.session.used)}%`} unit="of the session" size={2.25} />
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/15">
+                <div
+                  className="h-full rounded-full transition-[width] duration-700 ease-out"
+                  style={{ width: `${real.session.used}%`, backgroundColor: real.session.used >= 90 ? '#ff6b6b' : real.session.used >= 75 ? '#ffd27a' : '#fff4ee' }}
+                />
+              </div>
+              <div className="mt-1 truncate font-body text-[0.8125rem] text-off-white/70 tabular-nums">
+                {100 - Math.round(real.session.used)}% left · resets {at(real.session.resetsAt)} ({span(now ? Math.max(0, real.session.resetsAt - now.getTime()) : 0)})
+              </div>
+              <div className="truncate font-mono text-[0.6875rem] text-off-white/50 tabular-nums">
+                {real.week ? `week ${Math.round(real.week.used)}% · resets ${day(real.week.resetsAt)}` : `today ${tokens(total)} · ${d.replies} replies`}
+              </div>
+            </div>
+          ) : s ? (
             <div className="mt-auto">
               <Figure value={tokens(s.tokens)} unit="this session" size={2.25} />
               <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/15">

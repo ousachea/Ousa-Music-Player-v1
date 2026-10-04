@@ -43,6 +43,8 @@
       "env:HOME",
       "env:USERPROFILE",
       "env:CLAUDE_CONFIG_DIR",
+      "net:api.anthropic.com",
+      "run:/usr/bin/security",
       "sys"
     ],
     "api": 1

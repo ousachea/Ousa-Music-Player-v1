@@ -26,9 +26,9 @@ moves with it.
 UV, the chance of rain and the next twelve hours; the sun adds dawn, dusk, solar noon, the golden
 hour, the length of the day and the moon's phase; the clock adds the week, the day of the year and
 the time zone; the calendar shows the month with week numbers and how far through the year it is;
-the music has a scrubber; the battery a history; Claude Code its current five-hour session (when it
-opened, when it resets and how long is left, its tokens, replies and pace, where it is headed by the
-reset, and how it compares with your busiest session this week) beside the split of today's tokens;
+the music has a scrubber; the battery a history; Claude Code your plan's real limits (the session and
+the week, used, left and when each resets, as Claude Code's /usage shows them) with this computer's
+tokens, pace and replies beside the split of today's tokens;
 System and Displays everything known. The clock's face and the calendar's view are chosen there.
 Back, or preset 1, returns to Home on the page it came from, which Home now always remembers.
 
@@ -65,9 +65,9 @@ Widgets run to more than one page: swipe or turn the wheel, with dots marking th
   breathing, stars twinkling, clouds and fog drifting, rain slanting down, a storm flashing, snow
   falling. From Open-Meteo, for where the phone is, or near enough from the network when it will
   not say.
-- **Claude Code**: the current five-hour session with how much is used, how much is left and when it
-  resets, today's tokens beneath it and the week as bars, read from Claude Code's own logs on the
-  computer the Car Thing is plugged into.
+- **Claude Code**: your plan's session and weekly use, how much is left and when each resets, from
+  the account Claude Code is signed in to, with today's tokens and the week as bars from its logs on
+  the computer the Car Thing is plugged into. Without a login it estimates the session from the logs.
 - **Clock**: digital, a glowing LED, or analog with a sweeping second hand; tap to change.
 - **Calendar**: the month, the week or the day, with today marked; tap to change.
 - **Music**: what the phone is playing, with its artwork, progress, and previous, play and next.

@@ -208,7 +208,21 @@ function readClaude(o: Obj): ClaudeUsage | undefined {
     // a window is all or nothing: half of one would show a reset time against the wrong tokens
     if (Object.values(fields).every(v => v !== undefined) && fields.resetAt! > fields.start!) session = fields as NonNullable<ClaudeUsage['session']>;
   }
-  return { today: today as ClaudeUsage['today'], week: week ?? [], models, ...(session !== undefined ? { session } : {}) };
+  let limits: ClaudeUsage['limits'];
+  if (isObj(o.limits)) {
+    const l = o.limits;
+    const one = (v: unknown) => {
+      if (!isObj(v)) return undefined;
+      const used = num(v.used, 'percent');
+      const resetsAt = num(v.resetsAt, 'tokens');
+      return used === undefined || resetsAt === undefined ? undefined : compact({ used, resetsAt, severity: str(v.severity, 24) });
+    };
+    const checkedAt = num(l.checkedAt, 'tokens');
+    if (checkedAt !== undefined) {
+      limits = compact({ checkedAt, plan: str(l.plan, 32), session: one(l.session), week: one(l.week), weekOpus: one(l.weekOpus), weekSonnet: one(l.weekSonnet), error: str(l.error, 80) });
+    }
+  }
+  return { today: today as ClaudeUsage['today'], week: week ?? [], models, ...(session !== undefined ? { session } : {}), ...(limits ? { limits } : {}) };
 }
 
 export function readTelemetry(o: unknown): DeviceTelemetry | undefined {

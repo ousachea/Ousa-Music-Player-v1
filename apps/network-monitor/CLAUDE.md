@@ -23,6 +23,11 @@ platform cannot read is left out or sent as `null`, never estimated.
 - `extension/collectors/claude.ts` reads Claude Code's session logs (`~/.claude/projects`, or
   `~/.config/claude/projects`) incrementally from each file's last offset, counting each reply once by its message
   and request ids; parsing is in `claude-parse.ts`.
+- `extension/collectors/claude-limits.ts` asks Anthropic's usage endpoint (the one Claude Code's /usage uses) for
+  the plan's session and weekly limits every five minutes, with the login Claude Code stores
+  (`~/.claude/.credentials.json`, or the macOS keychain item `Claude Code-credentials` through `/usr/bin/security`).
+  The token is sent to `api.anthropic.com` only; it never goes to the Car Thing and is never logged. The endpoint is
+  undocumented, so its parsing ignores everything but the fields it needs and the widget falls back to the estimate.
 - `extension/run.ts` is how the agent runs a program: fixed binary and arguments, a timeout, no shell. Linux
   also reads `/proc` and `/sys` directly.
 - `extension/deno.d.ts` declares the slice of Deno the agent uses, so `src/` keeps browser types.

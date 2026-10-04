@@ -138,8 +138,27 @@ export interface ClaudeSession {
   peak: number;
 }
 
+/** one of the plan's limits: how much of it is used, as a percentage, and when it resets */
+export interface ClaudeLimit {
+  used: number;
+  resetsAt: number;
+  severity?: string;
+}
+
+/** the plan's own limits, from the account claude code is signed in to; an error says why they are missing */
+export interface ClaudeLimits {
+  checkedAt: number;
+  plan?: string;
+  session?: ClaudeLimit;
+  week?: ClaudeLimit;
+  weekOpus?: ClaudeLimit;
+  weekSonnet?: ClaudeLimit;
+  error?: string;
+}
+
 export interface ClaudeUsage {
   today: ClaudeDay;
+  limits?: ClaudeLimits | null;
   /** the window open now, or null between them */
   session?: ClaudeSession | null;
   /** total tokens a day, oldest first, today last */

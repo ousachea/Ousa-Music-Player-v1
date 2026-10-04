@@ -237,8 +237,8 @@ machines around you, one at a time, on the Car Thing.
   gradient arc round each figure that eases to every new reading; or as widgets, tiles in their own
   colours with a soft light drifting slowly across each, network wide along the bottom and the disk
   as a row of slats. Swipe or turn the wheel for more widgets: the weather with an animated sky,
-  Claude Code's current session (used, left and when it resets), today and this week, read from its
-  own logs on the computer,
+  Claude Code's plan limits (the session and the week, used, left and when each resets, as its
+  /usage shows them) with today and this week from its logs on the computer,
   a clock (digital, LED or analog), a calendar (month, week or day), what the phone is playing with
   its controls, an animated battery with its health and cycle count, the sun's day as a glowing arc,
   every core, the busiest apps, uptime, displays and any other drives. Tap the clock or the calendar

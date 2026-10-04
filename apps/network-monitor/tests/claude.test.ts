@@ -65,3 +65,26 @@ test('replies fall into five-hour windows, and the open one knows when it resets
   expect(s.burnPerMin).toBe(Math.round(120 / 110));
   expect(currentSession(replies, base + 12 * h)).toBeNull();
 });
+
+test('the usage endpoint reply reduces to the plan, session and week', async () => {
+  const { parseUsage, parseCredentials } = await import('../extension/collectors/claude-limits');
+  const body = {
+    five_hour: { utilization: 31.0, resets_at: '2026-10-04T10:29:59.562680+00:00', limit_dollars: null },
+    seven_day: { utilization: 40.0, resets_at: '2026-10-04T22:59:59.562701+00:00' },
+    seven_day_opus: null,
+    iguana_necktie: { anything: true },
+    limits: [
+      { kind: 'session', group: 'session', percent: 31, severity: 'normal', resets_at: '2026-10-04T10:29:59.562680+00:00' },
+      { kind: 'weekly_all', group: 'weekly', percent: 40, severity: 'warning', resets_at: '2026-10-04T22:59:59.562701+00:00' },
+    ],
+  };
+  const l = parseUsage(body, 'pro', 1)!;
+  expect(l.plan).toBe('Pro');
+  expect(l.session).toEqual({ used: 31, resetsAt: Date.parse('2026-10-04T10:29:59.562680Z'), severity: 'normal' });
+  expect(l.week?.used).toBe(40);
+  expect(l.week?.severity).toBe('warning');
+  expect(l.weekOpus).toBeUndefined();
+  expect(parseUsage({ unrelated: 1 }, 'pro', 1)).toBeNull();
+  expect(parseCredentials('{"claudeAiOauth":{"accessToken":"t","subscriptionType":"max","expiresAt":5}}')).toEqual({ accessToken: 't', subscriptionType: 'max', expiresAt: 5 });
+  expect(parseCredentials('not json')).toBeNull();
+});

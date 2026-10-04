@@ -5,6 +5,7 @@ import { asJson, defineExtension, json, type ExtensionContext } from '@bridgethi
 
 import { PROTOCOL_VERSION, type ClaudeUsage, type DeviceTelemetry, type Platform } from '../src/protocol/types';
 import { claudeReader } from './collectors/claude';
+import { readLimits } from './collectors/claude-limits';
 import type { Collector, Section } from './collectors/collector';
 import { linuxCollector } from './collectors/linux';
 import { macosCollector } from './collectors/macos';
@@ -16,6 +17,8 @@ const MEDIUM_EVERY = 5;
 const SLOW_EVERY = 30;
 /** claude code's logs change with every reply; once a minute is plenty for a day's tally */
 const CLAUDE_EVERY_MS = 60_000;
+/** the plan's limits come from anthropic; every five minutes is plenty and gentle */
+const LIMITS_EVERY_MS = 5 * 60_000;
 
 function collectorFor(os: typeof Deno.build.os, log: (...args: unknown[]) => void): { platform: Platform; collector: Collector } | null {
   if (os === 'darwin') return { platform: 'macos', collector: macosCollector() };
@@ -59,6 +62,9 @@ defineExtension({
     let slowBusy = false;
     let mediumBusy = false;
     let claudeBusy = false;
+    let limits: ClaudeUsage['limits'] = null;
+    let limitsAt = 0;
+    let limitsBusy = false;
 
     const watching = () => ctx.devices.some(d => d.connected && d.active);
 
@@ -126,6 +132,10 @@ defineExtension({
             claudeAt = Date.now();
             claudeUsage = (await claude.read().catch(() => null)) ?? claudeUsage;
           });
+          refresh(Date.now() - limitsAt >= LIMITS_EVERY_MS, () => limitsBusy, v => (limitsBusy = v), async () => {
+            limitsAt = Date.now();
+            limits = (await readLimits().catch(() => null)) ?? limits;
+          });
           const fast = await collector.fast();
           const now = Date.now();
           const merged = merge(slow, medium, fast);
@@ -138,7 +148,7 @@ defineExtension({
           const caps = collector.capabilities();
           if (!caps.gpu) data.gpu = null;
           if (!caps.battery) data.battery = null;
-          if (claudeUsage) data.claude = claudeUsage;
+          if (claudeUsage) data.claude = limits ? { ...claudeUsage, limits } : claudeUsage;
           if (tick === 0) sendCapabilities();
           ctx.broadcast(json({ type: 'telemetry', timestamp: now, deviceId, data }));
           tick++;

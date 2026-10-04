@@ -399,6 +399,10 @@ function ClaudeDetail({ t }: { t: DeviceTelemetry }) {
   const total = d.input + d.output + d.cacheWrite + d.cacheRead;
   const s = u.session ?? null;
   const used = s ? sessionShare(s) : null;
+  const lim = u.limits ?? null;
+  const day = (ms: number) => (zone ? partsIn(new Date(ms), zone).format({ weekday: 'short', hour: 'numeric', minute: '2-digit' }).format(new Date(ms)) : '—');
+  const ago = lim && now ? Math.max(0, Math.round((now.getTime() - lim.checkedAt) / 60_000)) : 0;
+  const tone = (pct: number) => (pct >= 90 ? '#ff6b6b' : pct >= 75 ? '#ffd27a' : SCENE.claude.accent);
   const at = (ms: number) => (zone ? partsIn(new Date(ms), zone).format({ hour: 'numeric', minute: '2-digit' }).format(new Date(ms)) : '—');
   const left = s && now ? Math.max(0, s.resetAt - now.getTime()) : 0;
   const elapsed = s && now ? Math.min(100, ((now.getTime() - s.start) / (s.resetAt - s.start)) * 100) : 0;
@@ -421,7 +425,48 @@ function ClaudeDetail({ t }: { t: DeviceTelemetry }) {
         <Head icon="claude" color={SCENE.claude.accent} right={u.models[0] && <span className="rounded-full bg-white/10 px-2 py-0.5 font-body text-[0.75rem] text-soft">{u.models[0].name}</span>}>
           Current session
         </Head>
-        {s ? (
+        {lim?.session ? (
+          <Panel className="flex flex-1 flex-col gap-2.5">
+            <div className="flex items-baseline justify-between">
+              <span className="font-display text-[2.25rem] leading-none font-semibold tabular-nums text-off-white">{Math.round(lim.session.used)}%</span>
+              <span className="font-mono text-[0.75rem] text-dim">resets {at(lim.session.resetsAt)}</span>
+            </div>
+            <div>
+              <div className="mb-1 flex justify-between font-body text-[0.8125rem]">
+                <span className="text-soft">Session used</span>
+                <span className="text-near">
+                  {100 - Math.round(lim.session.used)}% left · {span(now ? Math.max(0, lim.session.resetsAt - now.getTime()) : 0)}
+                </span>
+              </div>
+              {bar(lim.session.used, tone(lim.session.used))}
+            </div>
+            {lim.week && (
+              <div>
+                <div className="mb-1 flex justify-between font-body text-[0.8125rem]">
+                  <span className="text-soft">Week used · {Math.round(lim.week.used)}%</span>
+                  <span className="text-near">resets {day(lim.week.resetsAt)}</span>
+                </div>
+                {bar(lim.week.used, tone(lim.week.used))}
+              </div>
+            )}
+            {(lim.weekOpus || lim.weekSonnet) && (
+              <div className="font-body text-[0.8125rem] text-soft">
+                {lim.weekOpus ? `Opus this week ${Math.round(lim.weekOpus.used)}%` : ''}
+                {lim.weekOpus && lim.weekSonnet ? ' · ' : ''}
+                {lim.weekSonnet ? `Sonnet this week ${Math.round(lim.weekSonnet.used)}%` : ''}
+              </div>
+            )}
+            <div className="mt-auto grid grid-cols-3 gap-x-3 gap-y-2">
+              <Stat label="Plan" value={lim.plan ?? null} />
+              <Stat label="Tokens" value={s ? tokens(s.tokens) : null} sub="this computer" />
+              <Stat label="Pace" value={s ? `${tokens(s.burnPerMin)}/m` : null} />
+              <Stat label="Replies" value={s ? String(s.replies) : null} />
+              <Stat label="Today" value={tokens(total)} />
+              <Stat label="Checked" value={ago < 1 ? 'just now' : `${ago}m ago`} />
+            </div>
+            <div className="font-mono text-[0.625rem] leading-snug text-dim">From your Claude account, as Claude Code's /usage shows it.</div>
+          </Panel>
+        ) : s ? (
           <Panel className="flex flex-1 flex-col gap-2.5">
             <div className="flex items-baseline justify-between">
               <span className="font-display text-[2.25rem] leading-none font-semibold tabular-nums text-off-white">{tokens(s.tokens)}</span>
@@ -449,7 +494,9 @@ function ClaudeDetail({ t }: { t: DeviceTelemetry }) {
               <Stat label="Last peak" value={s.peak ? tokens(s.peak) : null} />
               <Stat label="Today" value={tokens(total)} />
             </div>
-            <div className="font-mono text-[0.625rem] leading-snug text-dim">Measured against your busiest session this week. Your plan's own limit is not in the logs.</div>
+            <div className="font-mono text-[0.625rem] leading-snug text-dim">
+              {lim?.error ? `${lim.error}. ` : ''}Measured against your busiest session this week.
+            </div>
           </Panel>
         ) : (
           <Panel className="flex flex-1 flex-col justify-center gap-2">
