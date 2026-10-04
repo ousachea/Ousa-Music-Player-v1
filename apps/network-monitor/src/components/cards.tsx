@@ -3,7 +3,7 @@
 import { memo, type ReactNode } from 'react';
 
 import { gb, pct } from '../composables/useMetrics';
-import type { DeviceInfo, ProcessInfo, StorageDevice } from '../protocol/types';
+import type { DeviceInfo, StorageDevice } from '../protocol/types';
 import { COLORS, ProgressBar, levelColor } from './graphs';
 
 export function Label({ children, color }: { children: ReactNode; color?: string }) {
@@ -171,19 +171,5 @@ export const DeviceCard = memo(function DeviceCard({
       </span>
       {selected && <span className="font-mono text-[0.75rem] tracking-[0.16em] text-near">SHOWING</span>}
     </button>
-  );
-});
-
-export const ProcessRow = memo(function ProcessRow({ process, sort }: { process: ProcessInfo; sort: 'cpu' | 'memory' }) {
-  return (
-    <div className="flex items-center gap-4 border-b border-white/6 py-2.5 font-mono text-[1.0625rem] tabular-nums">
-      <span className="min-w-0 flex-1 truncate text-near">{process.name}</span>
-      <span className={`w-20 text-right ${sort === 'cpu' ? 'text-off-white' : 'text-dim'}`}>
-        {process.cpu === undefined ? '—' : `${process.cpu.toFixed(1)}%`}
-      </span>
-      <span className={`w-24 text-right ${sort === 'memory' ? 'text-off-white' : 'text-dim'}`}>
-        {process.memory === undefined ? '—' : process.memory >= 1 ? `${process.memory.toFixed(1)} GB` : `${Math.round(process.memory * 1024)} MB`}
-      </span>
-    </div>
   );
 });

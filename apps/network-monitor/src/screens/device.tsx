@@ -2,7 +2,7 @@
 // report gets a plain line saying so rather than a screen of dashes
 import { memo, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
-import { Big, Label, MetricCard, ProcessRow, Stat, StorageCard, TemperatureBadge, platformLabel } from '../components/cards';
+import { Big, Label, MetricCard, Stat, StorageCard, TemperatureBadge, platformLabel } from '../components/cards';
 import { COLORS, MiniGraph, NetworkGraph, ProgressBar, levelColor } from '../components/graphs';
 import { RING_COLORS, Ring, RingValue } from '../components/ring';
 import { duration, gb, pct, type Formatters } from '../composables/useMetrics';
@@ -414,6 +414,28 @@ export const Storage = memo(function Storage({ entry, caps, fmt }: DeviceProps) 
 
 // ---- processes
 
+/** one colour per row, cycling, so a process is the same colour in its bar and its trend */
+const PROCESS_COLORS = ['#ef3a52', '#ff9f3a', '#bf9a72', '#b56ce3', '#f6d04d', '#6f63ea', '#3a8ef2', '#4cc6cc', '#ececf0'];
+/** readings kept per process for its trend; the agent sends processes every fifth frame, so about a minute */
+const TREND_POINTS = 12;
+
+type Trend = { cpu: number[]; memory: number[]; seen: number };
+
+function Sparkline({ points, color }: { points: number[]; color: string }) {
+  const w = 72;
+  const h = 18;
+  if (points.length < 2) {
+    return <path d={`M2 ${h / 2}H${w - 2}`} stroke={color} strokeWidth="1.6" opacity={0.5} />;
+  }
+  const lo = Math.min(...points);
+  const hi = Math.max(...points);
+  const span = hi - lo || 1;
+  const d = points
+    .map((v, i) => `${i ? 'L' : 'M'}${(2 + (i / (points.length - 1)) * (w - 4)).toFixed(1)} ${(h - 3 - ((v - lo) / span) * (h - 6)).toFixed(1)}`)
+    .join('');
+  return <path d={d} fill="none" stroke={color} strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" />;
+}
+
 export const Processes = memo(function Processes({
   entry,
   caps,
@@ -423,32 +445,86 @@ export const Processes = memo(function Processes({
   const list = useRef<HTMLDivElement>(null);
   useWheelScroll(list);
   const procs = entry.telemetry?.processes;
+  const ram = entry.telemetry?.memory?.total;
+
+  // each new list of processes adds a reading to every process's trend; guarded on the list itself, so a render
+  // that is not a new reading adds nothing
+  const trends = useRef(new Map<string, Trend>());
+  const lastList = useRef<typeof procs>(undefined);
+  if (procs && procs !== lastList.current) {
+    lastList.current = procs;
+    const now = Date.now();
+    for (const p of procs) {
+      const key = `${p.pid ?? ''}:${p.name}`;
+      const t = trends.current.get(key) ?? { cpu: [], memory: [], seen: now };
+      t.cpu = [...t.cpu, p.cpu ?? 0].slice(-TREND_POINTS);
+      t.memory = [...t.memory, p.memory ?? 0].slice(-TREND_POINTS);
+      t.seen = now;
+      trends.current.set(key, t);
+    }
+    // a process gone for a few minutes takes its history with it
+    for (const [key, t] of trends.current) if (now - t.seen > 180_000) trends.current.delete(key);
+  }
+
   const sorted = useMemo(
     () => [...(procs ?? [])].sort((a, b) => (sort === 'cpu' ? (b.cpu ?? 0) - (a.cpu ?? 0) : (b.memory ?? 0) - (a.memory ?? 0))),
     [procs, sort],
   );
   if (!caps.processes || !procs) return <NoData entry={entry} what="Process" />;
-  const head = (key: 'cpu' | 'memory', label: string, width: string) => (
+
+  // cpu reads as a share of one core; memory as a share of the machine's ram
+  const share = (p: (typeof sorted)[number]) =>
+    sort === 'cpu' ? p.cpu : p.memory !== undefined && ram ? (p.memory / ram) * 100 : undefined;
+  const top = Math.max(0.1, ...sorted.map(p => share(p) ?? 0));
+
+  const tab = (key: 'cpu' | 'memory', label: string) => (
     <button
       onClick={() => onSort(key)}
-      className={`${width} rounded-sm py-1 text-right font-mono text-[0.75rem] tracking-[0.18em] ${sort === key ? 'text-off-white' : 'text-dim'}`}>
+      className={`rounded-md px-2 py-0.5 font-mono text-[0.75rem] font-medium tracking-[0.14em] transition-colors duration-150 ${
+        sort === key ? 'bg-white/12 text-off-white' : 'text-dim active:bg-white/8'
+      }`}>
       {label}
-      {sort === key ? ' ▼' : ''}
     </button>
   );
+
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-4 border-b border-white/12 pb-1">
-        <span className="flex-1">
-          <Label>Processes · {procs.length}</Label>
-        </span>
-        {head('cpu', 'CPU', 'w-20')}
-        {head('memory', 'MEMORY', 'w-24')}
+      <div className="grid grid-cols-[1fr_15rem_5.5rem] items-center gap-5 pb-2">
+        <Label>Processes · {procs.length}</Label>
+        <div className="flex items-center gap-1">
+          <span className="mr-1 font-mono text-[0.75rem] font-medium tracking-[0.2em] text-dim">SHARE</span>
+          {tab('cpu', 'CPU')}
+          {tab('memory', 'RAM')}
+        </div>
+        <Label>Trend</Label>
       </div>
       <div ref={list} data-scroll className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none]">
-        {sorted.map(p => (
-          <ProcessRow key={`${p.name}-${p.pid ?? ''}`} process={p} sort={sort} />
-        ))}
+        {sorted.map((p, i) => {
+          const color = PROCESS_COLORS[i % PROCESS_COLORS.length];
+          const value = share(p);
+          const trend = trends.current.get(`${p.pid ?? ''}:${p.name}`);
+          return (
+            <div key={`${p.pid ?? ''}:${p.name}`} className="grid h-9 grid-cols-[1fr_15rem_5.5rem] items-center gap-5">
+              <span className="truncate font-body text-[1rem] text-near">{p.name}</span>
+              <div className="flex items-center gap-3">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/8">
+                  <div
+                    className="h-full rounded-full transition-[width] duration-700 ease-out"
+                    style={{ width: `${Math.max(3, ((value ?? 0) / top) * 100)}%`, backgroundColor: color }}
+                  />
+                </div>
+                <span className="w-14 text-right font-body text-[0.9375rem] text-near tabular-nums">
+                  {value === undefined ? '—' : `${value.toFixed(1)}%`}
+                </span>
+              </div>
+              <div className="grid h-7 place-items-center rounded-md bg-white/[0.07] ring-1 ring-white/6">
+                <svg viewBox="0 0 72 18" className="h-[18px] w-[72px] overflow-visible">
+                  <Sparkline points={(sort === 'cpu' ? trend?.cpu : trend?.memory) ?? []} color={color} />
+                </svg>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

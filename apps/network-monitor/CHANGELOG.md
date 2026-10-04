@@ -10,6 +10,9 @@ does. A soft light and a pool of shadow drift slowly round each tile, every one 
 device without a GPU or CPU reading hands the tile to its battery, and a row with a tile to spare lets
 its neighbour stretch rather than leave a gap.
 
+**Processes** reads as a breakdown: each process in a colour of its own, a bar for its share of a
+core or of the machine's memory, and a small trend line of its last minute beside it.
+
 **Press the wheel** to put away the bars along the top and bottom, so a screen has the whole display,
 and press again to bring them back. On a list the press still chooses.
 
