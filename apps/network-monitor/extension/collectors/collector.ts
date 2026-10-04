@@ -16,4 +16,11 @@ export interface Collector {
   slow(): Promise<Section>;
   /** what this machine can report, known once the first slow read is in */
   capabilities(): DeviceCapabilities;
+  /** a collector that gathers on its own clock hands back its latest reads, so every tier is asked every frame */
+  readonly streaming?: boolean;
+  /** the dashboard asked for a different pace */
+  setInterval?(ms: number): void;
+  /** whether any car thing is showing the app; a collector with a process of its own parks it when not */
+  setActive?(on: boolean): void;
+  stop?(): void;
 }

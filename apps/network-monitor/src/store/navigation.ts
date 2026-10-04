@@ -15,7 +15,7 @@ export type Screen =
   | 'more';
 
 /** the strip along the bottom, and the order a swipe or the wheel walks */
-export const MAIN: Screen[] = ['home', 'cpu', 'gpu', 'memory', 'network', 'more'];
+export const MAIN: Screen[] = ['home', 'cpu', 'gpu', 'memory', 'network', 'storage', 'more'];
 
 export type NavState = {
   screen: Screen;

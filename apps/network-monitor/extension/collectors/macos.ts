@@ -6,6 +6,7 @@ import { cpus } from 'node:os';
 import type { DeviceCapabilities, DisplayInfo, ProcessInfo, StorageDevice } from '../../src/protocol/types';
 import { GB, after, round, run, runJson } from '../run';
 import type { Collector, Section } from './collector';
+import { cpuMeter, rssiPercent } from './shared';
 
 const BIN = {
   vmStat: '/usr/bin/vm_stat',
@@ -26,20 +27,6 @@ const BIN = {
 
 const PING_HOST = '1.1.1.1';
 const PROCESS_COUNT = 25;
-
-type Ticks = { idle: number; total: number };
-
-function ticks(): Ticks[] {
-  return cpus().map(c => {
-    const t = c.times;
-    return { idle: t.idle, total: t.user + t.nice + t.sys + t.idle + t.irq };
-  });
-}
-
-function busy(prev: Ticks, now: Ticks) {
-  const total = now.total - prev.total;
-  return total > 0 ? Math.min(100, Math.max(0, (1 - (now.idle - prev.idle) / total) * 100)) : 0;
-}
 
 /** activity monitor's split: app memory, wired and compressed are used; file-backed and purgeable are cache */
 function memory(text: string, totalBytes: number) {
@@ -66,13 +53,10 @@ function ioregNumber(text: string, key: string) {
   return m ? Number(m[1]) : undefined;
 }
 
-/** -57 dBm reads as about half; -30 is as strong as wi-fi gets and -90 is as weak as it still works */
-const rssiPercent = (dbm: number) => Math.round(Math.min(100, Math.max(0, ((dbm + 90) / 60) * 100)));
-
 type Profiler<K extends string, T> = Record<K, T[]>;
 
 export function macosCollector(): Collector {
-  let lastTicks = ticks();
+  const cpu = cpuMeter();
   let lastNet: { at: number; rx: number; tx: number } | null = null;
   let lastDisk: { at: number; read: number; write: number } | null = null;
   let iface: string | null = null;
@@ -102,13 +86,7 @@ export function macosCollector(): Collector {
 
     async fast() {
       const now = Date.now();
-      const nowTicks = ticks();
-      const perCore = nowTicks.map((t, i) => (lastTicks[i] ? busy(lastTicks[i], t) : 0));
-      const all = busy(
-        lastTicks.reduce((a, t) => ({ idle: a.idle + t.idle, total: a.total + t.total }), { idle: 0, total: 0 }),
-        nowTicks.reduce((a, t) => ({ idle: a.idle + t.idle, total: a.total + t.total }), { idle: 0, total: 0 }),
-      );
-      lastTicks = nowTicks;
+      const { usage, perCoreUsage } = cpu();
 
       const [vm, swapText, gpuText, netText] = await Promise.all([
         run(BIN.vmStat, []),
@@ -118,7 +96,7 @@ export function macosCollector(): Collector {
       ]);
 
       const section: Section = {
-        cpu: { usage: round(all), perCoreUsage: perCore.map(v => Math.round(v)), load: Deno.loadavg().map(v => round(v, 2)) },
+        cpu: { usage, perCoreUsage, load: Deno.loadavg().map(v => round(v, 2)) },
         system: { uptime: Math.round(Deno.osUptime()) },
       };
       // apple silicon answers with one fixed nominal figure whatever the cores are doing, which would read as a

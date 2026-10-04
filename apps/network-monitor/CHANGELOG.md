@@ -1,5 +1,18 @@
 # O-System Monitor
 
+## 0.3.0
+
+**Windows and Linux** join macOS in Live: install the app in the bridgething desktop app on either
+and the computer the Car Thing is plugged into shows up, with nothing to set up and no admin rights.
+Windows reads through one PowerShell that stays running while the app is on screen, adds the live
+CPU clock, and for an NVIDIA card its temperature, clock, power and fan. Linux reads `/proc` and
+`/sys`, and adds CPU, drive and GPU temperatures, which Linux shares freely.
+
+Storage has its own **DISK** tab along the bottom, rather than sitting inside More.
+
+A busy process on several cores now reads past 100%, as Activity Monitor and top show it, where
+before it was dropped.
+
 ## 0.2.0
 
 The app is called **O-System Monitor** now, since it watches far more than the network. Same id, so

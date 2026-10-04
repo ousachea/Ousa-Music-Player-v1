@@ -15,13 +15,18 @@ platform cannot read is left out or sent as `null`, never estimated.
 - `extension/main.ts` runs the collector on three clocks (every interval, every fifth, every thirtieth), merges
   the latest of each into one frame, and broadcasts it only while a Car Thing has this app active. It answers
   the dashboard's `hello` (which carries the refresh interval) and nothing else.
-- `extension/collectors/<platform>.ts` implements `Collector`. macOS is done; Windows, Linux are next.
-- `extension/run.ts` is the only way the agent touches the system: an absolute binary path, fixed arguments, a
-  timeout, no shell.
+- `extension/collectors/<platform>.ts` implements `Collector`: `macos.ts` and `linux.ts` read on each tier;
+  `windows.ts` is `streaming`, keeping one PowerShell (`windows-script.ts`) running while a Car Thing watches and
+  handing back its latest lines. `shared.ts` holds what all three read alike (cpu ticks, rates, nvidia-smi).
+- Parsing lives apart from io in `linux-parse.ts` and `windows-parse.ts`, checked by `tests/collectors.test.ts`
+  against sample output (`bun test` in this folder), since neither system runs where this is developed.
+- `extension/run.ts` is how the agent runs a program: fixed binary and arguments, a timeout, no shell. Linux
+  also reads `/proc` and `/sys` directly.
 - `extension/deno.d.ts` declares the slice of Deno the agent uses, so `src/` keeps browser types.
 
-Every binary the collector runs is listed by absolute path in the manifest's extension `permissions`. Adding a
-command means adding it there too; the dev loop runs with exactly those flags and fails otherwise.
+Every binary a collector runs, and every path Linux reads, is listed in the manifest's extension
+`permissions`. Adding a command means adding it there too; the dev loop runs with exactly those flags and fails
+otherwise.
 
 ## Running it
 

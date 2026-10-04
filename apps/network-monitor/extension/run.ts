@@ -1,5 +1,6 @@
-// every reading the agent takes from the system goes through here: a fixed binary by absolute path, fixed
-// arguments, a time limit, and no shell, so nothing the dashboard sends can ever become a command
+// every reading the agent takes from the system goes through here: a fixed binary, fixed arguments, a time limit,
+// and no shell, so nothing the dashboard sends can ever become a command. macos and windows name binaries by
+// absolute path; linux by name, since where df and ping live differs between distributions
 const decoder = new TextDecoder();
 
 export async function run(binary: string, args: string[], timeoutMs = 4000): Promise<string | null> {

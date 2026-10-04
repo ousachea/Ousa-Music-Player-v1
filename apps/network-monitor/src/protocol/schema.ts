@@ -14,6 +14,8 @@ export const LIMITS = {
 
 export const RANGES = {
   percent: [0, 100],
+  /** a process is measured against one core, as top and activity monitor do, so a busy one passes 100 */
+  processCpu: [0, 51_200],
   temperature: [-40, 150],
   /** GB; a petabyte is past anything a dashboard will be watching */
   gigabytes: [0, 1_000_000],

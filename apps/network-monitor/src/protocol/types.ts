@@ -101,6 +101,7 @@ export interface BatteryInfo {
 export interface ProcessInfo {
   name: string;
   pid?: number;
+  /** percent of one core, so a process busy on several reads past 100 */
   cpu?: number;
   /** GB */
   memory?: number;

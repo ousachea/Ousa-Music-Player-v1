@@ -34,10 +34,11 @@ const NAV_LABEL: Partial<Record<Screen, string>> = {
   gpu: 'GPU',
   memory: 'RAM',
   network: 'NET',
+  storage: 'DISK',
   more: 'MORE',
 };
 
-const MORE_SCREENS: Screen[] = ['more', 'storage', 'processes', 'devices', 'settings', 'debug'];
+const MORE_SCREENS: Screen[] = ['more', 'processes', 'devices', 'settings', 'debug'];
 
 export const BottomNavigation = memo(function BottomNavigation({
   screen,

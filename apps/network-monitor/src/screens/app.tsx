@@ -211,7 +211,6 @@ function Field({ label, value, extra }: { label: string; value: string; extra?: 
 }
 
 const MORE: { screen: Screen; label: string; note: string }[] = [
-  { screen: 'storage', label: 'Storage', note: 'Drives, space, speed' },
   { screen: 'processes', label: 'Processes', note: 'What is using it' },
   { screen: 'devices', label: 'Devices', note: 'Pick what to watch' },
   { screen: 'settings', label: 'Settings', note: 'Source, units, history' },
@@ -221,7 +220,7 @@ const MORE: { screen: Screen; label: string; note: string }[] = [
 export const More = memo(function More({ onGo }: { onGo: (s: Screen) => void }) {
   const [focus] = useWheelList(MORE.length, i => onGo(MORE[i].screen));
   return (
-    <div className="grid h-full grid-cols-3 grid-rows-2 gap-3">
+    <div className="grid h-full grid-cols-2 grid-rows-2 gap-3">
       {MORE.map((m, i) => (
         <button
           key={m.screen}

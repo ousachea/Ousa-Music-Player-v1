@@ -5,15 +5,19 @@ import { asJson, defineExtension, json, type ExtensionContext } from '@bridgethi
 
 import { PROTOCOL_VERSION, type DeviceTelemetry, type Platform } from '../src/protocol/types';
 import type { Collector, Section } from './collectors/collector';
+import { linuxCollector } from './collectors/linux';
 import { macosCollector } from './collectors/macos';
+import { windowsCollector } from './collectors/windows';
 
 const MIN_INTERVAL = 1000;
 const MAX_INTERVAL = 5000;
 const MEDIUM_EVERY = 5;
 const SLOW_EVERY = 30;
 
-function collectorFor(os: typeof Deno.build.os): { platform: Platform; collector: Collector } | null {
+function collectorFor(os: typeof Deno.build.os, log: (...args: unknown[]) => void): { platform: Platform; collector: Collector } | null {
   if (os === 'darwin') return { platform: 'macos', collector: macosCollector() };
+  if (os === 'linux') return { platform: 'linux', collector: linuxCollector() };
+  if (os === 'windows') return { platform: 'windows', collector: windowsCollector(log) };
   return null;
 }
 
@@ -34,10 +38,12 @@ function merge(...parts: Section[]): Section {
 }
 
 let timer: ReturnType<typeof setTimeout> | undefined;
+let running: Collector | null = null;
 
 defineExtension({
   start(ctx: ExtensionContext) {
-    const found = collectorFor(Deno.build.os);
+    const found = collectorFor(Deno.build.os, (...args) => ctx.log.warn(...args));
+    running = found?.collector ?? null;
     let interval = MIN_INTERVAL;
     let deviceId: string | null = null;
     let slow: Section = {};
@@ -72,6 +78,7 @@ defineExtension({
       if (payload?.type !== 'hello') return;
       if (typeof payload.interval === 'number' && Number.isFinite(payload.interval)) {
         interval = Math.min(MAX_INTERVAL, Math.max(MIN_INTERVAL, Math.round(payload.interval)));
+        found?.collector.setInterval?.(interval);
       }
       hello();
       sendCapabilities();
@@ -86,11 +93,14 @@ defineExtension({
 
     const frame = async () => {
       // reading the machine costs something, so it only happens while a car thing is showing this app
-      if (!busy && deviceId && watching()) {
+      const on = watching();
+      collector.setActive?.(on);
+      if (!busy && deviceId && on) {
         busy = true;
         try {
-          if (tick % SLOW_EVERY === 0) slow = await collector.slow();
-          if (tick % MEDIUM_EVERY === 0) medium = await collector.medium();
+          // a streaming collector's tiers are its latest reads, cheap to ask for every frame
+          if (collector.streaming || tick % SLOW_EVERY === 0) slow = await collector.slow();
+          if (collector.streaming || tick % MEDIUM_EVERY === 0) medium = await collector.medium();
           const fast = await collector.fast();
           const now = Date.now();
           const merged = merge(slow, medium, fast);
@@ -129,5 +139,6 @@ defineExtension({
   },
   stop() {
     clearTimeout(timer);
+    running?.stop?.();
   },
 });

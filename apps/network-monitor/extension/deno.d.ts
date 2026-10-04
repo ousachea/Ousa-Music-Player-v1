@@ -15,12 +15,23 @@ declare namespace Deno {
     mac: string;
   }[];
 
+  function readTextFile(path: string): Promise<string>;
+  function readDir(path: string): AsyncIterable<{ name: string; isDirectory: boolean; isSymlink: boolean }>;
+  function systemMemoryInfo(): { total: number; free: number; available: number; buffers: number; cached: number; swapTotal: number; swapFree: number };
+
+  interface ChildProcess {
+    readonly stdout: ReadableStream<Uint8Array>;
+    readonly status: Promise<{ success: boolean; code: number }>;
+    kill(signal?: string): void;
+  }
+
   class Command {
     constructor(
       command: string,
       options?: { args?: string[]; stdout?: 'piped' | 'null'; stderr?: 'piped' | 'null'; stdin?: 'null'; signal?: AbortSignal; env?: Record<string, string> },
     );
     output(): Promise<{ code: number; success: boolean; stdout: Uint8Array; stderr: Uint8Array }>;
+    spawn(): ChildProcess;
   }
 }
 

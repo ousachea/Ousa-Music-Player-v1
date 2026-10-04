@@ -235,19 +235,28 @@ machines around you, one at a time, on the Car Thing.
 - **Home** shows the four that matter most for the device you're watching; a phone with no CPU data
   gets battery and storage in their place. **Home style** draws them as cards with bars, or as rings:
   a gradient arc round each figure that eases to every new reading.
-- **CPU, GPU, RAM, NET** each have their own screen with a live graph; CPU shows every core.
-- **More** reaches Storage, Processes (sort by CPU or memory), Devices, Settings and Debug, which
-  shows the raw telemetry.
+- **CPU, GPU, RAM, NET, DISK** each have their own screen; CPU shows every core, and DISK every
+  drive with its space and read and write speed.
+- **More** reaches Processes (sort by CPU or memory), Devices, Settings and Debug, which shows the
+  raw telemetry.
 - A device that goes quiet shows **Offline** with how long ago it last reported, and a banner says so
   when it comes back.
 
 **Live**, the default, shows the computer your Car Thing is plugged into. Install O-System Monitor in
 the bridgething desktop app and allow its extension: it reads the machine and reports every one to
-five seconds, as Refresh is set, while the app is on screen, and does nothing while it is not. On a Mac that is CPU per core and
-load, memory as Activity Monitor counts it, GPU load, Wi-Fi or Ethernet speed and signal, the drive
-with its read and write speed, battery health, displays and the busiest processes, all without admin
-rights. Temperatures need admin rights on macOS, so they are left out rather than guessed. Live also
-lists the Car Thing's own link. Windows and Linux are next.
+five seconds, as Refresh is set, while the app is on screen, and does nothing while it is not. Nothing
+needs admin rights:
+
+- **macOS:** CPU per core and load, memory as Activity Monitor counts it, GPU load, Wi-Fi or
+  Ethernet speed and signal, drives with read and write speed, battery health, displays and the
+  busiest processes. No temperatures, which macOS keeps behind admin rights.
+- **Windows:** the same through one PowerShell that stays running, plus the live CPU clock, and for
+  an NVIDIA card its temperature, clock, power and fan. No CPU temperature, which needs admin rights.
+- **Linux:** the same from `/proc` and `/sys`, plus CPU, drive and GPU temperatures, which Linux
+  does share; NVIDIA through `nvidia-smi`, AMD through its driver's files.
+
+Phones cannot run the extension: an iPhone or Android agent would be an app of its own. Live also
+lists the Car Thing's own link.
 
 **Mock** runs four pretend machines (a Windows gaming PC, a MacBook, a Linux server that drops off
 now and then, and an Android phone). Settings also choose the refresh rate, °C or °F, Mbps or MB/s,

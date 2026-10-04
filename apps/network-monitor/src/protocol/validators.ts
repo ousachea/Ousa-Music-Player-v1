@@ -163,7 +163,7 @@ const readBattery = (o: Obj): BatteryInfo =>
 function readProcess(o: Obj): ProcessInfo | undefined {
   const name = str(o.name, 64);
   if (!name) return undefined;
-  return compact({ name, pid: num(o.pid, 'pid'), cpu: num(o.cpu, 'percent'), memory: num(o.memory, 'gigabytes') });
+  return compact({ name, pid: num(o.pid, 'pid'), cpu: num(o.cpu, 'processCpu'), memory: num(o.memory, 'gigabytes') });
 }
 
 const readDisplay = (o: Obj): DisplayInfo =>
