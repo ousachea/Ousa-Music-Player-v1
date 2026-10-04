@@ -39,6 +39,10 @@ update**.
 > missing artist names and explicit tags (all optional in its settings); System Monitor uses it to
 > time its measurements.
 
+> System Monitor also ships a desktop extension, which reads the computer your Car Thing is plugged
+> into. Install it from the bridgething desktop app on that computer, which asks you to allow the
+> exact system tools it runs.
+
 ## O-Music Player
 
 Ten player styles, all tinted by the album art, with music notes drifting up over them (**Display →
@@ -238,8 +242,8 @@ machines around you, one at a time, on the Car Thing.
   when it comes back.
 
 **Live** in Settings shows the computer your Car Thing is plugged into. Install O-System Monitor in
-the bridgething desktop app and allow its extension: it reads the machine and reports a few times a
-second while the app is on screen, and nothing while it is not. On a Mac that is CPU per core and
+the bridgething desktop app and allow its extension: it reads the machine and reports every one to
+five seconds, as Refresh is set, while the app is on screen, and does nothing while it is not. On a Mac that is CPU per core and
 load, memory as Activity Monitor counts it, GPU load, Wi-Fi or Ethernet speed and signal, the drive
 with its read and write speed, battery health, displays and the busiest processes, all without admin
 rights. Temperatures need admin rights on macOS, so they are left out rather than guessed. Live also
