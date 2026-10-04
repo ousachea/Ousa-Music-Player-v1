@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-04T02:29:29.098Z",
+  "updated_at": "2026-10-04T02:36:16.589Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -398,6 +398,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.38.0",
+          "released_at": "2026-10-04T02:36:16.584Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.38.0.zip",
+            "size": 1032880,
+            "sha256": "a068e41030282a62c9ad06e21effbb2cb967c6d39e536fff59d8fb3f58b15e12"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.38.0.html",
+            "size": 33596,
+            "sha256": "8e4b2bfe7d4faa28cd3184723ec8b5a6b9520db8782b4ef02ba22ada0b503436"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A tenth player style, **Pocket**: a pocket music player held sideways, with the cover, track and\nprogress on a small screen and a click wheel beside it. The wheel's sides are menu (the queue),\nprevious, next and play/pause, its centre plays and pauses, and dragging round the ring turns the\nvolume, which the screen shows while it changes. **Body colour** is silver or black, and turned\nupright the screen stands above the wheel.\n\n**Stereo** gains **Light or dark**: the glowing night display, a daylight one with crisp dark dots on\npale glass, or **Auto**, light in the AM and dark in the PM by the phone's clock."
+        },
         {
           "version": "0.37.0",
           "released_at": "2026-10-04T02:29:29.093Z",
