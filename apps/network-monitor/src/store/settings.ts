@@ -16,7 +16,7 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  source: 'mock',
+  source: 'live',
   interval: 1000,
   tempUnit: 'c',
   netUnit: 'mbps',

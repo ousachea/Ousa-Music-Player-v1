@@ -76,8 +76,8 @@ const ROWS: Row[] = [
     key: 'source',
     label: 'Data source',
     choices: [
-      { value: 'mock', label: 'Mock' },
       { value: 'live', label: 'Live' },
+      { value: 'mock', label: 'Mock' },
     ],
     note: 'Live reads this Car Thing and any agent on the desktop extension',
   },

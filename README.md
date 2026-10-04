@@ -241,7 +241,7 @@ machines around you, one at a time, on the Car Thing.
 - A device that goes quiet shows **Offline** with how long ago it last reported, and a banner says so
   when it comes back.
 
-**Live** in Settings shows the computer your Car Thing is plugged into. Install O-System Monitor in
+**Live**, the default, shows the computer your Car Thing is plugged into. Install O-System Monitor in
 the bridgething desktop app and allow its extension: it reads the machine and reports every one to
 five seconds, as Refresh is set, while the app is on screen, and does nothing while it is not. On a Mac that is CPU per core and
 load, memory as Activity Monitor counts it, GPU load, Wi-Fi or Ethernet speed and signal, the drive

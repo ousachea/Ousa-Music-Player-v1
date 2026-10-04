@@ -12,7 +12,7 @@ in Settings shows the four as cards with bars, or as rings: a gradient arc round
 eases to every new reading, with network set against the speed of its link. Devices
 that go quiet show as offline with the time of their last report.
 
-**Live** shows the computer the Car Thing is plugged into, through a desktop extension that ships
+**Live**, the default, shows the computer the Car Thing is plugged into, through a desktop extension that ships
 with the app: install it in the bridgething desktop app and allow it. This release reads a Mac
 without admin rights: CPU per core and load, memory, GPU load, network speed and Wi-Fi signal, the
 drive and its read and write speed, battery health, displays and the busiest processes. It only
