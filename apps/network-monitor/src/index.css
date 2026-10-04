@@ -120,39 +120,83 @@
   will-change: transform;
 }
 
-/* the battery: a band of light running along the charge while it fills, a slow breath while it drains */
-@keyframes battery-shimmer {
+/* the battery: a rolling surface on the charge, bubbles rising in it and pulses of energy flowing in while it
+   charges, and a slow fade at the bottom of a drained one */
+@keyframes battery-wave {
   from {
-    transform: translateX(-120%);
+    transform: translateY(-50%);
   }
   to {
-    transform: translateX(260%);
+    transform: translateY(0);
   }
 }
 
-.battery-shimmer {
-  animation: battery-shimmer 2.2s ease-in-out infinite;
+.battery-wave {
+  animation: battery-wave 1.4s linear infinite;
 }
 
-@keyframes battery-breathe {
+@keyframes battery-bubble {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-46px) scale(1);
+    opacity: 0;
+  }
+}
+
+.battery-bubble {
+  animation: battery-bubble 2.4s ease-in infinite;
+}
+
+/* a full-width layer slid a whole width left carries its pulse from the tip to the charge */
+@keyframes battery-flow {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  15%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.battery-flow {
+  animation: battery-flow 1.8s ease-in infinite;
+}
+
+@keyframes bolt-halo {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0.55;
+  }
   50% {
-    filter: brightness(0.82);
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 0.95;
   }
 }
 
-.battery-breathe {
-  animation: battery-breathe 3.6s ease-in-out infinite;
+.bolt-halo {
+  animation: bolt-halo 2s ease-in-out infinite;
 }
 
-@keyframes bolt-pulse {
+@keyframes battery-low {
   50% {
-    transform: translate(-50%, -50%) scale(1.15);
-    opacity: 0.75;
+    opacity: 0.55;
   }
 }
 
-.bolt-pulse {
-  animation: bolt-pulse 1.6s ease-in-out infinite;
+.battery-low {
+  animation: battery-low 1.6s ease-in-out infinite;
 }
 
 /* the sun: its glow breathing, its rays turning slowly */

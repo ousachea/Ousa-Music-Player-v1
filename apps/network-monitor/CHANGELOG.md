@@ -1,5 +1,12 @@
 # O-System Monitor
 
+## 0.4.2
+
+The **battery** looks alive while it charges: the charge is a liquid with a glossy top and a surface
+that rolls along its edge, bubbles rise through it, pulses of energy flow in from the tip across the
+empty part, and the bolt glows in a breathing halo. On battery the surface rolls slowly and nothing
+flows, and below a fifth it fades gently in and out.
+
 ## 0.4.1
 
 Every style now speaks the same visual language. Each thing measured keeps one colour wherever it

@@ -17,6 +17,16 @@ function levelColors(pct: number): [string, string] {
   return ['#6fdc3c', '#c9f78a'];
 }
 
+/** where the bubbles rise inside the charge, fixed so a re-render never restarts one mid-rise */
+const BUBBLES = [
+  { left: 12, size: 4, duration: 2.4, delay: 0 },
+  { left: 28, size: 6, duration: 3.1, delay: -1.2 },
+  { left: 44, size: 3, duration: 2.0, delay: -0.6 },
+  { left: 58, size: 5, duration: 2.8, delay: -2.1 },
+  { left: 72, size: 4, duration: 2.3, delay: -1.6 },
+  { left: 86, size: 3, duration: 1.9, delay: -0.3 },
+];
+
 export const BatteryWidget = memo(function BatteryWidget({ battery }: { battery: BatteryInfo }) {
   const pct = Math.min(100, Math.max(0, battery.percentage ?? 0));
   const [from, to] = levelColors(pct);
@@ -30,18 +40,56 @@ export const BatteryWidget = memo(function BatteryWidget({ battery }: { battery:
         )}
       </div>
       <div className="mt-auto flex items-center gap-3">
-        <div className="relative h-[58px] flex-1 rounded-[14px] border-2 border-white/75 p-[5px]">
-          <span className="absolute top-1/2 -right-[9px] h-6 w-[6px] -translate-y-1/2 rounded-r-[3px] bg-white/75" />
-          <div
-            className={`relative h-full overflow-hidden rounded-[9px] transition-[width] duration-1000 ease-out ${charging ? '' : 'battery-breathe'}`}
-            style={{ width: `${Math.max(6, pct)}%`, background: `linear-gradient(90deg, ${from}, ${to})` }}>
-            {/* a band of light running along the charge while it fills */}
-            {charging && <span className="battery-shimmer absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/70 to-transparent" />}
+        <div className="relative h-[58px] flex-1 rounded-[14px] border-2 border-white/60 p-[5px] shadow-[inset_0_0_12px_rgba(0,0,0,0.5)]">
+          <span className="absolute top-1/2 -right-[9px] h-6 w-[6px] -translate-y-1/2 rounded-r-[3px] bg-white/60" />
+          {/* the inside: an empty well the charge fills, clipped to its corners */}
+          <div className="relative h-full overflow-hidden rounded-[9px] bg-white/[0.06]">
+            <div
+              className={`absolute inset-y-0 left-0 overflow-hidden transition-[width] duration-1000 ease-out ${!charging && pct < 20 ? 'battery-low' : ''}`}
+              style={{ width: `${Math.max(6, pct)}%`, background: `linear-gradient(90deg, ${from}, ${to})` }}>
+              {/* gloss along the top, so the charge reads as something with depth */}
+              <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/40 to-transparent" />
+              {charging &&
+                BUBBLES.map((b, i) => (
+                  <span
+                    key={i}
+                    className="battery-bubble absolute bottom-1 rounded-full bg-white/70"
+                    style={{ left: `${b.left}%`, width: b.size, height: b.size, animationDuration: `${b.duration}s`, animationDelay: `${b.delay}s` }}
+                  />
+                ))}
+            </div>
+            {/* the charge's leading edge rolls like the surface of a liquid; slower when nothing is coming in */}
+            {pct < 99 && (
+              <span className="absolute inset-y-0 w-[10px] overflow-hidden" style={{ left: `calc(${Math.max(6, pct)}% - 1px)` }}>
+                <svg viewBox="0 0 10 40" preserveAspectRatio="none" className="battery-wave absolute top-0 left-0 h-[200%] w-full" style={{ animationDuration: charging ? '1.4s' : '4s' }}>
+                  <path d="M0 0H4C9 2.5 9 7.5 4 10S-1 17.5 4 20 9 27.5 4 30-1 37.5 4 40H0Z" fill={to} />
+                </svg>
+              </span>
+            )}
+            {/* energy coming in: pulses travelling from the tip across the empty well into the charge */}
+            {charging && pct < 97 && (
+              <span className="absolute inset-y-0 right-0 overflow-hidden" style={{ left: `${Math.max(6, pct)}%` }}>
+                {[0, 1, 2].map(i => (
+                  <span key={i} className="battery-flow absolute inset-0" style={{ animationDelay: `${i * -0.6}s` }}>
+                    <span className="absolute top-1/2 right-0 h-[6px] w-[14px] -translate-y-1/2 rounded-full" style={{ background: `linear-gradient(90deg, transparent, ${to})`, boxShadow: `0 0 8px ${to}` }} />
+                  </span>
+                ))}
+              </span>
+            )}
           </div>
           {charging && (
-            <svg viewBox="0 0 24 24" className="bolt-pulse absolute top-1/2 left-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">
-              <path d="M13.5 2 4.5 13.5h6L9.5 22l9-11.5h-6z" fill="#fff" />
-            </svg>
+            <>
+              <span className="bolt-halo absolute top-1/2 left-1/2 h-12 w-12 rounded-full" style={{ background: `radial-gradient(circle, ${to} 0%, transparent 65%)` }} />
+              <svg viewBox="0 0 24 24" className="absolute top-1/2 left-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]">
+                <defs>
+                  <linearGradient id="bolt-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="100%" stopColor="#fff4c2" />
+                  </linearGradient>
+                </defs>
+                <path d="M13.5 2 4.5 13.5h6L9.5 22l9-11.5h-6z" fill="url(#bolt-fill)" stroke="rgba(0,0,0,0.25)" strokeWidth="0.6" strokeLinejoin="round" />
+              </svg>
+            </>
           )}
         </div>
       </div>
