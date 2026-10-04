@@ -58,16 +58,32 @@ function parse(raw: string | null | undefined): Settings {
   };
 }
 
+// the stored copy arrives a moment after the page, once the daemon answers; a change made before then is kept here
+// and laid over it, or the late load would quietly undo it
+let loaded = false;
+let early: Partial<Settings> = {};
+
+function save(client: BridgethingClient) {
+  client.store.put({ key: KEY, value: JSON.stringify(settingsStore.get()) }).catch(() => {});
+}
+
 export async function loadSettings(client: BridgethingClient) {
   try {
     const r = await client.store.get({ key: KEY });
-    if (r.ok) settingsStore.set(parse(r.response.value));
+    if (r.ok) settingsStore.set({ ...parse(r.response.value), ...early });
   } catch {
     // no daemon yet: the defaults stand until it answers
   }
+  loaded = true;
+  if (Object.keys(early).length > 0) save(client);
+  early = {};
 }
 
 export function updateSettings(client: BridgethingClient, patch: Partial<Settings>) {
   settingsStore.set(prev => ({ ...prev, ...patch }));
-  client.store.put({ key: KEY, value: JSON.stringify(settingsStore.get()) }).catch(() => {});
+  if (!loaded) {
+    early = { ...early, ...patch };
+    return;
+  }
+  save(client);
 }

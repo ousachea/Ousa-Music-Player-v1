@@ -1,6 +1,9 @@
-# O-Network Monitor
+# O-System Monitor
 
 ## 0.2.0
+
+The app is called **O-System Monitor** now, since it watches far more than the network. Same id, so
+an installed copy updates in place.
 
 A new dashboard: a small hardware monitoring station for the machines around you. **Home** shows
 CPU, GPU, RAM and network at a glance, each with its own screen and a live graph, and **More**

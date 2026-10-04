@@ -9,7 +9,7 @@ source once and all of them are available.
 | --- | --- |
 | **O-Music Player** | Now playing, in ten styles, coloured by the album art, on a screen that turns |
 | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
-| **O-Network Monitor** | Link status, latency and measured throughput |
+| **O-System Monitor** | CPU, GPU, memory, network and storage for your machines |
 | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
 | **O-Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
 | **O-Gold Tracker** | Live gold spot, Khmer weight conversion and a private purchase ledger |
@@ -35,8 +35,8 @@ to your phone. Then:
 Updates show up in the same place. Music Player can also check for one under **Settings → Software
 update**.
 
-> Music Player and Network Monitor ask for `net.proxy`. Music Player uses it for sharper album art,
-> missing artist names and explicit tags (all optional in its settings); Network Monitor uses it to
+> Music Player and System Monitor ask for `net.proxy`. Music Player uses it for sharper album art,
+> missing artist names and explicit tags (all optional in its settings); System Monitor uses it to
 > time its measurements.
 
 ## O-Music Player
@@ -221,9 +221,9 @@ with previous, play and next sits along the bottom while music plays. Time comes
 
 ![Stopwatch](apps/clock/screenshots/05-stopwatch.jpg)
 
-## O-Network Monitor
+## O-System Monitor
 
-![Network Monitor](apps/network-monitor/screenshots/01-dashboard.png)
+![System Monitor](apps/network-monitor/screenshots/01-dashboard.png)
 
 A small hardware monitoring station: CPU, GPU, memory, network, storage and processes for the
 machines around you, one at a time, on the Car Thing.
@@ -415,7 +415,7 @@ bun run bump MusicPlayerV1 patch -m "note"   # move the version and open a chang
 | O-Clock | http://localhost:5174 |
 | O-Desk Exchange | http://localhost:5175 |
 | O-Gold Tracker | http://localhost:5176 |
-| O-Network Monitor | http://localhost:5177 |
+| O-System Monitor | http://localhost:5177 |
 | O-Quote Flow | http://localhost:5178 |
 | O-Map | http://localhost:5179 |
 | O-Photos | http://localhost:5180 |

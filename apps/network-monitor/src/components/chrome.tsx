@@ -18,7 +18,7 @@ export const TopBar = memo(function TopBar({
 }) {
   return (
     <div className="flex h-12 shrink-0 items-center gap-4 border-b border-white/8 px-5">
-      <span className="font-display text-[1.125rem] font-bold tracking-[0.08em] text-off-white">O-NETWORK</span>
+      <span className="font-display text-[1.125rem] font-bold tracking-[0.08em] text-off-white">O-SYSTEM</span>
       <button onClick={onDevice} className="flex min-w-0 items-center gap-2.5 rounded-md px-2 py-1 active:bg-white/8">
         {device && <StatusIndicator online={online} label={false} />}
         <span className="truncate font-mono text-[0.875rem] tracking-[0.1em] text-soft uppercase">{device ?? 'no device'}</span>

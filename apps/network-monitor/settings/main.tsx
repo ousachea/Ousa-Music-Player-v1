@@ -52,7 +52,7 @@ function Settings() {
 
   return (
     <main>
-      <h1>{ctx?.name ?? 'network-monitor'} settings</h1>
+      <h1>{ctx?.name ?? 'O-System Monitor'} settings</h1>
       <p className="hint">{ctx ? `${ctx.webappId} on ${ctx.deviceId}` : 'connecting to the companion host...'}</p>
 
       <form onSubmit={saveConfig}>
