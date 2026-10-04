@@ -14,7 +14,7 @@ import type { DeviceEntry } from '../store/telemetry';
 import { NoData, type DeviceProps } from './device';
 import { SunWidget } from './sun';
 import { WeatherWidget } from './weather';
-import { BatteryWidget, CalendarWidget, ClockWidget, MusicWidget } from './widgets-life';
+import { BatteryWidget, CalendarWidget, ClaudeWidget, ClockWidget, MusicWidget } from './widgets-life';
 
 const usageOf = (part: { usage?: number; used?: number; total?: number } | null | undefined) =>
   part?.usage ?? (part?.used !== undefined && part.total ? (part.used / part.total) * 100 : undefined);
@@ -262,6 +262,7 @@ function extraPages(t: DeviceTelemetry, caps: DeviceCapabilities, go: (s: Screen
   const listed: (Item | null)[] = [
     { node: <WeatherWidget key="weather" />, wide: true },
     { node: <ClockWidget key="clock" /> },
+    t.claude ? { node: <ClaudeWidget key="claude" usage={t.claude} />, wide: true } : null,
     { node: <MusicWidget key="music" />, wide: true },
     { node: <CalendarWidget key="calendar" /> },
     caps.battery && t.battery && !usedBattery ? { node: <BatteryWidget key="bat" battery={t.battery} /> } : null,
@@ -273,25 +274,20 @@ function extraPages(t: DeviceTelemetry, caps: DeviceCapabilities, go: (s: Screen
     ...(t.storage ?? []).slice(1).map(d => ({ node: <DiskTile key={`disk-${d.id}`} d={d} onOpen={go('storage')} /> })),
   ];
   const more = listed.filter((x): x is Item => x !== null);
-  const pages: ReactNode[][] = [];
-  let page: ReactNode[] = [];
-  let cells = 0;
-  for (const item of more) {
+  // first fit: each widget takes the first page with room for it, so a wide one moving on does not leave a hole
+  const pages: { tiles: ReactNode[]; cells: number }[] = [];
+  more.forEach((item, i) => {
     const size = item.wide ? 2 : 1;
-    if (cells + size > 6) {
-      pages.push(page);
-      page = [];
-      cells = 0;
-    }
-    page.push(
-      <div key={(item.node as { key?: string }).key ?? pages.length * 10 + cells} className={`grid ${item.wide ? 'col-span-2' : ''}`}>
+    let page = pages.find(p => p.cells + size <= 6);
+    if (!page) pages.push((page = { tiles: [], cells: 0 }));
+    page.tiles.push(
+      <div key={(item.node as { key?: string }).key ?? i} className={`grid ${item.wide ? 'col-span-2' : ''}`}>
         {item.node}
       </div>,
     );
-    cells += size;
-  }
-  if (page.length) pages.push(page);
-  return pages;
+    page.cells += size;
+  });
+  return pages.map(p => p.tiles);
 }
 
 /** cards and rings keep their own first page, and the widget pages follow it in a plain dress to match */

@@ -19,6 +19,20 @@ declare namespace Deno {
   function readDir(path: string): AsyncIterable<{ name: string; isDirectory: boolean; isSymlink: boolean }>;
   function systemMemoryInfo(): { total: number; free: number; available: number; buffers: number; cached: number; swapTotal: number; swapFree: number };
 
+  const env: { get(key: string): string | undefined };
+  function stat(path: string): Promise<{ size: number; mtime: Date | null; isFile: boolean }>;
+  enum SeekMode {
+    Start = 0,
+    Current = 1,
+    End = 2,
+  }
+  interface FsFile {
+    seek(offset: number, whence: SeekMode): Promise<number>;
+    read(buffer: Uint8Array): Promise<number | null>;
+    close(): void;
+  }
+  function open(path: string, options?: { read?: boolean }): Promise<FsFile>;
+
   interface ChildProcess {
     readonly stdout: ReadableStream<Uint8Array>;
     readonly status: Promise<{ success: boolean; code: number }>;
@@ -36,5 +50,6 @@ declare namespace Deno {
 }
 
 declare module 'node:os' {
+  export function homedir(): string;
   export function cpus(): { model: string; speed: number; times: { user: number; nice: number; sys: number; idle: number; irq: number } }[];
 }

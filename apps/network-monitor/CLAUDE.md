@@ -20,6 +20,9 @@ platform cannot read is left out or sent as `null`, never estimated.
   handing back its latest lines. `shared.ts` holds what all three read alike (cpu ticks, rates, nvidia-smi).
 - Parsing lives apart from io in `linux-parse.ts` and `windows-parse.ts`, checked by `tests/collectors.test.ts`
   against sample output (`bun test` in this folder), since neither system runs where this is developed.
+- `extension/collectors/claude.ts` reads Claude Code's session logs (`~/.claude/projects`, or
+  `~/.config/claude/projects`) incrementally from each file's last offset, counting each reply once by its message
+  and request ids; parsing is in `claude-parse.ts`.
 - `extension/run.ts` is how the agent runs a program: fixed binary and arguments, a timeout, no shell. Linux
   also reads `/proc` and `/sys` directly.
 - `extension/deno.d.ts` declares the slice of Deno the agent uses, so `src/` keeps browser types.

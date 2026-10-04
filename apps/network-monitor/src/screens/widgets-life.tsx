@@ -6,7 +6,7 @@ import { memo, type ReactNode } from 'react';
 import { Caption, Figure, Icon, LOOKS, Tile, Title } from '../components/widget-kit';
 import { useClient, useNowPlaying } from '../composables/useNowPlaying';
 import { partsIn, useNow, useZoneContext, type Zone } from '../composables/useZone';
-import type { BatteryInfo } from '../protocol/types';
+import type { BatteryInfo, ClaudeUsage } from '../protocol/types';
 import { updateSettings, useSettings, type Settings } from '../store/settings';
 
 // ---- battery
@@ -333,3 +333,57 @@ function Music({ client }: { client: NonNullable<ReturnType<typeof useClient>> }
     </Tile>
   );
 }
+
+// ---- claude
+
+const tokens = (v: number) =>
+  v >= 1e9 ? `${(v / 1e9).toFixed(1)}B` : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(1)}k` : String(Math.round(v));
+
+/** claude code's day on this machine: today's tokens, how they split, and the week as bars */
+export const ClaudeWidget = memo(function ClaudeWidget({ usage }: { usage: ClaudeUsage }) {
+  const d = usage.today;
+  const total = d.input + d.output + d.cacheWrite + d.cacheRead;
+  const peak = Math.max(1, ...usage.week);
+  const days = Array.from({ length: 7 }, (_, i) => new Date(Date.now() - (6 - i) * 86_400_000));
+  return (
+    <Tile look={LOOKS.claude}>
+      <div className="flex h-full gap-5">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex items-center gap-2.5">
+            {/* the asterisk claude wears, drawn as eight rays */}
+            <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0 text-[#ffd2bd]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+              <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" />
+            </svg>
+            <span className="truncate font-display text-[1.25rem] font-semibold text-off-white">Claude Code</span>
+            {usage.models[0] && <span className="ml-auto rounded-full bg-white/14 px-2 py-0.5 font-body text-[0.75rem] whitespace-nowrap text-off-white/85">{usage.models[0].name}</span>}
+          </div>
+          <div className="mt-auto">
+            <Figure value={tokens(total)} unit="tokens" size={2.75} />
+            <Caption>
+              today · {d.replies} {d.replies === 1 ? 'reply' : 'replies'} · {d.sessions} {d.sessions === 1 ? 'session' : 'sessions'}
+            </Caption>
+            <div className="mt-1 truncate font-mono text-[0.6875rem] text-off-white/55 tabular-nums">
+              in {tokens(d.input)} · out {tokens(d.output)} · cache {tokens(d.cacheWrite + d.cacheRead)}
+            </div>
+          </div>
+        </div>
+        <div className="flex w-[40%] shrink-0 flex-col">
+          <span className="font-mono text-[0.6875rem] tracking-[0.16em] text-off-white/55">THIS WEEK</span>
+          <div className="mt-2 flex min-h-0 flex-1 items-end gap-1.5">
+            {usage.week.map((v, i) => (
+              <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
+                <span
+                  className="w-full rounded-[4px] transition-[height] duration-700 ease-out"
+                  style={{ height: `${Math.max(3, (v / peak) * 100)}%`, background: i === 6 ? '#fff4ee' : 'rgba(255,214,196,0.45)' }}
+                />
+                <span className={`font-body text-[0.625rem] ${i === 6 ? 'text-off-white' : 'text-off-white/50'}`}>
+                  {days[i].toLocaleDateString(undefined, { weekday: 'narrow' })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Tile>
+  );
+});

@@ -38,6 +38,11 @@
       "run:ping",
       "run:nvidia-smi",
       "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "read:~/.claude",
+      "read:~/.config/claude",
+      "env:HOME",
+      "env:USERPROFILE",
+      "env:CLAUDE_CONFIG_DIR",
       "sys"
     ],
     "api": 1

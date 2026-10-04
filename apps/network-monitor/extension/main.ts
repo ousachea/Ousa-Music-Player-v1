@@ -3,7 +3,8 @@
 // ever answers hello: nothing that arrives from a device can make it run anything
 import { asJson, defineExtension, json, type ExtensionContext } from '@bridgething/extension';
 
-import { PROTOCOL_VERSION, type DeviceTelemetry, type Platform } from '../src/protocol/types';
+import { PROTOCOL_VERSION, type ClaudeUsage, type DeviceTelemetry, type Platform } from '../src/protocol/types';
+import { claudeReader } from './collectors/claude';
 import type { Collector, Section } from './collectors/collector';
 import { linuxCollector } from './collectors/linux';
 import { macosCollector } from './collectors/macos';
@@ -13,6 +14,8 @@ const MIN_INTERVAL = 1000;
 const MAX_INTERVAL = 5000;
 const MEDIUM_EVERY = 5;
 const SLOW_EVERY = 30;
+/** claude code's logs change with every reply; once a minute is plenty for a day's tally */
+const CLAUDE_EVERY_MS = 60_000;
 
 function collectorFor(os: typeof Deno.build.os, log: (...args: unknown[]) => void): { platform: Platform; collector: Collector } | null {
   if (os === 'darwin') return { platform: 'macos', collector: macosCollector() };
@@ -50,6 +53,12 @@ defineExtension({
     let medium: Section = {};
     let tick = 0;
     let busy = false;
+    const claude = claudeReader((...args) => ctx.log.info(...args));
+    let claudeUsage: ClaudeUsage | null = null;
+    let claudeAt = 0;
+    let slowBusy = false;
+    let mediumBusy = false;
+    let claudeBusy = false;
 
     const watching = () => ctx.devices.some(d => d.connected && d.active);
 
@@ -98,9 +107,25 @@ defineExtension({
       if (!busy && deviceId && on) {
         busy = true;
         try {
-          // a streaming collector's tiers are its latest reads, cheap to ask for every frame
-          if (collector.streaming || tick % SLOW_EVERY === 0) slow = await collector.slow();
-          if (collector.streaming || tick % MEDIUM_EVERY === 0) medium = await collector.medium();
+          // the first frame waits for names and drives; after that the slow and medium reads (system_profiler takes
+          // seconds) and the claude logs refresh behind the frames, which go out on time with the latest of each.
+          // a frame held up for seconds would read on the dashboard as the machine going offline
+          const refresh = (due: boolean, busyFlag: () => boolean, set: (v: boolean) => void, run: () => Promise<void>) => {
+            if (!due || busyFlag()) return;
+            set(true);
+            void run().finally(() => set(false));
+          };
+          if (tick === 0) {
+            slow = await collector.slow();
+            medium = await collector.medium();
+          } else {
+            refresh(collector.streaming || tick % SLOW_EVERY === 0, () => slowBusy, v => (slowBusy = v), async () => void (slow = await collector.slow()));
+            refresh(collector.streaming || tick % MEDIUM_EVERY === 0, () => mediumBusy, v => (mediumBusy = v), async () => void (medium = await collector.medium()));
+          }
+          refresh(Date.now() - claudeAt >= CLAUDE_EVERY_MS, () => claudeBusy, v => (claudeBusy = v), async () => {
+            claudeAt = Date.now();
+            claudeUsage = (await claude.read().catch(() => null)) ?? claudeUsage;
+          });
           const fast = await collector.fast();
           const now = Date.now();
           const merged = merge(slow, medium, fast);
@@ -113,6 +138,7 @@ defineExtension({
           const caps = collector.capabilities();
           if (!caps.gpu) data.gpu = null;
           if (!caps.battery) data.battery = null;
+          if (claudeUsage) data.claude = claudeUsage;
           if (tick === 0) sendCapabilities();
           ctx.broadcast(json({ type: 'telemetry', timestamp: now, deviceId, data }));
           tick++;

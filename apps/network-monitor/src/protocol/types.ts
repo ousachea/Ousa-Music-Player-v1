@@ -114,6 +114,24 @@ export interface DisplayInfo {
   refreshRate?: number;
 }
 
+/** claude code's own record on this machine: tokens by kind, replies and sessions, for today and the week */
+export interface ClaudeDay {
+  input: number;
+  output: number;
+  cacheWrite: number;
+  cacheRead: number;
+  replies: number;
+  sessions: number;
+}
+
+export interface ClaudeUsage {
+  today: ClaudeDay;
+  /** total tokens a day, oldest first, today last */
+  week: number[];
+  /** today's tokens by model, largest first */
+  models: { name: string; tokens: number }[];
+}
+
 export interface DeviceTelemetry {
   device: DeviceInfo;
   system: SystemInfo;
@@ -125,6 +143,7 @@ export interface DeviceTelemetry {
   battery?: BatteryInfo | null;
   processes?: ProcessInfo[] | null;
   displays?: DisplayInfo[] | null;
+  claude?: ClaudeUsage | null;
 }
 
 export interface DeviceCapabilities {

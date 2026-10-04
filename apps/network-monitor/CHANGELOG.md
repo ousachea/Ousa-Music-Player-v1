@@ -16,6 +16,8 @@ Widgets run to more than one page: swipe or turn the wheel, with dots marking th
   breathing, stars twinkling, clouds and fog drifting, rain slanting down, a storm flashing, snow
   falling. From Open-Meteo, for where the phone is, or near enough from the network when it will
   not say.
+- **Claude Code**: today's tokens with how they split, replies, sessions and the model, and the week
+  as bars, read from Claude Code's own logs on the computer the Car Thing is plugged into.
 - **Clock**: digital, a glowing LED, or analog with a sweeping second hand; tap to change.
 - **Calendar**: the month, the week or the day, with today marked; tap to change.
 - **Music**: what the phone is playing, with its artwork, progress, and previous, play and next.

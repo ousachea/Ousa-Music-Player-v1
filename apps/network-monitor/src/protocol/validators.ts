@@ -5,6 +5,7 @@ import { LIMITS, RANGES, type Range } from './schema';
 import {
   PLATFORMS,
   type BatteryInfo,
+  type ClaudeUsage,
   type CpuInfo,
   type DeviceCapabilities,
   type DeviceInfo,
@@ -174,6 +175,26 @@ const readDisplay = (o: Obj): DisplayInfo =>
     refreshRate: num(o.refreshRate, 'hertz'),
   });
 
+function readClaude(o: Obj): ClaudeUsage | undefined {
+  if (!isObj(o.today)) return undefined;
+  const t = o.today;
+  const today = {
+    input: num(t.input, 'tokens'),
+    output: num(t.output, 'tokens'),
+    cacheWrite: num(t.cacheWrite, 'tokens'),
+    cacheRead: num(t.cacheRead, 'tokens'),
+    replies: num(t.replies, 'count'),
+    sessions: num(t.sessions, 'count'),
+  };
+  if (Object.values(today).some(v => v === undefined)) return undefined;
+  const week = nums(o.week, 'tokens', 7);
+  const models = (Array.isArray(o.models) ? o.models : [])
+    .slice(0, LIMITS.models)
+    .map(m => (isObj(m) ? { name: str(m.name, 64), tokens: num(m.tokens, 'tokens') } : null))
+    .filter((m): m is { name: string; tokens: number } => !!m?.name && m.tokens !== undefined);
+  return { today: today as ClaudeUsage['today'], week: week ?? [], models };
+}
+
 export function readTelemetry(o: unknown): DeviceTelemetry | undefined {
   if (!isObj(o)) return undefined;
   const device = readDevice(o.device);
@@ -197,6 +218,7 @@ export function readTelemetry(o: unknown): DeviceTelemetry | undefined {
     battery: section(o.battery, readBattery),
     processes: list(o.processes, LIMITS.processes, readProcess),
     displays: list(o.displays, LIMITS.displays, readDisplay),
+    claude: o.claude === null ? null : isObj(o.claude) ? readClaude(o.claude) : undefined,
   });
 }
 

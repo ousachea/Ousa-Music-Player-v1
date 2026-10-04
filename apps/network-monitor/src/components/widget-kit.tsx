@@ -18,6 +18,7 @@ export const LOOKS = {
   amber: { from: '#d9811c', to: '#5a2c08', glow: '#ffc56b', turn: 20 },
   rose: { from: '#d6336c', to: '#4d1030', glow: '#ff8fb3', turn: 26, reverse: true },
   cyan: { from: '#1b8fd1', to: '#0b2f4f', glow: '#7fd8ff', turn: 22 },
+  claude: { from: '#d97757', to: '#4a1f14', glow: '#ffb48f', turn: 23, reverse: true },
 } satisfies Record<string, Look>;
 
 export function Tile({ look, onOpen, className, children }: { look: Look; onOpen?: () => void; className?: string; children: ReactNode }) {

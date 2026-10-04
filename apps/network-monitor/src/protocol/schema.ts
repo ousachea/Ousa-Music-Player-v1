@@ -10,6 +10,7 @@ export const LIMITS = {
   cores: 512,
   load: 3,
   devices: 32,
+  models: 8,
 } as const;
 
 export const RANGES = {
@@ -35,6 +36,9 @@ export const RANGES = {
   pixels: [0, 32_768],
   hertz: [0, 1_000],
   pid: [0, 2 ** 31],
+  /** tokens: a day of heavy use is billions, never trillions */
+  tokens: [0, 1e13],
+  count: [0, 1e9],
 } as const satisfies Record<string, readonly [number, number]>;
 
 export type Range = keyof typeof RANGES;
