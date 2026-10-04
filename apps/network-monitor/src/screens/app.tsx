@@ -56,6 +56,14 @@ type Row = {
 
 const ROWS: Row[] = [
   {
+    key: 'homeStyle',
+    label: 'Home style',
+    choices: [
+      { value: 'cards', label: 'Cards' },
+      { value: 'rings', label: 'Rings' },
+    ],
+  },
+  {
     key: 'source',
     label: 'Data source',
     choices: [

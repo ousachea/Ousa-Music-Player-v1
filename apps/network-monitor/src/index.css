@@ -96,3 +96,14 @@
     transform: translateY(-8px);
   }
 }
+
+/* registered so a ring's arc and end cap ease between readings rather than jumping */
+@property --p {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.ring-arc {
+  transition: --p 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}

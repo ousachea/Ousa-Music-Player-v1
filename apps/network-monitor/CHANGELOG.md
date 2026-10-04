@@ -4,7 +4,9 @@
 
 A new dashboard: a small hardware monitoring station for the machines around you. **Home** shows
 CPU, GPU, RAM and network at a glance, each with its own screen and a live graph, and **More**
-reaches storage, processes, the device list, settings and a debug view of the raw data. Devices
+reaches storage, processes, the device list, settings and a debug view of the raw data. **Home style**
+in Settings shows the four as cards with bars, or as rings: a gradient arc round each figure that
+eases to every new reading, with network set against the speed of its link. Devices
 that go quiet show as offline with the time of their last report.
 
 Data comes from one telemetry format every future agent will speak, with each field checked before

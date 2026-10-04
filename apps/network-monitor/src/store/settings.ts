@@ -12,6 +12,7 @@ export type Settings = {
   historySec: 30 | 60 | 120;
   defaultDevice: string | null;
   processSort: 'cpu' | 'memory';
+  homeStyle: 'cards' | 'rings';
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -22,6 +23,7 @@ export const DEFAULT_SETTINGS: Settings = {
   historySec: 60,
   defaultDevice: null,
   processSort: 'cpu',
+  homeStyle: 'cards',
 };
 
 const KEY = 'settings';
@@ -52,6 +54,7 @@ function parse(raw: string | null | undefined): Settings {
     historySec: pick(o.historySec, [30, 60, 120] as const, d.historySec),
     defaultDevice: typeof o.defaultDevice === 'string' ? o.defaultDevice.slice(0, 64) : null,
     processSort: pick(o.processSort, ['cpu', 'memory'] as const, d.processSort),
+    homeStyle: pick(o.homeStyle, ['cards', 'rings'] as const, d.homeStyle),
   };
 }
 

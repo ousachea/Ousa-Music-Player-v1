@@ -229,7 +229,8 @@ A small hardware monitoring station: CPU, GPU, memory, network, storage and proc
 machines around you, one at a time, on the Car Thing.
 
 - **Home** shows the four that matter most for the device you're watching; a phone with no CPU data
-  gets battery and storage in their place.
+  gets battery and storage in their place. **Home style** draws them as cards with bars, or as rings:
+  a gradient arc round each figure that eases to every new reading.
 - **CPU, GPU, RAM, NET** each have their own screen with a live graph; CPU shows every core.
 - **More** reaches Storage, Processes (sort by CPU or memory), Devices, Settings and Debug, which
   shows the raw telemetry.

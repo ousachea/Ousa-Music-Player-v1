@@ -4,6 +4,7 @@ import { memo, useEffect, useMemo, useRef, useState, type ReactNode } from 'reac
 
 import { Big, Label, MetricCard, ProcessRow, Stat, StorageCard, TemperatureBadge, platformLabel } from '../components/cards';
 import { COLORS, MiniGraph, NetworkGraph, ProgressBar, levelColor } from '../components/graphs';
+import { RING_COLORS, Ring, RingValue } from '../components/ring';
 import { duration, gb, pct, type Formatters } from '../composables/useMetrics';
 import { useWheelScroll } from '../composables/useWheel';
 import type { DeviceCapabilities } from '../protocol/types';
@@ -176,6 +177,60 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
         }
       })}
       {tiles.length === 0 && <NoData entry={entry} what="Hardware" />}
+    </div>
+  );
+});
+
+/** the same tiles as rings: a percentage reads as a ring directly; throughput is set against the link it runs on,
+ * or against the busiest moment in the graph when the device does not say how fast its link is */
+export const HomeRings = memo(function HomeRings({ entry, caps, fmt, onOpen }: DeviceProps) {
+  const t = entry.telemetry;
+  if (!t) return null;
+  const tiles = tilesFor(caps);
+  if (tiles.length === 0) return <NoData entry={entry} what="Hardware" />;
+  const value = (v: number | undefined) => <RingValue value={v === undefined ? '—' : String(Math.round(v))} unit="%" />;
+  return (
+    <div className="flex h-full items-center justify-evenly">
+      {tiles.map((tile, i) => {
+        const divider = i > 0 && <span key={`d${tile}`} className="h-[70%] w-px bg-white/8" />;
+        let ring: ReactNode;
+        switch (tile) {
+          case 'cpu':
+            ring = <Ring percent={t.cpu?.usage} colors={RING_COLORS.cpu} center={value(t.cpu?.usage)} label="CPU" sub={fmt.temp(t.cpu?.temperature)} onOpen={() => onOpen('cpu')} />;
+            break;
+          case 'gpu':
+            ring = <Ring percent={t.gpu?.usage} colors={RING_COLORS.gpu} center={value(t.gpu?.usage)} label="GPU" sub={fmt.temp(t.gpu?.temperature)} onOpen={() => onOpen('gpu')} />;
+            break;
+          case 'memory': {
+            const m = t.memory;
+            const usage = m?.usage ?? (m?.used !== undefined && m.total ? (m.used / m.total) * 100 : undefined);
+            const sub = m?.used !== undefined && m.total !== undefined ? `${m.used.toFixed(1)} / ${Math.round(m.total)} GB` : null;
+            ring = <Ring percent={usage} colors={RING_COLORS.ram} center={value(usage)} label="RAM" sub={sub} onOpen={() => onOpen('memory')} />;
+            break;
+          }
+          case 'network': {
+            const n = t.network;
+            const peak = Math.max(1, ...entry.history.down.map(p => p.value));
+            const share = n?.download === undefined ? undefined : (n.download / (n.linkSpeed ?? peak)) * 100;
+            const down = fmt.rate(n?.download);
+            const sub = [n?.upload !== undefined ? `↑ ${fmt.rate(n.upload).value} ${fmt.rate(n.upload).unit}` : null, n?.ping !== undefined ? `${Math.round(n.ping)} ms` : null]
+              .filter(Boolean)
+              .join(' · ');
+            ring = <Ring percent={share} colors={RING_COLORS.network} center={<RingValue value={down.value} unit={down.unit} stacked />} label="Network" sub={sub || null} onOpen={() => onOpen('network')} />;
+            break;
+          }
+          case 'battery':
+            ring = <Ring percent={t.battery?.percentage} colors={RING_COLORS.battery} center={value(t.battery?.percentage)} label="Battery" sub={t.battery?.charging ? 'charging' : t.battery?.charging === false ? 'on battery' : null} />;
+            break;
+          case 'storage': {
+            const d = t.storage?.[0];
+            const usage = d?.usage ?? (d?.used !== undefined && d.total ? (d.used / d.total) * 100 : undefined);
+            ring = <Ring percent={usage} colors={RING_COLORS.storage} center={value(usage)} label="Storage" sub={d ? `${gb(d.used)} / ${gb(d.total)}` : null} onOpen={() => onOpen('storage')} />;
+            break;
+          }
+        }
+        return [divider, <div key={tile}>{ring}</div>];
+      })}
     </div>
   );
 });
