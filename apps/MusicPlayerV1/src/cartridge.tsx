@@ -58,6 +58,8 @@ export function Cartridge({
   artUrl,
   accent,
   shell = 'white',
+  printed = false,
+  onPrint,
   playing,
   motion,
   label,
@@ -68,6 +70,10 @@ export function Cartridge({
   /** the cover's colours; null keeps the disc gold */
   accent: Accent | null;
   shell?: Shell;
+  /** the cover printed across the disc, rather than the disc pressed in its colours */
+  printed?: boolean;
+  /** a tap on the slider's cover trades the two */
+  onPrint?: () => void;
   playing: boolean;
   motion: boolean;
   /** what the slider's spine says */
@@ -99,11 +105,23 @@ export function Cartridge({
       {/* the disc: the colour turns with it, the light on it stays put, the way light falls on a real one */}
       <div className="absolute top-[5%] left-[7%] aspect-square w-[88%]">
         <div
-          className="animate-platter absolute inset-0 rounded-full"
-          style={{ background: pressing(accent), transition: 'background 700ms', animationPlayState: playing && motion ? 'running' : 'paused', animationDuration: '6s' }}
-        />
+          className="animate-platter absolute inset-0 overflow-hidden rounded-full"
+          style={{ background: pressing(accent), transition: 'background 700ms', animationPlayState: playing && motion ? 'running' : 'paused', animationDuration: '6s' }}>
+          {/* printed: the cover turns with the disc, and fades in and out over the pressing */}
+          {artUrl && <img src={artUrl} alt="" className={`h-full w-full object-cover transition-opacity duration-500 ${printed ? 'opacity-100' : 'opacity-0'}`} />}
+        </div>
+        {/* a printed disc still catches light, a fainter sweep than the bare metal's */}
+        {printed && (
+          <div
+            className="pointer-events-none absolute inset-0 rounded-full mix-blend-screen opacity-35"
+            style={{
+              background:
+                'conic-gradient(from 208deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.55) 34deg, rgba(255,255,255,0) 74deg, rgba(255,255,255,0) 150deg, rgba(255,255,255,0.4) 188deg, rgba(255,255,255,0) 228deg, rgba(255,255,255,0) 300deg, rgba(255,255,255,0.32) 332deg, rgba(255,255,255,0) 360deg)',
+            }}
+          />
+        )}
         <div
-          className="pointer-events-none absolute inset-0 rounded-full"
+          className={`pointer-events-none absolute inset-0 rounded-full transition-opacity duration-500 ${printed ? 'opacity-0' : ''}`}
           style={{
             background:
               'radial-gradient(circle at 30% 26%, rgba(255,255,255,0.75), rgba(255,255,255,0) 42%), radial-gradient(circle at 74% 78%, rgba(255,250,225,0.45), rgba(255,255,255,0) 38%)',
@@ -119,9 +137,12 @@ export function Cartridge({
         <div className="ml-[3%] grid h-[62%] w-[9%] place-items-center rounded-[3px]" style={{ backgroundColor: k.spine[0] }}>
           <span className="font-display text-[0.5625rem] font-bold whitespace-nowrap [writing-mode:vertical-rl] rotate-180" style={{ color: k.spine[1] }}>{label}</span>
         </div>
-        <div className="ml-[12%] aspect-square h-[82%] overflow-hidden rounded-[4px] bg-black ring-1 ring-white/10">
+        <button
+          aria-label={printed ? 'disc in the cover colours' : 'cover on the disc'}
+          onClick={onPrint}
+          className="ml-[12%] aspect-square h-[82%] overflow-hidden rounded-[4px] bg-black ring-1 ring-white/10 transition active:scale-95">
           {artUrl ? <img src={artUrl} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full bg-white/10" />}
-        </div>
+        </button>
       </div>
 
       {/* the hub: a black ring with fine grooves, the grey clamp inside it, and the spindle hole */}

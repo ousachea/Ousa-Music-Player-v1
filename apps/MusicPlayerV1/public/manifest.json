@@ -220,6 +220,18 @@
     {
       "type": "enum",
       "data": {
+        "key": "cdDisc",
+        "label": "CD disc",
+        "choices": [
+          "colour",
+          "art"
+        ],
+        "default": "colour"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
         "key": "tape",
         "label": "Cassette tape design",
         "choices": [

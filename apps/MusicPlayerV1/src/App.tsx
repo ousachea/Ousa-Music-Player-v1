@@ -643,6 +643,8 @@ export default function App() {
             clockSize={prefs.clockSize}
             look={prefs.cdStyle}
             onLook={() => setPref('cdStyle', prefs.cdStyle === 'cartridge' ? 'tray' : 'cartridge')}
+            printed={prefs.cdDisc === 'art'}
+            onPrint={() => setPref('cdDisc', prefs.cdDisc === 'art' ? 'colour' : 'art')}
             onToggle={toggle}
             onPrev={() => goPrev(true)}
             onNext={() => goNext()}
@@ -1103,6 +1105,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
   pocketBody: { values: ['silver', 'black'], labels: ['Silver', 'Black'] },
   cdStyle: { values: ['tray', 'cartridge'], labels: ['Black', 'White'] },
+  cdDisc: { values: ['colour', 'art'], labels: ['Colour', 'Artwork'] },
   stereoMode: { values: ['dark', 'light', 'auto'], labels: ['Dark', 'Light', 'Auto'] },
   deckGlow: { values: GLOWS, labels: ['Album', 'Rainbow', 'Ice', 'Amber', 'Red', 'Green', 'White'] },
   vinylStyle: { values: ['turntable', 'sleeve', 'picture'], labels: ['Turntable', 'Sleeve', 'Picture disc'] },
@@ -1143,6 +1146,7 @@ const STYLE_ROWS: Row[] = [
   { key: 'flowBg', label: 'Background', only: ['flow'] },
   { key: 'pocketBody', label: 'Body colour', only: ['pocket'] },
   { key: 'cdStyle', label: 'Look', only: ['cd'] },
+  { key: 'cdDisc', label: 'Disc', only: ['cd'] },
   { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
@@ -2093,6 +2097,8 @@ function CdDeck({
   clockSize,
   look,
   onLook,
+  printed,
+  onPrint,
   onToggle,
   onPrev,
   onNext,
@@ -2118,6 +2124,8 @@ function CdDeck({
   /** the cartridge's shell: 'tray' is the smoked black one, 'cartridge' the frosted white; the hub trades them */
   look: Prefs['cdStyle'];
   onLook: () => void;
+  printed: boolean;
+  onPrint: () => void;
   onToggle: () => void;
   onPrev: () => void;
   onNext: () => void;
@@ -2132,6 +2140,8 @@ function CdDeck({
         artUrl={artUrl}
         accent={accent}
         shell={look === 'cartridge' ? 'white' : 'black'}
+        printed={printed}
+        onPrint={onPrint}
         playing={playing}
         motion={motion}
         label="O-Music"
