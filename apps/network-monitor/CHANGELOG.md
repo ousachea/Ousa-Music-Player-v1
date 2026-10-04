@@ -10,6 +10,13 @@ does. A soft light and a pool of shadow drift slowly round each tile, every one 
 device without a GPU or CPU reading hands the tile to its battery, and a row with a tile to spare lets
 its neighbour stretch rather than leave a gap.
 
+Widgets run to more than one page: swipe or turn the wheel for every core, the busiest apps, uptime,
+battery, displays and any other drives, with dots marking the page.
+
+**Preset 4** turns the screen a quarter at a time, for a Car Thing mounted on its side, and so does
+**Screen rotation** in Settings. Every screen lays itself out for portrait rather than stretching, and
+swipes follow the turn. Network stays on its tab along the bottom.
+
 **Processes** reads as a breakdown: each process in a colour of its own, a bar for its share of a
 core or of the machine's memory, and a small trend line of its last minute beside it.
 

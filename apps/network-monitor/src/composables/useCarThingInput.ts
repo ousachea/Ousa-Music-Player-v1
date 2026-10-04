@@ -2,6 +2,8 @@
 // nowhere else. a screen that scrolls takes the wheel first; anywhere else the wheel walks the screens
 import { useEffect, useRef } from 'react';
 
+import { toLayout, type Rotate } from '../components/stage';
+
 import { back, go, step, toggleBare, type Screen } from '../store/navigation';
 
 export type Action =
@@ -9,13 +11,14 @@ export type Action =
   | { type: 'back' }
   | { type: 'turn'; dir: 1 | -1 }
   | { type: 'press' }
+  | { type: 'rotate' }
   | { type: 'swipe'; dir: 1 | -1 };
 
 export const KEYMAP: Record<string, Action> = {
   '1': { type: 'go', screen: 'home' },
   '2': { type: 'go', screen: 'cpu' },
   '3': { type: 'go', screen: 'gpu' },
-  '4': { type: 'go', screen: 'network' },
+  '4': { type: 'rotate' },
   m: { type: 'go', screen: 'more' },
   Escape: { type: 'back' },
   ArrowRight: { type: 'turn', dir: 1 },
@@ -38,7 +41,7 @@ export function takeWheel(taker: WheelTaker | null) {
   wheelTaker = taker;
 }
 
-function act(action: Action) {
+function act(action: Action, rotate: () => void) {
   switch (action.type) {
     case 'go':
       return go(action.screen);
@@ -53,10 +56,18 @@ function act(action: Action) {
       return toggleBare();
     case 'swipe':
       return step(action.dir);
+    case 'rotate':
+      return rotate();
   }
 }
 
-export function useCarThingInput() {
+/** `rotate` is the current turn, so a swipe is read along the axis the viewer swiped; `onRotate` turns it further */
+export function useCarThingInput(rotate: Rotate, onRotate: () => void) {
+  const turn = useRef(rotate);
+  turn.current = rotate;
+  const spin = useRef(onRotate);
+  spin.current = onRotate;
+  const doAct = (action: Action) => act(action, () => spin.current());
   const wheelAcc = useRef(0);
   const swipeFrom = useRef<{ x: number; y: number } | null>(null);
 
@@ -65,7 +76,7 @@ export function useCarThingInput() {
       const action = KEYMAP[e.key];
       if (!action) return;
       e.preventDefault();
-      act(action);
+      doAct(action);
     };
     const onWheel = (e: WheelEvent) => {
       const d = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : 0;
@@ -74,22 +85,23 @@ export function useCarThingInput() {
       while (Math.abs(wheelAcc.current) >= WHEEL_STEP) {
         const dir = wheelAcc.current > 0 ? 1 : -1;
         wheelAcc.current -= dir * WHEEL_STEP;
-        act({ type: 'turn', dir });
+        doAct({ type: 'turn', dir });
       }
     };
     const onDown = (e: PointerEvent) => {
       const target = e.target instanceof Element ? e.target : null;
       // a list being dragged is scrolling, not asking for another screen
-      swipeFrom.current = target?.closest('[data-scroll]') ? null : { x: e.clientX, y: e.clientY };
+      swipeFrom.current = target?.closest('[data-scroll]') ? null : toLayout(e.clientX, e.clientY, turn.current);
     };
     const onUp = (e: PointerEvent) => {
       const from = swipeFrom.current;
       swipeFrom.current = null;
       if (!from) return;
-      const dx = e.clientX - from.x;
-      const dy = e.clientY - from.y;
+      const to = toLayout(e.clientX, e.clientY, turn.current);
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
       if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dy) > Math.abs(dx) * 0.7) return;
-      act({ type: 'swipe', dir: dx < 0 ? 1 : -1 });
+      doAct({ type: 'swipe', dir: dx < 0 ? 1 : -1 });
     };
     window.addEventListener('keydown', onKey);
     window.addEventListener('wheel', onWheel, { passive: true });

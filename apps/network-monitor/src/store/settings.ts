@@ -13,6 +13,7 @@ export type Settings = {
   defaultDevice: string | null;
   processSort: 'cpu' | 'memory';
   homeStyle: 'cards' | 'rings' | 'widgets';
+  rotate: 0 | 90 | 180 | 270;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -24,6 +25,7 @@ export const DEFAULT_SETTINGS: Settings = {
   defaultDevice: null,
   processSort: 'cpu',
   homeStyle: 'cards',
+  rotate: 0,
 };
 
 const KEY = 'settings';
@@ -55,6 +57,7 @@ function parse(raw: string | null | undefined): Settings {
     defaultDevice: typeof o.defaultDevice === 'string' ? o.defaultDevice.slice(0, 64) : null,
     processSort: pick(o.processSort, ['cpu', 'memory'] as const, d.processSort),
     homeStyle: pick(o.homeStyle, ['cards', 'rings', 'widgets'] as const, d.homeStyle),
+    rotate: pick(o.rotate, [0, 90, 180, 270] as const, d.rotate),
   };
 }
 

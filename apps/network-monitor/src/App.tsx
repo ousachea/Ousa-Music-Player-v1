@@ -2,6 +2,7 @@ import { BridgethingClient, type ConnectionState } from '@bridgething/client';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { AlertBanner, BottomNavigation, TopBar } from './components/chrome';
+import { OrientationContext, Stage } from './components/stage';
 import { useCarThingInput } from './composables/useCarThingInput';
 import { useMetrics } from './composables/useMetrics';
 import { useTelemetrySource } from './composables/useTelemetrySource';
@@ -36,7 +37,11 @@ export default function App() {
   }, [client]);
 
   useTelemetrySource(client);
-  useCarThingInput();
+  useCarThingInput(settings.rotate, () =>
+    updateSettings(client, { rotate: ((settings.rotate + 90) % 360) as 0 | 90 | 180 | 270 }),
+  );
+  const upright = settings.rotate === 90 || settings.rotate === 270;
+  const orientation = useMemo(() => ({ rotate: settings.rotate, upright }), [settings.rotate, upright]);
 
   // the device shown: the one picked this session, else the saved default, else the first computer to report,
   // since the car thing's own link is the least interesting thing on the list
@@ -108,6 +113,8 @@ export default function App() {
   }
 
   return (
+    <Stage rotate={settings.rotate}>
+    <OrientationContext.Provider value={orientation}>
     <div className="relative flex h-full w-full flex-col bg-screen">
       {!nav.bare && <TopBar device={entry?.info.name ?? null} online={entry?.online ?? false} clock={clock} onDevice={() => go('devices')} />}
       {/* keyed on screen and device, so switching either starts the view fresh rather than morphing the last one */}
@@ -118,6 +125,8 @@ export default function App() {
       {banner && <AlertBanner tone="ok" title="ONLINE" detail={`${banner} connected`} />}
       {daemon !== 'open' && <AlertBanner tone="warn" title="DAEMON" detail="reconnecting…" />}
     </div>
+    </OrientationContext.Provider>
+    </Stage>
   );
 }
 

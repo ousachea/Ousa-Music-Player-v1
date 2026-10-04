@@ -236,7 +236,8 @@ machines around you, one at a time, on the Car Thing.
   gets battery and storage in their place. **Home style** draws them as cards with bars; as rings, a
   gradient arc round each figure that eases to every new reading; or as widgets, tiles in their own
   colours with a soft light drifting slowly across each, network wide along the bottom and the disk
-  as a row of slats.
+  as a row of slats. Swipe or turn the wheel for more widgets: every core, the busiest apps, uptime,
+  battery, displays and any other drives.
 - **CPU, GPU, RAM, NET, DISK** each have their own screen; CPU shows every core, and DISK every
   drive with its space and read and write speed.
 - **More** reaches Processes (each with a coloured share bar and a trend line, by CPU or memory), Devices, Settings and Debug, which shows the
@@ -271,9 +272,9 @@ and how much history the graphs keep.
 | Preset button 1 | Home |
 | Preset button 2 | CPU |
 | Preset button 3 | GPU |
-| Preset button 4 | Network |
+| Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
 | Mode | More |
-| Turn the wheel | Scroll a list, or step through the screens |
+| Turn the wheel | Scroll a list or the widget pages, or step through the screens |
 | Press the wheel | Hide or show the top and bottom bars; on a list, choose |
 | Swipe across the screen | Next or previous screen |
 | Back | The screen before |

@@ -10,6 +10,7 @@ import { useWheelScroll } from '../composables/useWheel';
 import type { DeviceCapabilities } from '../protocol/types';
 import type { Screen } from '../store/navigation';
 import type { DeviceEntry } from '../store/telemetry';
+import { useOrientation } from '../components/stage';
 
 export type DeviceProps = {
   entry: DeviceEntry;
@@ -184,15 +185,16 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
 /** the same tiles as rings: a percentage reads as a ring directly; throughput is set against the link it runs on,
  * or against the busiest moment in the graph when the device does not say how fast its link is */
 export const HomeRings = memo(function HomeRings({ entry, caps, fmt, onOpen }: DeviceProps) {
+  const { upright } = useOrientation();
   const t = entry.telemetry;
   if (!t) return null;
   const tiles = tilesFor(caps);
   if (tiles.length === 0) return <NoData entry={entry} what="Hardware" />;
   const value = (v: number | undefined) => <RingValue value={v === undefined ? '—' : String(Math.round(v))} unit="%" />;
   return (
-    <div className="flex h-full items-center justify-evenly">
+    <div className={`h-full ${upright ? 'grid grid-cols-2 place-items-center' : 'flex items-center justify-evenly'}`}>
       {tiles.map((tile, i) => {
-        const divider = i > 0 && <span key={`d${tile}`} className="h-[70%] w-px bg-white/8" />;
+        const divider = i > 0 && !upright && <span key={`d${tile}`} className="h-[70%] w-px bg-white/8" />;
         let ring: ReactNode;
         switch (tile) {
           case 'cpu':
@@ -238,11 +240,12 @@ export const HomeRings = memo(function HomeRings({ entry, caps, fmt, onOpen }: D
 // ---- cpu
 
 export const Cpu = memo(function Cpu({ entry, caps, fmt, windowSec }: DeviceProps) {
+  const { upright } = useOrientation();
   const c = entry.telemetry?.cpu;
   if (!caps.cpu || !c) return <NoData entry={entry} what="CPU" />;
   const cores = c.perCoreUsage;
   return (
-    <div className="grid h-full grid-cols-[17rem_1fr] gap-5">
+    <div className={`h-full gap-5 ${upright ? 'flex flex-col' : 'grid grid-cols-[17rem_1fr]'}`}>
       <div className="flex min-w-0 flex-col gap-3">
         <Title>{c.name ?? 'CPU'}</Title>
         <div className="flex items-end gap-3">
@@ -256,7 +259,7 @@ export const Cpu = memo(function Cpu({ entry, caps, fmt, windowSec }: DeviceProp
           <Stat label="Threads" value={c.threads !== undefined ? String(c.threads) : null} />
         </div>
       </div>
-      <div className="flex min-w-0 flex-col gap-3">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
         <div className="relative min-h-0 flex-1 rounded-lg bg-white/[0.045] px-3 py-2">
           <div className="absolute top-2 left-3">
             <Label>Usage · {windowSec}s</Label>
@@ -283,11 +286,12 @@ export const Cpu = memo(function Cpu({ entry, caps, fmt, windowSec }: DeviceProp
 // ---- gpu
 
 export const Gpu = memo(function Gpu({ entry, caps, fmt, windowSec }: DeviceProps) {
+  const { upright } = useOrientation();
   const g = entry.telemetry?.gpu;
   if (!caps.gpu || !g) return <NoData entry={entry} what="GPU" />;
   const vram = g.memoryUsed !== undefined && g.memoryTotal !== undefined ? `${g.memoryUsed.toFixed(1)} / ${Math.round(g.memoryTotal)} GB` : g.memoryUsed !== undefined ? gb(g.memoryUsed) : null;
   return (
-    <div className="grid h-full grid-cols-[17rem_1fr] gap-5">
+    <div className={`h-full gap-5 ${upright ? 'flex flex-col' : 'grid grid-cols-[17rem_1fr]'}`}>
       <div className="flex min-w-0 flex-col gap-3">
         <Title>{g.name ?? 'GPU'}</Title>
         <div className="flex items-end gap-3">
@@ -302,7 +306,7 @@ export const Gpu = memo(function Gpu({ entry, caps, fmt, windowSec }: DeviceProp
           <Stat label="Fan" value={g.fan !== undefined ? `${g.fan}%` : null} />
         </div>
       </div>
-      <div className="relative min-h-0 rounded-lg bg-white/[0.045] px-3 py-2">
+      <div className="relative min-h-0 flex-1 rounded-lg bg-white/[0.045] px-3 py-2">
         <div className="absolute top-2 left-3 flex gap-4">
           <Label>Usage · {windowSec}s</Label>
           {caps.gpuTemperature && <Label color={COLORS.warn}>Temp</Label>}
@@ -323,11 +327,12 @@ export const Gpu = memo(function Gpu({ entry, caps, fmt, windowSec }: DeviceProp
 // ---- memory
 
 export const Memory = memo(function Memory({ entry, caps, windowSec }: DeviceProps) {
+  const { upright } = useOrientation();
   const m = entry.telemetry?.memory;
   if (!caps.memory || !m) return <NoData entry={entry} what="Memory" />;
   const usage = m.usage ?? (m.used !== undefined && m.total ? (m.used / m.total) * 100 : undefined);
   return (
-    <div className="grid h-full grid-cols-[1fr_1fr] gap-5">
+    <div className={`h-full gap-5 ${upright ? 'flex flex-col' : 'grid grid-cols-[1fr_1fr]'}`}>
       <div className="flex min-w-0 flex-col gap-3">
         <Title>Memory</Title>
         <Big value={`${m.used?.toFixed(1) ?? '—'} / ${m.total !== undefined ? Math.round(m.total) : '—'}`} unit="GB" size={3.5} />
@@ -345,7 +350,7 @@ export const Memory = memo(function Memory({ entry, caps, windowSec }: DevicePro
           <Stat label="Swap" value={m.swapUsed !== undefined ? gb(m.swapUsed) : null} sub={m.swapTotal !== undefined ? `of ${gb(m.swapTotal)}` : undefined} />
         </div>
       </div>
-      <div className="relative min-h-0 rounded-lg bg-white/[0.045] px-3 py-2">
+      <div className="relative min-h-0 flex-1 rounded-lg bg-white/[0.045] px-3 py-2">
         <div className="absolute top-2 left-3">
           <Label>Usage · {windowSec}s</Label>
         </div>
@@ -358,13 +363,14 @@ export const Memory = memo(function Memory({ entry, caps, windowSec }: DevicePro
 // ---- network
 
 export const Network = memo(function Network({ entry, caps, fmt, windowSec }: DeviceProps) {
+  const { upright } = useOrientation();
   const n = entry.telemetry?.network;
   if (!caps.network || !n) return <NoData entry={entry} what="Network" />;
   const down = fmt.rate(n.download);
   const up = fmt.rate(n.upload);
   const link = fmt.link(n.linkSpeed);
   return (
-    <div className="grid h-full grid-cols-[17rem_1fr] gap-5">
+    <div className={`h-full gap-5 ${upright ? 'flex flex-col' : 'grid grid-cols-[17rem_1fr]'}`}>
       <div className="flex min-w-0 flex-col gap-2">
         <Title>Network</Title>
         <div className="flex items-baseline gap-2">
@@ -384,7 +390,7 @@ export const Network = memo(function Network({ entry, caps, fmt, windowSec }: De
           </div>
         </div>
       </div>
-      <div className="relative min-h-0 rounded-lg bg-white/[0.045] px-3 py-2">
+      <div className="relative min-h-0 flex-1 rounded-lg bg-white/[0.045] px-3 py-2">
         <div className="absolute top-2 left-3 flex gap-4">
           <Label color={COLORS.down}>RX</Label>
           <Label color={COLORS.up}>TX</Label>
@@ -399,12 +405,13 @@ export const Network = memo(function Network({ entry, caps, fmt, windowSec }: De
 // ---- storage
 
 export const Storage = memo(function Storage({ entry, caps, fmt }: DeviceProps) {
+  const { upright } = useOrientation();
   const drives = entry.telemetry?.storage;
   const list = useRef<HTMLDivElement>(null);
   useWheelScroll(list);
   if (!caps.storage || !drives || drives.length === 0) return <NoData entry={entry} what="Storage" />;
   return (
-    <div ref={list} data-scroll className="grid h-full auto-rows-min grid-cols-2 gap-3 overflow-y-auto [scrollbar-width:none]">
+    <div ref={list} data-scroll className={`grid h-full auto-rows-min gap-3 overflow-y-auto [scrollbar-width:none] ${upright ? 'grid-cols-1' : 'grid-cols-2'}`}>
       {drives.map(d => (
         <StorageCard key={d.id} drive={d} temp={fmt.temp(d.temperature)} />
       ))}
@@ -442,8 +449,11 @@ export const Processes = memo(function Processes({
   sort,
   onSort,
 }: DeviceProps & { sort: 'cpu' | 'memory'; onSort: (s: 'cpu' | 'memory') => void }) {
+  const { upright } = useOrientation();
   const list = useRef<HTMLDivElement>(null);
   useWheelScroll(list);
+  // upright the name keeps its room and the share column narrows
+  const cols = upright ? 'grid-cols-[1fr_8rem_4.75rem]' : 'grid-cols-[1fr_15rem_5.5rem]';
   const procs = entry.telemetry?.processes;
   const ram = entry.telemetry?.memory?.total;
 
@@ -489,7 +499,7 @@ export const Processes = memo(function Processes({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="grid grid-cols-[1fr_15rem_5.5rem] items-center gap-5 pb-2">
+      <div className={`grid ${cols} items-center gap-5 pb-2`}>
         <Label>Processes · {procs.length}</Label>
         <div className="flex items-center gap-1">
           <span className="mr-1 font-mono text-[0.75rem] font-medium tracking-[0.2em] text-dim">SHARE</span>
@@ -504,7 +514,7 @@ export const Processes = memo(function Processes({
           const value = share(p);
           const trend = trends.current.get(`${p.pid ?? ''}:${p.name}`);
           return (
-            <div key={`${p.pid ?? ''}:${p.name}`} className="grid h-9 grid-cols-[1fr_15rem_5.5rem] items-center gap-5">
+            <div key={`${p.pid ?? ''}:${p.name}`} className={`grid h-9 ${cols} items-center gap-5`}>
               <span className="truncate font-body text-[1rem] text-near">{p.name}</span>
               <div className="flex items-center gap-3">
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/8">

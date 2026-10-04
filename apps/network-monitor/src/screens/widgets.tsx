@@ -1,11 +1,13 @@
 // home as a set of widgets: each tile a colour of its own fading to black in one corner, a title, one large figure
 // and a bar. cpu, memory and the gpu sit along the top, network runs wide underneath beside the disk. a device that
 // cannot fill a tile hands it to what it can, so a phone's cpu tile becomes its battery
-import { memo, type ReactNode } from 'react';
+import { memo, useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 
-import { gb, type Formatters } from '../composables/useMetrics';
-import type { DeviceCapabilities, DeviceTelemetry } from '../protocol/types';
-import type { Screen } from '../store/navigation';
+import { toLayout, useOrientation } from '../components/stage';
+import { takeWheel } from '../composables/useCarThingInput';
+import { duration, gb, type Formatters } from '../composables/useMetrics';
+import type { DeviceCapabilities, DeviceTelemetry, StorageDevice } from '../protocol/types';
+import { step, type Screen } from '../store/navigation';
 import type { DeviceEntry } from '../store/telemetry';
 import { NoData, type DeviceProps } from './device';
 
@@ -18,6 +20,10 @@ const LOOKS = {
   magenta: { from: '#d24fe6', to: '#6d2a73', glow: '#f08cff', turn: 21 },
   cardio: { from: '#2f74db', to: '#5a3fd8', glow: '#7fc4ff', turn: 27, reverse: true },
   violet: { from: '#7a5cf2', to: '#2a1d57', glow: '#a993ff', turn: 25 },
+  teal: { from: '#118a83', to: '#0a3b3d', glow: '#4fe0cf', turn: 24, reverse: true },
+  amber: { from: '#d9811c', to: '#5a2c08', glow: '#ffc56b', turn: 20 },
+  rose: { from: '#d6336c', to: '#4d1030', glow: '#ff8fb3', turn: 26, reverse: true },
+  cyan: { from: '#1b8fd1', to: '#0b2f4f', glow: '#7fd8ff', turn: 22 },
 } satisfies Record<string, Look>;
 
 function Tile({ look, onOpen, className, children }: { look: Look; onOpen?: () => void; className?: string; children: ReactNode }) {
@@ -249,8 +255,7 @@ function NetworkTile({ t, fmt, onOpen }: { t: DeviceTelemetry; fmt: Formatters; 
   );
 }
 
-function DiskTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
-  const d = t.storage![0];
+function DiskTile({ d, onOpen }: { d: StorageDevice; onOpen: () => void }) {
   const usage = usageOf(d);
   return (
     <Tile look={LOOKS.violet} onOpen={onOpen}>
@@ -269,6 +274,79 @@ function DiskTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
   );
 }
 
+function CoresTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
+  const cores = t.cpu!.perCoreUsage!;
+  return (
+    <Tile look={LOOKS.cyan} onOpen={onOpen}>
+      <Title icon={Icon.chip}>Cores</Title>
+      <div className="mt-auto flex h-[60%] items-end gap-[3px]">
+        {cores.map((v, i) => (
+          <span key={i} className="flex h-full flex-1 items-end rounded-[3px] bg-white/10">
+            <span className="w-full rounded-[3px] transition-[height] duration-700 ease-out" style={{ height: `${Math.max(4, v)}%`, background: 'linear-gradient(180deg, #ffffff, #7fd8ff)' }} />
+          </span>
+        ))}
+      </div>
+      <div className="mt-1.5">
+        <Caption>{cores.length} cores · busiest {Math.max(...cores)}%</Caption>
+      </div>
+    </Tile>
+  );
+}
+
+function AppsTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
+  const busiest = [...t.processes!].sort((a, b) => (b.cpu ?? 0) - (a.cpu ?? 0)).slice(0, 3);
+  return (
+    <Tile look={LOOKS.rose} onOpen={onOpen}>
+      <Title>Top apps</Title>
+      <div className="mt-auto flex flex-col gap-1.5">
+        {busiest.map(p => (
+          <div key={`${p.pid ?? ''}:${p.name}`} className="flex items-baseline gap-2">
+            <span className="min-w-0 flex-1 truncate font-body text-[0.9375rem] text-off-white/85">{p.name}</span>
+            <span className="font-display text-[1.125rem] font-semibold tabular-nums text-off-white">{p.cpu === undefined ? '—' : `${Math.round(p.cpu)}%`}</span>
+          </div>
+        ))}
+      </div>
+    </Tile>
+  );
+}
+
+function SystemTile({ t }: { t: DeviceTelemetry }) {
+  const up = t.system.uptime;
+  return (
+    <Tile look={LOOKS.teal}>
+      <Title>System</Title>
+      <div className="mt-auto">
+        <Figure value={up === undefined ? '—' : duration(up)} size={2.25} />
+        <Caption>Up time</Caption>
+        <div className="mt-1.5">
+          <Caption>{t.device.version ?? t.system.os ?? t.device.platform}</Caption>
+          {t.system.hostname && <Caption>{t.system.hostname}</Caption>}
+        </div>
+      </div>
+    </Tile>
+  );
+}
+
+function DisplaysTile({ t }: { t: DeviceTelemetry }) {
+  const list = t.displays!;
+  return (
+    <Tile look={LOOKS.amber}>
+      <Title>{list.length === 1 ? 'Display' : `${list.length} displays`}</Title>
+      <div className="mt-auto flex flex-col gap-1">
+        {list.slice(0, 3).map((d, i) => (
+          <div key={i} className="min-w-0">
+            <div className="truncate font-display text-[1.125rem] font-semibold tabular-nums text-off-white">
+              {d.width && d.height ? `${d.width} × ${d.height}` : '—'}
+              {d.refreshRate ? <span className="text-off-white/55"> · {d.refreshRate} Hz</span> : null}
+            </div>
+            {d.name && <Caption>{d.name}</Caption>}
+          </div>
+        ))}
+      </div>
+    </Tile>
+  );
+}
+
 function slots(caps: DeviceCapabilities) {
   // battery is the understudy: it takes the first of the cpu and gpu places the device leaves empty
   let battery = caps.battery;
@@ -279,6 +357,7 @@ function slots(caps: DeviceCapabilities) {
 }
 
 export const HomeWidgets = memo(function HomeWidgets({ entry, caps, fmt, onOpen }: DeviceProps & { entry: DeviceEntry }) {
+  const { upright } = useOrientation();
   const t = entry.telemetry;
   if (!t) return null;
   const { first, third } = slots(caps);
@@ -290,7 +369,7 @@ export const HomeWidgets = memo(function HomeWidgets({ entry, caps, fmt, onOpen 
   ].filter(Boolean);
   const bottom = [
     caps.network && t.network ? <NetworkTile key="net" t={t} fmt={fmt} onOpen={go('network')} /> : null,
-    caps.storage && t.storage?.length ? <DiskTile key="disk" t={t} onOpen={go('storage')} /> : null,
+    caps.storage && t.storage?.length ? <DiskTile key="disk" d={t.storage[0]} onOpen={go('storage')} /> : null,
   ].filter(Boolean);
   if (top.length + bottom.length === 0) return <NoData entry={entry} what="Hardware" />;
   // three columns a row; whatever a row is short of goes to its widest tile, network below and the last one above
@@ -303,10 +382,89 @@ export const HomeWidgets = memo(function HomeWidgets({ entry, caps, fmt, onOpen 
         </div>
       );
     });
-  return (
-    <div className="grid h-full grid-cols-3 grid-rows-2 gap-3">
+  // upright the page is two columns by three rows: the tiles in pairs and network last, across the full width
+  const isNet = (tile: ReactNode) => (tile as { key?: string }).key === 'net';
+  const home = upright ? (
+    [...top, ...bottom.filter(b => !isNet(b)), ...bottom.filter(isNet)].map((tile, i) => (
+      <div key={i} className={`grid ${isNet(tile) ? 'col-span-2' : ''}`}>
+        {tile}
+      </div>
+    ))
+  ) : (
+    <>
       {row(top, top.length - 1)}
       {row(bottom, 0)}
+    </>
+  );
+
+  // everything the first page had no room for, six to a page after it
+  const usedBattery = first === 'battery' || third === 'battery';
+  const more = [
+    t.cpu?.perCoreUsage && t.cpu.perCoreUsage.length > 1 ? <CoresTile key="cores" t={t} onOpen={go('cpu')} /> : null,
+    caps.processes && t.processes?.length ? <AppsTile key="apps" t={t} onOpen={go('processes')} /> : null,
+    <SystemTile key="system" t={t} />,
+    caps.battery && t.battery && !usedBattery ? <BatteryTile key="bat" t={t} look={LOOKS.green} /> : null,
+    caps.displays && t.displays?.length ? <DisplaysTile key="displays" t={t} /> : null,
+    ...(t.storage ?? []).slice(1).map(d => <DiskTile key={`disk-${d.id}`} d={d} onOpen={go('storage')} />),
+  ].filter(Boolean);
+  const pages: ReactNode[] = [home];
+  for (let at = 0; at < more.length; at += 6) pages.push(more.slice(at, at + 6));
+  return <Pager pages={pages} upright={upright} />;
+});
+
+const SWIPE_PX = 50;
+
+/** pages side by side, moved a whole page at a time by a swipe or a click of the wheel. moved by hand rather than
+ * scrolled natively, since the wheel also arrives as horizontal scroll and would move it twice */
+function Pager({ pages, upright }: { pages: ReactNode[]; upright: boolean }) {
+  const { rotate } = useOrientation();
+  const [page, setPage] = useState(0);
+  const count = pages.length;
+  const at = Math.min(page, count - 1);
+  const atRef = useRef(at);
+  atRef.current = at;
+  const from = useRef<number | null>(null);
+
+  useEffect(() => {
+    takeWheel({
+      turn: dir => {
+        const next = atRef.current + dir;
+        // past either end the wheel goes on to the next screen, as it does everywhere else
+        if (next < 0 || next >= count) return step(dir);
+        setPage(next);
+      },
+    });
+    return () => takeWheel(null);
+  }, [count]);
+
+  // read along the layout's own horizontal, which is the glass's vertical when the screen is turned
+  const down = (e: PointerEvent<HTMLDivElement>) => {
+    from.current = toLayout(e.clientX, e.clientY, rotate).x;
+  };
+  const up = (e: PointerEvent<HTMLDivElement>) => {
+    if (from.current === null) return;
+    const dx = toLayout(e.clientX, e.clientY, rotate).x - from.current;
+    from.current = null;
+    if (Math.abs(dx) < SWIPE_PX) return;
+    setPage(p => Math.min(count - 1, Math.max(0, Math.min(p, count - 1) + (dx < 0 ? 1 : -1))));
+  };
+
+  return (
+    <div data-scroll className="relative h-full overflow-hidden" onPointerDown={down} onPointerUp={up} onPointerCancel={() => (from.current = null)}>
+      <div className={`flex transition-transform duration-500 ${count > 1 ? 'h-[calc(100%-14px)]' : 'h-full'} ease-[cubic-bezier(0.22,1,0.36,1)]`} style={{ transform: `translateX(-${at * 100}%)` }}>
+        {pages.map((tiles, i) => (
+          <div key={i} className={`grid h-full w-full shrink-0 gap-3 pr-px ${upright ? 'grid-cols-2 grid-rows-3' : 'grid-cols-3 grid-rows-2'}`}>
+            {tiles}
+          </div>
+        ))}
+      </div>
+      {count > 1 && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center gap-1.5">
+          {pages.map((_, i) => (
+            <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === at ? 'w-4 bg-off-white' : 'w-1.5 bg-white/30'}`} />
+          ))}
+        </div>
+      )}
     </div>
   );
-});
+}

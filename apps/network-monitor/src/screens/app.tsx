@@ -3,6 +3,7 @@
 import { memo, useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { DeviceCard, Label, StatusIndicator } from '../components/cards';
+import { useOrientation } from '../components/stage';
 import { useKeepInView, useWheelList, useWheelScroll } from '../composables/useWheel';
 import type { Screen } from '../store/navigation';
 import type { Settings } from '../store/settings';
@@ -72,6 +73,17 @@ const ROWS: Row[] = [
       { value: 'rings', label: 'Rings' },
       { value: 'widgets', label: 'Widgets' },
     ],
+  },
+  {
+    key: 'rotate',
+    label: 'Screen rotation',
+    choices: [
+      { value: 0, label: '0°' },
+      { value: 90, label: '90°' },
+      { value: 180, label: '180°' },
+      { value: 270, label: '270°' },
+    ],
+    note: 'Preset 4 turns it a quarter at a time',
   },
   {
     key: 'source',
@@ -172,6 +184,7 @@ export const Debug = memo(function Debug({
   state: TelemetryState;
   entry: DeviceEntry | null;
 }) {
+  const { upright } = useOrientation();
   const [, tick] = useState(0);
   useEffect(() => {
     const id = setInterval(() => tick(n => n + 1), 500);
@@ -182,7 +195,7 @@ export const Debug = memo(function Debug({
   const ago = (t: number | null) => (t === null ? 'never' : `${((Date.now() - t) / 1000).toFixed(1)}s ago`);
   const json = entry?.telemetry ? JSON.stringify(entry.telemetry, null, 2) : 'no telemetry yet';
   return (
-    <div className="grid h-full grid-cols-[15rem_1fr] gap-5">
+    <div className={`h-full gap-5 ${upright ? 'flex flex-col' : 'grid grid-cols-[15rem_1fr]'}`}>
       <div className="flex flex-col gap-3 font-mono text-[0.875rem]">
         <Field label="Connection" value={daemon.toUpperCase()} />
         <Field label="Source" value={source.toUpperCase()} />
@@ -192,7 +205,7 @@ export const Debug = memo(function Debug({
         <Field label="Devices" value={String(state.order.length)} />
         {state.lastError && <Field label="Last error" value={state.lastError} />}
       </div>
-      <div ref={view} data-scroll className="min-h-0 overflow-y-auto rounded-lg bg-black/60 px-3 py-2 ring-1 ring-white/8 [scrollbar-width:none]">
+      <div ref={view} data-scroll className="min-h-0 flex-1 overflow-y-auto rounded-lg bg-black/60 px-3 py-2 ring-1 ring-white/8 [scrollbar-width:none]">
         <pre className="font-mono text-[0.75rem] leading-snug whitespace-pre-wrap text-soft">{json}</pre>
       </div>
     </div>
