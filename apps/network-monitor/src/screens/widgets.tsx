@@ -1,10 +1,10 @@
 // home as a set of widgets: each tile a colour of its own fading to black in one corner, a title, one large figure
 // and a bar. cpu, memory and the gpu sit along the top, network runs wide underneath beside the disk. a device that
 // cannot fill a tile hands it to what it can, so a phone's cpu tile becomes its battery
-import { memo, useEffect, useRef, type PointerEvent, type ReactNode } from 'react';
+import { memo, useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 
 import { useSettings } from '../store/settings';
-import { METRIC } from '../theme';
+import { METRIC, SCENE } from '../theme';
 import { AnimatedIcon } from '../components/icons';
 import { Bar, Caption, Figure, LOOKS, Slats, Tile, Title, ToneContext } from '../components/widget-kit';
 
@@ -328,6 +328,13 @@ function Pager({ pages, upright }: { pages: ReactNode[]; upright: boolean }) {
   const count = pages.length;
   const at = Math.min(page, count - 1);
   const atRef = useRef(at);
+  // the marker shows itself while the page turns, then rests
+  const [turning, setTurning] = useState(false);
+  useEffect(() => {
+    setTurning(true);
+    const id = setTimeout(() => setTurning(false), 1400);
+    return () => clearTimeout(id);
+  }, [at]);
   atRef.current = at;
   const from = useRef<number | null>(null);
 
@@ -376,11 +383,16 @@ function Pager({ pages, upright }: { pages: ReactNode[]; upright: boolean }) {
         )}
       </div>
       {/* fixed inside the turned stage is its bottom edge, so the marker sits on the screen's own edge whatever padding
-          the page has, one segment a page */}
+          the page has, one segment a page. it rests thin and faint, tinted, and brightens for a moment as the page turns */}
       {count > 1 && (
-        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[5] flex h-[3px] gap-[2px]">
+        <div
+          className={`pointer-events-none fixed inset-x-0 bottom-0 z-[5] flex gap-[2px] transition-[height,opacity] duration-500 ${turning ? 'h-[3px] opacity-100' : 'h-[2px] opacity-45'}`}>
           {pages.map((_, i) => (
-            <span key={i} className={`flex-1 transition-colors duration-300 ${i === at ? 'bg-off-white' : 'bg-white/18'}`} />
+            <span
+              key={i}
+              className="flex-1 transition-colors duration-300"
+              style={{ backgroundColor: i === at ? (turning ? 'var(--color-off-white)' : SCENE.clock.soft) : 'rgba(207,214,255,0.16)' }}
+            />
           ))}
         </div>
       )}

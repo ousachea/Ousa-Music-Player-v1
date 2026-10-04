@@ -34,7 +34,8 @@ Back, or preset 1, returns to Home on the page it came from, which Home now alwa
 the daylight filled warm, the next sunset and sunrise marked where it crosses, and the sun where it
 is now.
 
-The page marker is a thin bar along the bottom edge of the screen, and a wheel press takes away the
+The page marker is a thin bar along the bottom edge of the screen, resting faint and tinted at 2px and
+brightening while the page turns, and a wheel press takes away the
 margins with the top bar, so tiles run to the edges.
 
 ## 0.4.1
