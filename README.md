@@ -95,12 +95,14 @@ cover turning in the middle and ten-second skip keys either side. The card shows
 
 ![Stereo style](apps/MusicPlayerV1/screenshots/10-stereo.jpg)
 
-A car head unit's dot matrix display across the whole screen, in the album's colour or one picked
-under **Display colour** (ice, amber, red, green, white, or rainbow). It has a level meter, a
-scrolling title, a line that steps through artist, album and time (tap it or **DISP**), shuffle and
-repeat badges, and a volume readout on the display itself. **Light or dark** picks the glowing night
-display, a crisp daylight one with dark dots on pale glass, or **Auto**: light in the AM, dark in the
-PM, by the phone's clock. Tapping the clock switches between light and dark. Tapping the level meter steps through the display colours.
+A car head unit's dot matrix display across the whole screen, with a level meter, a scrolling
+title, a line that steps through artist, album and time (tap it or **DISP**), shuffle and repeat
+badges, and a volume readout on the display itself.
+
+- **Display colour**: the album's colour, ice, amber, red, green, white, or rainbow. Tap the level
+  meter to step through them.
+- **Light or dark**: the glowing night display, a crisp daylight one with dark dots on pale glass, or
+  **Auto** (light in the AM, dark in the PM, by the phone's clock). Tap the clock to switch.
 
 ### Flow
 
@@ -112,11 +114,13 @@ empty right side. **Background** is a dark wash of the album's colours, or black
 
 ### Pocket
 
-A pocket music player held sideways: a screen the full height of the display with the cover, track
-and progress bar, and a click wheel beside it. Its sides are menu (opens the queue), previous, next and play/pause, the
-centre plays and pauses, and dragging round the ring turns the volume, shown on the screen. **Body
-colour** is silver or black. Tap the screen to show just the artwork on it, and tap again to
-come back. Turned upright it stands like the real thing, screen above wheel.
+A pocket music player held sideways: a full-height screen with the cover, track and progress bar,
+and a click wheel beside it. Turned upright, the screen stands above the wheel.
+
+- **The wheel**: top opens the queue, left and right skip, bottom and centre play or pause, and
+  dragging round the ring turns the volume, shown on the screen.
+- **The screen**: tap it to show just the artwork, tap again to bring the track back.
+- **Body colour**: silver or black.
 
 ### Poster
 
