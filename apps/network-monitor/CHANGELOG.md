@@ -11,6 +11,8 @@ The bar along the bottom is gone, giving every screen its full height. A **gear*
 opens processes, devices, settings and debug, and each reading's own screen opens from its tile on
 Home.
 
+The **LED clock** glows in the clock tile's own colour instead of a fixed red.
+
 ## 0.4.1
 
 Every style now speaks the same visual language. Each thing measured keeps one colour wherever it

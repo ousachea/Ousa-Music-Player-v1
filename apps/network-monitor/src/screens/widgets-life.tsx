@@ -8,6 +8,7 @@ import { useClient, useNowPlaying } from '../composables/useNowPlaying';
 import { partsIn, useNow, useZoneContext, type Zone } from '../composables/useZone';
 import type { BatteryInfo, ClaudeUsage } from '../protocol/types';
 import { updateSettings, useSettings, type Settings } from '../store/settings';
+import { SCENE } from '../theme';
 
 // ---- battery
 
@@ -182,10 +183,11 @@ export const ClockWidget = memo(function ClockWidget() {
       );
     } else if (clockStyle === 'led') {
       const digits = `${hh.padStart(2, ' ')}${mm}`;
-      const color = '#ff4b3a';
+      // lit in the clock tile's own colour, so the digits glow as part of it rather than over it
+      const color = SCENE.clock.soft;
       face = (
         <div className="mt-auto">
-          <svg viewBox="0 0 190 70" className="w-full drop-shadow-[0_0_8px_rgba(255,75,58,0.55)]">
+          <svg viewBox="0 0 190 70" className="w-full" style={{ filter: `drop-shadow(0 0 8px ${SCENE.clock.accent})` }}>
             <LedDigit digit={digits[0]} x={0} color={color} />
             <LedDigit digit={digits[1]} x={44} color={color} />
             {/* the colon blinks with the seconds, the way a bedside clock's does */}
