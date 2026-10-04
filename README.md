@@ -100,7 +100,7 @@ under **Display colour** (ice, amber, red, green, white, or rainbow). It has a l
 scrolling title, a line that steps through artist, album and time (tap it or **DISP**), shuffle and
 repeat badges, and a volume readout on the display itself. **Light or dark** picks the glowing night
 display, a crisp daylight one with dark dots on pale glass, or **Auto**: light in the AM, dark in the
-PM, by the phone's clock.
+PM, by the phone's clock. Tapping the clock switches between light and dark.
 
 ### Flow
 

@@ -523,6 +523,7 @@ export default function App() {
           album={track.album ?? null}
           glow={prefs.deckGlow}
           day={stereoDay}
+          onDayNight={() => setPref('stereoMode', stereoDay ? 'dark' : 'light')}
           accent={accentOn}
           playing={playing}
           motion={prefs.motion}

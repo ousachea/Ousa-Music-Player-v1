@@ -382,6 +382,7 @@ export function Stereo({
   onToggle,
   onPrev,
   onNext,
+  onDayNight,
 }: {
   title: string;
   artist: string;
@@ -406,6 +407,7 @@ export function Stereo({
   onToggle: () => void;
   onPrev: () => void;
   onNext: () => void;
+  onDayNight: () => void;
 }) {
   const lit = glowColor(glow, accent);
   // the hue stays, taken down far enough to read as ink on the pale glass
@@ -471,7 +473,11 @@ export function Stereo({
               <Spectrum bars={16} playing={playing} motion={motion} color={color} height={7 * top} />
             </div>
           )}
-          <div className="flex shrink-0 items-start justify-end gap-2">
+          {/* the clock is the light switch: a head unit dims its display from the same corner */}
+          <button
+            aria-label={day ? 'dark display' : 'light display'}
+            onClick={onDayNight}
+            className="-m-2 flex shrink-0 items-start justify-end gap-2 p-2 transition-transform duration-150 active:scale-95">
             {wallClock && (
               <>
                 {wallClock.dayPeriod && (
@@ -484,7 +490,7 @@ export function Stereo({
                 <Label text={`${wallClock.hour}${wallClock.colon ? ':' : ' '}${wallClock.minute}`} pitch={top} color={color} />
               </>
             )}
-          </div>
+          </button>
         </div>
 
         <div ref={glass} className="flex w-full flex-col gap-5">

@@ -1,5 +1,9 @@
 # O-Music Player
 
+## 0.38.1
+
+Tapping the clock on **Stereo** switches the display between light and dark.
+
 ## 0.38.0
 
 A tenth player style, **Pocket**: a pocket music player held sideways, with the cover, track and
