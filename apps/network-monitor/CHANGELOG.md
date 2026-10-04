@@ -7,6 +7,10 @@ that rolls along its edge, bubbles rise through it, pulses of energy flow in fro
 empty part, and the bolt glows in a breathing halo. On battery the surface rolls slowly and nothing
 flows, and below a fifth it fades gently in and out.
 
+The bar along the bottom is gone, giving every screen its full height. A **gear** beside the clock
+opens processes, devices, settings and debug, and each reading's own screen opens from its tile on
+Home.
+
 ## 0.4.1
 
 Every style now speaks the same visual language. Each thing measured keeps one colour wherever it

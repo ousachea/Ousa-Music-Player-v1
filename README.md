@@ -242,9 +242,9 @@ machines around you, one at a time, on the Car Thing.
   its controls, an animated battery with its health and cycle count, the sun's day as a glowing arc,
   every core, the busiest apps, uptime, displays and any other drives. Tap the clock or the calendar
   to change its face. Cards and rings have the same pages after their first.
-- **CPU, GPU, RAM, NET, DISK** each have their own screen; CPU shows every core, and DISK every
+- **CPU, GPU, RAM, network and disk** each have their own screen, opened from their tile on Home; CPU shows every core, and DISK every
   drive with its space and read and write speed.
-- **More** reaches Processes (a radar of the busiest eight, or a list with share bars and trends), Devices, Settings and Debug, which shows the
+- **The gear** beside the clock reaches Processes (a radar of the busiest eight, or a list with share bars and trends), Devices, Settings and Debug, which shows the
   raw telemetry.
 - A device that goes quiet shows **Offline** with how long ago it last reported, and a banner says so
   when it comes back.
@@ -279,7 +279,9 @@ and how much history the graphs keep.
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
 | Mode | Next home style: cards, rings, widgets |
 | Turn the wheel | Scroll a list or the widget pages, or step through the screens |
-| Press the wheel | Hide or show the top and bottom bars; on a list, choose |
+| Press the wheel | Hide or show the top bar; on a list, choose |
+| Tap the gear | Processes, devices, settings and debug |
+| Tap a tile on Home | That reading's own screen |
 | Swipe across the screen | Next or previous screen |
 | Back | The screen before |
 | Tap the device name | Devices |
