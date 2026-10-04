@@ -11,6 +11,22 @@ type Rotate = 0 | 90 | 180 | 270;
 const STEP_DEG = 15;
 const STEP_LEVEL = 0.04;
 
+type Skin = { body: string; wheel: string; hub: string; glyph: string; edge: string; swatch: string };
+
+/** a body in one colour: the anodised gradient, a wheel a shade lighter, its hub, and glyphs that read on it */
+function anodised(base: string): Skin {
+  const mix = (pct: number, to: string) => `color-mix(in oklab, ${base} ${pct}%, ${to})`;
+  return {
+    body: `linear-gradient(180deg, ${mix(78, '#ffffff')} 0%, ${base} 48%, ${mix(80, '#000000')} 100%)`,
+    wheel: `radial-gradient(circle at 50% 35%, ${mix(35, '#ffffff')} 0%, ${mix(22, '#f4f4f6')} 55%, ${mix(30, '#e2e3e6')} 100%)`,
+    hub: `linear-gradient(180deg, ${mix(55, '#ffffff')} 0%, ${mix(70, '#ffffff')} 100%)`,
+    // the wheel is pale whatever the body, so its glyphs are a dark shade of the body's colour
+    glyph: mix(65, '#3a3a3a'),
+    edge: 'rgba(0,0,0,0.1)',
+    swatch: base,
+  };
+}
+
 const BODIES = {
   silver: {
     body: 'linear-gradient(180deg, #ededef 0%, #d9dadd 48%, #c9cacd 100%)',
@@ -18,6 +34,7 @@ const BODIES = {
     hub: 'linear-gradient(180deg, #e3e4e6 0%, #d2d3d6 100%)',
     glyph: '#a3a6ab',
     edge: 'rgba(0,0,0,0.08)',
+    swatch: '#d9dadd',
   },
   black: {
     body: 'linear-gradient(180deg, #3a3b3f 0%, #2a2b2e 48%, #1d1e21 100%)',
@@ -25,10 +42,25 @@ const BODIES = {
     hub: 'linear-gradient(180deg, #2f3034 0%, #25262a 100%)',
     glyph: '#c6c8cc',
     edge: 'rgba(255,255,255,0.08)',
+    swatch: '#2a2b2e',
   },
-} as const;
+  // the anodised colours the small players came in
+  blue: anodised('#3f7fd6'),
+  pink: anodised('#e46aa5'),
+  green: anodised('#5fae4a'),
+  red: anodised('#c8322f'),
+  gold: anodised('#c9a45c'),
+} satisfies Record<string, Skin>;
 
-export type PocketBody = keyof typeof BODIES;
+/** the order the screen's colour button steps through; album takes the cover's own colour */
+export const POCKET_BODIES = ['silver', 'black', 'blue', 'pink', 'green', 'red', 'gold', 'album'] as const;
+
+export type PocketBody = (typeof POCKET_BODIES)[number];
+
+function skinFor(body: PocketBody, accent: Accent | null): Skin {
+  if (body === 'album') return accent ? anodised(accent.fill) : BODIES.silver;
+  return BODIES[body];
+}
 
 function clock(ms: number) {
   const s = Math.max(0, Math.floor(ms / 1000));
@@ -51,6 +83,7 @@ export function Pocket({
   artist,
   accent,
   body,
+  onBody,
   playing,
   upright,
   rotate,
@@ -75,6 +108,8 @@ export function Pocket({
   artist: string;
   accent: Accent | null;
   body: PocketBody;
+  /** the colour button on the screen: the next finish */
+  onBody: () => void;
   // held above the player, which is rebuilt on every track, so the cover stays up from song to song
   artOnly: boolean;
   onArtOnly: (on: boolean) => void;
@@ -95,11 +130,11 @@ export function Pocket({
   onSeek: (ratio: number) => void;
   onVolume: (level: number) => void;
 }) {
-  const skin = BODIES[body];
+  const skin = skinFor(body, accent);
   return (
     <div
       className={`absolute inset-0 flex items-center justify-evenly overflow-hidden ${upright ? 'flex-col' : ''}`}
-      style={{ background: skin.body }}>
+      style={{ background: skin.body, transition: 'background 700ms' }}>
       {/* brushed finish: fine horizontal grain over the gradient */}
       <div
         className="pointer-events-none absolute inset-0 opacity-40"
@@ -127,6 +162,8 @@ export function Pocket({
         onSeek={onSeek}
         artOnly={artOnly}
         onArt={() => onArtOnly(!artOnly)}
+        swatch={body === 'album' ? 'conic-gradient(#e46aa5, #3f7fd6, #5fae4a, #c9a45c, #e46aa5)' : skin.swatch}
+        onBody={onBody}
       />
 
       <Wheel
@@ -163,6 +200,8 @@ function Screen({
   onSeek,
   artOnly,
   onArt,
+  swatch,
+  onBody,
 }: {
   artUrl: string | null;
   title: string;
@@ -181,6 +220,9 @@ function Screen({
   onSeek: (ratio: number) => void;
   artOnly: boolean;
   onArt: () => void;
+  /** the body's colour, shown on the button that changes it */
+  swatch: string;
+  onBody: () => void;
 }) {
   const bar = useRef<HTMLDivElement>(null);
   const pick = (e: PointerEvent<HTMLDivElement>) => {
@@ -264,6 +306,18 @@ function Screen({
           </div>
         </div>
 
+        {/* the body's colour, as a small dot in the corner: each tap steps to the next finish. its own tap, not the
+            screen's, which would turn the screen over to the artwork */}
+        <button
+          aria-label="body colour"
+          onClick={e => {
+            e.stopPropagation();
+            onBody();
+          }}
+          className="absolute top-1.5 left-2 grid h-7 w-7 place-items-center rounded-full transition-transform active:scale-90">
+          <span className="h-3.5 w-3.5 rounded-full ring-2 ring-white/80 shadow-[0_1px_3px_rgba(0,0,0,0.5)]" style={{ background: swatch }} />
+        </button>
+
         {/* a status corner the way the small screens had one: the clock, and play or pause */}
         <div className="absolute top-2 right-3 flex items-center gap-1.5 font-mono text-[0.6875rem] text-white/80 tabular-nums">
           {wallClock && (
@@ -305,7 +359,7 @@ function Wheel({
   onMenu,
   onVolume,
 }: {
-  skin: (typeof BODIES)[PocketBody];
+  skin: Skin;
   upright: boolean;
   rotate: Rotate;
   playing: boolean;

@@ -2,6 +2,7 @@
 import type { BridgethingClient } from '@bridgething/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { POCKET_BODIES, type PocketBody } from './pocket';
 import { GLOWS, type Glow } from './stereo';
 
 export type Prefs = {
@@ -18,7 +19,7 @@ export type Prefs = {
   vinylTint: 'black' | 'album' | 'marble';
   deckGlow: Glow;
   flowBg: 'album' | 'black';
-  pocketBody: 'silver' | 'black';
+  pocketBody: PocketBody;
   cdStyle: 'tray' | 'cartridge';
   cdDisc: 'colour' | 'art';
   stereoMode: 'dark' | 'light' | 'auto';
@@ -153,7 +154,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'cdStyle':
       return { ...prefs, cdStyle: value === 'cartridge' ? 'cartridge' : 'tray' };
     case 'pocketBody':
-      return { ...prefs, pocketBody: value === 'black' ? 'black' : 'silver' };
+      return { ...prefs, pocketBody: (POCKET_BODIES as readonly string[]).includes(value) ? (value as PocketBody) : 'silver' };
     case 'stereoMode':
       return { ...prefs, stereoMode: value === 'light' || value === 'auto' ? value : 'dark' };
     case 'deckGlow':

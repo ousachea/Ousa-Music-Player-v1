@@ -127,7 +127,8 @@ and a click wheel beside it. Turned upright, the screen stands above the wheel.
 - **The wheel**: top opens the queue, left and right skip, bottom and centre play or pause, and
   dragging round the ring turns the volume, shown on the screen.
 - **The screen**: tap it to show just the artwork, tap again to bring the track back.
-- **Body colour**: silver or black.
+- **Body colour**: silver, black, blue, pink, green, red, gold, or Album, which takes the cover's
+  colour. Tap the dot in the screen's corner to step through them.
 
 ### Poster
 

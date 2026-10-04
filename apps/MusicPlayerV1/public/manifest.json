@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "O-Music Player",
-  "version": "0.39.0",
+  "version": "0.40.0",
   "description": "Now playing from your phone, in five styles coloured by the album art, and turnable to any mounting.",
   "icon": "icon.jpg",
   "settings": "settings.html",
@@ -200,7 +200,13 @@
         "label": "Pocket body colour",
         "choices": [
           "silver",
-          "black"
+          "black",
+          "blue",
+          "pink",
+          "green",
+          "red",
+          "gold",
+          "album"
         ],
         "default": "silver"
       }

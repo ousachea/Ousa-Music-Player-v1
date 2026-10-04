@@ -1,5 +1,12 @@
 # O-Music Player
 
+## 0.40.0
+
+**Pocket** comes in more colours: silver, black, blue, pink, green, red, gold, and **Album**, which
+takes the cover's own colour and changes with every track. A small dot in the corner of the screen
+shows the colour and steps to the next on a tap, and **Body colour** in the style's settings picks
+one directly. The wheel's markings take a dark shade of the body so they read on every colour.
+
 ## 0.39.0
 
 **CD** is now a cartridge, like a MiniDisc: the disc in a shell with screws in its corners, a slider

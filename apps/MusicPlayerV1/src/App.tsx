@@ -16,7 +16,7 @@ import { activeIndex, useLyrics } from './lyrics';
 import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
 import { Cartridge } from './cartridge';
 import { CoverFlow } from './coverflow';
-import { Pocket } from './pocket';
+import { POCKET_BODIES, Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
@@ -497,6 +497,7 @@ export default function App() {
           artist={artistName ?? '—'}
           accent={accentOn}
           body={prefs.pocketBody}
+          onBody={() => setPref('pocketBody', POCKET_BODIES[(POCKET_BODIES.indexOf(prefs.pocketBody) + 1) % POCKET_BODIES.length])}
           playing={playing}
           upright={upright}
           rotate={prefs.rotate}
@@ -1103,7 +1104,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
   flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
-  pocketBody: { values: ['silver', 'black'], labels: ['Silver', 'Black'] },
+  pocketBody: { values: [...POCKET_BODIES], labels: ['Silver', 'Black', 'Blue', 'Pink', 'Green', 'Red', 'Gold', 'Album'] },
   cdStyle: { values: ['tray', 'cartridge'], labels: ['Black', 'White'] },
   cdDisc: { values: ['colour', 'art'], labels: ['Colour', 'Artwork'] },
   stereoMode: { values: ['dark', 'light', 'auto'], labels: ['Dark', 'Light', 'Auto'] },
