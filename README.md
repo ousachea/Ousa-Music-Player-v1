@@ -76,10 +76,12 @@ square and flat on one side, the record half out of it on the other with its pap
 the album's colour.
 
 **Picture disc** presses the cover into the whole face of the record and runs it off the edge of
-the screen, so its middle shows with the clear ring and the hole through it. The track sits beside it,
-the title over the artist and album, with a row of ticks to scrub along and round buttons under them.
-Turned upright, the disc hangs from the top edge. Record colour and In front are hidden here, since a
-picture disc has neither.
+the screen, so its middle shows with the clear ring and the hole cut through it to the blurred cover
+behind, the same backdrop as the other layouts. The track sits beside it under a centred clock, the
+title over the artist and album, with a row of ticks to scrub along and round buttons under them.
+While the song plays the ticks pulse like a level meter and the playhead glides with a soft halo.
+Turned upright, the disc hangs from the top edge. Record colour, In front and the clock position are
+hidden here, since a picture disc has no use for them.
 
 **Record colour** presses the disc in something other than black. Album gives it the cover's own
 colour and Marble swirls the cover's two colours through it, both dark enough that the grooves and

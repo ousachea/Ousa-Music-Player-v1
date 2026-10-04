@@ -685,7 +685,6 @@ export default function App() {
           showTransport={prefs.transport}
           progress={progress}
           wallClock={wallClock}
-          clockPos={prefs.clockPos}
           clockSize={prefs.clockSize}
           onLayout={() => setPref('vinylStyle', 'turntable')}
           onToggle={toggle}
@@ -1356,8 +1355,12 @@ function Panel({
             rows: group.rows.filter(
               r =>
                 (!r.only || r.only.includes(prefs.theme)) &&
-                // a picture disc is the cover all over, with no sleeve to bring forward and no resin to colour
-                !(prefs.vinylStyle === 'picture' && (r.key === 'vinylFront' || r.key === 'vinylTint')),
+                // a picture disc has no sleeve to bring forward, no resin to colour, and keeps its clock centred over the track
+                !(
+                  prefs.theme === 'vinyl' &&
+                  prefs.vinylStyle === 'picture' &&
+                  (r.key === 'vinylFront' || r.key === 'vinylTint' || r.key === 'clockPos')
+                ),
             ),
           }))
           .filter(group => group.rows.length > 0)
@@ -1807,12 +1810,14 @@ function Ticks({
   seed,
   rotate,
   progress,
+  playing,
   tint,
   onSeek,
 }: {
   seed: string;
   rotate: Prefs['rotate'];
   progress: number;
+  playing: boolean;
   tint: string;
   onSeek: (ratio: number) => void;
 }) {
@@ -1827,16 +1832,32 @@ function Ticks({
       {heights.map((h, i) => (
         <span
           key={i}
-          className="w-px rounded-full transition-colors duration-300"
-          style={{ height: `${h * 100}%`, backgroundColor: i / (TICKS - 1) <= at ? tint : 'rgba(255,255,255,0.28)' }}
+          className="tick-pulse w-px rounded-full transition-colors duration-300"
+          style={{
+            height: `${h * 100}%`,
+            backgroundColor: i / (TICKS - 1) <= at ? tint : 'rgba(255,255,255,0.28)',
+            // periods that do not divide each other keep neighbours out of step, so it reads as a level, not a wave
+            animationDuration: `${620 + ((i * 137) % 5) * 110}ms`,
+            animationDelay: `-${(i * 211) % 900}ms`,
+            animationPlayState: playing ? 'running' : 'paused',
+          }}
         />
       ))}
-      <div className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-off-white" style={{ left: `${at * 100}%` }}>
-        <span className="absolute top-1/2 left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-off-white bg-[#24272c]" />
+      <div
+        className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-off-white transition-[left] duration-500 ease-linear"
+        style={{ left: `${at * 100}%` }}>
+        {playing && (
+          <span className="absolute top-1/2 left-1/2 h-3 w-3 animate-halo rounded-full" style={{ backgroundColor: tint }} />
+        )}
+        <span className="absolute top-1/2 left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-off-white bg-screen" />
       </div>
     </div>
   );
 }
+
+// closest-side makes the stops a share of the radius: the ring is 36% of the disc across and its hole 46% of the ring
+const HOLE = 'radial-gradient(circle closest-side, transparent 16.3%, #000 16.8%)';
+const RING = 'radial-gradient(circle closest-side, transparent 45.5%, #000 46.5%)';
 
 // a picture disc, the cover pressed into the whole face, run off the edge of the screen so only its
 // centre and one side show, with the track set out plainly beside it
@@ -1854,7 +1875,6 @@ function PictureDisc({
   showTransport,
   progress,
   wallClock,
-  clockPos,
   clockSize,
   onLayout,
   onToggle,
@@ -1875,7 +1895,6 @@ function PictureDisc({
   showTransport: boolean;
   progress: number;
   wallClock: ClockParts | null;
-  clockPos: 'left' | 'center' | 'right';
   clockSize: number;
   onLayout: () => void;
   onToggle: () => void;
@@ -1883,22 +1902,25 @@ function PictureDisc({
   onNext: () => void;
   onSeek: (ratio: number) => void;
 }) {
-  // the hole has to be the same colour as the panel or it reads as a dot rather than a hole
-  const panel = accent ? `color-mix(in oklab, ${accent.fill} 10%, #24272c)` : '#24272c';
   const tint = accent?.soft ?? '#efefef';
   return (
     <div
-      className={`absolute inset-0 flex overflow-hidden ${upright ? 'flex-col' : ''}`}
-      style={{ background: panel }}>
+      className={`absolute inset-0 flex overflow-hidden ${upright ? 'flex-col' : ''}`}>
       <div className={`relative shrink-0 ${upright ? 'h-[44%] w-full' : 'h-full w-[46%]'}`}>
         <div
           className={`absolute aspect-square ${motion ? 'disc-swap' : ''} ${
             upright ? 'bottom-0 left-1/2 w-[118%] -translate-x-1/2' : 'top-1/2 right-0 h-[118%] -translate-y-1/2'
           }`}>
           <div
-            className="absolute inset-0 animate-platter overflow-hidden rounded-full shadow-[0_18px_50px_rgba(0,0,0,0.55)]"
-            // a whole cover turning at record speed is a blur, so the picture disc goes round slower
-            style={{ animationDuration: '9s', animationPlayState: playing && motion ? 'running' : 'paused' }}>
+            className="absolute inset-0 animate-platter overflow-hidden rounded-full"
+            // a whole cover turning at record speed is a blur, so the picture disc goes round slower.
+            // the hole is cut rather than painted, so the backdrop shows through it like the rest of the screen
+            style={{
+              animationDuration: '9s',
+              animationPlayState: playing && motion ? 'running' : 'paused',
+              mask: HOLE,
+              WebkitMask: HOLE,
+            }}>
             {artUrl ? (
               <img src={artUrl} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -1917,14 +1939,14 @@ function PictureDisc({
           <button
             aria-label="record layout"
             onClick={onLayout}
-            className="absolute top-1/2 left-1/2 grid h-[36%] w-[36%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[rgba(150,155,162,0.5)] ring-1 ring-white/15 backdrop-blur-sm transition active:scale-95">
-            <span className="h-[46%] w-[46%] rounded-full shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)]" style={{ background: panel }} />
-          </button>
+            className="absolute top-1/2 left-1/2 h-[36%] w-[36%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(150,155,162,0.5)] backdrop-blur-sm transition active:scale-95"
+            style={{ mask: RING, WebkitMask: RING }}
+          />
         </div>
       </div>
 
       <div className={`flex min-w-0 flex-1 flex-col items-center justify-between ${upright ? 'px-8 pt-6 pb-12' : 'py-7 pr-8 pl-10'}`}>
-        <div className={`flex min-h-5 w-full items-center ${JUSTIFY[clockPos]}`}>
+        <div className="flex min-h-5 w-full items-center justify-center">
           <ClockView parts={wallClock} size={(11 * clockSize) / 100} className="text-dim" color={accent?.soft} />
         </div>
 
@@ -1950,7 +1972,7 @@ function PictureDisc({
           </dl>
         </div>
 
-        <Ticks seed={title + artist} rotate={rotate} progress={progress} tint={tint} onSeek={onSeek} />
+        <Ticks seed={title + artist} rotate={rotate} progress={progress} playing={playing && motion} tint={tint} onSeek={onSeek} />
 
         {showTransport ? (
           <div className="flex items-center gap-9">

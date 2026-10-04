@@ -156,6 +156,21 @@
   }
 }
 
+/* each tick of the picture disc's scrubber breathes on its own period, which reads as a live level meter */
+@keyframes tick-pulse {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.45);
+  }
+}
+
+.tick-pulse {
+  animation: tick-pulse 700ms ease-in-out infinite;
+}
+
 /* the wave travels one wavelength and repeats, so the crests appear to run toward the playhead */
 @keyframes wave-travel {
   to {
