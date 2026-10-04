@@ -70,6 +70,7 @@ const ROWS: Row[] = [
     choices: [
       { value: 'cards', label: 'Cards' },
       { value: 'rings', label: 'Rings' },
+      { value: 'widgets', label: 'Widgets' },
     ],
   },
   {

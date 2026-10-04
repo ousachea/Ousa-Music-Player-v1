@@ -233,8 +233,9 @@ A small hardware monitoring station: CPU, GPU, memory, network, storage and proc
 machines around you, one at a time, on the Car Thing.
 
 - **Home** shows the four that matter most for the device you're watching; a phone with no CPU data
-  gets battery and storage in their place. **Home style** draws them as cards with bars, or as rings:
-  a gradient arc round each figure that eases to every new reading.
+  gets battery and storage in their place. **Home style** draws them as cards with bars; as rings, a
+  gradient arc round each figure that eases to every new reading; or as widgets, tiles in their own
+  colours fading to black, with network wide along the bottom and the disk as a row of slats.
 - **CPU, GPU, RAM, NET, DISK** each have their own screen; CPU shows every core, and DISK every
   drive with its space and read and write speed.
 - **More** reaches Processes (sort by CPU or memory), Devices, Settings and Debug, which shows the

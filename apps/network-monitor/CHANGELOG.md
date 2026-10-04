@@ -1,5 +1,14 @@
 # O-System Monitor
 
+## 0.4.0
+
+A third **Home style**, **Widgets**: each reading on a tile of its own colour that fades to black in
+one corner. CPU in green with its usage bar and its temperature, or its load where the machine
+gives no temperature; memory in blue; the GPU in magenta with its memory bar; network wide along the
+bottom with download, upload and ping; and the disk in violet over a row of slats that fill as it
+does. A device without a GPU or CPU reading hands the tile to its battery, and a row with a tile to
+spare lets its neighbour stretch rather than leave a gap.
+
 ## 0.3.0
 
 **Windows and Linux** join macOS in Live: install the app in the bridgething desktop app on either

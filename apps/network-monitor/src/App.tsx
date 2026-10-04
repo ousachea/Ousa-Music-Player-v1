@@ -8,6 +8,7 @@ import { useTelemetrySource } from './composables/useTelemetrySource';
 import { useWallClock } from './composables/useWallClock';
 import { daemonUrl } from './daemon';
 import { Debug, Devices, More, SettingsScreen } from './screens/app';
+import { HomeWidgets } from './screens/widgets';
 import { Cpu, Gpu, Home, HomeRings, Memory, Network, Offline, Processes, Storage, type DeviceProps } from './screens/device';
 import { go, selectDevice, useNav, type Screen } from './store/navigation';
 import { loadSettings, updateSettings, useSettings } from './store/settings';
@@ -95,7 +96,14 @@ export default function App() {
         );
         break;
       default:
-        body = settings.homeStyle === 'rings' ? <HomeRings {...deviceProps} /> : <Home {...deviceProps} />;
+        body =
+          settings.homeStyle === 'rings' ? (
+            <HomeRings {...deviceProps} />
+          ) : settings.homeStyle === 'widgets' ? (
+            <HomeWidgets {...deviceProps} />
+          ) : (
+            <Home {...deviceProps} />
+          );
     }
   }
 
