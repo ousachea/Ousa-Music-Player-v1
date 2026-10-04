@@ -14,6 +14,7 @@ import { accentFrom, type Accent } from './artwork-color';
 import { explicitFor, hdArtwork } from './hd-art';
 import { activeIndex, useLyrics } from './lyrics';
 import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
+import { Cartridge } from './cartridge';
 import { CoverFlow } from './coverflow';
 import { Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
@@ -640,6 +641,8 @@ export default function App() {
             remaining={prefs.remaining}
             wallClock={wallClock}
             clockSize={prefs.clockSize}
+            look={prefs.cdStyle}
+            onLook={() => setPref('cdStyle', prefs.cdStyle === 'cartridge' ? 'tray' : 'cartridge')}
             onToggle={toggle}
             onPrev={() => goPrev(true)}
             onNext={() => goNext()}
@@ -1099,6 +1102,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
   flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
   pocketBody: { values: ['silver', 'black'], labels: ['Silver', 'Black'] },
+  cdStyle: { values: ['tray', 'cartridge'], labels: ['Tray', 'Cartridge'] },
   stereoMode: { values: ['dark', 'light', 'auto'], labels: ['Dark', 'Light', 'Auto'] },
   deckGlow: { values: GLOWS, labels: ['Album', 'Rainbow', 'Ice', 'Amber', 'Red', 'Green', 'White'] },
   vinylStyle: { values: ['turntable', 'sleeve', 'picture'], labels: ['Turntable', 'Sleeve', 'Picture disc'] },
@@ -1138,6 +1142,7 @@ const STYLE_ROWS: Row[] = [
   { key: 'stereoMode', label: 'Light or dark', only: ['stereo'] },
   { key: 'flowBg', label: 'Background', only: ['flow'] },
   { key: 'pocketBody', label: 'Body colour', only: ['pocket'] },
+  { key: 'cdStyle', label: 'Look', only: ['cd'] },
   { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
@@ -2086,6 +2091,8 @@ function CdDeck({
   remaining,
   wallClock,
   clockSize,
+  look,
+  onLook,
   onToggle,
   onPrev,
   onNext,
@@ -2108,6 +2115,9 @@ function CdDeck({
   remaining: boolean;
   wallClock: ClockParts | null;
   clockSize: number;
+  /** the disc in its tray, or the gold disc in a clear cartridge; the middle of either trades for the other */
+  look: Prefs['cdStyle'];
+  onLook: () => void;
   onToggle: () => void;
   onPrev: () => void;
   onNext: () => void;
@@ -2115,7 +2125,17 @@ function CdDeck({
 }) {
   const tint = accent?.fill ?? '#efefef';
 
-  const tray = (
+  const tray = look === 'cartridge' ? (
+    <div className={`relative shrink-0 ${upright ? 'aspect-square w-full' : 'aspect-square h-full'} ${motion ? 'disc-swap' : ''}`}>
+      <Cartridge
+        artUrl={artUrl}
+        playing={playing}
+        motion={motion}
+        label="O-Music"
+        onLook={onLook}
+      />
+    </div>
+  ) : (
     <div
       className={`relative grid shrink-0 place-items-center overflow-hidden rounded-[28px] shadow-2xl ring-1 ring-white/8 ${
         upright ? 'aspect-square w-full' : 'aspect-square h-full'
@@ -2149,31 +2169,28 @@ function CdDeck({
 
         {/* the clamping ring and the hole punched through the middle of the print */}
         <div className="absolute inset-0 grid place-items-center">
-          <div
-            className="grid aspect-square w-[30%] place-items-center rounded-full ring-1 ring-black/30"
+          <button
+            aria-label="cd look"
+            onClick={onLook}
+            className="grid aspect-square w-[30%] place-items-center rounded-full ring-1 ring-black/30 transition active:scale-95"
             style={{ background: 'linear-gradient(150deg, #e9ecf0 0%, #b7bdc5 44%, #d8dce1 70%, #a7aeb7 100%)' }}>
             <div className="aspect-square w-[46%] rounded-full bg-[#0b0c0e] shadow-[inset_0_0_14px_rgba(0,0,0,0.8)] ring-1 ring-white/15" />
-          </div>
+          </button>
         </div>
       </div>
       </div>
 
-      {/* the disc is round inside a rounded square, so the corner is free; the clock lives there */}
-      {wallClock && (
-        <div className="absolute bottom-4 left-5">
-          <ClockView
-            parts={wallClock}
-            size={(10 * clockSize) / 100}
-            className="text-off-white/55"
-            color={accent?.soft}
-          />
-        </div>
-      )}
     </div>
   );
 
   const titles = (
     <div className="min-w-0 shrink-0">
+      {/* the clock heads the track, so the time and what is playing read together */}
+      {wallClock && (
+        <div className="mb-2">
+          <ClockView parts={wallClock} size={(11 * clockSize) / 100} className="text-off-white/70" color={accent?.soft} />
+        </div>
+      )}
       <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>
       {/* the track is centred in the space the controls leave, which is deep enough to wrap into
           whether or not the on-screen buttons are drawn */}
