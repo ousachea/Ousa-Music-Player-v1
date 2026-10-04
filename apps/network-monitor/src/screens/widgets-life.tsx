@@ -3,7 +3,8 @@
 // choice is kept with the rest of the settings
 import { memo, type ReactNode } from 'react';
 
-import { Caption, Figure, Icon, LOOKS, Tile, Title } from '../components/widget-kit';
+import { AnimatedIcon } from '../components/icons';
+import { Caption, Figure, LOOKS, Tile, Title } from '../components/widget-kit';
 import { useClient, useNowPlaying } from '../composables/useNowPlaying';
 import { partsIn, useNow, useZoneContext, type Zone } from '../composables/useZone';
 import type { BatteryInfo, ClaudeUsage } from '../protocol/types';
@@ -35,7 +36,7 @@ export const BatteryWidget = memo(function BatteryWidget({ battery }: { battery:
   return (
     <Tile look={LOOKS.graphite}>
       <div className="flex items-center justify-between gap-2">
-        <Title icon={Icon.battery}>Battery</Title>
+        <Title icon={<AnimatedIcon kind="battery" />}>Battery</Title>
         {battery.health !== undefined && (
           <span className="font-mono text-[0.6875rem] tracking-[0.16em] whitespace-nowrap text-off-white/60 uppercase">Health {battery.health}%</span>
         )}
@@ -218,7 +219,7 @@ export const ClockWidget = memo(function ClockWidget() {
   return (
     <Tile look={LOOKS.clock} onOpen={next}>
       <div className="flex items-baseline justify-between">
-        <Title>Clock</Title>
+        <Title icon={<AnimatedIcon kind="clock" />}>Clock</Title>
         <span className="font-mono text-[0.6875rem] tracking-[0.16em] text-off-white/50 uppercase">{CLOCK_NAMES[clockStyle]}</span>
       </div>
       {face}
@@ -306,7 +307,7 @@ export const CalendarWidget = memo(function CalendarWidget() {
   return (
     <Tile look={LOOKS.calendar} onOpen={next}>
       <div className="flex items-baseline justify-between gap-2">
-        <Title>{title}</Title>
+        <Title icon={<AnimatedIcon kind="calendar" />}>{title}</Title>
         <span className="font-mono text-[0.6875rem] tracking-[0.16em] text-off-white/50 uppercase">{calendarView}</span>
       </div>
       {body}
@@ -363,7 +364,11 @@ function Music({ client }: { client: NonNullable<ReturnType<typeof useClient>> }
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="truncate font-display text-[1.25rem] leading-tight font-semibold text-off-white">{track?.title ?? 'Nothing playing'}</div>
-          <Caption>{track ? (track.artist ?? '—') : 'Start music on your phone'}</Caption>
+          <div className="flex min-w-0 items-center gap-2">
+            {/* the bars dance while it plays and rest when it does not */}
+            {playing && <AnimatedIcon kind="music" className="h-4 w-4 shrink-0 text-off-white/70" />}
+            <Caption>{track ? (track.artist ?? '—') : 'Start music on your phone'}</Caption>
+          </div>
           <div className="mt-auto">
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/15">
               <div className="h-full rounded-full bg-off-white transition-[width] duration-1000 ease-linear" style={{ width: `${duration ? Math.min(100, (position / duration) * 100) : 0}%` }} />
@@ -400,10 +405,9 @@ export const ClaudeWidget = memo(function ClaudeWidget({ usage }: { usage: Claud
       <div className="flex h-full gap-5">
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex items-center gap-2.5">
-            {/* the asterisk claude wears, drawn as eight rays */}
-            <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0 text-[#ffd2bd]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-              <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" />
-            </svg>
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/14 text-[#ffd2bd]">
+              <AnimatedIcon kind="claude" />
+            </span>
             <span className="truncate font-display text-[1.25rem] font-semibold text-off-white">Claude Code</span>
             {usage.models[0] && <span className="ml-auto rounded-full bg-white/14 px-2 py-0.5 font-body text-[0.75rem] whitespace-nowrap text-off-white/85">{usage.models[0].name}</span>}
           </div>

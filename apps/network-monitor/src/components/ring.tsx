@@ -4,6 +4,7 @@
 import { memo, type CSSProperties, type ReactNode } from 'react';
 
 import { METRIC } from '../theme';
+import { AnimatedIcon, type IconKind } from './icons';
 
 /** each arc runs from the metric's pale tint at twelve to its full colour where it ends */
 export const RING_COLORS = {
@@ -23,6 +24,7 @@ export const Ring = memo(function Ring({
   colors,
   center,
   label,
+  icon,
   sub,
   onOpen,
 }: {
@@ -30,6 +32,7 @@ export const Ring = memo(function Ring({
   colors: readonly [string, string];
   center: ReactNode;
   label: string;
+  icon?: IconKind;
   sub?: string | null;
   onOpen?: () => void;
 }) {
@@ -90,7 +93,14 @@ export const Ring = memo(function Ring({
         </div>
       </div>
       <div className="text-center">
-        <div className="font-display text-[1.375rem] font-semibold text-off-white">{label}</div>
+        <div className="flex items-center justify-center gap-2 font-display text-[1.375rem] font-semibold text-off-white">
+          {icon && (
+            <span style={{ color: end }}>
+              <AnimatedIcon kind={icon} className="h-5 w-5" />
+            </span>
+          )}
+          {label}
+        </div>
         {sub && <div className="font-mono text-[0.875rem] text-soft tabular-nums">{sub}</div>}
       </div>
     </button>

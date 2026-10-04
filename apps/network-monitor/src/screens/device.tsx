@@ -4,6 +4,7 @@ import { memo, useEffect, useMemo, useRef, useState, type ReactNode } from 'reac
 
 import { Big, Label, MetricCard, Stat, StorageCard, TemperatureBadge, platformLabel } from '../components/cards';
 import { COLORS, MiniGraph, NetworkGraph, ProgressBar, levelColor } from '../components/graphs';
+import { AnimatedIcon, type IconKind } from '../components/icons';
 import { RING_COLORS, Ring, RingValue } from '../components/ring';
 import { duration, gb, pct, type Formatters } from '../composables/useMetrics';
 import { useWheelScroll } from '../composables/useWheel';
@@ -21,10 +22,17 @@ export type DeviceProps = {
   onOpen: (s: Screen) => void;
 };
 
-function Title({ children, right }: { children: ReactNode; right?: ReactNode }) {
+function Title({ children, right, icon, color }: { children: ReactNode; right?: ReactNode; icon?: IconKind; color?: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4">
-      <div className="line-clamp-2 min-w-0 font-display text-[1.375rem] leading-tight font-semibold text-near">{children}</div>
+      <div className="flex min-w-0 items-center gap-2.5">
+        {icon && (
+          <span className="shrink-0 self-center" style={{ color }}>
+            <AnimatedIcon kind={icon} className="h-6 w-6" />
+          </span>
+        )}
+        <div className="line-clamp-2 min-w-0 font-display text-[1.375rem] leading-tight font-semibold text-near">{children}</div>
+      </div>
       {right}
     </div>
   );
@@ -83,7 +91,7 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
         switch (tile) {
           case 'cpu':
             return (
-              <MetricCard key={tile} label="CPU" color={COLORS.cpu} onOpen={() => onOpen('cpu')}>
+              <MetricCard key={tile} icon="cpu" label="CPU" color={COLORS.cpu} onOpen={() => onOpen('cpu')}>
                 <div className="flex items-end justify-between">
                   <Big value={pct(t.cpu?.usage)} />
                   <TemperatureBadge celsius={t.cpu?.temperature} text={fmt.temp(t.cpu?.temperature)} />
@@ -95,7 +103,7 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
             );
           case 'gpu':
             return (
-              <MetricCard key={tile} label="GPU" color={COLORS.gpu} onOpen={() => onOpen('gpu')}>
+              <MetricCard key={tile} icon="gpu" label="GPU" color={COLORS.gpu} onOpen={() => onOpen('gpu')}>
                 <div className="flex items-end justify-between">
                   <Big value={pct(t.gpu?.usage)} />
                   <TemperatureBadge celsius={t.gpu?.temperature} text={fmt.temp(t.gpu?.temperature)} />
@@ -109,7 +117,7 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
             const m = t.memory;
             const usage = m?.usage ?? (m?.used !== undefined && m.total ? (m.used / m.total) * 100 : undefined);
             return (
-              <MetricCard key={tile} label="RAM" color={COLORS.ram} onOpen={() => onOpen('memory')}>
+              <MetricCard key={tile} icon="memory" label="RAM" color={COLORS.ram} onOpen={() => onOpen('memory')}>
                 <div className="flex items-end justify-between">
                   <Big value={pct(usage)} />
                   <span className="font-mono text-[1rem] text-soft tabular-nums">
@@ -127,7 +135,7 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
             const down = fmt.rate(n?.download);
             const up = fmt.rate(n?.upload);
             return (
-              <MetricCard key={tile} label="Network" color={COLORS.down} onOpen={() => onOpen('network')}>
+              <MetricCard key={tile} icon="network" label="Network" color={COLORS.down} onOpen={() => onOpen('network')}>
                 <div className="flex flex-col gap-1">
                   <div className="flex items-baseline gap-2">
                     <span className="font-display text-[1.5rem]" style={{ color: COLORS.down }}>↓</span>
@@ -148,7 +156,7 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
           case 'battery': {
             const b = t.battery;
             return (
-              <MetricCard key={tile} label="Battery" color={COLORS.battery}>
+              <MetricCard key={tile} icon="battery" label="Battery" color={COLORS.battery}>
                 <div className="flex items-end justify-between">
                   <Big value={pct(b?.percentage)} />
                   <span className="font-mono text-[1rem] text-soft">{b?.charging === undefined ? '' : b.charging ? 'charging' : 'on battery'}</span>
@@ -163,7 +171,7 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
             const d = t.storage?.[0];
             const usage = d?.usage ?? (d?.used !== undefined && d.total ? (d.used / d.total) * 100 : undefined);
             return (
-              <MetricCard key={tile} label="Storage" color={COLORS.storage} onOpen={() => onOpen('storage')}>
+              <MetricCard key={tile} icon="storage" label="Storage" color={COLORS.storage} onOpen={() => onOpen('storage')}>
                 <div className="flex items-end justify-between">
                   <Big value={pct(usage)} />
                   <span className="font-mono text-[1rem] text-soft tabular-nums">
@@ -199,16 +207,16 @@ export const HomeRings = memo(function HomeRings({ entry, caps, fmt, onOpen }: D
         let ring: ReactNode;
         switch (tile) {
           case 'cpu':
-            ring = <Ring percent={t.cpu?.usage} colors={RING_COLORS.cpu} center={value(t.cpu?.usage)} label="CPU" sub={fmt.temp(t.cpu?.temperature)} onOpen={() => onOpen('cpu')} />;
+            ring = <Ring percent={t.cpu?.usage} colors={RING_COLORS.cpu} center={value(t.cpu?.usage)} icon="cpu" label="CPU" sub={fmt.temp(t.cpu?.temperature)} onOpen={() => onOpen('cpu')} />;
             break;
           case 'gpu':
-            ring = <Ring percent={t.gpu?.usage} colors={RING_COLORS.gpu} center={value(t.gpu?.usage)} label="GPU" sub={fmt.temp(t.gpu?.temperature)} onOpen={() => onOpen('gpu')} />;
+            ring = <Ring percent={t.gpu?.usage} colors={RING_COLORS.gpu} center={value(t.gpu?.usage)} icon="gpu" label="GPU" sub={fmt.temp(t.gpu?.temperature)} onOpen={() => onOpen('gpu')} />;
             break;
           case 'memory': {
             const m = t.memory;
             const usage = m?.usage ?? (m?.used !== undefined && m.total ? (m.used / m.total) * 100 : undefined);
             const sub = m?.used !== undefined && m.total !== undefined ? `${m.used.toFixed(1)} / ${Math.round(m.total)} GB` : null;
-            ring = <Ring percent={usage} colors={RING_COLORS.ram} center={value(usage)} label="RAM" sub={sub} onOpen={() => onOpen('memory')} />;
+            ring = <Ring percent={usage} colors={RING_COLORS.ram} center={value(usage)} icon="memory" label="RAM" sub={sub} onOpen={() => onOpen('memory')} />;
             break;
           }
           case 'network': {
@@ -219,16 +227,16 @@ export const HomeRings = memo(function HomeRings({ entry, caps, fmt, onOpen }: D
             const sub = [n?.upload !== undefined ? `↑ ${fmt.rate(n.upload).value} ${fmt.rate(n.upload).unit}` : null, n?.ping !== undefined ? `${Math.round(n.ping)} ms` : null]
               .filter(Boolean)
               .join(' · ');
-            ring = <Ring percent={share} colors={RING_COLORS.network} center={<RingValue value={down.value} unit={down.unit} stacked />} label="Network" sub={sub || null} onOpen={() => onOpen('network')} />;
+            ring = <Ring percent={share} colors={RING_COLORS.network} center={<RingValue value={down.value} unit={down.unit} stacked />} icon="network" label="Network" sub={sub || null} onOpen={() => onOpen('network')} />;
             break;
           }
           case 'battery':
-            ring = <Ring percent={t.battery?.percentage} colors={RING_COLORS.battery} center={value(t.battery?.percentage)} label="Battery" sub={t.battery?.charging ? 'charging' : t.battery?.charging === false ? 'on battery' : null} />;
+            ring = <Ring percent={t.battery?.percentage} colors={RING_COLORS.battery} center={value(t.battery?.percentage)} icon="battery" label="Battery" sub={t.battery?.charging ? 'charging' : t.battery?.charging === false ? 'on battery' : null} />;
             break;
           case 'storage': {
             const d = t.storage?.[0];
             const usage = d?.usage ?? (d?.used !== undefined && d.total ? (d.used / d.total) * 100 : undefined);
-            ring = <Ring percent={usage} colors={RING_COLORS.storage} center={value(usage)} label="Storage" sub={d ? `${gb(d.used)} / ${gb(d.total)}` : null} onOpen={() => onOpen('storage')} />;
+            ring = <Ring percent={usage} colors={RING_COLORS.storage} center={value(usage)} icon="storage" label="Storage" sub={d ? `${gb(d.used)} / ${gb(d.total)}` : null} onOpen={() => onOpen('storage')} />;
             break;
           }
         }
@@ -248,7 +256,7 @@ export const Cpu = memo(function Cpu({ entry, caps, fmt, windowSec }: DeviceProp
   return (
     <div className={`h-full gap-5 ${upright ? 'flex flex-col' : 'grid grid-cols-[17rem_1fr]'}`}>
       <div className="flex min-w-0 flex-col gap-3">
-        <Title>{c.name ?? 'CPU'}</Title>
+        <Title icon="cpu" color={COLORS.cpu}>{c.name ?? 'CPU'}</Title>
         <div className="flex items-end gap-3">
           <Big value={pct(c.usage)} size={5} />
           <TemperatureBadge celsius={c.temperature} text={fmt.temp(c.temperature)} />
@@ -294,7 +302,7 @@ export const Gpu = memo(function Gpu({ entry, caps, fmt, windowSec }: DeviceProp
   return (
     <div className={`h-full gap-5 ${upright ? 'flex flex-col' : 'grid grid-cols-[17rem_1fr]'}`}>
       <div className="flex min-w-0 flex-col gap-3">
-        <Title>{g.name ?? 'GPU'}</Title>
+        <Title icon="gpu" color={COLORS.gpu}>{g.name ?? 'GPU'}</Title>
         <div className="flex items-end gap-3">
           <Big value={pct(g.usage)} size={5} />
           <TemperatureBadge celsius={g.temperature} text={fmt.temp(g.temperature)} />
@@ -335,7 +343,7 @@ export const Memory = memo(function Memory({ entry, caps, windowSec }: DevicePro
   return (
     <div className={`h-full gap-5 ${upright ? 'flex flex-col' : 'grid grid-cols-[1fr_1fr]'}`}>
       <div className="flex min-w-0 flex-col gap-3">
-        <Title>Memory</Title>
+        <Title icon="memory" color={COLORS.ram}>Memory</Title>
         <Big value={`${m.used?.toFixed(1) ?? '—'} / ${m.total !== undefined ? Math.round(m.total) : '—'}`} unit="GB" size={3.5} />
         <div className="flex items-center gap-4">
           <span className="font-display text-[2rem] font-semibold tabular-nums" style={{ color: levelColor(usage, COLORS.ram) }}>
@@ -373,7 +381,7 @@ export const Network = memo(function Network({ entry, caps, fmt, windowSec }: De
   return (
     <div className={`h-full gap-5 ${upright ? 'flex flex-col' : 'grid grid-cols-[17rem_1fr]'}`}>
       <div className="flex min-w-0 flex-col gap-2">
-        <Title>Network</Title>
+        <Title icon="network" color={COLORS.down}>Network</Title>
         <div className="flex items-baseline gap-2">
           <span className="font-display text-[2rem]" style={{ color: COLORS.down }}>↓</span>
           <Big value={down.value} unit={down.unit} size={3.25} />

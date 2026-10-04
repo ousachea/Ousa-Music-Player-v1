@@ -5,7 +5,8 @@ import { memo, useEffect, useRef, useState, type PointerEvent, type ReactNode } 
 
 import { useSettings } from '../store/settings';
 import { METRIC } from '../theme';
-import { Bar, Caption, Figure, Icon, LOOKS, Slats, Tile, Title, ToneContext } from '../components/widget-kit';
+import { AnimatedIcon } from '../components/icons';
+import { Bar, Caption, Figure, LOOKS, Slats, Tile, Title, ToneContext } from '../components/widget-kit';
 
 import { toLayout, useOrientation } from '../components/stage';
 import { takePager, takeWheel } from '../composables/useCarThingInput';
@@ -32,7 +33,7 @@ function CpuTile({ t, fmt, onOpen }: { t: DeviceTelemetry; fmt: Formatters; onOp
       : { value: String(c.cores ?? '—'), unit: 'cores', caption: c.name ?? 'Processor' };
   return (
     <Tile look={LOOKS.cpu} onOpen={onOpen}>
-      <Title>CPU</Title>
+      <Title icon={<AnimatedIcon kind="cpu" />}>CPU</Title>
       <div className="mt-2">
         <Bar value={c.usage} fill={METRIC.cpu.accent} label="Usage" right={c.usage === undefined ? '—' : `${Math.round(c.usage)}%`} />
       </div>
@@ -48,7 +49,7 @@ function MemoryTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
   const m = t.memory!;
   return (
     <Tile look={LOOKS.memory} onOpen={onOpen}>
-      <Title icon={Icon.memory} iconRight>
+      <Title icon={<AnimatedIcon kind="memory" />} iconRight>
         Memory
       </Title>
       <div className="mt-auto">
@@ -65,7 +66,7 @@ function GpuTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
   const memPct = g.memoryUsed !== undefined && g.memoryTotal ? (g.memoryUsed / g.memoryTotal) * 100 : undefined;
   return (
     <Tile look={LOOKS.gpu} onOpen={onOpen}>
-      <Title icon={Icon.gpu}>GPU</Title>
+      <Title icon={<AnimatedIcon kind="gpu" />}>GPU</Title>
       <div className="mt-auto">
         <Figure value={g.usage === undefined ? '—' : String(Math.round(g.usage))} unit="%" />
         <Caption>{g.name ?? 'Graphics load'}</Caption>
@@ -94,7 +95,7 @@ function NetworkTile({ t, fmt, onOpen }: { t: DeviceTelemetry; fmt: Formatters; 
   );
   return (
     <Tile look={LOOKS.network} onOpen={onOpen}>
-      <Title icon={Icon.network}>Network</Title>
+      <Title icon={<AnimatedIcon kind="network" />}>Network</Title>
       <div className="mt-auto">
         <Bar
           thick
@@ -117,7 +118,7 @@ function DiskTile({ d, onOpen }: { d: StorageDevice; onOpen: () => void }) {
   const usage = usageOf(d);
   return (
     <Tile look={LOOKS.disk} onOpen={onOpen}>
-      <Title>{d.name}</Title>
+      <Title icon={<AnimatedIcon kind="storage" />}>{d.name}</Title>
       <div className="mt-auto flex items-baseline gap-1">
         <span className="font-display text-[3rem] leading-none font-semibold tabular-nums text-off-white">{usage === undefined ? '—' : Math.round(usage)}</span>
         <span className="font-display text-[1.5rem] text-off-white/55">%</span>
@@ -136,7 +137,7 @@ function CoresTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
   const cores = t.cpu!.perCoreUsage!;
   return (
     <Tile look={LOOKS.cpu} onOpen={onOpen}>
-      <Title icon={Icon.chip}>Cores</Title>
+      <Title icon={<AnimatedIcon kind="cores" />}>Cores</Title>
       <div className="mt-auto flex h-[60%] items-end gap-[3px]">
         {cores.map((v, i) => (
           <span key={i} className="flex h-full flex-1 items-end rounded-[3px] bg-white/10">
@@ -155,7 +156,7 @@ function AppsTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
   const busiest = [...t.processes!].sort((a, b) => (b.cpu ?? 0) - (a.cpu ?? 0)).slice(0, 3);
   return (
     <Tile look={LOOKS.apps} onOpen={onOpen}>
-      <Title>Top apps</Title>
+      <Title icon={<AnimatedIcon kind="apps" />}>Top apps</Title>
       <div className="mt-auto flex flex-col gap-1.5">
         {busiest.map(p => (
           <div key={`${p.pid ?? ''}:${p.name}`} className="flex items-baseline gap-2">
@@ -172,7 +173,7 @@ function SystemTile({ t }: { t: DeviceTelemetry }) {
   const up = t.system.uptime;
   return (
     <Tile look={LOOKS.graphite}>
-      <Title>System</Title>
+      <Title icon={<AnimatedIcon kind="system" />}>System</Title>
       <div className="mt-auto">
         <Figure value={up === undefined ? '—' : duration(up)} size={2.25} />
         <Caption>Up time</Caption>
@@ -189,7 +190,7 @@ function DisplaysTile({ t }: { t: DeviceTelemetry }) {
   const list = t.displays!;
   return (
     <Tile look={LOOKS.displays}>
-      <Title>{list.length === 1 ? 'Display' : `${list.length} displays`}</Title>
+      <Title icon={<AnimatedIcon kind="displays" />}>{list.length === 1 ? 'Display' : `${list.length} displays`}</Title>
       <div className="mt-auto flex flex-col gap-1">
         {list.slice(0, 3).map((d, i) => (
           <div key={i} className="min-w-0">

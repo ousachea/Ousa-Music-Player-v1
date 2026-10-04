@@ -2,6 +2,8 @@
 // sun rides from rise to set and the moon from set to rise. dawn and dusk are the hour either side of the horizon
 import { memo } from 'react';
 
+import { AnimatedIcon } from '../components/icons';
+
 import { usePlace } from '../composables/useLocation';
 import { sunTimes } from '../composables/sun';
 import { useWeatherContext } from '../composables/useWeather';
@@ -134,7 +136,10 @@ export const SunWidget = memo(function SunWidget() {
       </svg>
       <div className="flex items-start justify-between px-5 pt-3.5">
         <div>
-          <div className="font-display text-[1.75rem] leading-tight font-semibold text-white">{look.title}</div>
+          <div className="flex items-center gap-2.5 font-display text-[1.75rem] leading-tight font-semibold text-white">
+            <AnimatedIcon kind={moon ? 'moon' : 'sun'} className="h-6 w-6" />
+            {look.title}
+          </div>
           <div className="font-body text-[0.875rem] text-white/65">{line}</div>
         </div>
         <div className="font-display text-[1.25rem] font-semibold tabular-nums text-white">{temp}</div>

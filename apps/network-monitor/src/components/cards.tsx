@@ -3,6 +3,7 @@
 import { memo, type ReactNode } from 'react';
 
 import { gb, pct } from '../composables/useMetrics';
+import { AnimatedIcon, type IconKind } from './icons';
 import type { DeviceInfo, StorageDevice } from '../protocol/types';
 import { COLORS, ProgressBar, levelColor } from './graphs';
 
@@ -31,19 +32,24 @@ export function Big({ value, unit, size = 3.5, dim }: { value: string; unit?: st
 export const MetricCard = memo(function MetricCard({
   label,
   color,
+  icon,
   onOpen,
   children,
   className,
 }: {
   label: string;
   color: string;
+  icon?: IconKind;
   onOpen?: () => void;
   children: ReactNode;
   className?: string;
 }) {
   const body = (
     <>
-      <Label color={color}>{label}</Label>
+      <div className="flex items-center gap-2" style={{ color }}>
+        {icon && <AnimatedIcon kind={icon} className="h-[18px] w-[18px]" />}
+        <Label color={color}>{label}</Label>
+      </div>
       {children}
     </>
   );

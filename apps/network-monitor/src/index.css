@@ -319,3 +319,138 @@
   --tile-radius: 22px;
   --panel-radius: 16px;
 }
+
+/* the icons' motions; each part turns or moves about its own middle */
+.icon-pulse,
+.icon-blink,
+.icon-spin,
+.icon-spin-slow,
+.icon-sweep,
+.icon-eq,
+.icon-bob-up,
+.icon-bob-down,
+.icon-glow,
+.icon-drift,
+.icon-fall {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes icon-pulse {
+  50% {
+    transform: scale(0.7);
+    opacity: 0.55;
+  }
+}
+.icon-pulse {
+  animation: icon-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes icon-blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+.icon-blink {
+  animation: icon-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes icon-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.icon-spin {
+  animation: icon-spin 2.4s linear infinite;
+}
+.icon-spin-slow {
+  animation: icon-spin 9s linear infinite;
+}
+
+/* the clock's hand turns about the face's middle, which is where the hand starts */
+.icon-sweep {
+  transform-box: view-box;
+  transform-origin: 12px 12px;
+  animation: icon-spin 6s linear infinite;
+}
+
+@keyframes icon-eq {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.icon-eq {
+  transform-origin: bottom;
+  animation: icon-eq 1s ease-in-out infinite;
+}
+
+@keyframes icon-bob-down {
+  50% {
+    transform: translateY(2px);
+  }
+}
+@keyframes icon-bob-up {
+  50% {
+    transform: translateY(-2px);
+  }
+}
+.icon-bob-down {
+  animation: icon-bob-down 1.4s ease-in-out infinite;
+}
+.icon-bob-up {
+  animation: icon-bob-up 1.4s ease-in-out infinite 0.7s;
+}
+
+@keyframes icon-glow {
+  50% {
+    opacity: 0.35;
+  }
+}
+.icon-glow {
+  animation: icon-glow 2.6s ease-in-out infinite;
+}
+
+@keyframes icon-drift {
+  50% {
+    transform: translateX(1.5px);
+  }
+}
+.icon-drift {
+  animation: icon-drift 3s ease-in-out infinite;
+}
+
+@keyframes icon-fall {
+  from {
+    transform: translateY(-2px);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(2.5px);
+    opacity: 0;
+  }
+}
+.icon-fall {
+  animation: icon-fall 1.1s linear infinite;
+}
+
+/* a heartbeat traced across the system icon and wiped away again */
+@keyframes icon-trace {
+  from {
+    stroke-dashoffset: 1;
+  }
+  60%,
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.icon-trace {
+  stroke-dasharray: 1;
+  animation: icon-trace 2.2s ease-out infinite;
+}

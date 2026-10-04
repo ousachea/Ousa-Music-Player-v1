@@ -17,6 +17,11 @@ The **LED clock** glows in the clock tile's own colour instead of a fixed red.
 clock or Claude Code. Whatever is hidden leaves Home in every style and the pages close up behind it;
 its own screen stays.
 
+Every card and widget has an **icon that moves**: the CPU's core pulses, the GPU's fan spins, memory's
+chips light in turn, network's arrows trade places, the drive turns, the clock's hand sweeps, the
+music's bars dance while it plays, Claude's asterisk turns, and the weather's sun, cloud, rain or snow
+moves with it.
+
 ## 0.4.1
 
 Every style now speaks the same visual language. Each thing measured keeps one colour wherever it

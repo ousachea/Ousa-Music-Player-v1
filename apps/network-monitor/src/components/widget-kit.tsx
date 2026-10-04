@@ -126,37 +126,4 @@ export function Slats({ value, count = 14 }: { value: number | undefined; count?
   );
 }
 
-export const Icon = {
-  chip: (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-      <rect x="6" y="6" width="12" height="12" rx="2" />
-      <rect x="9.5" y="9.5" width="5" height="5" rx="0.8" />
-      <path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3" />
-    </svg>
-  ),
-  memory: (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-      <rect x="3" y="7" width="18" height="10" rx="1.5" />
-      <path d="M7 10v4M11 10v4M15 10v4M6 17v2M10 17v2M14 17v2M18 17v2" />
-    </svg>
-  ),
-  gpu: (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-      <rect x="3" y="6" width="18" height="11" rx="1.5" />
-      <circle cx="9" cy="11.5" r="2.6" />
-      <path d="M15 9.5h3M15 13.5h3M6 17v2M10 17v2" />
-    </svg>
-  ),
-  network: (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 4v15M8 19l-3.5-3.5M8 19l3.5-3.5M16 20V5M16 5l-3.5 3.5M16 5l3.5 3.5" />
-    </svg>
-  ),
-  battery: (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-      <rect x="3" y="7" width="16" height="10" rx="2" />
-      <path d="M21 10.5v3M7 10v4M10.5 10v4" />
-    </svg>
-  ),
-};
 

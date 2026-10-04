@@ -3,6 +3,8 @@
 // snow falls, and a storm flashes. every moving part animates by transform or opacity, never by repainting
 import { memo, type ReactNode } from 'react';
 
+import { AnimatedIcon, type IconKind } from '../components/icons';
+
 import { usePlace } from '../composables/useLocation';
 import { useWeatherContext, type Sky } from '../composables/useWeather';
 import { partsIn, useNow, useZoneContext } from '../composables/useZone';
@@ -113,24 +115,8 @@ function scene(sky: Sky, day: boolean): Scene {
 }
 
 function SkyIcon({ sky, day }: { sky: Sky; day: boolean }) {
-  const cloud = <path d="M7 17h10a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.6 1.4A3.4 3.4 0 0 0 7 17Z" />;
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      {sky === 'clear' && day && (
-        <>
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
-        </>
-      )}
-      {sky === 'clear' && !day && <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" />}
-      {sky === 'cloudy' && cloud}
-      {sky === 'fog' && <path d="M4 9h16M3 13h18M5 17h14" />}
-      {(sky === 'rain' || sky === 'storm' || sky === 'snow') && <g transform="translate(0 -3)">{cloud}</g>}
-      {sky === 'rain' && <path d="M9 17.5l-1 3M13 17.5l-1 3M17 17.5l-1 3" />}
-      {sky === 'storm' && <path d="M13 15l-2.5 4h3l-2 4" />}
-      {sky === 'snow' && <path d="M9 19h.01M12 21h.01M15 19h.01M12 17.5h.01" strokeWidth="2.6" />}
-    </svg>
-  );
+  const kind: IconKind = sky === 'clear' ? (day ? 'sun' : 'moon') : sky === 'cloudy' ? 'cloud' : sky;
+  return <AnimatedIcon kind={kind} className="h-6 w-6" />;
 }
 
 export const WeatherWidget = memo(function WeatherWidget() {
