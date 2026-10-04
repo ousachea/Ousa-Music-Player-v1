@@ -73,6 +73,7 @@ export default function App() {
   // the settings open on the general page; a style's own settings are a page of their own under it
   const [stylePage, setStylePage] = useState(false);
   const [sheet, setSheet] = useState(false);
+  const [pocketArt, setPocketArt] = useState(false);
   const [hint, setHint] = useState(false);
   const [tip, setTip] = useState(false);
   const [tipAgain, setTipAgain] = useState(true);
@@ -509,6 +510,8 @@ export default function App() {
           onPrev={() => goPrev(true)}
           onNext={() => goNext()}
           onMenu={() => setSheet(true)}
+          artOnly={pocketArt}
+          onArtOnly={setPocketArt}
           onSeek={ratio => seek(ratio * duration)}
           onVolume={level => {
             if (volume?.muted) client.audio.muteToggle();

@@ -67,12 +67,17 @@ export function Pocket({
   onMenu,
   onSeek,
   onVolume,
+  artOnly,
+  onArtOnly,
 }: {
   artUrl: string | null;
   title: string;
   artist: string;
   accent: Accent | null;
   body: PocketBody;
+  // held above the player, which is rebuilt on every track, so the cover stays up from song to song
+  artOnly: boolean;
+  onArtOnly: (on: boolean) => void;
   playing: boolean;
   upright: boolean;
   rotate: Rotate;
@@ -120,6 +125,7 @@ export function Pocket({
         showVolume={showVolume}
         wallClock={wallClock}
         onSeek={onSeek}
+        onArt={() => onArtOnly(true)}
       />
 
       <Wheel
@@ -134,6 +140,23 @@ export function Pocket({
         onMenu={onMenu}
         onVolume={onVolume}
       />
+
+      {/* the cover on its own across the whole display, over a blur of itself; any tap puts it away */}
+      {artOnly && (
+        <button
+          aria-label="back to the player"
+          onClick={() => onArtOnly(false)}
+          className="absolute inset-0 z-10 grid animate-pop place-items-center overflow-hidden bg-black">
+          {artUrl ? (
+            <>
+              <img src={artUrl} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
+              <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-contain" />
+            </>
+          ) : (
+            <span className="font-body text-title text-white/60">no artwork</span>
+          )}
+        </button>
+      )}
     </div>
   );
 }
@@ -154,6 +177,7 @@ function Screen({
   showVolume,
   wallClock,
   onSeek,
+  onArt,
 }: {
   artUrl: string | null;
   title: string;
@@ -170,6 +194,7 @@ function Screen({
   showVolume: boolean;
   wallClock: ClockParts | null;
   onSeek: (ratio: number) => void;
+  onArt: () => void;
 }) {
   const bar = useRef<HTMLDivElement>(null);
   const pick = (e: PointerEvent<HTMLDivElement>) => {
@@ -181,7 +206,8 @@ function Screen({
   const level = volume?.muted ? 0 : (volume?.level ?? 0);
   return (
     <div
-      className={`relative shrink-0 rounded-[18px] bg-[#0c0c0d] p-2.5 shadow-[0_2px_0_rgba(255,255,255,0.5),inset_0_2px_6px_rgba(0,0,0,0.6)] ${
+      onClick={onArt}
+      className={`relative shrink-0 cursor-pointer rounded-[18px] bg-[#0c0c0d] p-2.5 shadow-[0_2px_0_rgba(255,255,255,0.5),inset_0_2px_6px_rgba(0,0,0,0.6)] ${
         upright ? 'h-[320px] w-[424px]' : 'h-[calc(100%-40px)] w-[470px]'
       }`}>
       <div className="relative h-full w-full overflow-hidden rounded-[9px] bg-[#6b6578]">
@@ -229,7 +255,9 @@ function Screen({
                   ref={bar}
                   className="relative -my-3 flex-1 cursor-pointer py-3"
                   onPointerDown={pick}
-                  onPointerMove={e => e.buttons === 1 && pick(e)}>
+                  onPointerMove={e => e.buttons === 1 && pick(e)}
+                  // seeking is not a request for the artwork
+                  onClick={e => e.stopPropagation()}>
                   <div className="relative h-[14px] overflow-hidden rounded-full bg-white/25">
                     <div
                       className="absolute inset-y-0 left-0 rounded-full"

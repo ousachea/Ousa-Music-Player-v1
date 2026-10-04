@@ -1,5 +1,10 @@
 # O-Music Player
 
+## 0.38.4
+
+Tapping **Pocket**'s screen shows just the artwork across the whole display, over a blur of
+itself, and stays up from song to song until another tap brings the player back.
+
 ## 0.38.3
 
 **Pocket**'s screen runs the full height of the display in landscape, with a larger cover and the
