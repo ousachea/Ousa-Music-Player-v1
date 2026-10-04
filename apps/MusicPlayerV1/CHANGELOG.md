@@ -1,5 +1,10 @@
 # O-Music Player
 
+## 0.38.3
+
+**Pocket**'s screen runs the full height of the display in landscape, with a larger cover and the
+wheel a little smaller beside it.
+
 ## 0.38.2
 
 Tapping the level meter on **Stereo** steps through the display colours.

@@ -182,7 +182,7 @@ function Screen({
   return (
     <div
       className={`relative shrink-0 rounded-[18px] bg-[#0c0c0d] p-2.5 shadow-[0_2px_0_rgba(255,255,255,0.5),inset_0_2px_6px_rgba(0,0,0,0.6)] ${
-        upright ? 'h-[320px] w-[424px]' : 'h-[330px] w-[436px]'
+        upright ? 'h-[320px] w-[424px]' : 'h-[calc(100%-40px)] w-[470px]'
       }`}>
       <div className="relative h-full w-full overflow-hidden rounded-[9px] bg-[#6b6578]">
         {/* the lcd takes its light from the cover, blurred into a wash the type reads over */}
@@ -195,7 +195,7 @@ function Screen({
 
         <div className="relative flex h-full flex-col justify-between p-[18px]">
           <div className="flex min-h-0 flex-1 items-center gap-5">
-            <div className="aspect-square h-[200px] shrink-0 overflow-hidden rounded-[6px] shadow-[0_6px_18px_rgba(0,0,0,0.35)]">
+            <div className={`aspect-square shrink-0 ${upright ? 'h-[200px]' : 'h-[236px]'} overflow-hidden rounded-[6px] shadow-[0_6px_18px_rgba(0,0,0,0.35)]`}>
               {artUrl ? (
                 <img src={artUrl} alt="" className="h-full w-full object-cover" />
               ) : (
@@ -352,7 +352,7 @@ function Wheel({
             : 'none';
 
   return (
-    <div className={`relative shrink-0 [perspective:700px] ${upright ? 'h-[340px] w-[340px]' : 'h-[300px] w-[300px]'}`}>
+    <div className={`relative shrink-0 [perspective:700px] ${upright ? 'h-[340px] w-[340px]' : 'h-[272px] w-[272px]'}`}>
       <div
         ref={ring}
         data-no-swipe
