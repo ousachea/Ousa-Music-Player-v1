@@ -13,7 +13,7 @@ import { WeatherContext, useWeather } from './composables/useWeather';
 import { ZoneContext, useZone } from './composables/useZone';
 import { daemonUrl } from './daemon';
 import { Debug, Devices, More, SettingsScreen } from './screens/app';
-import { HomeWidgets } from './screens/widgets';
+import { HomePaged, HomeWidgets } from './screens/widgets';
 import { Cpu, Gpu, Home, HomeRings, Memory, Network, Offline, Processes, Storage, type DeviceProps } from './screens/device';
 import { go, selectDevice, useNav, type Screen } from './store/navigation';
 import { loadSettings, updateSettings, useSettings } from './store/settings';
@@ -45,8 +45,14 @@ export default function App() {
   }, [client]);
 
   useTelemetrySource(client);
-  useCarThingInput(settings.rotate, () =>
-    updateSettings(client, { rotate: ((settings.rotate + 90) % 360) as 0 | 90 | 180 | 270 }),
+  useCarThingInput(
+    settings.rotate,
+    () => updateSettings(client, { rotate: ((settings.rotate + 90) % 360) as 0 | 90 | 180 | 270 }),
+    () => {
+      const order = ['cards', 'rings', 'widgets'] as const;
+      updateSettings(client, { homeStyle: order[(order.indexOf(settings.homeStyle) + 1) % order.length] });
+      go('home');
+    },
   );
   const upright = settings.rotate === 90 || settings.rotate === 270;
   const orientation = useMemo(() => ({ rotate: settings.rotate, upright }), [settings.rotate, upright]);
@@ -116,12 +122,12 @@ export default function App() {
         break;
       default:
         body =
-          settings.homeStyle === 'rings' ? (
-            <HomeRings {...deviceProps} />
-          ) : settings.homeStyle === 'widgets' ? (
+          settings.homeStyle === 'widgets' ? (
             <HomeWidgets {...deviceProps} />
           ) : (
-            <Home {...deviceProps} />
+            <HomePaged {...deviceProps}>
+              {settings.homeStyle === 'rings' ? <HomeRings {...deviceProps} /> : <Home {...deviceProps} />}
+            </HomePaged>
           );
     }
   }

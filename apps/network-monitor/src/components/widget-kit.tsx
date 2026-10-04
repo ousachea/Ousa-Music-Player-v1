@@ -1,6 +1,9 @@
 // the pieces every widget is built from: a tile in its own colour with light turning slowly behind it, a title,
 // a large figure, a caption, bars and the icons
-import type { ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
+
+/** colour for the widgets style; flat for the pages that follow cards and rings, so they match what came before */
+export const ToneContext = createContext<'color' | 'flat'>('color');
 
 /** a tile's colours, and how its light moves: seconds for one turn, and which way */
 export type Look = { from: string; to: string; glow: string; turn: number; reverse?: boolean };
@@ -20,6 +23,18 @@ export const LOOKS = {
 export function Tile({ look, onOpen, className, children }: { look: Look; onOpen?: () => void; className?: string; children: ReactNode }) {
   // a tile with controls of its own cannot itself be a button, so only a tile that opens something is one
   const Tag = onOpen ? 'button' : 'div';
+  const flat = useContext(ToneContext) === 'flat';
+  if (flat) {
+    return (
+      <Tag
+        onClick={onOpen}
+        className={`relative min-w-0 overflow-hidden rounded-lg bg-white/[0.045] text-left ${onOpen ? 'transition-transform duration-150 active:scale-[0.98]' : ''} ${className ?? ''}`}>
+        {/* a hairline of the tile's colour along the top is all the colour a flat tile keeps */}
+        <span className="pointer-events-none absolute inset-x-0 top-0 h-[2px]" style={{ backgroundColor: look.glow }} />
+        <span className="relative flex h-full flex-col px-4 py-3">{children}</span>
+      </Tag>
+    );
+  }
   return (
     <Tag
       onClick={onOpen}

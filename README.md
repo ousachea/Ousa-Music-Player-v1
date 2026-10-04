@@ -240,7 +240,7 @@ machines around you, one at a time, on the Car Thing.
   a clock (digital, LED or analog), a calendar (month, week or day), what the phone is playing with
   its controls, an animated battery with its health and cycle count, the sun's day as a glowing arc,
   every core, the busiest apps, uptime, displays and any other drives. Tap the clock or the calendar
-  to change its face.
+  to change its face. Cards and rings have the same pages after their first.
 - **CPU, GPU, RAM, NET, DISK** each have their own screen; CPU shows every core, and DISK every
   drive with its space and read and write speed.
 - **More** reaches Processes (a radar of the busiest eight, or a list with share bars and trends), Devices, Settings and Debug, which shows the
@@ -276,7 +276,7 @@ and how much history the graphs keep.
 | Preset button 2 | CPU |
 | Preset button 3 | GPU |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode | More |
+| Mode | Next home style: cards, rings, widgets |
 | Turn the wheel | Scroll a list or the widget pages, or step through the screens |
 | Press the wheel | Hide or show the top and bottom bars; on a list, choose |
 | Swipe across the screen | Next or previous screen |

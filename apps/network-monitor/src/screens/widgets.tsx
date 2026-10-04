@@ -3,7 +3,7 @@
 // cannot fill a tile hands it to what it can, so a phone's cpu tile becomes its battery
 import { memo, useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 
-import { Bar, Caption, Figure, Icon, LOOKS, Slats, Tile, Title } from '../components/widget-kit';
+import { Bar, Caption, Figure, Icon, LOOKS, Slats, Tile, Title, ToneContext } from '../components/widget-kit';
 
 import { toLayout, useOrientation } from '../components/stage';
 import { takeWheel } from '../composables/useCarThingInput';
@@ -247,14 +247,17 @@ export const HomeWidgets = memo(function HomeWidgets({ entry, caps, fmt, onOpen 
       </div>
     ))
   ) : (
-    <>
-      {row(top, top.length - 1)}
-      {row(bottom, 0)}
-    </>
+    [...row(top, top.length - 1), ...row(bottom, 0)]
   );
 
-  // everything the first page had no room for, six cells to a page after it: the day first, then the machine
   const usedBattery = first === 'battery' || third === 'battery';
+  return <Pager pages={[home, ...extraPages(t, caps, go, usedBattery)]} upright={upright} />;
+});
+
+
+/** the pages after the first, the same under every home style: the day first, then the machine, six cells a page */
+function extraPages(t: DeviceTelemetry, caps: DeviceCapabilities, go: (s: Screen) => () => void, usedBattery: boolean): ReactNode[][] {
+  // everything the first page had no room for, six cells to a page after it: the day first, then the machine
   type Item = { node: ReactNode; wide?: boolean };
   const listed: (Item | null)[] = [
     { node: <WeatherWidget key="weather" />, wide: true },
@@ -270,7 +273,7 @@ export const HomeWidgets = memo(function HomeWidgets({ entry, caps, fmt, onOpen 
     ...(t.storage ?? []).slice(1).map(d => ({ node: <DiskTile key={`disk-${d.id}`} d={d} onOpen={go('storage')} /> })),
   ];
   const more = listed.filter((x): x is Item => x !== null);
-  const pages: ReactNode[] = [home];
+  const pages: ReactNode[][] = [];
   let page: ReactNode[] = [];
   let cells = 0;
   for (const item of more) {
@@ -288,7 +291,23 @@ export const HomeWidgets = memo(function HomeWidgets({ entry, caps, fmt, onOpen 
     cells += size;
   }
   if (page.length) pages.push(page);
-  return <Pager pages={pages} upright={upright} />;
+  return pages;
+}
+
+/** cards and rings keep their own first page, and the widget pages follow it in a plain dress to match */
+export const HomePaged = memo(function HomePaged({ entry, caps, onOpen, children }: DeviceProps & { children: ReactNode }) {
+  const { upright } = useOrientation();
+  const t = entry.telemetry;
+  if (!t) return null;
+  const go = (s: Screen) => () => onOpen(s);
+  // the first page lends the battery a place only when it is short of cpu, gpu, memory or network
+  const primary = [caps.cpu, caps.gpu, caps.memory, caps.network].filter(Boolean).length;
+  const extras = extraPages(t, caps, go, primary < 4 && caps.battery).map((page, i) => [
+    <ToneContext.Provider key={`tone-${i}`} value="flat">
+      {page}
+    </ToneContext.Provider>,
+  ]);
+  return <Pager pages={[children, ...extras]} upright={upright} />;
 });
 
 const SWIPE_PX = 50;
@@ -331,11 +350,17 @@ function Pager({ pages, upright }: { pages: ReactNode[]; upright: boolean }) {
   return (
     <div data-scroll className="relative h-full overflow-hidden" onPointerDown={down} onPointerUp={up} onPointerCancel={() => (from.current = null)}>
       <div className={`flex transition-transform duration-500 ${count > 1 ? 'h-[calc(100%-14px)]' : 'h-full'} ease-[cubic-bezier(0.22,1,0.36,1)]`} style={{ transform: `translateX(-${at * 100}%)` }}>
-        {pages.map((tiles, i) => (
-          <div key={i} className={`grid h-full w-full shrink-0 gap-3 pr-px ${upright ? 'grid-cols-2 grid-rows-3' : 'grid-cols-3 grid-rows-2'}`}>
-            {tiles}
-          </div>
-        ))}
+        {pages.map((tiles, i) =>
+          Array.isArray(tiles) ? (
+            <div key={i} className={`grid h-full w-full shrink-0 gap-3 pr-px ${upright ? 'grid-cols-2 grid-rows-3' : 'grid-cols-3 grid-rows-2'}`}>
+              {tiles}
+            </div>
+          ) : (
+            <div key={i} className="h-full w-full shrink-0 pr-px">
+              {tiles}
+            </div>
+          ),
+        )}
       </div>
       {count > 1 && (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center gap-1.5">

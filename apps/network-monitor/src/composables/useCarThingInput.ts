@@ -12,6 +12,7 @@ export type Action =
   | { type: 'turn'; dir: 1 | -1 }
   | { type: 'press' }
   | { type: 'rotate' }
+  | { type: 'style' }
   | { type: 'swipe'; dir: 1 | -1 };
 
 export const KEYMAP: Record<string, Action> = {
@@ -19,7 +20,9 @@ export const KEYMAP: Record<string, Action> = {
   '2': { type: 'go', screen: 'cpu' },
   '3': { type: 'go', screen: 'gpu' },
   '4': { type: 'rotate' },
-  m: { type: 'go', screen: 'more' },
+  // mode, the button past the presets, steps through the home styles; 5 stands in for it at a keyboard
+  m: { type: 'style' },
+  '5': { type: 'style' },
   Escape: { type: 'back' },
   ArrowRight: { type: 'turn', dir: 1 },
   ArrowLeft: { type: 'turn', dir: -1 },
@@ -41,7 +44,7 @@ export function takeWheel(taker: WheelTaker | null) {
   wheelTaker = taker;
 }
 
-function act(action: Action, rotate: () => void) {
+function act(action: Action, rotate: () => void, style: () => void) {
   switch (action.type) {
     case 'go':
       return go(action.screen);
@@ -58,16 +61,20 @@ function act(action: Action, rotate: () => void) {
       return step(action.dir);
     case 'rotate':
       return rotate();
+    case 'style':
+      return style();
   }
 }
 
 /** `rotate` is the current turn, so a swipe is read along the axis the viewer swiped; `onRotate` turns it further */
-export function useCarThingInput(rotate: Rotate, onRotate: () => void) {
+export function useCarThingInput(rotate: Rotate, onRotate: () => void, onStyle: () => void) {
   const turn = useRef(rotate);
   turn.current = rotate;
   const spin = useRef(onRotate);
   spin.current = onRotate;
-  const doAct = (action: Action) => act(action, () => spin.current());
+  const restyle = useRef(onStyle);
+  restyle.current = onStyle;
+  const doAct = (action: Action) => act(action, () => spin.current(), () => restyle.current());
   const wheelAcc = useRef(0);
   const swipeFrom = useRef<{ x: number; y: number } | null>(null);
 
