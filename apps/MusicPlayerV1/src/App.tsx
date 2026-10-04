@@ -2129,6 +2129,7 @@ function CdDeck({
     <div className={`relative shrink-0 ${upright ? 'aspect-square w-full' : 'aspect-square h-full'} ${motion ? 'disc-swap' : ''}`}>
       <Cartridge
         artUrl={artUrl}
+        accent={accent}
         playing={playing}
         motion={motion}
         label="O-Music"

@@ -4,7 +4,8 @@
 
 **CD** has a second look, **Cartridge**: a gold disc in a clear, frosted cartridge, like a MiniDisc,
 with screws in its corners, a black slider carrying the cover, and a black hub in the middle. The
-gold turns while the track plays. Tap the middle of either disc to trade looks, or choose under
+disc is pressed in the cover's own colours with a metallic sheen, gold for a cover with none, and
+turns while the track plays. Tap the middle of either disc to trade looks, or choose under
 **Look** in the style's settings. In both, the clock now sits above the song.
 
 ## 0.38.5

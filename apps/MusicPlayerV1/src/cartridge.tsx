@@ -3,8 +3,21 @@
 // the middle. the disc turns while the track plays and holds its angle on pause, like the tray's
 import type { ReactNode } from 'react';
 
+import type { Accent } from './artwork-color';
+
 const GOLD =
   'conic-gradient(from 0deg, #f8e7a6, #d9b35b 11%, #fff4cf 21%, #c99a3e 33%, #f2d98f 46%, #b98a35 58%, #fbecb8 70%, #d4ad55 84%, #f8e7a6)';
+
+/** the same metal, pressed in the cover's two colours: each band of light and shade mixed from them, so the disc keeps
+ * its sheen and takes the album's colour */
+function pressing(accent: Accent | null) {
+  if (!accent) return GOLD;
+  const a = accent.fill;
+  const b = accent.fill2 ?? accent.fill;
+  const light = (c: string, pct: number) => `color-mix(in oklab, ${c} ${pct}%, #ffffff)`;
+  const dark = (c: string, pct: number) => `color-mix(in oklab, ${c} ${pct}%, #2a2118)`;
+  return `conic-gradient(from 0deg, ${light(a, 45)}, ${a} 11%, ${light(b, 30)} 21%, ${dark(a, 70)} 33%, ${light(b, 55)} 46%, ${dark(b, 75)} 58%, ${light(a, 35)} 70%, ${b} 84%, ${light(a, 45)})`;
+}
 
 /** a screw head sunk in the shell: a dish with a cross */
 function Screw({ x, y }: { x: number; y: number }) {
@@ -19,6 +32,7 @@ function Screw({ x, y }: { x: number; y: number }) {
 
 export function Cartridge({
   artUrl,
+  accent,
   playing,
   motion,
   label,
@@ -26,6 +40,8 @@ export function Cartridge({
   corner,
 }: {
   artUrl: string | null;
+  /** the cover's colours; null keeps the disc gold */
+  accent: Accent | null;
   playing: boolean;
   motion: boolean;
   /** what the slider's spine says */
@@ -53,11 +69,11 @@ export function Cartridge({
         {!corner && <Screw x={6.5} y={93.5} />}
       </svg>
 
-      {/* the gold disc: the colour turns with it, the light on it stays put, the way light falls on a real one */}
+      {/* the disc: the colour turns with it, the light on it stays put, the way light falls on a real one */}
       <div className="absolute top-[5%] left-[7%] aspect-square w-[88%]">
         <div
           className="animate-platter absolute inset-0 rounded-full"
-          style={{ background: GOLD, animationPlayState: playing && motion ? 'running' : 'paused', animationDuration: '6s' }}
+          style={{ background: pressing(accent), transition: 'background 700ms', animationPlayState: playing && motion ? 'running' : 'paused', animationDuration: '6s' }}
         />
         <div
           className="pointer-events-none absolute inset-0 rounded-full"

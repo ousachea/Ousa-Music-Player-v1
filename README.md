@@ -73,7 +73,8 @@ arrangements, and tapping the middle of the record steps through them:
 The album printed on a spinning disc with a metal clamping ring, in a tray tinted by the album's
 colour. The track, progress bar and a three-part transport sit beside it.
 
-**Cartridge**, the other **Look**, puts a gold disc in a clear frosted cartridge with a black
+**Cartridge**, the other **Look**, puts a disc in the cover's colours (gold for a colourless one) in
+a clear frosted cartridge with a black
 slider carrying the cover. Tap the middle of either disc to switch. The clock sits above the song.
 
 ### Cassette
