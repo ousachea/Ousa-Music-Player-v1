@@ -148,20 +148,20 @@ export const WeatherWidget = memo(function WeatherWidget() {
   const status = !place ? 'Finding where you are' : 'error' in place ? 'Location unavailable' : 'Loading the weather';
 
   return (
-    <div className="relative isolate h-full w-full overflow-hidden rounded-[22px] text-off-white shadow-[0_10px_30px_rgba(0,0,0,0.45)]" style={{ background: view.background }}>
+    <div className="relative isolate h-full w-full overflow-hidden rounded-[var(--tile-radius)] text-off-white shadow-[0_10px_30px_rgba(0,0,0,0.45)]" style={{ background: view.background }}>
       <div className="pointer-events-none absolute inset-0 -z-10">{view.layers}</div>
       <div className="flex h-full justify-between px-5 py-4">
         <div className="flex flex-col">
-          <div className="flex items-center gap-2 font-body text-[1.25rem] font-medium">
+          <div className="flex items-center gap-2 font-display text-[1.25rem] font-semibold">
             {weather && <SkyIcon sky={weather.sky} day={weather.day} />}
             {weather?.label ?? status}
           </div>
-          <div className="mt-auto font-body text-[4rem] leading-none font-medium tabular-nums">{temp === null ? '—' : `${temp}°`}</div>
+          <div className="mt-auto font-display text-[4rem] leading-none font-semibold tracking-display tabular-nums">{temp === null ? '—' : `${temp}°`}</div>
         </div>
         <div className="flex flex-col items-end text-right">
-          <div className="font-body text-[2rem] leading-none font-medium tabular-nums">{time}</div>
-          <div className="mt-1 font-body text-[0.875rem] tracking-[0.04em] tabular-nums opacity-90">{date}</div>
-          <div className="mt-auto font-body text-[0.9375rem] opacity-90">
+          <div className="font-display text-[2rem] leading-none font-semibold tabular-nums">{time}</div>
+          <div className="mt-1 font-mono text-[0.75rem] tracking-[0.12em] tabular-nums opacity-80">{date}</div>
+          <div className="mt-auto font-body text-[0.875rem] opacity-80">
             {weather?.city ?? ''}
             {place && 'approximate' in place && place.approximate ? <span className="opacity-60"> ≈</span> : null}
           </div>

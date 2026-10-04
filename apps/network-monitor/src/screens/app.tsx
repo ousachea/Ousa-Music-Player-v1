@@ -47,7 +47,7 @@ export const Devices = memo(function Devices({
         })}
         {/* with only the car thing listed, nothing on the desktop is reporting yet */}
         {live && ids.every(id => state.devices[id].info.platform === 'carthing') && (
-          <div className="rounded-lg border border-dashed border-white/12 px-4 py-3 font-mono text-[0.875rem] leading-relaxed text-dim">
+          <div className="rounded-[var(--panel-radius)] border border-dashed border-white/12 px-4 py-3 font-mono text-[0.875rem] leading-relaxed text-dim">
             No computer reporting. Install O-System Monitor in the bridgething desktop app on the computer this Car
             Thing is plugged into, and allow its extension.
           </div>
@@ -147,7 +147,7 @@ export const SettingsScreen = memo(function SettingsScreen({
   return (
     <div ref={list} data-scroll className="flex h-full flex-col gap-1.5 overflow-y-auto [scrollbar-width:none]">
       {ROWS.map((row, i) => (
-        <div key={row.key} className={`flex items-center gap-4 rounded-lg px-4 py-2.5 ${i === focus ? 'bg-white/10' : 'bg-white/[0.045]'}`}>
+        <div key={row.key} className={`flex items-center gap-4 rounded-[var(--panel-radius)] px-4 py-2.5 ${i === focus ? 'bg-white/10' : 'bg-white/[0.045]'}`}>
           <div className="min-w-0 flex-1">
             <div className="font-display text-[1.25rem] font-medium text-near">{row.label}</div>
             {row.note && <div className="truncate font-mono text-[0.75rem] text-dim">{row.note}</div>}
@@ -205,7 +205,7 @@ export const Debug = memo(function Debug({
         <Field label="Devices" value={String(state.order.length)} />
         {state.lastError && <Field label="Last error" value={state.lastError} />}
       </div>
-      <div ref={view} data-scroll className="min-h-0 flex-1 overflow-y-auto rounded-lg bg-black/60 px-3 py-2 ring-1 ring-white/8 [scrollbar-width:none]">
+      <div ref={view} data-scroll className="min-h-0 flex-1 overflow-y-auto rounded-[var(--panel-radius)] bg-black/60 px-3 py-2 ring-1 ring-white/8 [scrollbar-width:none]">
         <pre className="font-mono text-[0.75rem] leading-snug whitespace-pre-wrap text-soft">{json}</pre>
       </div>
     </div>
@@ -239,7 +239,7 @@ export const More = memo(function More({ onGo }: { onGo: (s: Screen) => void }) 
         <button
           key={m.screen}
           onClick={() => onGo(m.screen)}
-          className={`flex flex-col justify-end gap-1 rounded-lg px-4 py-3 text-left transition-colors duration-150 active:scale-[0.98] ${
+          className={`flex flex-col justify-end gap-1 rounded-[var(--tile-radius)] px-4 py-3 text-left transition-colors duration-150 active:scale-[0.98] ${
             i === focus ? 'bg-white/12' : 'bg-white/[0.045]'
           }`}>
           <span className="font-display text-[1.625rem] font-semibold text-off-white">{m.label}</span>

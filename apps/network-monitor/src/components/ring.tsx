@@ -3,13 +3,16 @@
 // the browser can ease it from one reading to the next instead of jumping
 import { memo, type CSSProperties, type ReactNode } from 'react';
 
+import { METRIC } from '../theme';
+
+/** each arc runs from the metric's pale tint at twelve to its full colour where it ends */
 export const RING_COLORS = {
-  cpu: ['#ff5a1f', '#ffc46b'],
-  gpu: ['#d9f24a', '#16b33a'],
-  ram: ['#b9d2ff', '#6e56f0'],
-  network: ['#7fe3ff', '#2f6bff'],
-  battery: ['#d9f24a', '#16b33a'],
-  storage: ['#ffe28a', '#ff9f1c'],
+  cpu: [METRIC.cpu.soft, METRIC.cpu.accent],
+  gpu: [METRIC.gpu.soft, METRIC.gpu.accent],
+  ram: [METRIC.memory.soft, METRIC.memory.accent],
+  network: [METRIC.network.soft, METRIC.network.accent],
+  battery: ['#c9f78a', '#6fdc3c'],
+  storage: [METRIC.disk.soft, METRIC.disk.accent],
 } as const;
 
 /** the arc's width as a share of the ring's radius */

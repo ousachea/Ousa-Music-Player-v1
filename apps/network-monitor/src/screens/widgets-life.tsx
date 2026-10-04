@@ -22,7 +22,7 @@ export const BatteryWidget = memo(function BatteryWidget({ battery }: { battery:
   const [from, to] = levelColors(pct);
   const charging = !!battery.charging;
   return (
-    <Tile look={LOOKS.green}>
+    <Tile look={LOOKS.graphite}>
       <div className="flex items-center justify-between gap-2">
         <Title icon={Icon.battery}>Battery</Title>
         {battery.health !== undefined && (
@@ -166,7 +166,7 @@ export const ClockWidget = memo(function ClockWidget() {
     }
   }
   return (
-    <Tile look={LOOKS.cyan} onOpen={next}>
+    <Tile look={LOOKS.clock} onOpen={next}>
       <div className="flex items-baseline justify-between">
         <Title>Clock</Title>
         <span className="font-mono text-[0.6875rem] tracking-[0.16em] text-off-white/50 uppercase">{CLOCK_NAMES[clockStyle]}</span>
@@ -254,7 +254,7 @@ export const CalendarWidget = memo(function CalendarWidget() {
     }
   }
   return (
-    <Tile look={LOOKS.rose} onOpen={next}>
+    <Tile look={LOOKS.calendar} onOpen={next}>
       <div className="flex items-baseline justify-between gap-2">
         <Title>{title}</Title>
         <span className="font-mono text-[0.6875rem] tracking-[0.16em] text-off-white/50 uppercase">{calendarView}</span>
@@ -300,7 +300,7 @@ function Music({ client }: { client: NonNullable<ReturnType<typeof useClient>> }
     </button>
   );
   return (
-    <Tile look={LOOKS.magenta}>
+    <Tile look={LOOKS.graphite}>
       {/* the cover, blurred, is the tile's light while something plays */}
       {artUrl && <img src={artUrl} alt="" className="pointer-events-none absolute -inset-6 -z-10 h-[calc(100%+3rem)] w-[calc(100%+3rem)] scale-110 object-cover opacity-55 blur-2xl" />}
       <div className="flex h-full min-h-0 gap-4">

@@ -47,7 +47,7 @@ export const MetricCard = memo(function MetricCard({
       {children}
     </>
   );
-  const box = `flex min-w-0 flex-col gap-2 rounded-lg bg-white/[0.045] px-4 py-3 text-left ${className ?? ''}`;
+  const box = `flex min-w-0 flex-col gap-2 rounded-[var(--tile-radius)] bg-white/[0.045] px-4 py-3 text-left ${className ?? ''}`;
   return onOpen ? (
     <button onClick={onOpen} className={`${box} transition-[transform,background-color] duration-150 active:scale-[0.98] active:bg-white/8`}>
       {body}
@@ -99,7 +99,7 @@ export const StorageCard = memo(function StorageCard({
 }) {
   const usage = drive.usage ?? (drive.used !== undefined && drive.total ? (drive.used / drive.total) * 100 : undefined);
   return (
-    <div className="flex flex-col gap-2 rounded-lg bg-white/[0.045] px-4 py-3">
+    <div className="flex flex-col gap-2 rounded-[var(--tile-radius)] bg-white/[0.045] px-4 py-3">
       <div className="flex items-baseline justify-between gap-3">
         <div className="min-w-0">
           <div className="truncate font-display text-[1.25rem] font-semibold text-off-white">{drive.name}</div>
@@ -158,7 +158,7 @@ export const DeviceCard = memo(function DeviceCard({
   return (
     <button
       onClick={onPick}
-      className={`flex w-full items-center gap-4 rounded-lg px-4 py-3 text-left transition-colors duration-150 ${
+      className={`flex w-full items-center gap-4 rounded-[var(--panel-radius)] px-4 py-3 text-left transition-colors duration-150 ${
         focused ? 'bg-white/10' : 'bg-white/[0.045]'
       } ${selected ? 'ring-1 ring-white/30' : ''}`}>
       <StatusIndicator online={online} label={false} />

@@ -269,3 +269,9 @@
 .sun-arc-run {
   animation: sun-arc-run 6s ease-in-out infinite;
 }
+
+/* the shared corners: a whole tile, and a panel within a screen */
+:root {
+  --tile-radius: 22px;
+  --panel-radius: 16px;
+}

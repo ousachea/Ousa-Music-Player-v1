@@ -3,6 +3,7 @@
 import { memo } from 'react';
 
 import { MAIN, type Screen } from '../store/navigation';
+import { METRIC } from '../theme';
 import { StatusIndicator } from './cards';
 
 export const TopBar = memo(function TopBar({
@@ -38,6 +39,15 @@ const NAV_LABEL: Partial<Record<Screen, string>> = {
   more: 'MORE',
 };
 
+/** the screens about one thing measured wear its colour on the bar; the rest stay white */
+const NAV_COLOR: Partial<Record<Screen, string>> = {
+  cpu: METRIC.cpu.accent,
+  gpu: METRIC.gpu.accent,
+  memory: METRIC.memory.accent,
+  network: METRIC.network.accent,
+  storage: METRIC.disk.accent,
+};
+
 const MORE_SCREENS: Screen[] = ['more', 'processes', 'devices', 'settings', 'debug'];
 
 export const BottomNavigation = memo(function BottomNavigation({
@@ -58,7 +68,7 @@ export const BottomNavigation = memo(function BottomNavigation({
             className={`relative flex-1 font-mono text-[0.9375rem] font-medium tracking-[0.16em] outline-none transition-colors duration-150 active:bg-white/6 ${
               on ? 'text-off-white' : 'text-dim'
             }`}>
-            {on && <span className="absolute inset-x-6 top-0 h-0.5 bg-off-white" />}
+            {on && <span className="absolute inset-x-6 top-0 h-0.5 rounded-full" style={{ backgroundColor: NAV_COLOR[s] ?? 'var(--color-off-white)' }} />}
             {NAV_LABEL[s]}
           </button>
         );

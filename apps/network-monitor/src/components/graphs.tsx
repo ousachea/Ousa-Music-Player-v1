@@ -3,15 +3,16 @@
 import { memo } from 'react';
 
 import type { MetricHistory } from '../store/telemetry';
+import { METRIC, UPLOAD } from '../theme';
 
 export const COLORS = {
-  cpu: '#4cc9f0',
-  gpu: '#80ed99',
-  ram: '#c3a6ff',
-  down: '#4cc9f0',
-  up: '#ffb066',
-  storage: '#ffd166',
-  battery: '#80ed99',
+  cpu: METRIC.cpu.accent,
+  gpu: METRIC.gpu.accent,
+  ram: METRIC.memory.accent,
+  down: METRIC.network.accent,
+  up: UPLOAD,
+  storage: METRIC.disk.accent,
+  battery: '#6fdc3c',
   ok: 'var(--color-ok)',
   warn: 'var(--color-experimental)',
   err: 'var(--color-err)',

@@ -1,12 +1,13 @@
-// the busiest processes as a radar: one spoke each, cpu in green and memory in orange, each scaled to its own leader
+// the busiest processes as a radar: one spoke each, cpu in green and memory in blue, each scaled to its own leader
 // so the two shapes can be compared even though one is a share of a core and the other a share of ram. the shapes
 // glide to each new reading rather than jump, over a few frames once every few seconds
 import { memo, useEffect, useRef, useState } from 'react';
 
 import type { ProcessInfo } from '../protocol/types';
+import { METRIC } from '../theme';
 
-const CPU = '#6ff2b4';
-const RAM = '#ff5a2a';
+const CPU = METRIC.cpu.accent;
+const RAM = METRIC.memory.accent;
 const RINGS = 5;
 const TWEEN_MS = 700;
 

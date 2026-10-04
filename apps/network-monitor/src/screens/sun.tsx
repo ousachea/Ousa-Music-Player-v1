@@ -105,7 +105,7 @@ export const SunWidget = memo(function SunWidget() {
   const arc = `M${CX - RX} ${CY} A${RX} ${RY} 0 0 1 ${CX + RX} ${CY}`;
 
   return (
-    <div className="relative isolate h-full w-full overflow-hidden rounded-[26px] border-[4px] border-white/85 shadow-[0_10px_30px_rgba(0,0,0,0.45)]" style={{ background: look.sky }}>
+    <div className="relative isolate h-full w-full overflow-hidden rounded-[var(--tile-radius)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]" style={{ background: look.sky }}>
       <svg viewBox="0 0 300 100" preserveAspectRatio="xMidYMax slice" className="absolute inset-0 -z-10 h-full w-full">
         <defs>
           <linearGradient id={`arc-${phase}`} x1="0" x2="1" y1="0" y2="0">
@@ -135,9 +135,9 @@ export const SunWidget = memo(function SunWidget() {
       <div className="flex items-start justify-between px-5 pt-3.5">
         <div>
           <div className="font-display text-[1.75rem] leading-tight font-semibold text-white">{look.title}</div>
-          <div className="font-body text-[0.8125rem] text-white/70">{line}</div>
+          <div className="font-body text-[0.875rem] text-white/65">{line}</div>
         </div>
-        <div className="font-display text-[1.25rem] font-medium tabular-nums text-white">{temp}</div>
+        <div className="font-display text-[1.25rem] font-semibold tabular-nums text-white">{temp}</div>
       </div>
     </div>
   );

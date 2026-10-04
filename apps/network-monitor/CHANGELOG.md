@@ -1,5 +1,14 @@
 # O-System Monitor
 
+## 0.4.1
+
+Every style now speaks the same visual language. Each thing measured keeps one colour wherever it
+appears, in the cards, the rings, the widgets, the graphs, the radar and the bar along the bottom:
+**CPU green**, **GPU magenta**, **memory blue**, **network teal** and **disk violet**, with upload
+in amber. Tiles share one set of corners and panels another, the weather and the sun's day cards
+take the same type and frame as the rest, and the tiles that carry their own colour (the battery's
+level, the music's artwork, the system's facts) sit on a quiet graphite.
+
 ## 0.4.0
 
 A third **Home style**, **Widgets**: each reading on a tile of its own colour that fades to black in

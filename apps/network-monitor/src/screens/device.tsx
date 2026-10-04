@@ -127,7 +127,7 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
             const down = fmt.rate(n?.download);
             const up = fmt.rate(n?.upload);
             return (
-              <MetricCard key={tile} label="Network" color={COLORS.up} onOpen={() => onOpen('network')}>
+              <MetricCard key={tile} label="Network" color={COLORS.down} onOpen={() => onOpen('network')}>
                 <div className="flex flex-col gap-1">
                   <div className="flex items-baseline gap-2">
                     <span className="font-display text-[1.5rem]" style={{ color: COLORS.down }}>↓</span>
@@ -261,14 +261,14 @@ export const Cpu = memo(function Cpu({ entry, caps, fmt, windowSec }: DeviceProp
         </div>
       </div>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
-        <div className="relative min-h-0 flex-1 rounded-lg bg-white/[0.045] px-3 py-2">
+        <div className="relative min-h-0 flex-1 rounded-[var(--panel-radius)] bg-white/[0.045] px-3 py-2">
           <div className="absolute top-2 left-3">
             <Label>Usage · {windowSec}s</Label>
           </div>
           <MiniGraph windowSec={windowSec} max={100} lines={[{ points: entry.history.cpu, color: COLORS.cpu, fill: true }]} />
         </div>
         {cores && cores.length > 0 && (
-          <div className="rounded-lg bg-white/[0.045] px-3 py-2">
+          <div className="rounded-[var(--panel-radius)] bg-white/[0.045] px-3 py-2">
             <Label>{cores.length} cores</Label>
             <div className="mt-2 flex h-16 items-end gap-[3px]">
               {cores.map((v, i) => (
@@ -307,7 +307,7 @@ export const Gpu = memo(function Gpu({ entry, caps, fmt, windowSec }: DeviceProp
           <Stat label="Fan" value={g.fan !== undefined ? `${g.fan}%` : null} />
         </div>
       </div>
-      <div className="relative min-h-0 flex-1 rounded-lg bg-white/[0.045] px-3 py-2">
+      <div className="relative min-h-0 flex-1 rounded-[var(--panel-radius)] bg-white/[0.045] px-3 py-2">
         <div className="absolute top-2 left-3 flex gap-4">
           <Label>Usage · {windowSec}s</Label>
           {caps.gpuTemperature && <Label color={COLORS.warn}>Temp</Label>}
@@ -351,7 +351,7 @@ export const Memory = memo(function Memory({ entry, caps, windowSec }: DevicePro
           <Stat label="Swap" value={m.swapUsed !== undefined ? gb(m.swapUsed) : null} sub={m.swapTotal !== undefined ? `of ${gb(m.swapTotal)}` : undefined} />
         </div>
       </div>
-      <div className="relative min-h-0 flex-1 rounded-lg bg-white/[0.045] px-3 py-2">
+      <div className="relative min-h-0 flex-1 rounded-[var(--panel-radius)] bg-white/[0.045] px-3 py-2">
         <div className="absolute top-2 left-3">
           <Label>Usage · {windowSec}s</Label>
         </div>
@@ -391,7 +391,7 @@ export const Network = memo(function Network({ entry, caps, fmt, windowSec }: De
           </div>
         </div>
       </div>
-      <div className="relative min-h-0 flex-1 rounded-lg bg-white/[0.045] px-3 py-2">
+      <div className="relative min-h-0 flex-1 rounded-[var(--panel-radius)] bg-white/[0.045] px-3 py-2">
         <div className="absolute top-2 left-3 flex gap-4">
           <Label color={COLORS.down}>RX</Label>
           <Label color={COLORS.up}>TX</Label>

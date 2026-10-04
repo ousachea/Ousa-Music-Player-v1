@@ -2,23 +2,29 @@
 // a large figure, a caption, bars and the icons
 import { createContext, useContext, type ReactNode } from 'react';
 
+import { METRIC, SCENE, type Tone } from '../theme';
+
 /** colour for the widgets style; flat for the pages that follow cards and rings, so they match what came before */
 export const ToneContext = createContext<'color' | 'flat'>('color');
 
 /** a tile's colours, and how its light moves: seconds for one turn, and which way */
 export type Look = { from: string; to: string; glow: string; turn: number; reverse?: boolean };
 
+/** each tile takes its colour from the theme, with its own pace of light so no two move together */
+const look = (t: Tone, turn: number, reverse?: boolean): Look => ({ from: t.from, to: t.to, glow: t.glow, turn, reverse });
+
 export const LOOKS = {
-  green: { from: '#5b8f17', to: '#2e4c0a', glow: '#a6e04a', turn: 19 },
-  blue: { from: '#0f4a7d', to: '#0a2c4d', glow: '#2f8fe0', turn: 23, reverse: true },
-  magenta: { from: '#d24fe6', to: '#6d2a73', glow: '#f08cff', turn: 21 },
-  cardio: { from: '#2f74db', to: '#5a3fd8', glow: '#7fc4ff', turn: 27, reverse: true },
-  violet: { from: '#7a5cf2', to: '#2a1d57', glow: '#a993ff', turn: 25 },
-  teal: { from: '#118a83', to: '#0a3b3d', glow: '#4fe0cf', turn: 24, reverse: true },
-  amber: { from: '#d9811c', to: '#5a2c08', glow: '#ffc56b', turn: 20 },
-  rose: { from: '#d6336c', to: '#4d1030', glow: '#ff8fb3', turn: 26, reverse: true },
-  cyan: { from: '#1b8fd1', to: '#0b2f4f', glow: '#7fd8ff', turn: 22 },
-  claude: { from: '#d97757', to: '#4a1f14', glow: '#ffb48f', turn: 23, reverse: true },
+  cpu: look(METRIC.cpu, 19),
+  memory: look(METRIC.memory, 23, true),
+  gpu: look(METRIC.gpu, 21),
+  network: look(METRIC.network, 27, true),
+  disk: look(METRIC.disk, 25),
+  clock: look(SCENE.clock, 22),
+  calendar: look(SCENE.calendar, 26, true),
+  apps: look(SCENE.apps, 20),
+  displays: look(SCENE.displays, 24, true),
+  claude: look(SCENE.claude, 23, true),
+  graphite: look(SCENE.graphite, 28),
 } satisfies Record<string, Look>;
 
 export function Tile({ look, onOpen, className, children }: { look: Look; onOpen?: () => void; className?: string; children: ReactNode }) {
@@ -29,7 +35,7 @@ export function Tile({ look, onOpen, className, children }: { look: Look; onOpen
     return (
       <Tag
         onClick={onOpen}
-        className={`relative min-w-0 overflow-hidden rounded-lg bg-white/[0.045] text-left ${onOpen ? 'transition-transform duration-150 active:scale-[0.98]' : ''} ${className ?? ''}`}>
+        className={`relative min-w-0 overflow-hidden rounded-[var(--tile-radius)] bg-white/[0.045] text-left ${onOpen ? 'transition-transform duration-150 active:scale-[0.98]' : ''} ${className ?? ''}`}>
         {/* a hairline of the tile's colour along the top is all the colour a flat tile keeps */}
         <span className="pointer-events-none absolute inset-x-0 top-0 h-[2px]" style={{ backgroundColor: look.glow }} />
         <span className="relative flex h-full flex-col px-4 py-3">{children}</span>
@@ -39,7 +45,7 @@ export function Tile({ look, onOpen, className, children }: { look: Look; onOpen
   return (
     <Tag
       onClick={onOpen}
-      className={`relative isolate min-w-0 overflow-hidden rounded-[26px] text-left shadow-[0_10px_30px_rgba(0,0,0,0.45)] ${onOpen ? 'transition-transform duration-150 active:scale-[0.98]' : ''} ${className ?? ''}`}
+      className={`relative isolate min-w-0 overflow-hidden rounded-[var(--tile-radius)] text-left shadow-[0_10px_30px_rgba(0,0,0,0.45)] ${onOpen ? 'transition-transform duration-150 active:scale-[0.98]' : ''} ${className ?? ''}`}
       style={{ background: `linear-gradient(150deg, ${look.from}, ${look.to})` }}>
       {/* the moving light: a glow and a pool of black on a layer larger than the tile, turning slowly about its
           middle. only the layer's transform changes, so the device moves pixels it already has rather than
@@ -53,7 +59,7 @@ export function Tile({ look, onOpen, className, children }: { look: Look; onOpen
           animationDirection: look.reverse ? 'reverse' : 'normal',
         }}
       />
-      <span className="pointer-events-none absolute inset-0 rounded-[26px] ring-1 ring-white/8 ring-inset" />
+      <span className="pointer-events-none absolute inset-0 rounded-[var(--tile-radius)] ring-1 ring-white/8 ring-inset" />
       <span className="relative flex h-full flex-col px-4 py-3">{children}</span>
     </Tag>
   );
@@ -111,7 +117,7 @@ export function Slats({ value, count = 14 }: { value: number | undefined; count?
           className="flex-1 rounded-[5px] transition-colors duration-500"
           style={
             i < lit
-              ? { background: 'repeating-linear-gradient(135deg, #7b52f5 0 4px, #6a42e6 4px 8px)' }
+              ? { background: `repeating-linear-gradient(135deg, ${METRIC.disk.accent} 0 4px, ${METRIC.disk.from} 4px 8px)` }
               : { background: 'rgba(245,245,250,0.92)' }
           }
         />

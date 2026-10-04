@@ -3,6 +3,7 @@
 // cannot fill a tile hands it to what it can, so a phone's cpu tile becomes its battery
 import { memo, useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 
+import { METRIC } from '../theme';
 import { Bar, Caption, Figure, Icon, LOOKS, Slats, Tile, Title, ToneContext } from '../components/widget-kit';
 
 import { toLayout, useOrientation } from '../components/stage';
@@ -29,10 +30,10 @@ function CpuTile({ t, fmt, onOpen }: { t: DeviceTelemetry; fmt: Formatters; onOp
       ? { value: c.load[0].toFixed(2), unit: '', caption: 'Load average' }
       : { value: String(c.cores ?? '—'), unit: 'cores', caption: c.name ?? 'Processor' };
   return (
-    <Tile look={LOOKS.green} onOpen={onOpen}>
+    <Tile look={LOOKS.cpu} onOpen={onOpen}>
       <Title>CPU</Title>
       <div className="mt-2">
-        <Bar value={c.usage} fill="#b5f03c" label="Usage" right={c.usage === undefined ? '—' : `${Math.round(c.usage)}%`} />
+        <Bar value={c.usage} fill={METRIC.cpu.accent} label="Usage" right={c.usage === undefined ? '—' : `${Math.round(c.usage)}%`} />
       </div>
       <div className="mt-auto">
         <Figure value={big.value} unit={big.unit} />
@@ -45,7 +46,7 @@ function CpuTile({ t, fmt, onOpen }: { t: DeviceTelemetry; fmt: Formatters; onOp
 function MemoryTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
   const m = t.memory!;
   return (
-    <Tile look={LOOKS.blue} onOpen={onOpen}>
+    <Tile look={LOOKS.memory} onOpen={onOpen}>
       <Title icon={Icon.memory} iconRight>
         Memory
       </Title>
@@ -62,14 +63,14 @@ function GpuTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
   const mem = g.memoryUsed !== undefined && g.memoryTotal !== undefined ? `${g.memoryUsed.toFixed(1)} of ${Math.round(g.memoryTotal)} GB` : g.memoryUsed !== undefined ? gb(g.memoryUsed) : undefined;
   const memPct = g.memoryUsed !== undefined && g.memoryTotal ? (g.memoryUsed / g.memoryTotal) * 100 : undefined;
   return (
-    <Tile look={LOOKS.magenta} onOpen={onOpen}>
+    <Tile look={LOOKS.gpu} onOpen={onOpen}>
       <Title icon={Icon.gpu}>GPU</Title>
       <div className="mt-auto">
         <Figure value={g.usage === undefined ? '—' : String(Math.round(g.usage))} unit="%" />
         <Caption>{g.name ?? 'Graphics load'}</Caption>
       </div>
       <div className="mt-2">
-        <Bar value={memPct ?? g.usage} fill="linear-gradient(90deg, #e3349b, #f6c6f7 75%, #ffffff)" label={mem ? 'Memory' : 'Load'} right={mem ?? (g.usage === undefined ? '—' : `${Math.round(g.usage)}%`)} />
+        <Bar value={memPct ?? g.usage} fill={`linear-gradient(90deg, ${METRIC.gpu.accent}, ${METRIC.gpu.soft} 75%, #ffffff)`} label={mem ? 'Memory' : 'Load'} right={mem ?? (g.usage === undefined ? '—' : `${Math.round(g.usage)}%`)} />
       </div>
     </Tile>
   );
@@ -91,13 +92,13 @@ function NetworkTile({ t, fmt, onOpen }: { t: DeviceTelemetry; fmt: Formatters; 
     </div>
   );
   return (
-    <Tile look={LOOKS.cardio} onOpen={onOpen}>
+    <Tile look={LOOKS.network} onOpen={onOpen}>
       <Title icon={Icon.network}>Network</Title>
       <div className="mt-auto">
         <Bar
           thick
           value={share ?? (n.download !== undefined ? Math.min(100, n.download) : undefined)}
-          fill="linear-gradient(90deg, #3d8bff, #8fd8ff 65%, #ffffff)"
+          fill={`linear-gradient(90deg, ${METRIC.network.accent}, ${METRIC.network.soft} 65%, #ffffff)`}
           label={n.interface ?? 'Download'}
           right={n.linkSpeed ? `of ${fmt.link(n.linkSpeed)}` : `${down.value} ${down.unit}`}
         />
@@ -114,7 +115,7 @@ function NetworkTile({ t, fmt, onOpen }: { t: DeviceTelemetry; fmt: Formatters; 
 function DiskTile({ d, onOpen }: { d: StorageDevice; onOpen: () => void }) {
   const usage = usageOf(d);
   return (
-    <Tile look={LOOKS.violet} onOpen={onOpen}>
+    <Tile look={LOOKS.disk} onOpen={onOpen}>
       <Title>{d.name}</Title>
       <div className="mt-auto flex items-baseline gap-1">
         <span className="font-display text-[3rem] leading-none font-semibold tabular-nums text-off-white">{usage === undefined ? '—' : Math.round(usage)}</span>
@@ -133,12 +134,12 @@ function DiskTile({ d, onOpen }: { d: StorageDevice; onOpen: () => void }) {
 function CoresTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
   const cores = t.cpu!.perCoreUsage!;
   return (
-    <Tile look={LOOKS.cyan} onOpen={onOpen}>
+    <Tile look={LOOKS.cpu} onOpen={onOpen}>
       <Title icon={Icon.chip}>Cores</Title>
       <div className="mt-auto flex h-[60%] items-end gap-[3px]">
         {cores.map((v, i) => (
           <span key={i} className="flex h-full flex-1 items-end rounded-[3px] bg-white/10">
-            <span className="w-full rounded-[3px] transition-[height] duration-700 ease-out" style={{ height: `${Math.max(4, v)}%`, background: 'linear-gradient(180deg, #ffffff, #7fd8ff)' }} />
+            <span className="w-full rounded-[3px] transition-[height] duration-700 ease-out" style={{ height: `${Math.max(4, v)}%`, background: `linear-gradient(180deg, #ffffff, ${METRIC.cpu.accent})` }} />
           </span>
         ))}
       </div>
@@ -152,7 +153,7 @@ function CoresTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
 function AppsTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
   const busiest = [...t.processes!].sort((a, b) => (b.cpu ?? 0) - (a.cpu ?? 0)).slice(0, 3);
   return (
-    <Tile look={LOOKS.rose} onOpen={onOpen}>
+    <Tile look={LOOKS.apps} onOpen={onOpen}>
       <Title>Top apps</Title>
       <div className="mt-auto flex flex-col gap-1.5">
         {busiest.map(p => (
@@ -169,7 +170,7 @@ function AppsTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
 function SystemTile({ t }: { t: DeviceTelemetry }) {
   const up = t.system.uptime;
   return (
-    <Tile look={LOOKS.teal}>
+    <Tile look={LOOKS.graphite}>
       <Title>System</Title>
       <div className="mt-auto">
         <Figure value={up === undefined ? '—' : duration(up)} size={2.25} />
@@ -186,7 +187,7 @@ function SystemTile({ t }: { t: DeviceTelemetry }) {
 function DisplaysTile({ t }: { t: DeviceTelemetry }) {
   const list = t.displays!;
   return (
-    <Tile look={LOOKS.amber}>
+    <Tile look={LOOKS.displays}>
       <Title>{list.length === 1 ? 'Display' : `${list.length} displays`}</Title>
       <div className="mt-auto flex flex-col gap-1">
         {list.slice(0, 3).map((d, i) => (
