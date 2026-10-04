@@ -2,7 +2,7 @@
 // nowhere else. a screen that scrolls takes the wheel first; anywhere else the wheel walks the screens
 import { useEffect, useRef } from 'react';
 
-import { back, go, step, type Screen } from '../store/navigation';
+import { back, go, step, toggleBare, type Screen } from '../store/navigation';
 
 export type Action =
   | { type: 'go'; screen: Screen }
@@ -20,7 +20,9 @@ export const KEYMAP: Record<string, Action> = {
   Escape: { type: 'back' },
   ArrowRight: { type: 'turn', dir: 1 },
   ArrowLeft: { type: 'turn', dir: -1 },
+  // the wheel press arrives as enter; space stands in for it at a keyboard
   Enter: { type: 'press' },
+  ' ': { type: 'press' },
 };
 
 /** one wheel click is this much horizontal delta; a fast spin arrives as one big event */
@@ -46,7 +48,9 @@ function act(action: Action) {
       if (wheelTaker) return wheelTaker.turn(action.dir);
       return step(action.dir);
     case 'press':
-      return wheelTaker?.press?.();
+      // a list on screen uses the press to choose; anywhere else it puts the bars away or brings them back
+      if (wheelTaker?.press) return wheelTaker.press();
+      return toggleBare();
     case 'swipe':
       return step(action.dir);
   }

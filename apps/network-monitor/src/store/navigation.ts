@@ -22,9 +22,11 @@ export type NavState = {
   /** where back goes; one level is all a dashboard this size needs */
   from: Screen | null;
   device: string | null;
+  /** the top and bottom bars put away, so the screen has the whole display */
+  bare: boolean;
 };
 
-export const navStore = createStore<NavState>({ screen: 'home', from: null, device: null });
+export const navStore = createStore<NavState>({ screen: 'home', from: null, device: null, bare: false });
 
 export const useNav = () => useStore(navStore);
 
@@ -46,6 +48,10 @@ export function step(dir: 1 | -1) {
     const next = MAIN[(i + dir + MAIN.length) % MAIN.length];
     return { ...s, screen: next, from: s.screen };
   });
+}
+
+export function toggleBare() {
+  navStore.set(s => ({ ...s, bare: !s.bare }));
 }
 
 export function selectDevice(id: string) {

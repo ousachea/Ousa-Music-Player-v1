@@ -109,12 +109,12 @@ export default function App() {
 
   return (
     <div className="relative flex h-full w-full flex-col bg-screen">
-      <TopBar device={entry?.info.name ?? null} online={entry?.online ?? false} clock={clock} onDevice={() => go('devices')} />
+      {!nav.bare && <TopBar device={entry?.info.name ?? null} online={entry?.online ?? false} clock={clock} onDevice={() => go('devices')} />}
       {/* keyed on screen and device, so switching either starts the view fresh rather than morphing the last one */}
       <div key={`${nav.screen}:${APP_SCREENS.includes(nav.screen) ? '' : id}`} className="min-h-0 flex-1 animate-[enter_180ms_ease-out] px-5 py-4">
         {body}
       </div>
-      <BottomNavigation screen={nav.screen} onGo={go} />
+      {!nav.bare && <BottomNavigation screen={nav.screen} onGo={go} />}
       {banner && <AlertBanner tone="ok" title="ONLINE" detail={`${banner} connected`} />}
       {daemon !== 'open' && <AlertBanner tone="warn" title="DAEMON" detail="reconnecting…" />}
     </div>

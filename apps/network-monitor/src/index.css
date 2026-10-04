@@ -107,3 +107,15 @@
 .ring-arc {
   transition: --p 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* the widgets' light: one slow full turn, linear, so it loops without a seam */
+@keyframes widget-drift {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.widget-drift {
+  animation: widget-drift 22s linear infinite;
+  will-change: transform;
+}

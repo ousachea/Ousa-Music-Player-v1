@@ -9,25 +9,37 @@ import type { Screen } from '../store/navigation';
 import type { DeviceEntry } from '../store/telemetry';
 import { NoData, type DeviceProps } from './device';
 
-type Look = { from: string; to: string; shade: string };
+/** a tile's colours, and how its light moves: seconds for one turn, and which way */
+type Look = { from: string; to: string; glow: string; turn: number; reverse?: boolean };
 
-// each gradient runs corner to corner, with black pooled where the reference pools it
 const LOOKS = {
-  green: { from: '#5b8f17', to: '#2e4c0a', shade: 'radial-gradient(90% 90% at 100% 100%, rgba(0,0,0,0.85), transparent 60%)' },
-  blue: { from: '#0f4a7d', to: '#0a2c4d', shade: 'radial-gradient(70% 60% at 50% 0%, rgba(0,0,0,0.75), transparent 70%)' },
-  magenta: { from: '#d24fe6', to: '#6d2a73', shade: 'radial-gradient(90% 90% at 0% 100%, rgba(0,0,0,0.8), transparent 60%)' },
-  cardio: { from: '#2f74db', to: '#5a3fd8', shade: 'radial-gradient(60% 80% at 45% 100%, rgba(0,0,0,0.8), transparent 70%)' },
-  violet: { from: '#7a5cf2', to: '#2a1d57', shade: 'linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.85))' },
+  green: { from: '#5b8f17', to: '#2e4c0a', glow: '#a6e04a', turn: 19 },
+  blue: { from: '#0f4a7d', to: '#0a2c4d', glow: '#2f8fe0', turn: 23, reverse: true },
+  magenta: { from: '#d24fe6', to: '#6d2a73', glow: '#f08cff', turn: 21 },
+  cardio: { from: '#2f74db', to: '#5a3fd8', glow: '#7fc4ff', turn: 27, reverse: true },
+  violet: { from: '#7a5cf2', to: '#2a1d57', glow: '#a993ff', turn: 25 },
 } satisfies Record<string, Look>;
 
 function Tile({ look, onOpen, className, children }: { look: Look; onOpen?: () => void; className?: string; children: ReactNode }) {
   return (
     <button
       onClick={onOpen}
-      className={`relative flex min-w-0 flex-col overflow-hidden rounded-[26px] px-4 py-3 text-left shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition-transform duration-150 active:scale-[0.98] ${className ?? ''}`}
-      style={{ background: `${look.shade}, linear-gradient(150deg, ${look.from}, ${look.to})` }}>
+      className={`relative isolate min-w-0 overflow-hidden rounded-[26px] text-left shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition-transform duration-150 active:scale-[0.98] ${className ?? ''}`}
+      style={{ background: `linear-gradient(150deg, ${look.from}, ${look.to})` }}>
+      {/* the moving light: a glow and a pool of black on a layer larger than the tile, turning slowly about its
+          middle. only the layer's transform changes, so the device moves pixels it already has rather than
+          repainting a gradient every frame */}
+      <span
+        aria-hidden
+        className="widget-drift pointer-events-none absolute -inset-[60%] -z-10"
+        style={{
+          background: `radial-gradient(circle at 32% 34%, color-mix(in oklab, ${look.glow} 70%, transparent) 0, transparent 26%), radial-gradient(circle at 68% 66%, rgba(0,0,0,0.85) 0, transparent 30%)`,
+          animationDuration: `${look.turn}s`,
+          animationDirection: look.reverse ? 'reverse' : 'normal',
+        }}
+      />
       <span className="pointer-events-none absolute inset-0 rounded-[26px] ring-1 ring-white/8 ring-inset" />
-      {children}
+      <span className="relative flex h-full flex-col px-4 py-3">{children}</span>
     </button>
   );
 }

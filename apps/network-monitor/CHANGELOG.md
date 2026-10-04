@@ -6,8 +6,12 @@ A third **Home style**, **Widgets**: each reading on a tile of its own colour th
 one corner. CPU in green with its usage bar and its temperature, or its load where the machine
 gives no temperature; memory in blue; the GPU in magenta with its memory bar; network wide along the
 bottom with download, upload and ping; and the disk in violet over a row of slats that fill as it
-does. A device without a GPU or CPU reading hands the tile to its battery, and a row with a tile to
-spare lets its neighbour stretch rather than leave a gap.
+does. A soft light and a pool of shadow drift slowly round each tile, every one at its own pace. A
+device without a GPU or CPU reading hands the tile to its battery, and a row with a tile to spare lets
+its neighbour stretch rather than leave a gap.
+
+**Press the wheel** to put away the bars along the top and bottom, so a screen has the whole display,
+and press again to bring them back. On a list the press still chooses.
 
 ## 0.3.0
 
