@@ -1102,7 +1102,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
   flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
   pocketBody: { values: ['silver', 'black'], labels: ['Silver', 'Black'] },
-  cdStyle: { values: ['tray', 'cartridge'], labels: ['Tray', 'Cartridge'] },
+  cdStyle: { values: ['tray', 'cartridge'], labels: ['Black', 'White'] },
   stereoMode: { values: ['dark', 'light', 'auto'], labels: ['Dark', 'Light', 'Auto'] },
   deckGlow: { values: GLOWS, labels: ['Album', 'Rainbow', 'Ice', 'Amber', 'Red', 'Green', 'White'] },
   vinylStyle: { values: ['turntable', 'sleeve', 'picture'], labels: ['Turntable', 'Sleeve', 'Picture disc'] },
@@ -2115,7 +2115,7 @@ function CdDeck({
   remaining: boolean;
   wallClock: ClockParts | null;
   clockSize: number;
-  /** the disc in its tray, or the gold disc in a clear cartridge; the middle of either trades for the other */
+  /** the cartridge's shell: 'tray' is the smoked black one, 'cartridge' the frosted white; the hub trades them */
   look: Prefs['cdStyle'];
   onLook: () => void;
   onToggle: () => void;
@@ -2125,62 +2125,18 @@ function CdDeck({
 }) {
   const tint = accent?.fill ?? '#efefef';
 
-  const tray = look === 'cartridge' ? (
+  // one cartridge, frosted white or smoked black; the hub trades the shells
+  const tray = (
     <div className={`relative shrink-0 ${upright ? 'aspect-square w-full' : 'aspect-square h-full'} ${motion ? 'disc-swap' : ''}`}>
       <Cartridge
         artUrl={artUrl}
         accent={accent}
+        shell={look === 'cartridge' ? 'white' : 'black'}
         playing={playing}
         motion={motion}
         label="O-Music"
         onLook={onLook}
       />
-    </div>
-  ) : (
-    <div
-      className={`relative grid shrink-0 place-items-center overflow-hidden rounded-[28px] shadow-2xl ring-1 ring-white/8 ${
-        upright ? 'aspect-square w-full' : 'aspect-square h-full'
-      }`}
-      style={{
-        // the tray takes a dark wash of the album's own colour rather than a flat grey
-        background: accent
-          ? `linear-gradient(155deg, color-mix(in oklab, ${accent.fill} 16%, #0b0c0e), #0b0c0e 70%)`
-          : '#141517',
-      }}>
-      <div className={`relative aspect-square w-[88%] ${motion ? 'disc-swap' : ''}`}>
-      <div
-        className="animate-platter absolute inset-0 overflow-hidden rounded-full shadow-[0_18px_40px_rgba(0,0,0,0.55)]"
-        style={{ animationPlayState: playing && motion ? 'running' : 'paused' }}>
-        {artUrl ? (
-          <img src={artUrl} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <div className="grid h-full w-full place-items-center bg-white/8">
-            <Disc className="h-12 w-12 text-off-white/30" />
-          </div>
-        )}
-        {/* a pressed disc throws a radial sheen over whatever is printed on it */}
-        <div
-          className="absolute inset-0 rounded-full mix-blend-screen opacity-30"
-          style={{
-            background:
-              'conic-gradient(from 208deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.55) 34deg, rgba(255,255,255,0) 74deg, rgba(255,255,255,0) 150deg, rgba(255,255,255,0.4) 188deg, rgba(255,255,255,0) 228deg, rgba(255,255,255,0) 300deg, rgba(255,255,255,0.32) 332deg, rgba(255,255,255,0) 360deg)',
-          }}
-        />
-        <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/35" />
-
-        {/* the clamping ring and the hole punched through the middle of the print */}
-        <div className="absolute inset-0 grid place-items-center">
-          <button
-            aria-label="cd look"
-            onClick={onLook}
-            className="grid aspect-square w-[30%] place-items-center rounded-full ring-1 ring-black/30 transition active:scale-95"
-            style={{ background: 'linear-gradient(150deg, #e9ecf0 0%, #b7bdc5 44%, #d8dce1 70%, #a7aeb7 100%)' }}>
-            <div className="aspect-square w-[46%] rounded-full bg-[#0b0c0e] shadow-[inset_0_0_14px_rgba(0,0,0,0.8)] ring-1 ring-white/15" />
-          </button>
-        </div>
-      </div>
-      </div>
-
     </div>
   );
 

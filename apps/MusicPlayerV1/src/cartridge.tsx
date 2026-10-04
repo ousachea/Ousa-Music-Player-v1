@@ -1,4 +1,4 @@
-// the cd style's other look: a gold disc in a clear cartridge, the way a minidisc sits in its shell. a frosted shell
+// the cd style: a disc in a cartridge, frosted white or smoked black, the way a minidisc sits in its shell. a frosted shell
 // with screws in its corners, the gold turning under a black slider that carries the cover, and the black hub over
 // the middle. the disc turns while the track plays and holds its angle on pause, like the tray's
 import type { ReactNode } from 'react';
@@ -19,13 +19,37 @@ function pressing(accent: Accent | null) {
   return `conic-gradient(from 0deg, ${light(a, 45)}, ${a} 11%, ${light(b, 30)} 21%, ${dark(a, 70)} 33%, ${light(b, 55)} 46%, ${dark(b, 75)} 58%, ${light(a, 35)} 70%, ${b} 84%, ${light(a, 45)})`;
 }
 
+/** the two shells: frosted white, and smoked black; every moulding is drawn in the shell's own ink */
+const SHELLS = {
+  white: {
+    body: 'linear-gradient(150deg, #f5f3ec 0%, #e3dfd5 55%, #d4cfc3 100%)',
+    line: 'rgba(0,0,0,0.07)',
+    lift: 'rgba(255,255,255,0.55)',
+    screw: ['#d6d1c6', '#c2bcaf', '#7a7468'],
+    frost: 'rgba(255,255,255,0.35)',
+    slider: '#141414',
+    spine: ['#d9d9d9', '#2a2a2a'],
+  },
+  black: {
+    body: 'linear-gradient(150deg, #2b2c30 0%, #18191c 55%, #0e0f11 100%)',
+    line: 'rgba(255,255,255,0.08)',
+    lift: 'rgba(255,255,255,0.07)',
+    screw: ['#3a3b40', '#2a2b2f', '#8a8c92'],
+    frost: 'rgba(0,0,0,0.35)',
+    slider: '#060607',
+    spine: ['#2e2f33', '#c9cbd0'],
+  },
+} as const;
+
+export type Shell = keyof typeof SHELLS;
+
 /** a screw head sunk in the shell: a dish with a cross */
-function Screw({ x, y }: { x: number; y: number }) {
+function Screw({ x, y, colors }: { x: number; y: number; colors: readonly [string, string, string] }) {
   return (
     <g transform={`translate(${x} ${y})`}>
-      <circle r="1.9" fill="#d6d1c6" stroke="rgba(0,0,0,0.14)" strokeWidth="0.3" />
-      <circle r="1.25" fill="#c2bcaf" />
-      <path d="M-0.8 -0.8 0.8 0.8M0.8 -0.8 -0.8 0.8" stroke="#7a7468" strokeWidth="0.35" strokeLinecap="round" />
+      <circle r="1.9" fill={colors[0]} stroke="rgba(0,0,0,0.14)" strokeWidth="0.3" />
+      <circle r="1.25" fill={colors[1]} />
+      <path d="M-0.8 -0.8 0.8 0.8M0.8 -0.8 -0.8 0.8" stroke={colors[2]} strokeWidth="0.35" strokeLinecap="round" />
     </g>
   );
 }
@@ -33,6 +57,7 @@ function Screw({ x, y }: { x: number; y: number }) {
 export function Cartridge({
   artUrl,
   accent,
+  shell = 'white',
   playing,
   motion,
   label,
@@ -42,6 +67,7 @@ export function Cartridge({
   artUrl: string | null;
   /** the cover's colours; null keeps the disc gold */
   accent: Accent | null;
+  shell?: Shell;
   playing: boolean;
   motion: boolean;
   /** what the slider's spine says */
@@ -51,22 +77,23 @@ export function Cartridge({
   /** the clock, set in the shell's free corner */
   corner?: ReactNode;
 }) {
+  const k = SHELLS[shell];
   return (
     <div
       className="relative h-full w-full overflow-hidden rounded-[7%] shadow-[0_18px_40px_rgba(0,0,0,0.55)]"
-      style={{ background: 'linear-gradient(150deg, #f5f3ec 0%, #e3dfd5 55%, #d4cfc3 100%)' }}>
+      style={{ background: k.body }}>
       {/* the shell's mouldings: an inner rim, the notches and rings a cartridge is cast with, and four screws */}
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
-        <rect x="2.5" y="2.5" width="95" height="95" rx="5" fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth="0.5" />
-        <rect x="12" y="3.2" width="9" height="5.5" rx="2" fill="rgba(255,255,255,0.55)" stroke="rgba(0,0,0,0.08)" strokeWidth="0.35" />
-        <circle cx="10" cy="14" r="5" fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth="0.6" />
-        <circle cx="90" cy="12" r="3.6" fill="rgba(255,255,255,0.5)" stroke="rgba(0,0,0,0.1)" strokeWidth="0.4" />
-        <circle cx="88" cy="86" r="4.2" fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="0.6" />
-        <rect x="70" y="92.5" width="12" height="3.2" rx="1.6" fill="rgba(0,0,0,0.06)" />
-        <Screw x={6.5} y={6.5} />
-        <Screw x={93.5} y={6.5} />
-        <Screw x={93.5} y={93.5} />
-        {!corner && <Screw x={6.5} y={93.5} />}
+        <rect x="2.5" y="2.5" width="95" height="95" rx="5" fill="none" stroke={k.line} strokeWidth="0.5" />
+        <rect x="12" y="3.2" width="9" height="5.5" rx="2" fill={k.lift} stroke={k.line} strokeWidth="0.35" />
+        <circle cx="10" cy="14" r="5" fill="none" stroke={k.line} strokeWidth="0.6" />
+        <circle cx="90" cy="12" r="3.6" fill={k.lift} stroke={k.line} strokeWidth="0.4" />
+        <circle cx="88" cy="86" r="4.2" fill="none" stroke={k.line} strokeWidth="0.6" />
+        <rect x="70" y="92.5" width="12" height="3.2" rx="1.6" fill={k.line} />
+        <Screw x={6.5} y={6.5} colors={k.screw} />
+        <Screw x={93.5} y={6.5} colors={k.screw} />
+        <Screw x={93.5} y={93.5} colors={k.screw} />
+        {!corner && <Screw x={6.5} y={93.5} colors={k.screw} />}
       </svg>
 
       {/* the disc: the colour turns with it, the light on it stays put, the way light falls on a real one */}
@@ -84,13 +111,13 @@ export function Cartridge({
         />
         {/* the clear band inside the data, then the shell's frosting over the disc's rim */}
         <div className="pointer-events-none absolute inset-[30%] rounded-full bg-white/25 ring-1 ring-white/40" />
-        <div className="pointer-events-none absolute inset-0 rounded-full ring-[3px] ring-inset ring-white/35" />
+        <div className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: `inset 0 0 0 3px ${k.frost}` }} />
       </div>
 
       {/* the slider: black, out from the left edge to the middle, carrying the cover and a spine label */}
-      <div className="absolute top-[36%] -left-[1%] flex h-[27%] w-[54%] items-center rounded-r-[6px] bg-[#141414] shadow-[0_6px_16px_rgba(0,0,0,0.35)]">
-        <div className="ml-[3%] grid h-[62%] w-[9%] place-items-center rounded-[3px] bg-[#d9d9d9]">
-          <span className="font-display text-[0.5625rem] font-bold whitespace-nowrap text-[#2a2a2a] [writing-mode:vertical-rl] rotate-180">{label}</span>
+      <div className="absolute top-[36%] -left-[1%] flex h-[27%] w-[54%] items-center rounded-r-[6px] shadow-[0_6px_16px_rgba(0,0,0,0.35)]" style={{ backgroundColor: k.slider }}>
+        <div className="ml-[3%] grid h-[62%] w-[9%] place-items-center rounded-[3px]" style={{ backgroundColor: k.spine[0] }}>
+          <span className="font-display text-[0.5625rem] font-bold whitespace-nowrap [writing-mode:vertical-rl] rotate-180" style={{ color: k.spine[1] }}>{label}</span>
         </div>
         <div className="ml-[12%] aspect-square h-[82%] overflow-hidden rounded-[4px] bg-black ring-1 ring-white/10">
           {artUrl ? <img src={artUrl} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full bg-white/10" />}

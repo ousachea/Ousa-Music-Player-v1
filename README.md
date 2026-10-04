@@ -70,12 +70,10 @@ arrangements, and tapping the middle of the record steps through them:
 
 ![CD style](apps/MusicPlayerV1/screenshots/03-cd.jpg)
 
-The album printed on a spinning disc with a metal clamping ring, in a tray tinted by the album's
-colour. The track, progress bar and a three-part transport sit beside it.
-
-**Cartridge**, the other **Look**, puts a disc in the cover's colours (gold for a colourless one) in
-a clear frosted cartridge with a black
-slider carrying the cover. Tap the middle of either disc to switch. The clock sits above the song.
+A disc in a cartridge, like a MiniDisc: screws in the corners, a slider carrying the cover and a black
+hub. The disc takes the cover's colours with a metallic sheen (gold for a colourless cover) and turns
+while the track plays. **Look** picks a frosted **White** shell or a smoked **Black** one; tap the hub
+to switch. The clock sits above the song, with the progress bar and a three-part transport below.
 
 ### Cassette
 
