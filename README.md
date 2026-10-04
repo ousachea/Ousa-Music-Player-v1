@@ -265,6 +265,9 @@ needs admin rights:
 Phones cannot run the extension: an iPhone or Android agent would be an app of its own. Live also
 lists the Car Thing's own link.
 
+**Show on Home** in Settings turns each kind of information on or off: any reading, any widget.
+What is hidden leaves Home in every style, and its own screen stays.
+
 **Mock** runs four pretend machines (a Windows gaming PC, a MacBook, a Linux server that drops off
 now and then, and an Android phone). Settings also choose the refresh rate, °C or °F, Mbps or MB/s,
 and how much history the graphs keep.

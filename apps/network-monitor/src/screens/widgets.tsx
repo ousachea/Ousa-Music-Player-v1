@@ -3,6 +3,7 @@
 // cannot fill a tile hands it to what it can, so a phone's cpu tile becomes its battery
 import { memo, useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 
+import { useSettings } from '../store/settings';
 import { METRIC } from '../theme';
 import { Bar, Caption, Figure, Icon, LOOKS, Slats, Tile, Title, ToneContext } from '../components/widget-kit';
 
@@ -215,6 +216,7 @@ function slots(caps: DeviceCapabilities) {
 
 export const HomeWidgets = memo(function HomeWidgets({ entry, caps, fmt, onOpen }: DeviceProps & { entry: DeviceEntry }) {
   const { upright } = useOrientation();
+  const { hidden } = useSettings();
   const t = entry.telemetry;
   if (!t) return null;
   const { first, third } = slots(caps);
@@ -252,12 +254,12 @@ export const HomeWidgets = memo(function HomeWidgets({ entry, caps, fmt, onOpen 
   );
 
   const usedBattery = first === 'battery' || third === 'battery';
-  return <Pager pages={[home, ...extraPages(t, caps, go, usedBattery)]} upright={upright} />;
+  return <Pager pages={[home, ...extraPages(t, caps, go, usedBattery, hidden)]} upright={upright} />;
 });
 
 
 /** the pages after the first, the same under every home style: the day first, then the machine, six cells a page */
-function extraPages(t: DeviceTelemetry, caps: DeviceCapabilities, go: (s: Screen) => () => void, usedBattery: boolean): ReactNode[][] {
+function extraPages(t: DeviceTelemetry, caps: DeviceCapabilities, go: (s: Screen) => () => void, usedBattery: boolean, hidden: readonly string[]): ReactNode[][] {
   // everything the first page had no room for, six cells to a page after it: the day first, then the machine
   type Item = { node: ReactNode; wide?: boolean };
   const listed: (Item | null)[] = [
@@ -274,7 +276,12 @@ function extraPages(t: DeviceTelemetry, caps: DeviceCapabilities, go: (s: Screen
     caps.displays && t.displays?.length ? { node: <DisplaysTile key="displays" t={t} /> } : null,
     ...(t.storage ?? []).slice(1).map(d => ({ node: <DiskTile key={`disk-${d.id}`} d={d} onOpen={go('storage')} /> })),
   ];
-  const more = listed.filter((x): x is Item => x !== null);
+  // a widget's key names what it shows; any the settings have hidden are left out, the other drives under one name
+  const hide = (node: ReactNode) => {
+    const key = String((node as { key?: string }).key ?? '');
+    return hidden.includes(key.startsWith('disk-') ? 'drives' : key === 'bat' ? 'battery' : key);
+  };
+  const more = listed.filter((x): x is Item => x !== null && !hide(x.node));
   // first fit: each widget takes the first page with room for it, so a wide one moving on does not leave a hole
   const pages: { tiles: ReactNode[]; cells: number }[] = [];
   more.forEach((item, i) => {
@@ -294,12 +301,13 @@ function extraPages(t: DeviceTelemetry, caps: DeviceCapabilities, go: (s: Screen
 /** cards and rings keep their own first page, and the widget pages follow it in a plain dress to match */
 export const HomePaged = memo(function HomePaged({ entry, caps, onOpen, children }: DeviceProps & { children: ReactNode }) {
   const { upright } = useOrientation();
+  const { hidden } = useSettings();
   const t = entry.telemetry;
   if (!t) return null;
   const go = (s: Screen) => () => onOpen(s);
   // the first page lends the battery a place only when it is short of cpu, gpu, memory or network
   const primary = [caps.cpu, caps.gpu, caps.memory, caps.network].filter(Boolean).length;
-  const extras = extraPages(t, caps, go, primary < 4 && caps.battery).map((page, i) => [
+  const extras = extraPages(t, caps, go, primary < 4 && caps.battery, hidden).map((page, i) => [
     <ToneContext.Provider key={`tone-${i}`} value="flat">
       {page}
     </ToneContext.Provider>,

@@ -4,6 +4,7 @@ import { memo, useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { DeviceCard, Label, StatusIndicator } from '../components/cards';
 import { useOrientation } from '../components/stage';
+import { INFO } from '../store/info';
 import { useKeepInView, useWheelList, useWheelScroll } from '../composables/useWheel';
 import type { Screen } from '../store/navigation';
 import type { Settings } from '../store/settings';
@@ -141,13 +142,18 @@ export const SettingsScreen = memo(function SettingsScreen({
     const at = row.choices.findIndex(c => c.value === settings[row.key]);
     onChange({ [row.key]: row.choices[(at + 1) % row.choices.length].value } as Partial<Settings>);
   };
-  const [focus] = useWheelList(ROWS.length, i => cycle(ROWS[i]));
+  const toggle = (key: string) =>
+    onChange({ hidden: settings.hidden.includes(key) ? settings.hidden.filter(k => k !== key) : [...settings.hidden, key] });
+  // the wheel walks the rows and then the show-on-home toggles, as one list
+  const [focus] = useWheelList(ROWS.length + INFO.length, i => (i < ROWS.length ? cycle(ROWS[i]) : toggle(INFO[i - ROWS.length].key)));
   const list = useRef<HTMLDivElement>(null);
-  useKeepInView(list, focus);
+  useEffect(() => {
+    list.current?.querySelector(`[data-focus="${focus}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focus]);
   return (
     <div ref={list} data-scroll className="flex h-full flex-col gap-1.5 overflow-y-auto [scrollbar-width:none]">
       {ROWS.map((row, i) => (
-        <div key={row.key} className={`flex items-center gap-4 rounded-[var(--panel-radius)] px-4 py-2.5 ${i === focus ? 'bg-white/10' : 'bg-white/[0.045]'}`}>
+        <div key={row.key} data-focus={i} className={`flex items-center gap-4 rounded-[var(--panel-radius)] px-4 py-2.5 ${i === focus ? 'bg-white/10' : 'bg-white/[0.045]'}`}>
           <div className="min-w-0 flex-1">
             <div className="font-display text-[1.25rem] font-medium text-near">{row.label}</div>
             {row.note && <div className="truncate font-mono text-[0.75rem] text-dim">{row.note}</div>}
@@ -169,6 +175,30 @@ export const SettingsScreen = memo(function SettingsScreen({
           </div>
         </div>
       ))}
+      <div className="mt-3 mb-0.5 px-1">
+        <Label>Show on Home</Label>
+      </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {INFO.map((info, k) => {
+          const index = ROWS.length + k;
+          const shown = !settings.hidden.includes(info.key);
+          return (
+            <button
+              key={info.key}
+              data-focus={index}
+              onClick={() => toggle(info.key)}
+              className={`flex items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left transition-colors duration-150 ${
+                index === focus ? 'bg-white/10' : 'bg-white/[0.045]'
+              }`}>
+              <span className={`truncate font-body text-[0.9375rem] ${shown ? 'text-near' : 'text-dim'}`}>{info.label}</span>
+              {/* a small switch: lit and to the right when it shows */}
+              <span className={`relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200 ${shown ? 'bg-[var(--color-ok)]' : 'bg-white/15'}`}>
+                <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-[left] duration-200 ${shown ? 'left-[18px]' : 'left-0.5'}`} />
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 });

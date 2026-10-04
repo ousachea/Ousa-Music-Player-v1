@@ -2,6 +2,7 @@
 import type { BridgethingClient } from '@bridgething/client';
 
 import { createStore, useStore } from './create';
+import { INFO_KEYS } from './info';
 
 export type Settings = {
   source: 'mock' | 'live';
@@ -17,6 +18,8 @@ export type Settings = {
   rotate: 0 | 90 | 180 | 270;
   clockStyle: 'digital' | 'led' | 'analog';
   calendarView: 'month' | 'week' | 'day';
+  /** kinds of information kept off home */
+  hidden: string[];
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -32,6 +35,7 @@ export const DEFAULT_SETTINGS: Settings = {
   rotate: 0,
   clockStyle: 'digital',
   calendarView: 'month',
+  hidden: [],
 };
 
 const KEY = 'settings';
@@ -67,6 +71,7 @@ function parse(raw: string | null | undefined): Settings {
     rotate: pick(o.rotate, [0, 90, 180, 270] as const, d.rotate),
     clockStyle: pick(o.clockStyle, ['digital', 'led', 'analog'] as const, d.clockStyle),
     calendarView: pick(o.calendarView, ['month', 'week', 'day'] as const, d.calendarView),
+    hidden: Array.isArray(o.hidden) ? o.hidden.filter((k): k is string => typeof k === 'string' && INFO_KEYS.includes(k)) : d.hidden,
   };
 }
 

@@ -13,6 +13,10 @@ Home.
 
 The **LED clock** glows in the clock tile's own colour instead of a fixed red.
 
+**Show on Home** in Settings turns each kind of information on or off, from CPU to the weather, the
+clock or Claude Code. Whatever is hidden leaves Home in every style and the pages close up behind it;
+its own screen stays.
+
 ## 0.4.1
 
 Every style now speaks the same visual language. Each thing measured keeps one colour wherever it

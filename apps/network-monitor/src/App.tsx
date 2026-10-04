@@ -17,6 +17,7 @@ import { HomePaged, HomeWidgets } from './screens/widgets';
 import { Cpu, Gpu, Home, HomeRings, Memory, Network, Offline, Processes, Storage, type DeviceProps } from './screens/device';
 import { go, selectDevice, useNav, type Screen } from './store/navigation';
 import { loadSettings, updateSettings, useSettings } from './store/settings';
+import { shownCaps } from './store/info';
 import { capabilities, useTelemetry } from './store/telemetry';
 
 /** screens about the dashboard itself, which stay usable whatever state the device is in */
@@ -120,15 +121,18 @@ export default function App() {
           />
         );
         break;
-      default:
+      default: {
+        // home leaves out what the settings hide; every other screen sees all the device reports
+        const homeProps = { ...deviceProps, caps: shownCaps(deviceProps.caps, settings.hidden) };
         body =
           settings.homeStyle === 'widgets' ? (
-            <HomeWidgets {...deviceProps} />
+            <HomeWidgets {...homeProps} />
           ) : (
-            <HomePaged {...deviceProps}>
-              {settings.homeStyle === 'rings' ? <HomeRings {...deviceProps} /> : <Home {...deviceProps} />}
+            <HomePaged {...homeProps}>
+              {settings.homeStyle === 'rings' ? <HomeRings {...homeProps} /> : <Home {...homeProps} />}
             </HomePaged>
           );
+      }
     }
   }
 
