@@ -272,7 +272,7 @@ and how much history the graphs keep.
 
 | What you do | What happens |
 | --- | --- |
-| Preset button 1 | Home |
+| Preset button 1 | Home; pressed again on Home, the next page of widgets |
 | Preset button 2 | CPU |
 | Preset button 3 | GPU |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |

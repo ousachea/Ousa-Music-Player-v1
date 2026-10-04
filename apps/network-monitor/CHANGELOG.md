@@ -26,7 +26,8 @@ Widgets run to more than one page: swipe or turn the wheel, with dots marking th
 - Every core, the busiest apps, uptime, displays and any other drives.
 
 Cards and Rings have the same pages after their own first, in a plain dress to match. **Mode** steps
-through the three home styles; More stays on its tab.
+through the three home styles; More stays on its tab. **Preset 1**, pressed again on Home, turns to the next page of
+widgets.
 
 **Preset 4** turns the screen a quarter at a time, for a Car Thing mounted on its side, and so does
 **Screen rotation** in Settings. Every screen lays itself out for portrait rather than stretching, and

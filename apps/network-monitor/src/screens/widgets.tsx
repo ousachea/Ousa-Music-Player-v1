@@ -6,7 +6,7 @@ import { memo, useEffect, useRef, useState, type PointerEvent, type ReactNode } 
 import { Bar, Caption, Figure, Icon, LOOKS, Slats, Tile, Title, ToneContext } from '../components/widget-kit';
 
 import { toLayout, useOrientation } from '../components/stage';
-import { takeWheel } from '../composables/useCarThingInput';
+import { takePager, takeWheel } from '../composables/useCarThingInput';
 import { duration, gb, type Formatters } from '../composables/useMetrics';
 import type { DeviceCapabilities, DeviceTelemetry, StorageDevice } from '../protocol/types';
 import { step, type Screen } from '../store/navigation';
@@ -332,7 +332,12 @@ function Pager({ pages, upright }: { pages: ReactNode[]; upright: boolean }) {
         setPage(next);
       },
     });
-    return () => takeWheel(null);
+    // preset 1 on home turns the page, round to the first after the last
+    takePager(() => setPage(p => (Math.min(p, count - 1) + 1) % count));
+    return () => {
+      takeWheel(null);
+      takePager(null);
+    };
   }, [count]);
 
   // read along the layout's own horizontal, which is the glass's vertical when the screen is turned

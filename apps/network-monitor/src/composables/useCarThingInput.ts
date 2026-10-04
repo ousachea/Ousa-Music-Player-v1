@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 
 import { toLayout, type Rotate } from '../components/stage';
 
-import { back, go, step, toggleBare, type Screen } from '../store/navigation';
+import { back, go, navStore, step, toggleBare, type Screen } from '../store/navigation';
 
 export type Action =
   | { type: 'go'; screen: Screen }
@@ -13,10 +13,12 @@ export type Action =
   | { type: 'press' }
   | { type: 'rotate' }
   | { type: 'style' }
+  | { type: 'home' }
   | { type: 'swipe'; dir: 1 | -1 };
 
 export const KEYMAP: Record<string, Action> = {
-  '1': { type: 'go', screen: 'home' },
+  // home, and pressed again on home, the next page of widgets
+  '1': { type: 'home' },
   '2': { type: 'go', screen: 'cpu' },
   '3': { type: 'go', screen: 'gpu' },
   '4': { type: 'rotate' },
@@ -34,6 +36,13 @@ export const KEYMAP: Record<string, Action> = {
 /** one wheel click is this much horizontal delta; a fast spin arrives as one big event */
 const WHEEL_STEP = 40;
 const SWIPE_MIN_PX = 70;
+
+/** the home pager registers here while it is up, so preset 1 can turn its page */
+let pagerNext: (() => void) | null = null;
+
+export function takePager(next: (() => void) | null) {
+  pagerNext = next;
+}
 
 export type WheelTaker = { turn: (dir: 1 | -1) => void; press?: () => void };
 
@@ -63,6 +72,9 @@ function act(action: Action, rotate: () => void, style: () => void) {
       return rotate();
     case 'style':
       return style();
+    case 'home':
+      if (navStore.get().screen === 'home' && pagerNext) return pagerNext();
+      return go('home');
   }
 }
 
