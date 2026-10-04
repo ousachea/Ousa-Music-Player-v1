@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-04T06:30:11.757Z",
+  "updated_at": "2026-10-04T06:38:49.188Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -398,6 +398,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.40.0",
+          "released_at": "2026-10-04T06:38:49.185Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.40.0.zip",
+            "size": 1041065,
+            "sha256": "206911e29598adc5b20ebd04f59933b63d0e1df0cc783e81d798a50c85efffa4"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.40.0.html",
+            "size": 33596,
+            "sha256": "8e4b2bfe7d4faa28cd3184723ec8b5a6b9520db8782b4ef02ba22ada0b503436"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Pocket** comes in more colours: silver, black, blue, pink, green, red, gold, and **Album**, which\ntakes the cover's own colour and changes with every track. A small dot in the corner of the screen\nshows the colour and steps to the next on a tap, and **Body colour** in the style's settings picks\none directly. The wheel's markings take a dark shade of the body so they read on every colour."
+        },
         {
           "version": "0.39.0",
           "released_at": "2026-10-04T06:30:11.754Z",
