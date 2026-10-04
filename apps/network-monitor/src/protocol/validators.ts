@@ -192,7 +192,23 @@ function readClaude(o: Obj): ClaudeUsage | undefined {
     .slice(0, LIMITS.models)
     .map(m => (isObj(m) ? { name: str(m.name, 64), tokens: num(m.tokens, 'tokens') } : null))
     .filter((m): m is { name: string; tokens: number } => !!m?.name && m.tokens !== undefined);
-  return { today: today as ClaudeUsage['today'], week: week ?? [], models };
+  let session: ClaudeUsage['session'];
+  if (o.session === null) session = null;
+  else if (isObj(o.session)) {
+    const x = o.session;
+    const fields = {
+      start: num(x.start, 'tokens'),
+      resetAt: num(x.resetAt, 'tokens'),
+      tokens: num(x.tokens, 'tokens'),
+      replies: num(x.replies, 'count'),
+      burnPerMin: num(x.burnPerMin, 'tokens'),
+      projected: num(x.projected, 'tokens'),
+      peak: num(x.peak, 'tokens'),
+    };
+    // a window is all or nothing: half of one would show a reset time against the wrong tokens
+    if (Object.values(fields).every(v => v !== undefined) && fields.resetAt! > fields.start!) session = fields as NonNullable<ClaudeUsage['session']>;
+  }
+  return { today: today as ClaudeUsage['today'], week: week ?? [], models, ...(session !== undefined ? { session } : {}) };
 }
 
 export function readTelemetry(o: unknown): DeviceTelemetry | undefined {

@@ -19,7 +19,7 @@ import type { DeviceEntry } from '../store/telemetry';
 import { SCENE } from '../theme';
 import { SunWidget } from './sun';
 import { WeatherWidget } from './weather';
-import { BatteryWidget, ClockWidget } from './widgets-life';
+import { BatteryWidget, ClockWidget, sessionRecord, sessionShare } from './widgets-life';
 
 function Head({ icon, color, children, right }: { icon: IconKind; color: string; children: ReactNode; right?: ReactNode }) {
   return (
@@ -388,13 +388,20 @@ function BatteryDetail({ entry }: { entry: DeviceEntry }) {
 
 // ---- claude
 
-const tokens = (v: number) => (v >= 1e9 ? `${(v / 1e9).toFixed(2)}B` : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(1)}k` : String(Math.round(v)));
+const tokens = (v: number) => (v >= 1e9 ? `${(v / 1e9).toFixed(2)}B` : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${Math.round(v / 1e3)}k` : String(Math.round(v)));
 
 function ClaudeDetail({ t }: { t: DeviceTelemetry }) {
+  const zone = useZoneContext();
+  const now = useNow(zone, 15_000);
   const u = t.claude;
   if (!u) return <Head icon="claude" color={SCENE.claude.accent}>No Claude Code logs on this computer</Head>;
   const d = u.today;
   const total = d.input + d.output + d.cacheWrite + d.cacheRead;
+  const s = u.session ?? null;
+  const used = s ? sessionShare(s) : null;
+  const at = (ms: number) => (zone ? partsIn(new Date(ms), zone).format({ hour: 'numeric', minute: '2-digit' }).format(new Date(ms)) : '—');
+  const left = s && now ? Math.max(0, s.resetAt - now.getTime()) : 0;
+  const elapsed = s && now ? Math.min(100, ((now.getTime() - s.start) / (s.resetAt - s.start)) * 100) : 0;
   const parts = [
     { label: 'Cache read', value: d.cacheRead, color: SCENE.claude.accent },
     { label: 'Cache write', value: d.cacheWrite, color: SCENE.claude.soft },
@@ -403,60 +410,92 @@ function ClaudeDetail({ t }: { t: DeviceTelemetry }) {
   ];
   const peak = Math.max(1, ...u.week);
   const days = Array.from({ length: 7 }, (_, i) => new Date(Date.now() - (6 - i) * 86_400_000));
+  const bar = (pct: number, color: string) => (
+    <div className="h-2 overflow-hidden rounded-full bg-white/10">
+      <div className="h-full rounded-full transition-[width] duration-700 ease-out" style={{ width: `${pct}%`, backgroundColor: color }} />
+    </div>
+  );
   return (
-    <div className="grid h-full grid-cols-[1fr_1fr] gap-4">
-      <div className="flex flex-col gap-3">
-        <Head icon="claude" color={SCENE.claude.accent}>Claude Code today</Head>
-        <div className="flex items-baseline gap-2">
-          <span className="font-display text-[3.25rem] leading-none font-semibold tabular-nums text-off-white">{tokens(total)}</span>
-          <span className="font-display text-[1.25rem] text-soft">tokens</span>
-        </div>
-        <div className="font-body text-[0.9375rem] text-soft">
-          {d.replies} replies · {d.sessions} sessions
-        </div>
-        <Panel className="flex flex-col gap-2">
-          {/* the four kinds as one stacked bar, then each with its figure */}
-          <div className="flex h-3 overflow-hidden rounded-full">
+    <div className="grid h-full grid-cols-[1.1fr_1fr] gap-4">
+      <div className="flex min-h-0 flex-col gap-3">
+        <Head icon="claude" color={SCENE.claude.accent} right={u.models[0] && <span className="rounded-full bg-white/10 px-2 py-0.5 font-body text-[0.75rem] text-soft">{u.models[0].name}</span>}>
+          Current session
+        </Head>
+        {s ? (
+          <Panel className="flex flex-1 flex-col gap-2.5">
+            <div className="flex items-baseline justify-between">
+              <span className="font-display text-[2.25rem] leading-none font-semibold tabular-nums text-off-white">{tokens(s.tokens)}</span>
+              <span className="font-mono text-[0.75rem] text-dim">resets {at(s.resetAt)}</span>
+            </div>
+            <div>
+              <div className="mb-1 flex justify-between font-body text-[0.8125rem]">
+                <span className="text-soft">{used !== null ? `${Math.round(used)}% used` : sessionRecord(s) ? 'Busiest session this week' : 'Used'}</span>
+                <span className="text-near">{used !== null ? `${100 - Math.round(used)}% left` : sessionRecord(s) ? `${Math.round((s.tokens / s.peak) * 100)}% of the last peak` : 'nothing to measure against yet'}</span>
+              </div>
+              {bar(used ?? (sessionRecord(s) ? 100 : 0), SCENE.claude.accent)}
+            </div>
+            <div>
+              <div className="mb-1 flex justify-between font-body text-[0.8125rem]">
+                <span className="text-soft">Window {Math.round(elapsed)}% gone</span>
+                <span className="text-near">{span(left)} left</span>
+              </div>
+              {bar(elapsed, SCENE.claude.soft)}
+            </div>
+            <div className="mt-auto grid grid-cols-3 gap-x-3 gap-y-2">
+              <Stat label="Started" value={at(s.start)} />
+              <Stat label="Replies" value={String(s.replies)} />
+              <Stat label="Pace" value={`${tokens(s.burnPerMin)}/m`} />
+              <Stat label="By reset" value={tokens(s.projected)} />
+              <Stat label="Last peak" value={s.peak ? tokens(s.peak) : null} />
+              <Stat label="Today" value={tokens(total)} />
+            </div>
+            <div className="font-mono text-[0.625rem] leading-snug text-dim">Measured against your busiest session this week. Your plan's own limit is not in the logs.</div>
+          </Panel>
+        ) : (
+          <Panel className="flex flex-1 flex-col justify-center gap-2">
+            <span className="font-display text-[1.375rem] text-near">No session open</span>
+            <span className="font-body text-[0.875rem] text-dim">The next message opens a five-hour window. Today: {tokens(total)} tokens, {d.replies} replies.</span>
+          </Panel>
+        )}
+      </div>
+      <div className="flex min-h-0 flex-col gap-3">
+        <Panel className="flex flex-col gap-1.5">
+          <Label>Today · {tokens(total)} · {d.replies} replies</Label>
+          <div className="flex h-2.5 overflow-hidden rounded-full">
             {parts.map(p => (
               <span key={p.label} style={{ width: `${total ? (p.value / total) * 100 : 0}%`, backgroundColor: p.color }} />
             ))}
           </div>
-          {parts.map(p => (
-            <div key={p.label} className="flex items-center gap-2 font-body text-[0.875rem]">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: p.color }} />
-              <span className="flex-1 text-soft">{p.label}</span>
-              <span className="text-near tabular-nums">{tokens(p.value)}</span>
-              <span className="w-12 text-right text-dim tabular-nums">{total ? `${Math.round((p.value / total) * 100)}%` : ''}</span>
-            </div>
-          ))}
-        </Panel>
-      </div>
-      <div className="flex flex-col gap-3">
-        <Panel className="flex min-h-0 flex-1 flex-col">
-          <Label>This week</Label>
-          <div className="mt-2 flex min-h-0 flex-1 items-end gap-2">
-            {u.week.map((v, i) => (
-              <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
-                <span className="font-mono text-[0.625rem] text-dim tabular-nums">{v ? tokens(v) : ''}</span>
-                <span className="w-full rounded-[5px]" style={{ height: `${Math.max(2, (v / peak) * 75)}%`, background: i === 6 ? SCENE.claude.soft : `${SCENE.claude.accent}80` }} />
-                <span className={`font-body text-[0.6875rem] ${i === 6 ? 'text-off-white' : 'text-dim'}`}>{days[i].toLocaleDateString(undefined, { weekday: 'short' })}</span>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+            {parts.map(p => (
+              <div key={p.label} className="flex items-center gap-1.5 font-body text-[0.8125rem]">
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: p.color }} />
+                <span className="flex-1 truncate text-soft">{p.label}</span>
+                <span className="text-near tabular-nums">{tokens(p.value)}</span>
               </div>
             ))}
           </div>
         </Panel>
-        <Panel className="flex flex-col gap-1.5">
-          <Label>Models today</Label>
-          {u.models.slice(0, 3).map(m => (
-            <div key={m.name} className="flex items-center gap-2 font-body text-[0.875rem]">
-              <span className="flex-1 truncate text-near">{m.name}</span>
-              <span className="text-soft tabular-nums">{tokens(m.tokens)}</span>
-            </div>
-          ))}
-          {!u.models.length && <span className="font-body text-[0.875rem] text-dim">None yet today</span>}
+        <Panel className="flex min-h-0 flex-1 flex-col">
+          <Label>This week</Label>
+          <div className="mt-1 flex min-h-0 flex-1 items-end gap-2">
+            {u.week.map((v, i) => (
+              <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
+                <span className="font-mono text-[0.5625rem] text-dim tabular-nums">{v ? tokens(v) : ''}</span>
+                <span className="w-full rounded-[4px]" style={{ height: `${Math.max(2, (v / peak) * 70)}%`, background: i === 6 ? SCENE.claude.soft : `${SCENE.claude.accent}80` }} />
+                <span className={`font-body text-[0.625rem] ${i === 6 ? 'text-off-white' : 'text-dim'}`}>{days[i].toLocaleDateString(undefined, { weekday: 'short' })}</span>
+              </div>
+            ))}
+          </div>
         </Panel>
       </div>
     </div>
   );
+}
+
+function span(ms: number) {
+  const m = Math.round(ms / 60_000);
+  return m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}m`;
 }
 
 // ---- system and displays

@@ -174,6 +174,15 @@ function macbook(): Agent {
         claude: {
           today: { input: 18_400, output: 412_000 + tick * 90, cacheWrite: 3_100_000, cacheRead: 38_600_000 + tick * 4_000, replies: 287 + Math.floor(tick / 20), sessions: 5 },
           week: [21_000_000, 34_000_000, 12_500_000, 0, 27_800_000, 45_200_000, 42_130_000 + tick * 4_090],
+          session: {
+            start: Math.floor(Date.now() / 3_600_000) * 3_600_000 - 2 * 3_600_000,
+            resetAt: Math.floor(Date.now() / 3_600_000) * 3_600_000 + 3 * 3_600_000,
+            tokens: 18_200_000 + tick * 3_000,
+            replies: 96 + Math.floor(tick / 30),
+            burnPerMin: 131_000,
+            projected: 41_800_000,
+            peak: 30_500_000,
+          },
           models: [
             { name: 'Opus 5.5', tokens: 39_800_000 },
             { name: 'Haiku 4.5', tokens: 2_330_000 },

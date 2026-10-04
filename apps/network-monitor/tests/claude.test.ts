@@ -40,3 +40,28 @@ test('model ids read as names', () => {
   expect(modelName('claude-haiku-4-5-20251001')).toBe('Haiku 4.5');
   expect(modelName('claude-fable-5-1')).toBe('Fable 5.1');
 });
+
+test('replies fall into five-hour windows, and the open one knows when it resets', async () => {
+  const { windows, currentSession } = await import('../extension/collectors/claude-parse');
+  const h = 3_600_000;
+  const base = Date.parse('2026-10-04T01:20:00Z');
+  const replies = [
+    { at: base, tokens: 100 },
+    { at: base + 2 * h, tokens: 300 },
+    // past the first window's five hours: a new one, opening on its hour
+    { at: base + 5.5 * h, tokens: 50 },
+    { at: base + 6 * h, tokens: 70 },
+  ];
+  const w = windows(replies);
+  expect(w.map(x => [new Date(x.start).toISOString().slice(11, 16), x.tokens])).toEqual([
+    ['01:00', 400],
+    ['06:00', 120],
+  ]);
+  const now = base + 6.5 * h; // 07:50, fifty minutes into a window that opened at 06:00
+  const s = currentSession(replies, now)!;
+  expect(new Date(s.resetAt).toISOString().slice(11, 16)).toBe('11:00');
+  expect(s.tokens).toBe(120);
+  expect(s.peak).toBe(400);
+  expect(s.burnPerMin).toBe(Math.round(120 / 110));
+  expect(currentSession(replies, base + 12 * h)).toBeNull();
+});

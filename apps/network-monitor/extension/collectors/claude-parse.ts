@@ -1,10 +1,16 @@
 // claude code keeps every session as json lines on this machine, and each reply it receives records the tokens it
 // used. a reply can be written several times, once for each block of its content, carrying the same usage, so it
 // is counted once by its message and request ids. pure, so it can be checked against sample lines
-import type { ClaudeUsage } from '../../src/protocol/types';
+import type { ClaudeSession, ClaudeUsage } from '../../src/protocol/types';
+
+const HOUR = 3_600_000;
+/** claude's usage limits reset five hours after the window opened */
+const WINDOW = 5 * HOUR;
 
 export type Reply = {
   key: string;
+  /** unix ms */
+  at: number;
   day: string;
   model: string;
   session: string;
@@ -43,6 +49,7 @@ export function parseReply(line: string): Reply | null {
   const request = typeof o.requestId === 'string' ? o.requestId : '';
   return {
     key: `${id}:${request}` === ':' ? `${o.uuid ?? at}` : `${id}:${request}`,
+    at,
     day: localDay(at),
     model,
     session: typeof o.sessionId === 'string' ? o.sessionId : '',
@@ -64,9 +71,47 @@ export function modelName(id: string): string {
 }
 
 /** replies in, a running tally per day out; each reply counted once however often it was written */
+/** the five-hour windows replies fall into: a window opens on the hour of the first reply after the last one closed
+ * (or after five quiet hours), as claude itself counts them */
+export function windows(replies: { at: number; tokens: number }[]) {
+  const sorted = [...replies].sort((a, b) => a.at - b.at);
+  const out: { start: number; last: number; tokens: number; replies: number }[] = [];
+  for (const r of sorted) {
+    const cur = out[out.length - 1];
+    if (!cur || r.at >= cur.start + WINDOW || r.at - cur.last > WINDOW) out.push({ start: Math.floor(r.at / HOUR) * HOUR, last: r.at, tokens: r.tokens, replies: 1 });
+    else {
+      cur.tokens += r.tokens;
+      cur.replies += 1;
+      cur.last = r.at;
+    }
+  }
+  return out;
+}
+
+/** the window open at `now`, with its pace and what it is on course for, against the busiest closed one */
+export function currentSession(replies: { at: number; tokens: number }[], now: number): ClaudeSession | null {
+  const all = windows(replies);
+  const last = all[all.length - 1];
+  if (!last || now >= last.start + WINDOW) return null;
+  const minutes = Math.max(1, (now - last.start) / 60_000);
+  const burnPerMin = last.tokens / minutes;
+  const left = Math.max(0, (last.start + WINDOW - now) / 60_000);
+  return {
+    start: last.start,
+    resetAt: last.start + WINDOW,
+    tokens: last.tokens,
+    replies: last.replies,
+    burnPerMin: Math.round(burnPerMin),
+    projected: Math.round(last.tokens + burnPerMin * left),
+    peak: Math.max(0, ...all.slice(0, -1).map(w => w.tokens)),
+  };
+}
+
 export function tally() {
   const days = new Map<string, Day>();
   const seen = new Map<string, Set<string>>();
+  // every reply this week with its moment, for the five-hour windows
+  let recent: { at: number; tokens: number }[] = [];
   return {
     add(r: Reply) {
       let keys = seen.get(r.day);
@@ -81,6 +126,7 @@ export function tally() {
       d.cacheRead += r.cacheRead;
       d.replies += 1;
       if (r.session) d.sessions.add(r.session);
+      recent.push({ at: r.at, tokens: r.input + r.output + r.cacheWrite + r.cacheRead });
       const name = modelName(r.model);
       d.models.set(name, (d.models.get(name) ?? 0) + r.input + r.output + r.cacheWrite + r.cacheRead);
     },
@@ -89,6 +135,7 @@ export function tally() {
       const keep = new Set(Array.from({ length: 8 }, (_, i) => localDay(today - i * 86_400_000)));
       for (const day of days.keys()) if (!keep.has(day)) days.delete(day);
       for (const day of seen.keys()) if (!keep.has(day)) seen.delete(day);
+      recent = recent.filter(r => today - r.at < 8 * 86_400_000);
     },
     summary(today: number): ClaudeUsage {
       const d = days.get(localDay(today));
@@ -104,6 +151,7 @@ export function tally() {
         },
         week: Array.from({ length: 7 }, (_, i) => total(days.get(localDay(today - (6 - i) * 86_400_000)))),
         models: [...(d?.models ?? new Map<string, number>())].sort((a, b) => b[1] - a[1]).map(([name, tokens]) => ({ name, tokens })),
+        session: currentSession(recent, today),
       };
     },
   };

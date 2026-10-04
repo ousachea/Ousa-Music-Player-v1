@@ -124,8 +124,24 @@ export interface ClaudeDay {
   sessions: number;
 }
 
+/** claude's limits run in five-hour windows that open with the first message after a quiet spell */
+export interface ClaudeSession {
+  /** unix ms the window opened, and when it resets */
+  start: number;
+  resetAt: number;
+  tokens: number;
+  replies: number;
+  /** tokens a minute since the window opened, and where that pace lands by the reset */
+  burnPerMin: number;
+  projected: number;
+  /** the busiest earlier window this week, the yardstick for how much of this one is used */
+  peak: number;
+}
+
 export interface ClaudeUsage {
   today: ClaudeDay;
+  /** the window open now, or null between them */
+  session?: ClaudeSession | null;
   /** total tokens a day, oldest first, today last */
   week: number[];
   /** today's tokens by model, largest first */
