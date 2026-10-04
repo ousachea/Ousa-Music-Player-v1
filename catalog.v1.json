@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-04T02:47:24.421Z",
+  "updated_at": "2026-10-04T03:23:32.463Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -1865,8 +1865,8 @@
     },
     {
       "id": "01a07c16-be12-7003-91aa-482b107fdccb",
-      "name": "O-Network Monitor",
-      "description": "Live link status, latency and throughput for the Car Thing.",
+      "name": "O-System Monitor",
+      "description": "CPU, GPU, memory, network and storage for your machines, on the Car Thing.",
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07c16-be12-7003-91aa-482b107fdccb.png",
       "screenshots": [
@@ -1875,6 +1875,45 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.2.0",
+          "released_at": "2026-10-04T03:23:32.461Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c16-be12-7003-91aa-482b107fdccb/0.2.0.zip",
+            "size": 944662,
+            "sha256": "de443cbfdc5fc2bc8522ce99c250612ef12dd653a981f7e17ccd6fb4fb3c854d"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c16-be12-7003-91aa-482b107fdccb/0.2.0.html",
+            "size": 26935,
+            "sha256": "40613e2f3a9aad26b2e2687dd27ebcc57fcf5322563b72fbf68732c427e13313"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/vm_stat",
+              "run:/usr/sbin/sysctl",
+              "run:/usr/sbin/ioreg",
+              "run:/usr/sbin/netstat",
+              "run:/bin/ps",
+              "run:/usr/bin/pmset",
+              "run:/bin/df",
+              "run:/sbin/ping",
+              "run:/sbin/route",
+              "run:/usr/sbin/system_profiler",
+              "run:/usr/bin/sw_vers",
+              "run:/usr/sbin/scutil",
+              "run:/sbin/ifconfig",
+              "run:/usr/sbin/networksetup",
+              "sys"
+            ]
+          },
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The app is called **O-System Monitor** now, since it watches far more than the network. Same id, so\nan installed copy updates in place.\n\nA new dashboard: a small hardware monitoring station for the machines around you. **Home** shows\nCPU, GPU, RAM and network at a glance, each with its own screen and a live graph, and **More**\nreaches storage, processes, the device list, settings and a debug view of the raw data. **Home style**\nin Settings shows the four as cards with bars, or as rings: a gradient arc round each figure that\neases to every new reading, with network set against the speed of its link. Devices\nthat go quiet show as offline with the time of their last report.\n\n**Live**, the default, shows the computer the Car Thing is plugged into, through a desktop extension that ships\nwith the app: install it in the bridgething desktop app and allow it. This release reads a Mac\nwithout admin rights: CPU per core and load, memory, GPU load, network speed and Wi-Fi signal, the\ndrive and its read and write speed, battery health, displays and the busiest processes. It only\nworks while the app is on screen. Live also lists the Car Thing's own link, measured as before.\n**Mock** runs four pretend machines so every screen can be explored without one."
+        },
         {
           "version": "0.1.2",
           "released_at": "2026-09-09T15:47:17.428Z",
@@ -1891,6 +1930,26 @@
           "permissions": [
             "net.proxy"
           ],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/vm_stat",
+              "run:/usr/sbin/sysctl",
+              "run:/usr/sbin/ioreg",
+              "run:/usr/sbin/netstat",
+              "run:/bin/ps",
+              "run:/usr/bin/pmset",
+              "run:/bin/df",
+              "run:/sbin/ping",
+              "run:/sbin/route",
+              "run:/usr/sbin/system_profiler",
+              "run:/usr/bin/sw_vers",
+              "run:/usr/sbin/scutil",
+              "run:/sbin/ifconfig",
+              "run:/usr/sbin/networksetup",
+              "sys"
+            ]
+          },
           "min_libbridgething_version": "0.12.1",
           "changelog": "The app is called **O-Network Monitor** now, on the store card, on the device and in the tab it\nopens in. Nothing else about it changes: same id, same settings, same data, so an installed copy\nupdates in place and simply reads O-Network Monitor afterwards."
         },
@@ -1910,6 +1969,26 @@
           "permissions": [
             "net.proxy"
           ],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/vm_stat",
+              "run:/usr/sbin/sysctl",
+              "run:/usr/sbin/ioreg",
+              "run:/usr/sbin/netstat",
+              "run:/bin/ps",
+              "run:/usr/bin/pmset",
+              "run:/bin/df",
+              "run:/sbin/ping",
+              "run:/sbin/route",
+              "run:/usr/sbin/system_profiler",
+              "run:/usr/bin/sw_vers",
+              "run:/usr/sbin/scutil",
+              "run:/sbin/ifconfig",
+              "run:/usr/sbin/networksetup",
+              "sys"
+            ]
+          },
           "min_libbridgething_version": "0.12.1",
           "changelog": "An icon of its own for the store and the launcher."
         },
@@ -1929,6 +2008,26 @@
           "permissions": [
             "net.proxy"
           ],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/vm_stat",
+              "run:/usr/sbin/sysctl",
+              "run:/usr/sbin/ioreg",
+              "run:/usr/sbin/netstat",
+              "run:/bin/ps",
+              "run:/usr/bin/pmset",
+              "run:/bin/df",
+              "run:/sbin/ping",
+              "run:/sbin/route",
+              "run:/usr/sbin/system_profiler",
+              "run:/usr/bin/sw_vers",
+              "run:/usr/sbin/scutil",
+              "run:/sbin/ifconfig",
+              "run:/usr/sbin/networksetup",
+              "sys"
+            ]
+          },
           "min_libbridgething_version": "0.12.1",
           "changelog": "First release. Link status, latency, measured download and a 60 second graph.\nUpload and local IP report as unavailable: they need interface counters that the\ndaemon does not expose."
         }
