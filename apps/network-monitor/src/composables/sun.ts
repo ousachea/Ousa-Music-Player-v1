@@ -17,8 +17,9 @@ const transit = (ds: number, m: number, l: number) => J2000 + ds + 0.0053 * Math
 
 export type SunDay = { rise: number | null; set: number | null; noon: number; polar: 'day' | 'night' | null };
 
-/** `at` is any moment on the day wanted; times come back as unix ms */
-export function sunTimes(at: number, lat: number, lon: number): SunDay {
+/** `at` is any moment on the day wanted; times come back as unix ms. `angle` is how far below the horizon the sun's
+ * centre is at the moment wanted: -0.833 for sunrise and sunset, -6 for the civil dawn and dusk around them */
+export function sunTimes(at: number, lat: number, lon: number, angle = -0.833): SunDay {
   const lw = RAD * -lon;
   const phi = RAD * lat;
   const d = toDays(at);
@@ -28,11 +29,38 @@ export function sunTimes(at: number, lat: number, lon: number): SunDay {
   const l = eclipticLongitude(m);
   const dec = Math.asin(Math.sin(TILT) * Math.sin(l));
   const noon = transit(ds, m, l);
-  const cos = (Math.sin(-0.833 * RAD) - Math.sin(phi) * Math.sin(dec)) / (Math.cos(phi) * Math.cos(dec));
+  const cos = (Math.sin(angle * RAD) - Math.sin(phi) * Math.sin(dec)) / (Math.cos(phi) * Math.cos(dec));
   if (cos < -1) return { rise: null, set: null, noon: fromJulian(noon), polar: 'day' };
   if (cos > 1) return { rise: null, set: null, noon: fromJulian(noon), polar: 'night' };
   const w = Math.acos(cos);
   const set = transit(J0 + (w + lw) / (2 * Math.PI) + n, m, l);
   const rise = noon - (set - noon);
   return { rise: fromJulian(rise), set: fromJulian(set), noon: fromJulian(noon), polar: null };
+}
+
+const SYNODIC_DAYS = 29.530588853;
+/** a new moon to count from: 6 january 2000, 18:14 utc */
+const KNOWN_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
+
+const PHASES = ['New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous', 'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent'];
+
+/** how far through its month the moon is (0 new, 0.5 full), how much of it is lit, and the phase's name */
+export function moonPhase(at: number) {
+  const age = ((((at - KNOWN_NEW_MOON) / DAY_MS) % SYNODIC_DAYS) + SYNODIC_DAYS) % SYNODIC_DAYS;
+  const phase = age / SYNODIC_DAYS;
+  const lit = (1 - Math.cos(phase * 2 * Math.PI)) / 2;
+  return { phase, lit, name: PHASES[Math.round(phase * 8) % 8] };
+}
+
+/** how high the sun stands at a moment, in degrees above the horizon (negative below it) */
+export function sunAltitude(at: number, lat: number, lon: number): number {
+  const lw = RAD * -lon;
+  const phi = RAD * lat;
+  const d = toDays(at);
+  const m = meanAnomaly(d);
+  const l = eclipticLongitude(m);
+  const dec = Math.asin(Math.sin(TILT) * Math.sin(l));
+  const ra = Math.atan2(Math.sin(l) * Math.cos(TILT), Math.cos(l));
+  const hour = RAD * (280.16 + 360.9856235 * d) - lw - ra;
+  return Math.asin(Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.cos(hour)) / RAD;
 }

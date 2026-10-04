@@ -8,7 +8,8 @@ import { Caption, Figure, LOOKS, Tile, Title } from '../components/widget-kit';
 import { useClient, useNowPlaying } from '../composables/useNowPlaying';
 import { partsIn, useNow, useZoneContext, type Zone } from '../composables/useZone';
 import type { BatteryInfo, ClaudeUsage } from '../protocol/types';
-import { updateSettings, useSettings, type Settings } from '../store/settings';
+import { openDetail } from '../store/navigation';
+import { useSettings, type Settings } from '../store/settings';
 import { SCENE } from '../theme';
 
 // ---- battery
@@ -34,7 +35,7 @@ export const BatteryWidget = memo(function BatteryWidget({ battery }: { battery:
   const [from, to] = levelColors(pct);
   const charging = !!battery.charging;
   return (
-    <Tile look={LOOKS.graphite}>
+    <Tile look={LOOKS.graphite} onOpen={() => openDetail('battery')}>
       <div className="flex items-center justify-between gap-2">
         <Title icon={<AnimatedIcon kind="battery" />}>Battery</Title>
         {battery.health !== undefined && (
@@ -108,7 +109,6 @@ export const BatteryWidget = memo(function BatteryWidget({ battery }: { battery:
 
 // ---- clock
 
-const CLOCK_STYLES: Settings['clockStyle'][] = ['digital', 'led', 'analog'];
 const CLOCK_NAMES: Record<Settings['clockStyle'], string> = { digital: 'Digital', led: 'LED', analog: 'Analog' };
 
 /** the seven segments a-g of each digit, as which are lit */
@@ -147,10 +147,8 @@ function hour12(zone: Zone) {
 
 export const ClockWidget = memo(function ClockWidget() {
   const zone = useZoneContext();
-  const client = useClient();
   const { clockStyle } = useSettings();
   const now = useNow(zone, 1000);
-  const next = () => client && updateSettings(client, { clockStyle: CLOCK_STYLES[(CLOCK_STYLES.indexOf(clockStyle) + 1) % CLOCK_STYLES.length] });
 
   let face: ReactNode = <Caption>Waiting for the phone's time</Caption>;
   if (now && zone) {
@@ -217,7 +215,7 @@ export const ClockWidget = memo(function ClockWidget() {
     }
   }
   return (
-    <Tile look={LOOKS.clock} onOpen={next}>
+    <Tile look={LOOKS.clock} onOpen={() => openDetail('clock')}>
       <div className="flex items-baseline justify-between">
         <Title icon={<AnimatedIcon kind="clock" />}>Clock</Title>
         <span className="font-mono text-[0.6875rem] tracking-[0.16em] text-off-white/50 uppercase">{CLOCK_NAMES[clockStyle]}</span>
@@ -229,8 +227,6 @@ export const ClockWidget = memo(function ClockWidget() {
 
 // ---- calendar
 
-const CAL_VIEWS: Settings['calendarView'][] = ['month', 'week', 'day'];
-
 /** a plain date, kept in utc so day arithmetic never trips over a daylight-saving change */
 const utc = (y: number, m: number, d: number) => new Date(Date.UTC(y, m - 1, d));
 /** monday first, as most of the world counts a week */
@@ -238,10 +234,8 @@ const mondayIndex = (date: Date) => (date.getUTCDay() + 6) % 7;
 
 export const CalendarWidget = memo(function CalendarWidget() {
   const zone = useZoneContext();
-  const client = useClient();
   const { calendarView } = useSettings();
   const now = useNow(zone, 30_000);
-  const next = () => client && updateSettings(client, { calendarView: CAL_VIEWS[(CAL_VIEWS.indexOf(calendarView) + 1) % CAL_VIEWS.length] });
 
   let body: ReactNode = <Caption>Waiting for the phone's date</Caption>;
   let title = 'Calendar';
@@ -305,7 +299,7 @@ export const CalendarWidget = memo(function CalendarWidget() {
     }
   }
   return (
-    <Tile look={LOOKS.calendar} onOpen={next}>
+    <Tile look={LOOKS.calendar} onOpen={() => openDetail('calendar')}>
       <div className="flex items-baseline justify-between gap-2">
         <Title icon={<AnimatedIcon kind="calendar" />}>{title}</Title>
         <span className="font-mono text-[0.6875rem] tracking-[0.16em] text-off-white/50 uppercase">{calendarView}</span>
@@ -355,7 +349,7 @@ function Music({ client }: { client: NonNullable<ReturnType<typeof useClient>> }
       {/* the cover, blurred, is the tile's light while something plays */}
       {artUrl && <img src={artUrl} alt="" className="pointer-events-none absolute -inset-6 -z-10 h-[calc(100%+3rem)] w-[calc(100%+3rem)] scale-110 object-cover opacity-55 blur-2xl" />}
       <div className="flex h-full min-h-0 gap-4">
-        <div className="aspect-square h-full shrink-0 overflow-hidden rounded-2xl bg-black/30 shadow-[0_8px_20px_rgba(0,0,0,0.45)]">
+        <div onClick={() => openDetail('music')} className="aspect-square h-full shrink-0 cursor-pointer overflow-hidden rounded-2xl bg-black/30 shadow-[0_8px_20px_rgba(0,0,0,0.45)]">
           {artUrl ? (
             <img src={artUrl} alt="" className="h-full w-full object-cover" />
           ) : (
@@ -363,7 +357,7 @@ function Music({ client }: { client: NonNullable<ReturnType<typeof useClient>> }
           )}
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="truncate font-display text-[1.25rem] leading-tight font-semibold text-off-white">{track?.title ?? 'Nothing playing'}</div>
+          <div onClick={() => openDetail('music')} className="cursor-pointer truncate font-display text-[1.25rem] leading-tight font-semibold text-off-white">{track?.title ?? 'Nothing playing'}</div>
           <div className="flex min-w-0 items-center gap-2">
             {/* the bars dance while it plays and rest when it does not */}
             {playing && <AnimatedIcon kind="music" className="h-4 w-4 shrink-0 text-off-white/70" />}
@@ -401,7 +395,7 @@ export const ClaudeWidget = memo(function ClaudeWidget({ usage }: { usage: Claud
   const peak = Math.max(1, ...usage.week);
   const days = Array.from({ length: 7 }, (_, i) => new Date(Date.now() - (6 - i) * 86_400_000));
   return (
-    <Tile look={LOOKS.claude}>
+    <Tile look={LOOKS.claude} onOpen={() => openDetail('claude')}>
       <div className="flex h-full gap-5">
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex items-center gap-2.5">

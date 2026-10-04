@@ -9,7 +9,7 @@ import {
 } from '../protocol/types';
 import { createStore, useStore } from './create';
 
-export type Series = 'cpu' | 'cpuTemp' | 'gpu' | 'gpuTemp' | 'ram' | 'down' | 'up' | 'ping';
+export type Series = 'cpu' | 'cpuTemp' | 'gpu' | 'gpuTemp' | 'ram' | 'down' | 'up' | 'ping' | 'battery';
 
 export interface MetricHistory {
   timestamp: number;
@@ -53,6 +53,7 @@ const emptyHistory = (): Record<Series, MetricHistory[]> => ({
   down: [],
   up: [],
   ping: [],
+  battery: [],
 });
 
 export function capabilities(entry: DeviceEntry): DeviceCapabilities | null {
@@ -72,6 +73,7 @@ function sample(t: DeviceTelemetry): Partial<Record<Series, number>> {
     down: t.network?.download,
     up: t.network?.upload,
     ping: t.network?.ping,
+    battery: t.battery?.percentage,
   };
 }
 

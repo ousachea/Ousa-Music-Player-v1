@@ -8,6 +8,7 @@ import { AnimatedIcon, type IconKind } from '../components/icons';
 import { usePlace } from '../composables/useLocation';
 import { useWeatherContext, type Sky } from '../composables/useWeather';
 import { partsIn, useNow, useZoneContext } from '../composables/useZone';
+import { openDetail } from '../store/navigation';
 import { useSettings } from '../store/settings';
 
 type Scene = { background: string; layers: ReactNode };
@@ -134,7 +135,7 @@ export const WeatherWidget = memo(function WeatherWidget() {
   const status = !place ? 'Finding where you are' : 'error' in place ? 'Location unavailable' : 'Loading the weather';
 
   return (
-    <div className="relative isolate h-full w-full overflow-hidden rounded-[var(--tile-radius)] text-off-white shadow-[0_10px_30px_rgba(0,0,0,0.45)]" style={{ background: view.background }}>
+    <div onClick={() => openDetail('weather')} className="relative isolate h-full w-full cursor-pointer overflow-hidden rounded-[var(--tile-radius)] text-off-white shadow-[0_10px_30px_rgba(0,0,0,0.45)]" style={{ background: view.background }}>
       <div className="pointer-events-none absolute inset-0 -z-10">{view.layers}</div>
       <div className="flex h-full justify-between px-5 py-4">
         <div className="flex flex-col">

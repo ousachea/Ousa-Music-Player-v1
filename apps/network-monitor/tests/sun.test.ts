@@ -23,3 +23,21 @@ test('the arctic in june never sets, and in december never rises', () => {
   expect(sunTimes(Date.parse('2024-06-21T12:00:00Z'), 78.22, 15.65).polar).toBe('day');
   expect(sunTimes(Date.parse('2024-12-21T12:00:00Z'), 78.22, 15.65).polar).toBe('night');
 });
+
+test('civil dawn comes before sunrise, and the moon was full on 17 september 2024', async () => {
+  const { moonPhase } = await import('../src/composables/sun');
+  const at = Date.parse('2024-06-21T12:00:00Z');
+  const rise = sunTimes(at, 51.5074, -0.1278).rise!;
+  const dawn = sunTimes(at, 51.5074, -0.1278, -6).rise!;
+  expect(dawn).toBeLessThan(rise);
+  expect((rise - dawn) / 60_000).toBeGreaterThan(30);
+  const full = moonPhase(Date.parse('2024-09-18T02:34:00Z'));
+  expect(full.name).toBe('Full moon');
+  expect(full.lit).toBeGreaterThan(0.98);
+});
+
+test('the sun stands about 62 degrees over london at midsummer noon, and is down at midnight', async () => {
+  const { sunAltitude } = await import('../src/composables/sun');
+  expect(sunAltitude(Date.parse('2024-06-21T12:02:00Z'), 51.5074, -0.1278)).toBeCloseTo(62, 0);
+  expect(sunAltitude(Date.parse('2024-06-21T00:00:00Z'), 51.5074, -0.1278)).toBeLessThan(0);
+});

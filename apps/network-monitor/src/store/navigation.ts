@@ -12,9 +12,13 @@ export type Screen =
   | 'devices'
   | 'settings'
   | 'debug'
-  | 'more';
+  | 'more'
+  | 'detail';
 
-/** the strip along the bottom, and the order a swipe or the wheel walks */
+/** the widgets whose detail is a screen of its own rather than a metric's */
+export type Detail = 'weather' | 'sun' | 'clock' | 'calendar' | 'music' | 'battery' | 'claude' | 'system' | 'displays';
+
+/** the order a swipe or the wheel walks the screens */
 export const MAIN: Screen[] = ['home', 'cpu', 'gpu', 'memory', 'network', 'storage', 'more'];
 
 export type NavState = {
@@ -22,11 +26,15 @@ export type NavState = {
   /** where back goes; one level is all a dashboard this size needs */
   from: Screen | null;
   device: string | null;
-  /** the top and bottom bars put away, so the screen has the whole display */
+  /** the top bar put away, so the screen has the whole display */
   bare: boolean;
+  /** the home page last shown, so coming back to home lands where it was left */
+  homePage: number;
+  /** which widget the detail screen is about */
+  detail: Detail | null;
 };
 
-export const navStore = createStore<NavState>({ screen: 'home', from: null, device: null, bare: false });
+export const navStore = createStore<NavState>({ screen: 'home', from: null, device: null, bare: false, homePage: 0, detail: null });
 
 export const useNav = () => useStore(navStore);
 
@@ -48,6 +56,14 @@ export function step(dir: 1 | -1) {
     const next = MAIN[(i + dir + MAIN.length) % MAIN.length];
     return { ...s, screen: next, from: s.screen };
   });
+}
+
+export function openDetail(detail: Detail) {
+  navStore.set(s => ({ ...s, screen: 'detail', detail, from: 'home' }));
+}
+
+export function setHomePage(page: number) {
+  navStore.set(s => (s.homePage === page ? s : { ...s, homePage: page }));
 }
 
 export function toggleBare() {

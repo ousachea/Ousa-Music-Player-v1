@@ -7,7 +7,35 @@ import type { Place } from './useLocation';
 
 export type Sky = 'clear' | 'cloudy' | 'fog' | 'rain' | 'storm' | 'snow';
 
-export type Weather = { celsius: number; code: number; day: boolean; sky: Sky; label: string; city: string | null };
+export type Hour = { time: string; celsius: number; sky: Sky; day: boolean };
+
+export type Weather = {
+  celsius: number;
+  code: number;
+  day: boolean;
+  sky: Sky;
+  label: string;
+  city: string | null;
+  feels?: number;
+  humidity?: number;
+  /** km/h, and the compass bearing it blows from */
+  wind?: number;
+  windFrom?: number;
+  high?: number;
+  low?: number;
+  uv?: number;
+  rainChance?: number;
+  /** the next twelve hours, local time */
+  hours: Hour[];
+};
+
+type Reply = {
+  current?: { temperature_2m?: number; weather_code?: number; is_day?: number; apparent_temperature?: number; relative_humidity_2m?: number; wind_speed_10m?: number; wind_direction_10m?: number };
+  daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[]; uv_index_max?: number[]; precipitation_probability_max?: number[] };
+  hourly?: { time?: string[]; temperature_2m?: number[]; weather_code?: number[]; is_day?: number[] };
+};
+
+const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
 
 const REFRESH_MS = 15 * 60_000;
 
@@ -37,9 +65,12 @@ export function useWeather(client: BridgethingClient | null, place: Place): Weat
     let gone = false;
     let city = ipCity;
     const load = async () => {
-      const r = await fetchJson<{ current?: { temperature_2m?: number; weather_code?: number; is_day?: number } }>(
+      const r = await fetchJson<Reply>(
         client,
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(3)}&longitude=${lon.toFixed(3)}&current=temperature_2m,weather_code,is_day&timezone=auto`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(3)}&longitude=${lon.toFixed(3)}` +
+          '&current=temperature_2m,weather_code,is_day,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m' +
+          '&daily=temperature_2m_max,temperature_2m_min,uv_index_max,precipitation_probability_max&forecast_days=1' +
+          '&hourly=temperature_2m,weather_code,is_day&forecast_hours=13&timezone=auto',
       );
       // the phone's fix comes without a name, so the city is looked up once from the coordinates
       if (!city) {
@@ -59,7 +90,30 @@ export function useWeather(client: BridgethingClient | null, place: Place): Weat
         const forced = localStorage.getItem('weather.force');
         if (forced) [code, day] = [Number(forced.split(',')[0]), forced.split(',')[1] !== 'night'];
       }
-      setWeather({ celsius: c.temperature_2m, code, day, city, ...describe(code) });
+      const h = r?.hourly;
+      // the first hour is the one already under way; the twelve after it are the forecast
+      const hours: Hour[] = (h?.time ?? []).slice(1, 13).flatMap((time, i) => {
+        const celsius = num(h?.temperature_2m?.[i + 1]);
+        const wmo = num(h?.weather_code?.[i + 1]);
+        return celsius === undefined || wmo === undefined ? [] : [{ time: time.slice(11, 16), celsius, sky: describe(wmo).sky, day: h?.is_day?.[i + 1] !== 0 }];
+      });
+      const d = r?.daily;
+      setWeather({
+        celsius: c.temperature_2m,
+        code,
+        day,
+        city,
+        ...describe(code),
+        feels: num(c.apparent_temperature),
+        humidity: num(c.relative_humidity_2m),
+        wind: num(c.wind_speed_10m),
+        windFrom: num(c.wind_direction_10m),
+        high: num(d?.temperature_2m_max?.[0]),
+        low: num(d?.temperature_2m_min?.[0]),
+        uv: num(d?.uv_index_max?.[0]),
+        rainChance: num(d?.precipitation_probability_max?.[0]),
+        hours,
+      });
     };
     void load();
     const id = setInterval(load, REFRESH_MS);

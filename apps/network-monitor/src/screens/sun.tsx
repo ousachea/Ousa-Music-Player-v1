@@ -1,149 +1,134 @@
-// the sun's day as a wide card: the part of the day it is, a line about it, the temperature, and a glowing arc the
-// sun rides from rise to set and the moon from set to rise. dawn and dusk are the hour either side of the horizon
-import { memo } from 'react';
+// sunset and sunrise as the sun's own path: its height through the next day drawn as a curve over a horizon, the
+// daylight above it filled warm, the next sunset and sunrise marked where the curve crosses, and the sun where it is
+// now. the curve is drawn stretched to the card; the marks over it are placed by hand so they stay round
+import { memo, type ReactNode } from 'react';
 
 import { AnimatedIcon } from '../components/icons';
-
 import { usePlace } from '../composables/useLocation';
-import { sunTimes } from '../composables/sun';
-import { useWeatherContext } from '../composables/useWeather';
+import { sunAltitude, sunTimes } from '../composables/sun';
 import { partsIn, useNow, useZoneContext } from '../composables/useZone';
-import { useSettings } from '../store/settings';
+import { openDetail } from '../store/navigation';
+import { SCENE } from '../theme';
 
 const HOUR = 3_600_000;
+/** the window runs from a little before now to most of a day ahead, so the next sunset and sunrise both fit */
+const BEFORE = 4 * HOUR;
+const SPAN = 24 * HOUR;
+const STEPS = 96;
+/** where the horizon sits down the graph, and how much of it the sun's highest point may use */
+const HORIZON = 0.56;
+const REACH = 0.5;
 
-type Phase = 'night' | 'dawn' | 'day' | 'dusk';
-
-const LOOK: Record<Phase, { title: string; sky: string; arc: [string, string, string]; orb: string; glow: string }> = {
-  night: {
-    title: 'Night',
-    sky: 'radial-gradient(120% 140% at 70% 0%, #3a3a3e 0%, #121214 45%, #050506 100%)',
-    arc: ['rgba(255,255,255,0)', 'rgba(255,255,255,0.75)', 'rgba(255,255,255,0.15)'],
-    orb: '#ffffff',
-    glow: 'rgba(255,255,255,0.65)',
-  },
-  dawn: {
-    title: 'Dawn',
-    sky: 'linear-gradient(180deg, #8e5aa8 0%, #d9708a 45%, #ff9a6a 80%, #ffc27a 100%)',
-    arc: ['rgba(255,214,150,0.2)', 'rgba(255,240,215,0.95)', 'rgba(170,200,255,0.6)'],
-    orb: '#ffd08a',
-    glow: 'rgba(255,170,90,0.85)',
-  },
-  day: {
-    title: 'Day',
-    sky: 'linear-gradient(200deg, #b17ee8 0%, #8f8cf0 40%, #5aa0f4 75%, #4cb2f6 100%)',
-    arc: ['rgba(255,255,255,0.35)', 'rgba(255,224,190,0.95)', 'rgba(255,255,255,0.45)'],
-    orb: '#ffc58a',
-    glow: 'rgba(255,160,80,0.9)',
-  },
-  dusk: {
-    title: 'Dusk',
-    sky: 'linear-gradient(180deg, #4a3a8f 0%, #b45a8f 50%, #ff8a5c 85%, #ffb06a 100%)',
-    arc: ['rgba(170,200,255,0.5)', 'rgba(255,230,205,0.95)', 'rgba(255,200,140,0.2)'],
-    orb: '#ffb07a',
-    glow: 'rgba(255,130,80,0.85)',
-  },
-};
-
-// the arc is the top of an ellipse whose ends fall below the card, as in the reference
-const CX = 150;
-const CY = 118;
-const RX = 168;
-const RY = 100;
+const W = 1000;
+const H = 100;
 
 export const SunWidget = memo(function SunWidget() {
   const place = usePlace();
   const zone = useZoneContext();
-  const weather = useWeatherContext();
-  const now = useNow(zone, 30_000);
-  const { tempUnit } = useSettings();
+  const now = useNow(zone, 60_000);
 
-  let phase: Phase = 'day';
-  let line = 'Finding where you are';
-  let t = 0.5;
-  let moon = false;
-  if (place && 'error' in place) line = 'Location unavailable';
-  if (place && 'lat' in place && now && zone) {
-    const at = now.getTime();
-    const day = sunTimes(at, place.lat, place.lon);
-    const fmt = (ms: number) => partsIn(new Date(ms), zone).format({ hour: 'numeric', minute: '2-digit' }).format(new Date(ms));
-    if (day.polar) {
-      phase = day.polar === 'day' ? 'day' : 'night';
-      moon = day.polar === 'night';
-      line = day.polar === 'day' ? 'Midnight sun' : 'Polar night';
-    } else {
-      const rise = day.rise!;
-      const set = day.set!;
-      const nextRise = at > set ? sunTimes(at + 24 * HOUR, place.lat, place.lon).rise ?? rise + 24 * HOUR : rise;
-      const lastSet = at < rise ? sunTimes(at - 24 * HOUR, place.lat, place.lon).set ?? set - 24 * HOUR : set;
-      if (at >= rise - HOUR / 2 && at < rise + HOUR) {
-        phase = 'dawn';
-        line = `Golden sun · sunrise ${fmt(rise)}`;
-      } else if (at > set - HOUR && at <= set + HOUR / 2) {
-        phase = 'dusk';
-        line = `Golden hour · sunset ${fmt(set)}`;
-      } else if (at > rise && at < set) {
-        phase = 'day';
-        line = Math.abs(at - day.noon) < HOUR ? 'The very peak' : `Sunset ${fmt(set)}`;
-      } else {
-        phase = 'night';
-        line = `Sunrise ${fmt(nextRise)}`;
-      }
-      if (at >= rise && at <= set) {
-        t = (at - rise) / (set - rise);
-      } else {
-        // after dark the moon takes the arc, from last sunset to the next sunrise
-        moon = true;
-        t = (at - lastSet) / (nextRise - lastSet);
-      }
-    }
-  }
-  const look = LOOK[phase];
-  // the ends of the arc are below the card, so the orb is kept to the part that shows
-  const angle = Math.PI - (0.12 + Math.min(1, Math.max(0, t)) * 0.76) * Math.PI;
-  const ox = CX + RX * Math.cos(angle);
-  const oy = CY - RY * Math.sin(angle);
-  const temp = weather ? `${Math.round(tempUnit === 'f' ? weather.celsius * 1.8 + 32 : weather.celsius)} ${tempUnit === 'f' ? 'F°' : 'C°'}` : '';
-  const arc = `M${CX - RX} ${CY} A${RX} ${RY} 0 0 1 ${CX + RX} ${CY}`;
-
-  return (
-    <div className="relative isolate h-full w-full overflow-hidden rounded-[var(--tile-radius)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]" style={{ background: look.sky }}>
-      <svg viewBox="0 0 300 100" preserveAspectRatio="xMidYMax slice" className="absolute inset-0 -z-10 h-full w-full">
-        <defs>
-          <linearGradient id={`arc-${phase}`} x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor={look.arc[0]} />
-            <stop offset="55%" stopColor={look.arc[1]} />
-            <stop offset="100%" stopColor={look.arc[2]} />
-          </linearGradient>
-          <radialGradient id={`orb-${phase}`}>
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="45%" stopColor={look.orb} />
-            <stop offset="100%" stopColor={look.orb} stopOpacity="0" />
-          </radialGradient>
-          <filter id="arc-blur" x="-20%" y="-50%" width="140%" height="200%">
-            <feGaussianBlur stdDeviation="3.5" />
-          </filter>
-        </defs>
-        {/* the arc twice: once blurred wide for its glow, once crisp, and a light running along it */}
-        <path d={arc} fill="none" stroke={`url(#arc-${phase})`} strokeWidth="11" opacity="0.55" filter="url(#arc-blur)" />
-        <path d={arc} fill="none" stroke={`url(#arc-${phase})`} strokeWidth="6" strokeLinecap="round" />
-        <path d={arc} fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2.5" strokeLinecap="round" pathLength={100} strokeDasharray="6 94" className="sun-arc-run" />
-        <g transform={`translate(${ox} ${oy})`}>
-          <circle r="22" fill={look.glow} opacity="0.55" filter="url(#arc-blur)" className="sun-glow" />
-          <circle r="11" fill={`url(#orb-${phase})`} />
-          <circle r={moon ? 7.5 : 6.5} fill={moon ? '#f4f4f6' : '#fff6e6'} />
-        </g>
-      </svg>
-      <div className="flex items-start justify-between px-5 pt-3.5">
-        <div>
-          <div className="flex items-center gap-2.5 font-display text-[1.75rem] leading-tight font-semibold text-white">
-            <AnimatedIcon kind={moon ? 'moon' : 'sun'} className="h-6 w-6" />
-            {look.title}
-          </div>
-          <div className="font-body text-[0.875rem] text-white/65">{line}</div>
-        </div>
-        <div className="font-display text-[1.25rem] font-semibold tabular-nums text-white">{temp}</div>
-      </div>
+  const shell = (body: ReactNode) => (
+    <div
+      onClick={() => openDetail('sun')}
+      className="relative isolate flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-[var(--tile-radius)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
+      style={{ background: `linear-gradient(160deg, ${SCENE.graphite.from}, ${SCENE.graphite.to})` }}>
+      <div className="pt-3 text-center font-display text-[0.9375rem] font-medium tracking-[0.18em] text-soft uppercase">Sunset &amp; Sunrise</div>
+      {body}
     </div>
+  );
+  if (!place || 'error' in place || !now || !zone) {
+    return shell(<div className="grid flex-1 place-items-center font-body text-[0.875rem] text-dim">{place && 'error' in place ? 'Location unavailable' : 'Finding where you are'}</div>);
+  }
+
+  const at = now.getTime();
+  const start = at - BEFORE;
+  const samples = Array.from({ length: STEPS + 1 }, (_, i) => sunAltitude(start + (i / STEPS) * SPAN, place.lat, place.lon));
+  const peak = Math.max(10, ...samples.map(Math.abs));
+  const x = (ms: number) => ((ms - start) / SPAN) * W;
+  const y = (alt: number) => (HORIZON - (alt / peak) * REACH) * H;
+  const curve = samples.map((alt, i) => `${i ? 'L' : 'M'}${((i / STEPS) * W).toFixed(1)} ${y(alt).toFixed(2)}`).join('');
+  const area = `${curve}L${W} ${HORIZON * H}L0 ${HORIZON * H}Z`;
+  const nowX = x(at);
+
+  // the first sunset and the first sunrise inside the window, today's or tomorrow's
+  const events = [0, 1].flatMap(day => {
+    const t = sunTimes(at + day * 24 * HOUR, place.lat, place.lon);
+    return [
+      t.set !== null ? { kind: 'set' as const, at: t.set } : null,
+      t.rise !== null ? { kind: 'rise' as const, at: t.rise } : null,
+    ].filter((e): e is { kind: 'set' | 'rise'; at: number } => !!e && e.at > start && e.at < start + SPAN);
+  });
+  const sunset = events.filter(e => e.kind === 'set').sort((a, b) => a.at - b.at)[0];
+  const sunrise = events.filter(e => e.kind === 'rise' && e.at > at).sort((a, b) => a.at - b.at)[0];
+  const fmt = (ms: number) => partsIn(new Date(ms), zone).format({ hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(ms));
+  const up = sunAltitude(at, place.lat, place.lon) > 0;
+  const pct = (px: number) => `${(px / W) * 100}%`;
+  const marks = [sunset && { ...sunset, label: 'Sunset' }, sunrise && { ...sunrise, label: 'Sunrise' }].filter(Boolean) as { kind: 'set' | 'rise'; at: number; label: string }[];
+
+  return shell(
+    <>
+      {/* the two times, each over the dotted line down to where the curve meets the horizon */}
+      <div className="relative h-[42px] shrink-0">
+        {marks.map(m => (
+          <div key={m.label} className="absolute top-0 -translate-x-1/2 text-center" style={{ left: `clamp(48px, ${pct(x(m.at))}, calc(100% - 48px))` }}>
+            <div className="font-body text-[0.75rem] text-soft">{m.label}</div>
+            <div className="font-display text-[1.25rem] leading-tight font-medium tabular-nums text-off-white">{fmt(m.at)}</div>
+          </div>
+        ))}
+      </div>
+      <div className="relative min-h-0 flex-1">
+        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
+          <defs>
+            <linearGradient id="sun-day" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#f7a21b" />
+              <stop offset="100%" stopColor="#ffc457" />
+            </linearGradient>
+            {/* daylight is whatever of the curve stands above the horizon */}
+            <clipPath id="sun-above">
+              <rect x="0" y="-50" width={W} height={HORIZON * H + 50} />
+            </clipPath>
+            <clipPath id="sun-past">
+              <rect x="0" y="-50" width={nowX} height={H + 100} />
+            </clipPath>
+            <clipPath id="sun-ahead">
+              <rect x={nowX} y="-50" width={W - nowX} height={H + 100} />
+            </clipPath>
+          </defs>
+          <g clipPath="url(#sun-above)">
+            <path d={area} fill="url(#sun-day)" clipPath="url(#sun-past)" />
+            <path d={area} fill="url(#sun-day)" opacity="0.18" clipPath="url(#sun-ahead)" />
+          </g>
+          <line x1="0" x2={W} y1={HORIZON * H} y2={HORIZON * H} stroke="rgba(255,255,255,0.28)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <path d={curve} fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="1.4" vectorEffect="non-scaling-stroke" />
+          {marks.map(m => (
+            <line key={m.label} x1={x(m.at)} x2={x(m.at)} y1={-42} y2={HORIZON * H} stroke="rgba(255,255,255,0.45)" strokeWidth="1.2" strokeDasharray="2 3" vectorEffect="non-scaling-stroke" />
+          ))}
+        </svg>
+        <span className="absolute right-3 font-mono text-[0.625rem] font-semibold tracking-[0.12em] text-dim" style={{ top: `calc(${HORIZON * 100}% - 14px)` }}>
+          HORIZON
+        </span>
+        {sunrise && (
+          <span
+            className="absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[1.5px] border-white/80 bg-[#14171e]"
+            style={{ left: pct(x(sunrise.at)), top: `${HORIZON * 100}%` }}
+          />
+        )}
+        {/* the sun where it is now, glowing; after dark it is the moon's pale dot under the horizon */}
+        <span className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: pct(nowX), top: `${(y(sunAltitude(at, place.lat, place.lon)) / H) * 100}%` }}>
+          {up ? (
+            <span className="relative grid place-items-center">
+              <span className="sun-glow absolute h-9 w-9 rounded-full bg-[radial-gradient(circle,rgba(255,196,87,0.7),transparent_65%)]" />
+              <span className="relative text-[#ffc457]">
+                <AnimatedIcon kind="sun" className="h-6 w-6" />
+              </span>
+            </span>
+          ) : (
+            <span className="relative text-[#cfd6ff]">
+              <AnimatedIcon kind="moon" className="h-5 w-5" />
+            </span>
+          )}
+        </span>
+      </div>
+    </>,
   );
 });

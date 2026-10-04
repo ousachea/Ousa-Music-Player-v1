@@ -1,7 +1,7 @@
 // home as a set of widgets: each tile a colour of its own fading to black in one corner, a title, one large figure
 // and a bar. cpu, memory and the gpu sit along the top, network runs wide underneath beside the disk. a device that
 // cannot fill a tile hands it to what it can, so a phone's cpu tile becomes its battery
-import { memo, useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
+import { memo, useEffect, useRef, type PointerEvent, type ReactNode } from 'react';
 
 import { useSettings } from '../store/settings';
 import { METRIC } from '../theme';
@@ -12,7 +12,7 @@ import { toLayout, useOrientation } from '../components/stage';
 import { takePager, takeWheel } from '../composables/useCarThingInput';
 import { duration, gb, type Formatters } from '../composables/useMetrics';
 import type { DeviceCapabilities, DeviceTelemetry, StorageDevice } from '../protocol/types';
-import { step, type Screen } from '../store/navigation';
+import { navStore, openDetail, setHomePage, step, useNav, type Screen } from '../store/navigation';
 import type { DeviceEntry } from '../store/telemetry';
 import { NoData, type DeviceProps } from './device';
 import { SunWidget } from './sun';
@@ -172,7 +172,7 @@ function AppsTile({ t, onOpen }: { t: DeviceTelemetry; onOpen: () => void }) {
 function SystemTile({ t }: { t: DeviceTelemetry }) {
   const up = t.system.uptime;
   return (
-    <Tile look={LOOKS.graphite}>
+    <Tile look={LOOKS.graphite} onOpen={() => openDetail('system')}>
       <Title icon={<AnimatedIcon kind="system" />}>System</Title>
       <div className="mt-auto">
         <Figure value={up === undefined ? '—' : duration(up)} size={2.25} />
@@ -189,7 +189,7 @@ function SystemTile({ t }: { t: DeviceTelemetry }) {
 function DisplaysTile({ t }: { t: DeviceTelemetry }) {
   const list = t.displays!;
   return (
-    <Tile look={LOOKS.displays}>
+    <Tile look={LOOKS.displays} onOpen={() => openDetail('displays')}>
       <Title icon={<AnimatedIcon kind="displays" />}>{list.length === 1 ? 'Display' : `${list.length} displays`}</Title>
       <div className="mt-auto flex flex-col gap-1">
         {list.slice(0, 3).map((d, i) => (
@@ -322,7 +322,9 @@ const SWIPE_PX = 50;
  * scrolled natively, since the wheel also arrives as horizontal scroll and would move it twice */
 function Pager({ pages, upright }: { pages: ReactNode[]; upright: boolean }) {
   const { rotate } = useOrientation();
-  const [page, setPage] = useState(0);
+  // the page lives in the navigation store, so leaving home and coming back lands on the same one
+  const page = useNav().homePage;
+  const setPage = (next: number | ((p: number) => number)) => setHomePage(typeof next === 'function' ? next(navStore.get().homePage) : next);
   const count = pages.length;
   const at = Math.min(page, count - 1);
   const atRef = useRef(at);
@@ -360,7 +362,7 @@ function Pager({ pages, upright }: { pages: ReactNode[]; upright: boolean }) {
 
   return (
     <div data-scroll className="relative h-full overflow-hidden" onPointerDown={down} onPointerUp={up} onPointerCancel={() => (from.current = null)}>
-      <div className={`flex transition-transform duration-500 ${count > 1 ? 'h-[calc(100%-14px)]' : 'h-full'} ease-[cubic-bezier(0.22,1,0.36,1)]`} style={{ transform: `translateX(-${at * 100}%)` }}>
+      <div className={`flex transition-transform duration-500 h-full ease-[cubic-bezier(0.22,1,0.36,1)]`} style={{ transform: `translateX(-${at * 100}%)` }}>
         {pages.map((tiles, i) =>
           Array.isArray(tiles) ? (
             <div key={i} className={`grid h-full w-full shrink-0 gap-3 pr-px ${upright ? 'grid-cols-2 grid-rows-3' : 'grid-cols-3 grid-rows-2'}`}>
@@ -373,10 +375,12 @@ function Pager({ pages, upright }: { pages: ReactNode[]; upright: boolean }) {
           ),
         )}
       </div>
+      {/* fixed inside the turned stage is its bottom edge, so the marker sits on the screen's own edge whatever padding
+          the page has, one segment a page */}
       {count > 1 && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center gap-1.5">
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[5] flex h-[3px] gap-[2px]">
           {pages.map((_, i) => (
-            <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === at ? 'w-4 bg-off-white' : 'w-1.5 bg-white/30'}`} />
+            <span key={i} className={`flex-1 transition-colors duration-300 ${i === at ? 'bg-off-white' : 'bg-white/18'}`} />
           ))}
         </div>
       )}

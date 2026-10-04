@@ -9,7 +9,7 @@ import { RING_COLORS, Ring, RingValue } from '../components/ring';
 import { duration, gb, pct, type Formatters } from '../composables/useMetrics';
 import { useWheelScroll } from '../composables/useWheel';
 import type { DeviceCapabilities } from '../protocol/types';
-import type { Screen } from '../store/navigation';
+import { openDetail, type Screen } from '../store/navigation';
 import type { DeviceEntry } from '../store/telemetry';
 import { useOrientation } from '../components/stage';
 import { ProcessRadar } from './radar';
@@ -156,7 +156,7 @@ export const Home = memo(function Home({ entry, caps, fmt, onOpen }: DeviceProps
           case 'battery': {
             const b = t.battery;
             return (
-              <MetricCard key={tile} icon="battery" label="Battery" color={COLORS.battery}>
+              <MetricCard key={tile} icon="battery" label="Battery" color={COLORS.battery} onOpen={() => openDetail('battery')}>
                 <div className="flex items-end justify-between">
                   <Big value={pct(b?.percentage)} />
                   <span className="font-mono text-[1rem] text-soft">{b?.charging === undefined ? '' : b.charging ? 'charging' : 'on battery'}</span>
@@ -231,7 +231,7 @@ export const HomeRings = memo(function HomeRings({ entry, caps, fmt, onOpen }: D
             break;
           }
           case 'battery':
-            ring = <Ring percent={t.battery?.percentage} colors={RING_COLORS.battery} center={value(t.battery?.percentage)} icon="battery" label="Battery" sub={t.battery?.charging ? 'charging' : t.battery?.charging === false ? 'on battery' : null} />;
+            ring = <Ring percent={t.battery?.percentage} colors={RING_COLORS.battery} center={value(t.battery?.percentage)} icon="battery" label="Battery" sub={t.battery?.charging ? 'charging' : t.battery?.charging === false ? 'on battery' : null} onOpen={() => openDetail('battery')} />;
             break;
           case 'storage': {
             const d = t.storage?.[0];

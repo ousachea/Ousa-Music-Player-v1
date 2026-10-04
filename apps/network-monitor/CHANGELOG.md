@@ -22,6 +22,21 @@ chips light in turn, network's arrows trade places, the drive turns, the clock's
 music's bars dance while it plays, Claude's asterisk turns, and the weather's sun, cloud, rain or snow
 moves with it.
 
+**Every card opens into more.** The weather adds feels-like, the day's high and low, humidity, wind,
+UV, the chance of rain and the next twelve hours; the sun adds dawn, dusk, solar noon, the golden
+hour, the length of the day and the moon's phase; the clock adds the week, the day of the year and
+the time zone; the calendar shows the month with week numbers and how far through the year it is;
+the music has a scrubber; the battery a history; Claude Code the split of its tokens and the models;
+System and Displays everything known. The clock's face and the calendar's view are chosen there.
+Back, or preset 1, returns to Home on the page it came from, which Home now always remembers.
+
+**Sunset & Sunrise** is redrawn as the sun's path through the next day: a curve over the horizon,
+the daylight filled warm, the next sunset and sunrise marked where it crosses, and the sun where it
+is now.
+
+The page marker is a thin bar along the bottom edge of the screen, and a wheel press takes away the
+margins with the top bar, so tiles run to the edges.
+
 ## 0.4.1
 
 Every style now speaks the same visual language. Each thing measured keeps one colour wherever it

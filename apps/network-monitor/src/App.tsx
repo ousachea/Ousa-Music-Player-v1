@@ -13,6 +13,7 @@ import { WeatherContext, useWeather } from './composables/useWeather';
 import { ZoneContext, useZone } from './composables/useZone';
 import { daemonUrl } from './daemon';
 import { Debug, Devices, More, SettingsScreen } from './screens/app';
+import { DetailScreen } from './screens/details';
 import { HomePaged, HomeWidgets } from './screens/widgets';
 import { Cpu, Gpu, Home, HomeRings, Memory, Network, Offline, Processes, Storage, type DeviceProps } from './screens/device';
 import { go, selectDevice, useNav, type Screen } from './store/navigation';
@@ -91,6 +92,7 @@ export default function App() {
   else if (nav.screen === 'settings') body = <SettingsScreen settings={settings} onChange={patch => updateSettings(client, patch)} />;
   else if (nav.screen === 'debug') body = <Debug daemon={daemon} source={settings.source} state={telemetry} entry={entry} />;
   else if (nav.screen === 'more') body = <More onGo={go} />;
+  else if (nav.screen === 'detail' && nav.detail) body = <DetailScreen detail={nav.detail} entry={entry} />;
   else if (!deviceProps) body = <Waiting source={settings.source} />;
   else if (!deviceProps.entry.online) body = <Offline entry={deviceProps.entry} />;
   else {
@@ -155,7 +157,7 @@ export default function App() {
         />
       )}
       {/* keyed on screen and device, so switching either starts the view fresh rather than morphing the last one */}
-      <div key={`${nav.screen}:${APP_SCREENS.includes(nav.screen) ? '' : id}`} className="min-h-0 flex-1 animate-[enter_180ms_ease-out] px-5 py-4">
+      <div key={`${nav.screen}:${APP_SCREENS.includes(nav.screen) ? '' : id}`} className={`min-h-0 flex-1 animate-[enter_180ms_ease-out] ${nav.bare ? 'p-0' : 'px-5 py-4'}`}>
         {body}
       </div>
       {banner && <AlertBanner tone="ok" title="ONLINE" detail={`${banner} connected`} />}
