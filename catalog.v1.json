@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-04T03:23:32.463Z",
+  "updated_at": "2026-10-04T03:36:41.721Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -1876,6 +1876,52 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.3.0",
+          "released_at": "2026-10-04T03:36:41.718Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c16-be12-7003-91aa-482b107fdccb/0.3.0.zip",
+            "size": 953626,
+            "sha256": "0b70b43c171341da14f010170edc824341dfe689ea1e40950878bc0c695ec6f7"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c16-be12-7003-91aa-482b107fdccb/0.3.0.html",
+            "size": 26935,
+            "sha256": "40613e2f3a9aad26b2e2687dd27ebcc57fcf5322563b72fbf68732c427e13313"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/vm_stat",
+              "run:/usr/sbin/sysctl",
+              "run:/usr/sbin/ioreg",
+              "run:/usr/sbin/netstat",
+              "run:/bin/ps",
+              "run:/usr/bin/pmset",
+              "run:/bin/df",
+              "run:/sbin/ping",
+              "run:/sbin/route",
+              "run:/usr/sbin/system_profiler",
+              "run:/usr/bin/sw_vers",
+              "run:/usr/sbin/scutil",
+              "run:/sbin/ifconfig",
+              "run:/usr/sbin/networksetup",
+              "read:/proc",
+              "read:/sys",
+              "read:/etc/os-release",
+              "run:df",
+              "run:ping",
+              "run:nvidia-smi",
+              "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+              "sys"
+            ]
+          },
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Windows and Linux** join macOS in Live: install the app in the bridgething desktop app on either\nand the computer the Car Thing is plugged into shows up, with nothing to set up and no admin rights.\nWindows reads through one PowerShell that stays running while the app is on screen, adds the live\nCPU clock, and for an NVIDIA card its temperature, clock, power and fan. Linux reads `/proc` and\n`/sys`, and adds CPU, drive and GPU temperatures, which Linux shares freely.\n\nStorage has its own **DISK** tab along the bottom, rather than sitting inside More.\n\nA busy process on several cores now reads past 100%, as Activity Monitor and top show it, where\nbefore it was dropped."
+        },
+        {
           "version": "0.2.0",
           "released_at": "2026-10-04T03:23:32.461Z",
           "download": {
@@ -1908,6 +1954,13 @@
               "run:/usr/sbin/scutil",
               "run:/sbin/ifconfig",
               "run:/usr/sbin/networksetup",
+              "read:/proc",
+              "read:/sys",
+              "read:/etc/os-release",
+              "run:df",
+              "run:ping",
+              "run:nvidia-smi",
+              "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
               "sys"
             ]
           },
@@ -1947,6 +2000,13 @@
               "run:/usr/sbin/scutil",
               "run:/sbin/ifconfig",
               "run:/usr/sbin/networksetup",
+              "read:/proc",
+              "read:/sys",
+              "read:/etc/os-release",
+              "run:df",
+              "run:ping",
+              "run:nvidia-smi",
+              "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
               "sys"
             ]
           },
@@ -1986,6 +2046,13 @@
               "run:/usr/sbin/scutil",
               "run:/sbin/ifconfig",
               "run:/usr/sbin/networksetup",
+              "read:/proc",
+              "read:/sys",
+              "read:/etc/os-release",
+              "run:df",
+              "run:ping",
+              "run:nvidia-smi",
+              "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
               "sys"
             ]
           },
@@ -2025,6 +2092,13 @@
               "run:/usr/sbin/scutil",
               "run:/sbin/ifconfig",
               "run:/usr/sbin/networksetup",
+              "read:/proc",
+              "read:/sys",
+              "read:/etc/os-release",
+              "run:df",
+              "run:ping",
+              "run:nvidia-smi",
+              "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
               "sys"
             ]
           },
