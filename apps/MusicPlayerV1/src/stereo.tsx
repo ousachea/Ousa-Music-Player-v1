@@ -383,6 +383,7 @@ export function Stereo({
   onPrev,
   onNext,
   onDayNight,
+  onGlow,
 }: {
   title: string;
   artist: string;
@@ -408,6 +409,7 @@ export function Stereo({
   onPrev: () => void;
   onNext: () => void;
   onDayNight: () => void;
+  onGlow: () => void;
 }) {
   const lit = glowColor(glow, accent);
   // the hue stays, taken down far enough to read as ink on the pale glass
@@ -469,9 +471,9 @@ export function Stereo({
           </div>
           {/* turned on its side the row is too narrow for the meter and the clock both, and the clock wins */}
           {!upright && (
-            <div className="flex flex-1 justify-center">
+            <button aria-label="next display colour" onClick={onGlow} className="flex flex-1 justify-center transition-transform duration-150 active:scale-95">
               <Spectrum bars={16} playing={playing} motion={motion} color={color} height={7 * top} />
-            </div>
+            </button>
           )}
           {/* the clock is the light switch: a head unit dims its display from the same corner */}
           <button

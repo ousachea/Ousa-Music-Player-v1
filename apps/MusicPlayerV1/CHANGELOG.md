@@ -1,5 +1,9 @@
 # O-Music Player
 
+## 0.38.2
+
+Tapping the level meter on **Stereo** steps through the display colours.
+
 ## 0.38.1
 
 Tapping the clock on **Stereo** switches the display between light and dark.

@@ -524,6 +524,7 @@ export default function App() {
           glow={prefs.deckGlow}
           day={stereoDay}
           onDayNight={() => setPref('stereoMode', stereoDay ? 'dark' : 'light')}
+          onGlow={() => setPref('deckGlow', GLOWS[(GLOWS.indexOf(prefs.deckGlow) + 1) % GLOWS.length])}
           accent={accentOn}
           playing={playing}
           motion={prefs.motion}
