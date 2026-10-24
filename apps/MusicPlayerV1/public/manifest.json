@@ -49,7 +49,12 @@
           "mosaic",
           "ambient",
           "tuner",
-          "typewriter"
+          "typewriter",
+          "terminal",
+          "ticket",
+          "film",
+          "comic",
+          "magazine"
         ],
         "default": "widget"
       }

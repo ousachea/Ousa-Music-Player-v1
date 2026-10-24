@@ -8,7 +8,7 @@ none, so Khmer in titles, quotes, names and captions displays properly.
 
 |  | App | What it does |
 | --- | --- | --- |
-| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in twenty-two styles, coloured by the album art, on a screen that turns |
+| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in twenty-seven styles, coloured by the album art, on a screen that turns |
 | <img src="apps/clock/public/icon.png" width="40" alt=""> | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
 | <img src="apps/network-monitor/public/icon.png" width="40" alt=""> | **O-System Monitor** | CPU, GPU, memory, network and storage for your machines |
 | <img src="apps/quote-flow/public/icon.png" width="40" alt=""> | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -47,7 +47,7 @@ update**.
 
 ## O-Music Player
 
-Twenty-two player styles, all tinted by the album art, with music notes drifting up over them (**Display →
+Twenty-seven player styles, all tinted by the album art, with music notes drifting up over them (**Display →
 Floating notes**). Switch styles with **Mode** or in the settings; a small tag at the bottom names
 the current one. Track changes cross-fade the blurred background, and Vinyl and CD swap in a new
 record or disc. Anything you can tap to change a style's look, such as the record's label, the CD's hub and
@@ -229,6 +229,31 @@ card, and the buttons are ivory preset keys.
 Each song typed onto a sheet that runs the width of the screen, a letter at a time when it starts, with
 the last few still on the page above, and the machine's round keys for the buttons.
 
+### Terminal
+
+The song printed on a green-on-black command line, each new one streaming in under the last few, with an
+ASCII progress bar, a cursor at the prompt, and bracketed commands for the buttons.
+
+### Ticket
+
+The song as a concert ticket: the cover as the poster, the title as the act, the artist as the venue, and a
+stub with a seat and barcode made from the song. Tap the stub to tear it off; a new one grows back.
+
+### Film strip
+
+What has played runs past as frames on a strip of film, sprocket holes and all, with the song playing now
+lit in the projector's gate in the middle.
+
+### Comic
+
+The cover as a halftone comic panel, the title in a speech bubble, the artist in a caption box, and a burst
+(POW!, BAM!, ZAP!) going off when the song changes.
+
+### Magazine
+
+The song as the front of a magazine: a masthead, the art full bleed, the title as the cover story, and the
+artist, album and running time as the cover lines.
+
 ### The queue
 
 ![The queue](apps/MusicPlayerV1/screenshots/08-queue.jpg)
@@ -244,7 +269,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel, Dashboard, Neon, Mosaic, Ambient, Tuner, Typewriter |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel, Dashboard, Neon, Mosaic, Ambient, Tuner, Typewriter, Terminal, Ticket, Film strip, Comic, Magazine |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -272,7 +297,7 @@ Press the button under the wheel; it opens where you left it, section and scroll
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
-- **Style**: the twenty-two styles as a grid. Tap one to switch to it, and its own settings (backdrop,
+- **Style**: the twenty-seven styles as a grid. Tap one to switch to it, and its own settings (backdrop,
   time remaining and the rest) slide in over the grid; **All styles**, or the button under the wheel, goes
   back
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation

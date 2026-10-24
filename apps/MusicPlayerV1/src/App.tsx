@@ -19,8 +19,11 @@ import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './q
 import { Cartridge } from './cartridge';
 import { CoverFlow } from './coverflow';
 import { Ambient } from './ambient';
+import { Comic } from './comic';
 import { Dashboard } from './dashboard';
+import { FilmStrip } from './filmstrip';
 import { Jukebox } from './jukebox';
+import { Magazine } from './magazine';
 import { Mosaic } from './mosaic';
 import { Neon } from './neon';
 import { Night } from './night';
@@ -28,6 +31,8 @@ import { Pixel } from './pixel';
 import { Polaroid } from './polaroid';
 import { Receipt } from './receipt';
 import { SplitFlap } from './splitflap';
+import { Terminal } from './terminal';
+import { Ticket } from './ticket';
 import { Tuner } from './tuner';
 import { Typewriter } from './typewriter';
 import type { StyleProps } from './style-kit';
@@ -68,6 +73,8 @@ const AUTO_SEEK: Partial<Record<Prefs['theme'], SeekKind>> = {
   neon: 'glow',
   tuner: 'ruler',
   typewriter: 'ruler',
+  ticket: 'dots',
+  comic: 'pill',
 };
 // how long a browsed lyric view stays put before it goes back to following the song
 const LYRIC_BROWSE_MS = 5000;
@@ -157,7 +164,7 @@ export default function App() {
   // Mosaic walls the screen with the history, so it reads the queue too
   const queue = useQueue(
     client,
-    sheet || prefs.theme === 'flow' || prefs.theme === 'jukebox' || prefs.theme === 'mosaic',
+    sheet || prefs.theme === 'flow' || prefs.theme === 'jukebox' || prefs.theme === 'mosaic' || prefs.theme === 'film',
     track?.persistentId ?? track?.title ?? null,
   );
   const flowThumbs = useThumbs(
@@ -166,7 +173,7 @@ export default function App() {
       ? [...(queue?.items ?? []).slice(0, 3), ...(queue?.previous ?? []).slice(-3)].flatMap(t => (t.artworkId ? [t.artworkId] : []))
       : prefs.theme === 'jukebox'
         ? [...(queue?.items ?? []).slice(0, 8), ...(queue?.previous ?? []).slice(-9)].flatMap(t => (t.artworkId ? [t.artworkId] : []))
-        : prefs.theme === 'mosaic'
+        : prefs.theme === 'mosaic' || prefs.theme === 'film'
           ? // the whole history, since repeats are dropped from the wall and it still has to fill
             [...new Set((queue?.previous ?? []).flatMap(t => (t.artworkId ? [t.artworkId] : [])))]
           : [],
@@ -547,7 +554,17 @@ export default function App() {
                 ? 'skip-prev'
                 : 'skip-next'
         }`}>
-      {prefs.theme === 'dashboard' ? (
+      {prefs.theme === 'terminal' ? (
+        <Terminal {...styleProps} />
+      ) : prefs.theme === 'ticket' ? (
+        <Ticket {...styleProps} />
+      ) : prefs.theme === 'film' ? (
+        <FilmStrip {...styleProps} queue={queue} thumbs={flowThumbs} />
+      ) : prefs.theme === 'comic' ? (
+        <Comic {...styleProps} />
+      ) : prefs.theme === 'magazine' ? (
+        <Magazine {...styleProps} />
+      ) : prefs.theme === 'dashboard' ? (
         <Dashboard {...styleProps} volume={volume} />
       ) : prefs.theme === 'neon' ? (
         <Neon {...styleProps} />
@@ -1202,7 +1219,7 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
     values: [...THEMES],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel', 'Dashboard', 'Neon', 'Mosaic', 'Ambient', 'Tuner', 'Typewriter'],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel', 'Dashboard', 'Neon', 'Mosaic', 'Ambient', 'Tuner', 'Typewriter', 'Terminal', 'Ticket', 'Film strip', 'Comic', 'Magazine'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   polaroidFrame: { values: [...FRAMES], labels: ['White', 'Black', 'Cream'] },
@@ -1824,6 +1841,26 @@ const GLYPHS: Record<string, ReactNode> = {
       <path d="M5.5 10h13M8 10v2M11 10v2M14 10v2M17 10v2M12.5 8.5v6" />
       <circle cx="8" cy="16" r="1" />
       <circle cx="16" cy="16" r="1" />
+    </>
+  ),
+  terminal: (
+    <>
+      <rect x="2.5" y="4" width="19" height="16" rx="2" />
+      <path d="M6.5 9l3 3-3 3M12 15h5" />
+    </>
+  ),
+  ticket: <path d="M3 7a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-3a2 2 0 0 0 0-4zM15 5v14" />,
+  film: (
+    <>
+      <rect x="2.5" y="5" width="19" height="14" rx="1.5" />
+      <path d="M2.5 8.5h19M2.5 15.5h19M6 5v3.5M10 5v3.5M14 5v3.5M18 5v3.5M6 15.5V19M10 15.5V19M14 15.5V19M18 15.5V19" />
+    </>
+  ),
+  comic: <path d="M12 3l2 4.5 4.5-1.5-1.5 4.5L21 12l-4 2 1.5 4.5L14 17l-2 4-2-4-4.5 1.5L7 14l-4-2 4-1.5-1.5-4.5L10 7.5z" />,
+  magazine: (
+    <>
+      <rect x="4" y="2.5" width="16" height="19" rx="1.5" />
+      <path d="M7 6.5h10M7 17h7" />
     </>
   ),
   typewriter: (

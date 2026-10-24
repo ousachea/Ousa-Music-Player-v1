@@ -6,7 +6,7 @@ import { POCKET_BODIES, type PocketBody } from './pocket';
 import { GLOWS, type Glow } from './stereo';
 
 // every player style, in the order Mode steps through them; widget, the first, is the default
-export const THEMES = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics', 'night', 'flap', 'receipt', 'jukebox', 'polaroid', 'pixel', 'dashboard', 'neon', 'mosaic', 'ambient', 'tuner', 'typewriter'] as const;
+export const THEMES = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics', 'night', 'flap', 'receipt', 'jukebox', 'polaroid', 'pixel', 'dashboard', 'neon', 'mosaic', 'ambient', 'tuner', 'typewriter', 'terminal', 'ticket', 'film', 'comic', 'magazine'] as const;
 
 // the seek bar kinds; auto picks the one that suits the style
 export const SEEKS = ['bar', 'wave', 'cells', 'dots', 'glow', 'hand', 'pill', 'ruler', 'pulse', 'stripes'] as const;

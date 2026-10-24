@@ -129,7 +129,7 @@ export function Hand({ progress, dot, tint }: Look) {
 export function Pill({ progress, dot, tint, tint2 }: Look) {
   const at = `${clamp(progress) * 100}%`;
   return (
-    <div className="relative h-2.5 w-full rounded-full bg-white/15">
+    <div className="relative h-2.5 w-full rounded-full" style={{ background: faint(tint) }}>
       <div
         className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-300 ease-linear"
         style={{ width: at, background: `linear-gradient(90deg, ${tint}, ${tint2})` }}
