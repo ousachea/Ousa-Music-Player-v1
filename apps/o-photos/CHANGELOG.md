@@ -1,5 +1,10 @@
 # O-Photos
 
+## 0.2.2
+
+Khmer text displays on the device. The Car Thing has no Khmer font, so Khmer in your own text
+(quotes, names, captions, track titles) came out as empty boxes; the app now carries its own.
+
 ## 0.2.1
 
 An icon in the store: a stack of photos, in the same family as the other apps.

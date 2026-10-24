@@ -1,5 +1,10 @@
 # O-Gold Tracker
 
+## 0.3.4
+
+Khmer text displays on the device. The Car Thing has no Khmer font, so Khmer in your own text
+(quotes, names, captions, track titles) came out as empty boxes; the app now carries its own.
+
 ## 0.3.3
 
 The app is called **O-Gold Tracker** now, on the store card, on the device and in the tab it opens

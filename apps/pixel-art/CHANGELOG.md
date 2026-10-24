@@ -1,5 +1,10 @@
 # O-Pixel Art
 
+## 0.1.2
+
+Khmer text displays on the device. The Car Thing has no Khmer font, so Khmer in your own text
+(quotes, names, captions, track titles) came out as empty boxes; the app now carries its own.
+
 ## 0.1.1
 
 An icon: a pixel flame on the app's own glowing wall, hot white at its base and red at the tips.

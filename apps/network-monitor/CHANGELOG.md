@@ -1,5 +1,10 @@
 # O-System Monitor
 
+## 0.4.3
+
+Khmer text displays on the device. The Car Thing has no Khmer font, so Khmer in your own text
+(quotes, names, captions, track titles) came out as empty boxes; the app now carries its own.
+
 ## 0.4.2
 
 The **battery** looks alive while it charges: the charge is a liquid with a glossy top and a surface

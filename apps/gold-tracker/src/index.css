@@ -16,6 +16,17 @@
   src: url("./fonts/Inter-Variable.ttf") format("truetype-variations");
 }
 
+/* the device has no khmer face at all; the range keeps it from loading until a khmer character
+   actually appears */
+@font-face {
+  font-family: "Noto Sans Khmer";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./fonts/NotoSansKhmer-Variable.ttf") format("truetype-variations");
+  unicode-range: U+1780-17FF, U+19E0-19FF, U+200B-200D, U+25CC;
+}
+
 @theme {
   --color-off-white: #f4efe6;
   --color-bg: #0d0a06;
@@ -57,9 +68,9 @@
   --text-hero: 1.375rem;
   --text-screen-title: 2.125rem;
 
-  --font-display: "Outfit", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-display: "Outfit", "Noto Sans Khmer", system-ui, sans-serif;
+  --font-body: "Inter", "Noto Sans Khmer", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Noto Sans Khmer", monospace;
 
   --tracking-wordmark: -0.03em;
   --tracking-display: -0.02em;

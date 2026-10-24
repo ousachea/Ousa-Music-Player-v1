@@ -1,5 +1,10 @@
 # O-Desk Exchange
 
+## 0.2.1
+
+Khmer text displays on the device. The Car Thing has no Khmer font, so Khmer in your own text
+(quotes, names, captions, track titles) came out as empty boxes; the app now carries its own.
+
 ## 0.2.0
 
 The twelve names on the board stop pretending to be a real exchange: Vapourware Systems, Wheely Fast

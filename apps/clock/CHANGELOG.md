@@ -1,5 +1,10 @@
 # O-Clock
 
+## 0.5.1
+
+Khmer text displays on the device. The Car Thing has no Khmer font, so Khmer in your own text
+(quotes, names, captions, track titles) came out as empty boxes; the app now carries its own.
+
 ## 0.5.0
 
 **Calendar**, a tenth face: the month the phone thinks it is, laid out from Monday with the weekday
