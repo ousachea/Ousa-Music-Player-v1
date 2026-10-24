@@ -22,7 +22,7 @@ import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
-import { GROUPS, STYLE_ROWS, shown } from './settings-layout';
+import { GROUPS, STYLE_ROWS, shown, type Row } from './settings-layout';
 
 const SCRUB_COMMIT_MS = 340;
 // one rotary detent lands around deltaX 1, so a detent is a volume step
@@ -73,7 +73,6 @@ export default function App() {
     prefs.stereoMode === 'light' || (prefs.stereoMode === 'auto' && Number(dayClock?.hour ?? NaN) % 24 < 12);
   const [panel, setPanel] = useState(false);
   // the settings open on the general page; a style's own settings are a page of their own under it
-  const [stylePage, setStylePage] = useState(false);
   const [sheet, setSheet] = useState(false);
   const [pocketArt, setPocketArt] = useState(false);
   const [hint, setHint] = useState(false);
@@ -367,11 +366,7 @@ export default function App() {
       if (e.key === ' ' || e.key === 'Enter') press();
       else if (e.key === 'Escape') {
         if (sheet) setSheet(false);
-        else if (panel && stylePage) setStylePage(false);
-        else {
-          setStylePage(false);
-          setPanel(open => !open);
-        }
+        else setPanel(open => !open);
       }
       else if (e.key === 'ArrowLeft' || e.key === '1') goPrev(true);
       else if (e.key === '2') toggle();
@@ -442,7 +437,7 @@ export default function App() {
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
     };
-  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, sheet, stylePage, toggle]);
+  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, sheet, toggle]);
 
   if (!track)
     return (
@@ -925,8 +920,6 @@ export default function App() {
           setPref={setPref}
           accent={accentOn}
           artUrl={artUrl}
-          stylePage={stylePage}
-          onStylePage={setStylePage}
         />
       )}
     </div>
@@ -1138,16 +1131,12 @@ function Panel({
   setPref,
   accent,
   artUrl,
-  stylePage,
-  onStylePage,
 }: {
   client: BridgethingClient;
   prefs: Prefs;
   setPref: (key: keyof Prefs, value: string) => void;
   accent: Accent | null;
   artUrl: string | null;
-  stylePage: boolean;
-  onStylePage: (open: boolean) => void;
 }) {
   // the pixel size is what tells you whether the sharper lookup actually landed
   const [artPx, setArtPx] = useState<string | null>(null);
@@ -1164,11 +1153,16 @@ function Panel({
       at: el.scrollTop / (el.scrollHeight - el.clientHeight),
     });
   }, []);
-  useEffect(onScroll, [onScroll, prefs.theme, stylePage]);
-  // each page starts at its top, rather than wherever the other one had been scrolled to
+  // the style leads because it is what this is opened for most, and it opens on the style's own settings
+  const [tab, setTab] = useState<string>('Style');
+  useEffect(onScroll, [onScroll, prefs.theme, tab]);
+  // each section starts at its top, rather than wherever the last one had been scrolled to
   useEffect(() => {
     if (list.current) list.current.scrollTop = 0;
-  }, [stylePage]);
+  }, [tab]);
+  const rows = (tab === 'Style' ? STYLE_ROWS : (GROUPS.find(g => g.title === tab)?.rows ?? [])).filter(r =>
+    shown(r, read),
+  );
   const tint = accent?.fill ?? '#efefef';
   const ink = accent?.ink ?? '#060809';
   const { state: update, check } = useUpdateCheck(client);
@@ -1255,155 +1249,150 @@ function Panel({
     );
   };
 
+  const rowView = (row: Row, last: boolean) => {
+    const rule = last ? '' : 'border-b border-white/6';
+    const choices = ENUMS[row.key];
+    // four or more choices crowd out their own label beside it, so they go under it instead
+    if (choices && choices.values.length > 3) {
+      const props = {
+        values: choices.values,
+        labels: choices.labels,
+        value: String(prefs[row.key]),
+        tint,
+        ink,
+        onPick: (next: string) => setPref(row.key, next),
+      };
+      return (
+        <div key={row.key} className={`flex flex-col gap-2 px-4 py-3 ${rule}`}>
+          <span className="text-title text-near">{row.label}</span>
+          {choices.values.length > GRID_FROM ? <StyleGrid {...props} /> : <Segments {...props} />}
+        </div>
+      );
+    }
+    return (
+      <div key={row.key} className={`flex items-center justify-between gap-5 px-4 py-2 ${rule}`}>
+        <span className="min-w-0 truncate text-title text-near">{row.label}</span>
+        {control(row.key)}
+      </div>
+    );
+  };
+
   return (
     <div
-      className={`absolute inset-0 z-10 flex flex-col bg-screen/97 backdrop-blur-sm ${
+      className={`absolute inset-0 z-10 flex bg-screen/97 backdrop-blur-sm ${
         // the wide right margin keeps the rows clear of the wheel in landscape; turned, that edge is
-        // the bottom of the screen and the column is only 480 wide, so it evens out instead
-        upright ? 'p-5' : 'py-5 pl-8 pr-24'
+        // the bottom of the screen and the column is only 480 wide, so the sections become a top row
+        upright ? 'flex-col gap-3 p-5' : 'gap-5 py-5 pl-6 pr-24'
       }`}>
-      <div className="flex items-baseline justify-between gap-4">
-        <span className="font-mono text-hint tracking-[0.22em] text-dim uppercase">Settings</span>
-        <span className="flex items-center gap-2 text-hint text-dim">
-          <BackGlyph className="h-3.5 w-3.5" />
-          {stylePage ? 'the button under the wheel goes back' : 'the button under the wheel closes this'}
-        </span>
-      </div>
-
-      {/* the styles are tabs: a tile picks the style and opens its page, and the page's own header
-          is the way back. the grid stays out of the scrolling list so it is always in reach */}
-      <div className="mt-3 flex shrink-0 items-center gap-4">
-        {artUrl && (
-          <img
-            src={artUrl}
-            alt=""
-            onLoad={e => setArtPx(`${e.currentTarget.naturalWidth} x ${e.currentTarget.naturalHeight}`)}
-            className="h-14 w-14 shrink-0 rounded-xl object-cover ring-1 ring-white/12"
-          />
+      <nav className={upright ? 'flex shrink-0 gap-1.5 overflow-x-auto [scrollbar-width:none]' : 'flex w-40 shrink-0 flex-col gap-1'}>
+        {!upright && (
+          <span className="mb-2 px-3 font-mono text-hint tracking-[0.22em] text-dim uppercase">Settings</span>
         )}
-        <div className="min-w-0 flex-1">
-          <div className="mb-1.5 flex items-baseline gap-2">
-            <span className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Player style</span>
-            {artPx && (
-              <span className="truncate text-hint text-dim">
-                art {artPx}
-                {prefs.hdArt ? ', HD' : ''}
-              </span>
-            )}
-          </div>
-          {stylePage ? (
+        {TABS.map(name => {
+          const on = name === tab;
+          return (
             <button
-              onClick={() => onStylePage(false)}
-              className="flex h-11 w-full items-center gap-3 rounded-xl bg-white/10 px-4 transition active:scale-[0.98]">
-              <svg viewBox="0 0 24 24" className="h-5 w-5 text-dim" fill="none" stroke="currentColor" strokeWidth="2.4">
-                <path d="M15 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className="text-row text-dim">All styles</span>
-              <span className="ml-auto text-row font-semibold" style={{ color: tint }}>
-                {styleName}
-              </span>
+              key={name}
+              aria-pressed={on}
+              onClick={() => setTab(name)}
+              style={on ? { backgroundColor: tint, color: ink } : undefined}
+              className={`flex shrink-0 flex-col items-start rounded-xl px-3 py-2 text-left transition duration-200 active:scale-[0.97] ${
+                on ? '' : 'text-near'
+              }`}>
+              <span className="text-row-lg font-semibold">{name}</span>
+              {name === 'Style' && <span className={`text-hint ${on ? 'opacity-70' : 'text-dim'}`}>{styleName}</span>}
             </button>
-          ) : (
+          );
+        })}
+        {!upright && (
+          <span className="mt-auto flex items-start gap-2 px-3 text-hint text-dim">
+            <BackGlyph className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            the button under the wheel closes this
+          </span>
+        )}
+      </nav>
+
+      <div className="relative flex min-h-0 flex-1">
+        <div
+          ref={list}
+          onScroll={onScroll}
+          className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pl-4 [scrollbar-width:none]">
+          {tab === 'Style' && (
             <StyleGrid
               values={ENUMS.theme.values}
               labels={ENUMS.theme.labels}
               value={prefs.theme}
               tint={tint}
               ink={ink}
-              opens
-              cols={5}
-              onPick={next => {
-                setPref('theme', next);
-                onStylePage(true);
-              }}
+              cols={upright ? 4 : 5}
+              onPick={next => setPref('theme', next)}
             />
           )}
-        </div>
-      </div>
+          {tab === 'Style' && (
+            <h2 className="-mb-2 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{styleName} settings</h2>
+          )}
+          {tab === 'Style' && rows.length === 0 && (
+            <p className="rounded-2xl bg-white/4 px-4 py-5 text-center text-row text-dim">
+              {styleName} has no settings of its own.
+            </p>
+          )}
+          {rows.length > 0 && (
+            <div className="shrink-0 rounded-2xl bg-white/4">{rows.map((row, i) => rowView(row, i === rows.length - 1))}</div>
+          )}
 
-      <div className="relative mt-3 flex min-h-0 flex-1">
-      <div
-        ref={list}
-        onScroll={onScroll}
-        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pl-4 [scrollbar-width:none]">
-        {stylePage && STYLE_ROWS.every(r => !r.only?.includes(prefs.theme)) && (
-          <p className="px-1 py-6 text-center text-row text-dim">{styleName} has no settings of its own.</p>
-        )}
-        {(stylePage ? [{ title: `${styleName} settings`, rows: STYLE_ROWS }] : GROUPS)
-          .map(group => ({ ...group, rows: group.rows.filter(r => shown(r, read)) }))
-          .filter(group => group.rows.length > 0)
-          .map((group, gi) => (
-            <section key={group.title} className={gi === 0 ? '' : 'mt-6'}>
-              <h2 className="mb-1 flex items-baseline gap-2 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
-                {group.title}
-              </h2>
-              <div className="rounded-2xl bg-white/4">
-                {group.rows.map((row, ri) => {
-                  const last = ri === group.rows.length - 1 ? '' : 'border-b border-white/6';
-                  const choices = ENUMS[row.key];
-                  // too many choices to sit beside the label as pills, so they go under it as tiles
-                  if (choices && choices.values.length > GRID_FROM) {
-                    return (
-                      <div key={row.key} className={`flex flex-col gap-2 px-4 py-3 ${last}`}>
-                        <span className="text-title text-near">{row.label}</span>
-                        <StyleGrid
-                          values={choices.values}
-                          labels={choices.labels}
-                          value={String(prefs[row.key])}
-                          tint={tint}
-                          ink={ink}
-                          onPick={next => setPref(row.key, next)}
-                        />
-                      </div>
-                    );
-                  }
-                  return (
-                    <div key={row.key} className={`flex items-center justify-between gap-5 px-4 py-2 ${last}`}>
-                      <span className="min-w-0 truncate text-title text-near">{row.label}</span>
-                      {control(row.key)}
+          {tab === 'About' && (
+            <>
+              <div className="shrink-0 rounded-2xl bg-white/4">
+                <div className="flex items-center justify-between gap-5 border-b border-white/6 px-4 py-2">
+                  <div className="min-w-0">
+                    <div className="truncate text-title text-near">Software update</div>
+                    <div className="truncate text-hint text-dim">{updateLine(update)}</div>
+                  </div>
+                  <button
+                    onClick={check}
+                    disabled={update.kind === 'checking'}
+                    className="shrink-0 rounded-full px-5 py-2 text-row font-medium transition active:scale-95 disabled:opacity-50"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
+                    {update.kind === 'checking' ? 'Checking...' : 'Check'}
+                  </button>
+                </div>
+                {/* the pixel size is what tells you whether the sharper lookup actually landed */}
+                <div className="flex items-center justify-between gap-5 px-4 py-2">
+                  <div className="min-w-0">
+                    <div className="truncate text-title text-near">Album art</div>
+                    <div className="truncate text-hint text-dim">
+                      {artUrl ? `${artPx ?? '...'}${prefs.hdArt ? ', HD lookup on' : ''}` : 'Nothing playing'}
                     </div>
-                  );
-                })}
+                  </div>
+                  {artUrl && (
+                    <img
+                      src={artUrl}
+                      alt=""
+                      onLoad={e => setArtPx(`${e.currentTarget.naturalWidth} x ${e.currentTarget.naturalHeight}`)}
+                      className="h-10 w-10 shrink-0 rounded-lg object-cover ring-1 ring-white/12"
+                    />
+                  )}
+                </div>
               </div>
-            </section>
-          ))}
+              <p className="px-1 text-hint text-dim">Changing a setting in the companion app overrides it here.</p>
+            </>
+          )}
+        </div>
 
-        {!stylePage && (
-        <section className="mt-6 mb-1">
-          <h2 className="mb-1 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">About</h2>
-          <div className="flex items-center justify-between gap-5 rounded-2xl bg-white/4 px-4 py-2">
-            <div className="min-w-0">
-              <div className="truncate text-title text-near">Software update</div>
-              <div className="truncate text-hint text-dim">{updateLine(update)}</div>
-            </div>
-            <button
-              onClick={check}
-              disabled={update.kind === 'checking'}
-              className="shrink-0 rounded-full px-5 py-2 text-row font-medium transition active:scale-95 disabled:opacity-50"
-              style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
-              {update.kind === 'checking' ? 'Checking...' : 'Check'}
-            </button>
+        {scroll.shown < 1 && (
+          <div className="absolute top-0 bottom-0 left-0 w-[3px] rounded-full bg-white/8">
+            <div
+              className="absolute w-full rounded-full transition-[top] duration-100"
+              style={{
+                height: `${Math.max(12, scroll.shown * 100)}%`,
+                top: `${scroll.at * (100 - Math.max(12, scroll.shown * 100))}%`,
+                backgroundColor: tint,
+                opacity: 0.55,
+              }}
+            />
           </div>
-        </section>
         )}
       </div>
-
-      {scroll.shown < 1 && (
-        <div className="absolute top-0 bottom-0 left-0 w-[3px] rounded-full bg-white/8">
-          <div
-            className="absolute w-full rounded-full transition-[top] duration-100"
-            style={{
-              height: `${Math.max(12, scroll.shown * 100)}%`,
-              top: `${scroll.at * (100 - Math.max(12, scroll.shown * 100))}%`,
-              backgroundColor: tint,
-              opacity: 0.55,
-            }}
-          />
-        </div>
-      )}
-      </div>
-
-      <p className="mt-2 text-hint text-dim">Changing a setting in the companion app overrides it here.</p>
     </div>
   );
 }
@@ -1475,8 +1464,10 @@ function Segments({
   );
 }
 
-// past this many choices a row of pills crowds out its own label
+// past this many choices a row of pills runs off the side, so they become tiles
 const GRID_FROM = 6;
+
+const TABS = ['Style', ...GROUPS.map(g => g.title), 'About'];
 
 // nine styles no longer fit a single row of pills, so the picker is a grid of tiles big enough to
 // hit without aiming
@@ -1486,7 +1477,6 @@ function StyleGrid({
   value,
   tint,
   ink,
-  opens,
   cols = 4,
   onPick,
 }: {
@@ -1495,8 +1485,6 @@ function StyleGrid({
   value: string;
   tint: string;
   ink: string;
-  // a tile that leads to a page of its own says so with a chevron
-  opens?: boolean;
   cols?: 4 | 5;
   onPick: (next: string) => void;
 }) {
@@ -1514,11 +1502,6 @@ function StyleGrid({
               on ? '' : 'bg-white/10 text-dim'
             }`}>
             {labels[i]}
-            {opens && (
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 opacity-60" fill="none" stroke="currentColor" strokeWidth="2.6">
-                <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
           </button>
         );
       })}

@@ -194,13 +194,15 @@ the physical buttons.
 
 ![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
-Press the button under the wheel. The styles sit at the top as a grid; tap one to switch to it and
-see its own settings (backdrop, time remaining and the rest live there). Below are the general ones:
+Press the button under the wheel. Sections run down the left, and the one you pick fills the rest of
+the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.)
 
+- **Style**: the ten styles as a grid, with the current one's own settings under it (backdrop, time
+  remaining and the rest live there)
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
 - **Controls**: what the wheel does, seek step, seek bar style and playhead dot
 - **Clock**: position, size, 12/24 hour, seconds
-- **About**: check for updates
+- **About**: check for updates, and the size of the album art that arrived
 
 A setting that only matters once another is on stays hidden until then: clock size with the clock on,
 seek step with the wheel set to scrub, backdrop blur with a backdrop at all.
