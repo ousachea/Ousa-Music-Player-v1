@@ -195,18 +195,19 @@ the physical buttons.
 ![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
 Press the button under the wheel. The styles sit at the top as a grid; tap one to switch to it and
-see its own settings. Below are the general ones:
+see its own settings (backdrop, time remaining and the rest live there). Below are the general ones:
 
-- **On-screen buttons**: show the transport, and whether to offer hiding it
-- **Player**: accent colour, HD album art
+- **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
 - **Controls**: what the wheel does, seek step, seek bar style and playhead dot
-- **Backdrop**: intensity, blur and drift of the blurred art
-- **Display**: animations, floating notes, rotation, time remaining
 - **Clock**: position, size, 12/24 hour, seconds
 - **About**: check for updates
 
+A setting that only matters once another is on stays hidden until then: clock size with the clock on,
+seek step with the wheel set to scrub, backdrop blur with a backdrop at all.
+
 With the on-screen buttons off, small markers at the screen edge show what each preset does. Every
-setting is also in the companion app; the last change wins.
+setting is also in the companion app, laid out the same way: the current style's settings first, help
+behind each setting's name, and changes saved as you make them. The last change wins.
 
 ## O-Clock
 

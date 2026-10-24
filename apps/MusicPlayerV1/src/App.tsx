@@ -22,6 +22,7 @@ import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
+import { GROUPS, STYLE_ROWS, shown } from './settings-layout';
 
 const SCRUB_COMMIT_MS = 340;
 // one rotary detent lands around deltaX 1, so a detent is a volume step
@@ -1131,80 +1132,6 @@ const NUMERIC: Record<string, { min: number; max: number; step: number; suffix: 
   pulseBpm: { min: PULSE_BPM_MIN, max: PULSE_BPM_MAX, step: 5, suffix: '', auto: 0 },
 };
 
-// grouped so a related pair reads together rather than as nine unrelated lines
-type Row = { key: keyof Prefs; label: string; only?: Prefs['theme'][] };
-
-// rows that only some styles can use, kept together under the name of the style you are in
-const STYLE_ROWS: Row[] = [
-  { key: 'lyricsInfo', label: 'Track corner', only: ['lyrics'] },
-  { key: 'words', label: 'Show the words', only: ['lyrics'] },
-  { key: 'lyricSize', label: 'Text size', only: ['lyrics'] },
-  { key: 'vinylStyle', label: 'Layout', only: ['vinyl'] },
-  { key: 'vinylFront', label: 'In front', only: ['vinyl'] },
-  { key: 'vinylTint', label: 'Record colour', only: ['vinyl'] },
-  { key: 'deckGlow', label: 'Display colour', only: ['stereo'] },
-  { key: 'stereoMode', label: 'Light or dark', only: ['stereo'] },
-  { key: 'flowBg', label: 'Background', only: ['flow'] },
-  { key: 'pocketBody', label: 'Body colour', only: ['pocket'] },
-  { key: 'cdStyle', label: 'Look', only: ['cd'] },
-  { key: 'cdDisc', label: 'Disc', only: ['cd'] },
-  { key: 'tape', label: 'Tape design', only: ['cassette'] },
-  { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
-  { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
-  { key: 'coverPanel', label: 'Panel behind the track', only: ['widget'] },
-  { key: 'coverVolume', label: 'Volume slider', only: ['widget'] },
-  { key: 'pulse', label: 'Art pulse', only: ['widget'] },
-  { key: 'pulseBpm', label: 'Pulse tempo', only: ['widget'] },
-  { key: 'backdrop', label: 'Backdrop intensity', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
-  { key: 'blur', label: 'Backdrop blur', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
-  { key: 'drift', label: 'Backdrop drift', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'] },
-  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'pocket'] },
-];
-
-// the one most reached for, so it leads the list instead of sitting a few screens down under controls
-const BUTTON_ROWS: Row[] = [
-  { key: 'transport', label: 'Show them' },
-  { key: 'tip', label: 'Offer to hide them' },
-];
-
-const GROUPS: { title: string; rows: Row[] }[] = [
-  {
-    title: 'Player',
-    rows: [
-      { key: 'accent', label: 'Accent colour' },
-      { key: 'hdArt', label: 'HD album art' },
-    ],
-  },
-  {
-    title: 'Controls',
-    rows: [
-      { key: 'wheel', label: 'Rotary wheel' },
-      { key: 'seekSeconds', label: 'Seek step' },
-      { key: 'seek', label: 'Seek bar' },
-      { key: 'seekDot', label: 'Dot at the playhead' },
-    ],
-  },
-  {
-    title: 'Display',
-    rows: [
-      { key: 'motion', label: 'Animations' },
-      { key: 'notes', label: 'Floating notes' },
-      { key: 'rotate', label: 'Screen rotation' },
-    ],
-  },
-  {
-    title: 'Clock',
-    rows: [
-      { key: 'clock', label: 'Show clock' },
-      // CD pins its clock to the corner of the tray, so there is no position to choose there
-      { key: 'clockPos', label: 'Position', only: ['widget', 'vinyl', 'poster'] },
-      { key: 'clockSize', label: 'Size' },
-      { key: 'clockFormat', label: 'Format' },
-      { key: 'clockSeconds', label: 'Seconds' },
-    ],
-  },
-];
-
 function Panel({
   client,
   prefs,
@@ -1226,6 +1153,7 @@ function Panel({
   const [artPx, setArtPx] = useState<string | null>(null);
   const upright = prefs.rotate === 90 || prefs.rotate === 270;
   const styleName = ENUMS.theme.labels[ENUMS.theme.values.indexOf(prefs.theme)] ?? 'Player';
+  const read = (key: keyof Prefs) => String(prefs[key]);
   // the wheel scrolls this list and there is no scrollbar, so a rail has to say how far it runs
   const [scroll, setScroll] = useState({ shown: 1, at: 0 });
   const onScroll = useCallback(() => {
@@ -1401,23 +1329,8 @@ function Panel({
         {stylePage && STYLE_ROWS.every(r => !r.only?.includes(prefs.theme)) && (
           <p className="px-1 py-6 text-center text-row text-dim">{styleName} has no settings of its own.</p>
         )}
-        {(stylePage
-          ? [{ title: `${styleName} settings`, rows: STYLE_ROWS, own: true }]
-          : [{ title: 'On-screen buttons', rows: BUTTON_ROWS, own: false }, ...GROUPS.map(g => ({ ...g, own: false }))]
-        )
-          .map(group => ({
-            ...group,
-            rows: group.rows.filter(
-              r =>
-                (!r.only || r.only.includes(prefs.theme)) &&
-                // a picture disc has no sleeve to bring forward, no resin to colour, and keeps its clock centred over the track
-                !(
-                  prefs.theme === 'vinyl' &&
-                  prefs.vinylStyle === 'picture' &&
-                  (r.key === 'vinylFront' || r.key === 'vinylTint' || r.key === 'clockPos')
-                ),
-            ),
-          }))
+        {(stylePage ? [{ title: `${styleName} settings`, rows: STYLE_ROWS }] : GROUPS)
+          .map(group => ({ ...group, rows: group.rows.filter(r => shown(r, read)) }))
           .filter(group => group.rows.length > 0)
           .map((group, gi) => (
             <section key={group.title} className={gi === 0 ? '' : 'mt-6'}>

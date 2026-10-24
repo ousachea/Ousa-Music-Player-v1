@@ -1,6 +1,8 @@
 import { settings, type ConfigField, type SettingsContext } from '@bridgething/client/settings';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+
+import { GROUPS, STYLE_ROWS, shown, type Read } from '../src/settings-layout';
 import './style.css';
 
 // the enum keys are terse on purpose so they read well in the manifest; spell them out for a person
@@ -18,7 +20,7 @@ const CHOICE_LABELS: Record<string, string> = {
   bl: 'Bottom left',
   tr: 'Top right',
   br: 'Bottom right',
-  auto: 'Match the player style',
+  auto: 'Auto',
   on: 'Always show it',
   off: 'Never show it',
   bar: 'Straight line',
@@ -35,6 +37,35 @@ const CHOICE_LABELS: Record<string, string> = {
   red: 'Red',
   green: 'Green',
   white: 'White',
+  pocket: 'Pocket',
+  '0': 'Upright',
+  '90': '90\u00b0',
+  '180': 'Upside down',
+  '270': '270\u00b0',
+  turntable: 'Turntable',
+  sleeve: 'Sleeve',
+  picture: 'Picture disc',
+  record: 'Record',
+  marble: 'Marble',
+  dark: 'Dark',
+  light: 'Light',
+  silver: 'Silver',
+  blue: 'Blue',
+  pink: 'Pink',
+  gold: 'Gold',
+  // the stored names predate the looks they now stand for
+  tray: 'Black',
+  cartridge: 'White',
+  colour: 'Colour',
+  art: 'Artwork',
+  written: 'Written',
+  printed: 'Printed',
+  clear: 'Clear',
+  left: 'Left',
+  center: 'Centre',
+  right: 'Right',
+  h12: '12 hour',
+  h24: '24 hour',
 };
 
 const HINTS: Record<string, string> = {
@@ -80,6 +111,7 @@ function Settings() {
   const [values, setValues] = useState<Record<string, string>>({});
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
+  const [armed, setArmed] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -96,15 +128,12 @@ function Settings() {
     })();
   }, []);
 
-  async function save(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  // each change is written on its own: the device only drops its own override for a key whose value moved
+  async function commit(entries: [string, string][]) {
     setBusy(true);
     setStatus('saving...');
     try {
-      for (const field of fields) {
-        const key = field.data.key;
-        await settings.config.set(key, values[key] ?? defaultFor(field));
-      }
+      for (const [key, value] of entries) await settings.config.set(key, value);
       setStatus('saved, the device picks it up straight away');
     } catch (err) {
       setStatus(err instanceof Error ? err.message : String(err));
@@ -113,80 +142,128 @@ function Settings() {
     }
   }
 
+  const change = (key: string, value: string) => {
+    setValues(v => ({ ...v, [key]: value }));
+    commit([[key, value]]);
+  };
+
   function reset() {
-    setValues(Object.fromEntries(fields.map(f => [f.data.key, defaultFor(f)])));
-    setStatus('defaults restored, save to apply them');
+    // two taps, since it now writes straight through rather than waiting for a save
+    if (!armed) return setArmed(true);
+    setArmed(false);
+    const defaults = Object.fromEntries(fields.map(f => [f.data.key, defaultFor(f)]));
+    setValues(defaults);
+    commit(Object.entries(defaults));
   }
 
-  const set = (key: string, value: string) => setValues(v => ({ ...v, [key]: value }));
+  const byKey = Object.fromEntries(fields.map(f => [f.data.key, f]));
+  const read: Read = key => values[key] ?? '';
+  const theme = byKey.theme ? read('theme') : '';
+  const sections = [{ title: `${CHOICE_LABELS[theme] ?? theme} settings`, rows: STYLE_ROWS }, ...GROUPS]
+    .map(g => ({ ...g, rows: g.rows.filter(r => byKey[r.key] && shown(r, read)) }))
+    .filter(g => g.rows.length > 0);
+
+  function control(field: ConfigField, label: string) {
+    const key = field.data.key;
+    const value = values[key] ?? defaultFor(field);
+    if (field.type === 'boolean') {
+      return (
+        <input
+          type="checkbox"
+          role="switch"
+          aria-label={label}
+          checked={value !== 'false'}
+          onChange={e => change(key, e.currentTarget.checked ? 'true' : 'false')}
+        />
+      );
+    }
+    if (field.type === 'enum') {
+      return (
+        <select aria-label={label} value={value} onChange={e => change(key, e.currentTarget.value)}>
+          {field.data.choices.map(choice => (
+            <option value={choice} key={choice}>
+              {CHOICE_LABELS[choice] ?? choice}
+            </option>
+          ))}
+        </select>
+      );
+    }
+    if (field.type === 'number') {
+      const { min, max } = field.data;
+      return (
+        <input
+          type="number"
+          inputMode="numeric"
+          aria-label={label}
+          value={value}
+          min={min ?? undefined}
+          max={max ?? undefined}
+          step={field.data.step ?? undefined}
+          onChange={e => setValues(v => ({ ...v, [key]: e.currentTarget.value }))}
+          // saved on the way out, so a half typed number never reaches the device, and held to the manifest's bounds
+          onBlur={e => {
+            const n = Number(e.currentTarget.value);
+            const next = e.currentTarget.value === '' || !Number.isFinite(n)
+              ? defaultFor(field)
+              : String(Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n)));
+            change(key, next);
+          }}
+        />
+      );
+    }
+    return (
+      <input
+        type={field.type === 'secret' ? 'password' : 'text'}
+        aria-label={label}
+        value={value}
+        onChange={e => setValues(v => ({ ...v, [key]: e.currentTarget.value }))}
+        onBlur={e => change(key, e.currentTarget.value)}
+      />
+    );
+  }
+
+  function row(key: string, label: string) {
+    const field = byKey[key];
+    if (!field) return null;
+    const hint = HINTS[key];
+    return (
+      <div className="field" key={key}>
+        {/* the help sits behind the label, so the page reads as a list of settings rather than a manual */}
+        {hint ? (
+          <details>
+            <summary>{label}</summary>
+            <p className="sub">{hint}</p>
+          </details>
+        ) : (
+          <span className="label">{label}</span>
+        )}
+        {control(field, label)}
+      </div>
+    );
+  }
 
   return (
     <main>
       <h1>{ctx?.name ?? 'O-Music Player'}</h1>
-      <p className="hint">{ctx ? `${ctx.webappId} on ${ctx.deviceId}` : 'connecting to the companion host...'}</p>
+      <p className="hint">{ctx ? 'Changes save as you make them. Tap a setting\u2019s name to see what it does.' : 'connecting to the companion host...'}</p>
 
-      <form onSubmit={save}>
-        {fields.length === 0 && <p className="hint">this webapp declares no config fields yet.</p>}
-        {fields.map(field => {
-          const key = field.data.key;
-          const value = values[key] ?? defaultFor(field);
+      {fields.length === 0 && <p className="hint">this webapp declares no config fields yet.</p>}
+      {byKey.theme && <section className="card">{row('theme', 'Player style')}</section>}
+      {sections.map(section => (
+        <section key={section.title}>
+          <h2>{section.title}</h2>
+          <div className="card">{section.rows.map(r => row(r.key, r.label))}</div>
+        </section>
+      ))}
 
-          if (field.type === 'boolean') {
-            return (
-              <div className="field check" key={key}>
-                <label htmlFor={key}>
-                  <input
-                    id={key}
-                    type="checkbox"
-                    checked={value !== 'false'}
-                    onChange={e => set(key, e.currentTarget.checked ? 'true' : 'false')}
-                  />
-                  <span>{field.data.label}</span>
-                </label>
-              </div>
-            );
-          }
-
-          return (
-            <div className="field" key={key}>
-              <label htmlFor={key}>{field.data.label}</label>
-              {field.type === 'enum' ? (
-                <select id={key} value={value} onChange={e => set(key, e.currentTarget.value)}>
-                  {field.data.choices.map(choice => (
-                    <option value={choice} key={choice}>
-                      {CHOICE_LABELS[choice] ?? choice}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  id={key}
-                  type={field.type === 'number' ? 'number' : field.type === 'secret' ? 'password' : 'text'}
-                  value={value}
-                  // the manifest's own bounds, so the field cannot be saved outside what the app accepts
-                  min={field.type === 'number' ? (field.data.min ?? undefined) : undefined}
-                  max={field.type === 'number' ? (field.data.max ?? undefined) : undefined}
-                  step={field.type === 'number' ? (field.data.step ?? undefined) : undefined}
-                  onChange={e => set(key, e.currentTarget.value)}
-                />
-              )}
-              {HINTS[key] && <p className="sub">{HINTS[key]}</p>}
-            </div>
-          );
-        })}
-
-        <div className="row">
-          <button type="submit" disabled={busy || fields.length === 0}>
-            Save settings
-          </button>
-          <button type="button" className="secondary" onClick={reset} disabled={busy || fields.length === 0}>
-            Reset to defaults
-          </button>
-          <button type="button" className="secondary" onClick={() => settings.done()}>
-            Done
-          </button>
-        </div>
-      </form>
+      <div className="row">
+        <button type="button" onClick={() => settings.done()}>
+          Done
+        </button>
+        <button type="button" className="secondary" onClick={reset} disabled={busy || fields.length === 0}>
+          {armed ? 'Tap again to reset everything' : 'Reset to defaults'}
+        </button>
+      </div>
 
       <p className="status">{status}</p>
     </main>
