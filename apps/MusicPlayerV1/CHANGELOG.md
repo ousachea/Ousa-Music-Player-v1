@@ -1,5 +1,14 @@
 # O-Music Player
 
+## 0.42.0
+
+**Double-press the button under the wheel** to show or hide the on-screen buttons. A single press
+still opens settings.
+
+**Settings have icons**: one beside each section, and a small picture of each style on its tile.
+**Offer to hide the buttons** now lives under Controls, and it and **On-screen buttons** each carry a
+line saying what they do.
+
 ## 0.41.0
 
 **Khmer** shows properly. The Car Thing has no Khmer font, so titles like ដូចមេ came out as empty
