@@ -5,17 +5,17 @@ source once and all of them are available.
 
 ![Cover style](apps/MusicPlayerV1/screenshots/01-cover.jpg)
 
-| App | What it does |
-| --- | --- |
-| **O-Music Player** | Now playing, in ten styles, coloured by the album art, on a screen that turns |
-| **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
-| **O-System Monitor** | CPU, GPU, memory, network and storage for your machines |
-| **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
-| **O-Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
-| **O-Gold Tracker** | Live gold spot, Khmer weight conversion and a private purchase ledger |
-| **O-Map** | Cambodia on the dash, with live traffic when you bring a key |
-| **O-Photos** | An Immich library on the dash, as a photo frame |
-| **O-Pixel Art** | A glowing LED wall: animated scenes, and pixel art you draw yourself |
+|  | App | What it does |
+| --- | --- | --- |
+| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in ten styles, coloured by the album art, on a screen that turns |
+| <img src="apps/clock/public/icon.png" width="40" alt=""> | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
+| <img src="apps/network-monitor/public/icon.png" width="40" alt=""> | **O-System Monitor** | CPU, GPU, memory, network and storage for your machines |
+| <img src="apps/quote-flow/public/icon.png" width="40" alt=""> | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
+| <img src="apps/desk-exchange/public/icon.png" width="40" alt=""> | **O-Desk Exchange** | A fictional stock market: invented tickers, headlines and prices |
+| <img src="apps/gold-tracker/public/icon.png" width="40" alt=""> | **O-Gold Tracker** | Live gold spot, Khmer weight conversion and a private purchase ledger |
+| <img src="apps/o-map/public/icon.png" width="40" alt=""> | **O-Map** | Cambodia on the dash, with live traffic when you bring a key |
+| <img src="apps/o-photos/public/icon.png" width="40" alt=""> | **O-Photos** | An Immich library on the dash, as a photo frame |
+| <img src="apps/pixel-art/public/icon.png" width="40" alt=""> | **O-Pixel Art** | A glowing LED wall: animated scenes, and pixel art you draw yourself |
 
 ## Put it on your Car Thing
 

@@ -1,5 +1,9 @@
 # O-Map
 
+## 0.1.1
+
+An icon in the store: a map pin over a folded map, in the same family as the other apps.
+
 ## 0.1.0
 
 Cambodia on the dash. The map is OpenStreetMap tiles fetched a tile at a time through the phone,

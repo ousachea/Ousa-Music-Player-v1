@@ -1,5 +1,9 @@
 # O-Photos
 
+## 0.2.1
+
+An icon in the store: a stack of photos, in the same family as the other apps.
+
 ## 0.2.0
 
 **Preset 4 turns the screen**, a quarter at a time, 0 to 90 to 180 to 270 and round again, for a

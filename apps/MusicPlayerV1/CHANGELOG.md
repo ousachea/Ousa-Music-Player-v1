@@ -1,5 +1,23 @@
 # O-Music Player
 
+## 0.41.0
+
+**Khmer** shows properly. The Car Thing has no Khmer font, so titles like ដូចមេ came out as empty
+boxes; the player now carries its own.
+
+**Long titles show in full** in Cover, CD, Flow and Poster. Instead of being cut off after a few
+lines, a long title shrinks until all of it fits; short titles look the same as before.
+
+**HD album art** now works for music playing in a browser tab, which sends no album name: the cover
+is found by the song instead, and only used when the song and artist match.
+
+**Settings are tidier.** On the device, sections run down the left (Style, Display, Controls,
+Clock, About) and the one you pick fills the screen. The style grid lives in Style, with that style's
+own settings under it. Settings that do nothing until another is turned on stay hidden until then,
+such as clock size with the clock off or seek step unless the wheel scrubs. The companion app
+groups the same way, shows only the current style's settings, keeps each setting's explanation
+behind its name, and saves changes as you make them.
+
 ## 0.40.0
 
 **Pocket** comes in more colours: silver, black, blue, pink, green, red, gold, and **Album**, which
