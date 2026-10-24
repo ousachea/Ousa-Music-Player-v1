@@ -8,7 +8,10 @@ import { Transport, hash, type StyleProps } from './style-kit';
 const BURSTS = ['POW!', 'BAM!', 'ZAP!', 'WHAM!', 'BOOM!', 'KAPOW!'];
 const INK = '#141414';
 
-// how far a tap has stepped the burst word on from the one the song picks; kept here, outside the style that is rebuilt
+// the corners the burst lands in, a tap moving it on to the next
+const SPOTS = ['top-2 right-2', 'bottom-2 left-2', 'top-2 left-2', 'bottom-2 right-2'];
+
+// how far a tap has stepped the burst word and its corner on from where the song starts them; kept here, outside the style that is rebuilt
 // for every track, so the word chosen carries on to the next songs until the app reloads
 let stepped = 0;
 
@@ -41,16 +44,18 @@ export function Comic({ artUrl, title, artist, accent, playing, motion, upright,
       }}>
       <div className={`flex h-full ${upright ? 'flex-col justify-center gap-4 p-5' : 'items-center gap-7 p-7'}`}>
         {/* the panel */}
-        <div
+        {/* the whole panel is the tap target: a tap gives the burst a new word and moves it to the next corner */}
+        <button
+          aria-label="another burst"
+          onClick={nextWord}
           // turned, the panel takes the column's full width as a square, so the whole cover shows and the screen fills
-          className={`relative shrink-0 -rotate-[1.5deg] overflow-hidden border-[5px] bg-black shadow-[8px_8px_0_#141414] ${upright ? 'aspect-square w-full' : 'aspect-square h-[400px]'}`}
+          className={`relative shrink-0 -rotate-[1.5deg] animate-hint overflow-hidden border-[5px] bg-black text-left shadow-[8px_8px_0_#141414] transition active:scale-[0.99] ${upright ? 'aspect-square w-full' : 'aspect-square h-[400px]'}`}
           style={{ borderColor: INK }}>
           {artUrl && <img src={artUrl} alt="" className="h-full w-full object-cover saturate-[1.6] contrast-[1.15]" />}
           {/* halftone over the art, as if it went through the press */}
           <div className="pointer-events-none absolute inset-0 mix-blend-multiply [background-image:radial-gradient(rgba(0,0,0,0.55)_1.2px,transparent_1.6px)] [background-size:6px_6px]" />
           {/* the burst, going off as the song comes in */}
-          {/* tap the burst for another word */}
-          <button aria-label="another word" onClick={nextWord} className="absolute top-2 right-2 h-36 w-36 animate-hint transition active:scale-90">
+          <div className={`pointer-events-none absolute h-36 w-36 ${SPOTS[step % SPOTS.length]}`}>
           <svg viewBox="0 0 200 200" className={`h-full w-full ${motion ? 'animate-pop' : ''}`} key={title + word}>
             <polygon points={star(12, 96, 62, 100)} fill={INK} transform="translate(5 5)" />
             <polygon points={star(12, 96, 62, 100)} fill="#ffd400" stroke={INK} strokeWidth="5" strokeLinejoin="round" />
@@ -59,8 +64,8 @@ export function Comic({ artUrl, title, artist, accent, playing, motion, upright,
               {word}
             </text>
           </svg>
-          </button>
-        </div>
+          </div>
+        </button>
 
         <div className={`flex min-w-0 flex-col ${upright ? 'gap-4' : 'flex-1 gap-6'}`}>
           {/* the speech bubble, its tail pointing back at the panel */}
