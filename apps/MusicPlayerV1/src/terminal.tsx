@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { cells, fmt, type StyleProps } from './style-kit';
 
-const GREEN = '#39ff7a';
+const TERMINAL_GREEN = '#39ff7a';
 const KEY_MS = 18;
 const KEPT = 3;
 
@@ -15,7 +15,7 @@ const KEPT = 3;
 const DROP_PX = 16;
 const FRAME_MS = 40;
 
-function Rain({ title, running }: { title: string; running: boolean }) {
+function Rain({ title, running, ink, head }: { title: string; running: boolean; ink: string; head: string }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const el = canvas.current;
@@ -50,10 +50,13 @@ function Rain({ title, running }: { title: string; running: boolean }) {
         const x = i * DROP_PX;
         const y = row * DROP_PX;
         // the head of each drop bright, the rest of it the screen's green
-        ctx.fillStyle = '#c8ffd9';
+        ctx.fillStyle = head;
         ctx.fillText(pick(), x, y);
-        ctx.fillStyle = 'rgba(57, 255, 122, 0.75)';
+        // the trail through globalAlpha, since the colour can arrive as hsl() and canvas has no color-mix to lean on
+        ctx.globalAlpha = 0.75;
+        ctx.fillStyle = ink;
         ctx.fillText(pick(), x, y - DROP_PX);
+        ctx.globalAlpha = 1;
         drops[i] = y > el.height && Math.random() > 0.975 ? 0 : row + 1;
       });
     });
@@ -61,7 +64,7 @@ function Rain({ title, running }: { title: string; running: boolean }) {
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [title, running]);
+  }, [title, running, ink, head]);
   return <canvas ref={canvas} className="absolute inset-0 h-full w-full" />;
 }
 
@@ -82,7 +85,13 @@ export function Terminal({
   onToggle,
   onPrev,
   onNext,
-}: StyleProps) {
+  accent,
+  colour,
+  onColour,
+}: StyleProps & { colour: 'green' | 'album'; onColour: () => void }) {
+  // the classic green, or the cover's own colour; with the cover's, the drops' heads stay near white so they read on any
+  const GREEN = colour === 'album' && accent ? accent.soft : TERMINAL_GREEN;
+  const head = colour === 'album' && accent ? '#f4f4f4' : '#c8ffd9';
   if (log[log.length - 1]?.title !== title) {
     log.push({ title, artist });
     if (log.length > KEPT + 1) log.shift();
@@ -105,10 +114,10 @@ export function Terminal({
   const width = upright ? 22 : 40;
   const filled = Math.round(Math.min(1, Math.max(0, progress)) * width);
   const glow = { color: GREEN, textShadow: `0 0 6px color-mix(in srgb, ${GREEN} 60%, transparent)` };
-  const command = (label: string, onClick: () => void) => (
+  const command = (label: string, onClick: () => void, extra = '') => (
     <button
       onClick={onClick}
-      className="h-14 rounded-sm px-4 ring-1 transition active:bg-[#39ff7a] active:text-black"
+      className={`h-14 rounded-sm px-4 ring-1 transition active:bg-[#39ff7a] active:text-black ${extra}`}
       style={{ ...glow, ['--tw-ring-color' as string]: `color-mix(in srgb, ${GREEN} 45%, transparent)` }}>
       [ {label} ]
     </button>
@@ -116,7 +125,7 @@ export function Terminal({
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#050806] font-mono">
-      <Rain title={title} running={motion} />
+      <Rain title={title} running={motion} ink={GREEN} head={head} />
       {/* the faint rows of an old monitor */}
       <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(0,0,0,0.25)_0_1px,transparent_1px_3px)]" />
       {/* the output sits on a dark pane so it reads over the rain */}
@@ -141,13 +150,17 @@ export function Terminal({
         <div className="mt-1">
           $ <span className="inline-block h-5 w-2.5 translate-y-1 animate-pulse" style={{ background: GREEN }} />
         </div>
-        {showTransport && (
-          <div className={`mt-5 flex gap-3 ${upright ? 'justify-between' : ''}`}>
-            {command('prev', onPrev)}
-            {command(playing ? 'pause' : 'play', onToggle)}
-            {command('next', onNext)}
-          </div>
-        )}
+        {/* the controls, and in the bottom right the colour key, which trades green for the cover's colour */}
+        <div className={`mt-5 flex items-center gap-3 ${upright ? 'flex-wrap' : ''}`}>
+          {showTransport && (
+            <>
+              {command('prev', onPrev)}
+              {command(playing ? 'pause' : 'play', onToggle)}
+              {command('next', onNext)}
+            </>
+          )}
+          {command(colour === 'album' ? 'album' : 'green', onColour, 'ml-auto animate-hint')}
+        </div>
       </div>
     </div>
   );

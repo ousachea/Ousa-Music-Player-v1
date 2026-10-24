@@ -29,6 +29,7 @@ export const STYLE_ROWS: Row[] = [
   { key: 'cdDisc', label: 'Disc', only: ['cd'] },
   { key: 'tape', label: 'Tape design', only: ['cassette'] },
   { key: 'tapeArt', label: 'Artwork on the label', only: ['cassette'] },
+  { key: 'terminalColor', label: 'Text colour', hint: 'The key in the bottom right of the screen trades them too.', only: ['terminal'] },
   { key: 'polaroidFrame', label: 'Frame', hint: 'Tap the photo to step through them.', only: ['polaroid'] },
   { key: 'coverEdge', label: 'Art to the edge', only: ['widget'] },
   { key: 'coverPanel', label: 'Panel behind the track', only: ['widget'] },

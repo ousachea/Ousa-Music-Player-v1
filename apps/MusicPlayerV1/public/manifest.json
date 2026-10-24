@@ -276,6 +276,18 @@
     {
       "type": "enum",
       "data": {
+        "key": "terminalColor",
+        "label": "Terminal text colour",
+        "choices": [
+          "green",
+          "album"
+        ],
+        "default": "green"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
         "key": "polaroidFrame",
         "label": "Polaroid frame",
         "choices": [

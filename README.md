@@ -233,7 +233,8 @@ the last few still on the page above, and the machine's round keys for the butto
 
 The song printed on a green-on-black command line while code rains down the screen behind it non-stop,
 the way it does in The Matrix. Each new song streams in under the last few, with an ASCII progress bar, a
-cursor at the prompt, and bracketed commands for the buttons.
+cursor at the prompt, and bracketed commands for the buttons. The **[ green ]** key in the bottom right
+trades the classic green for the cover's own colour, text and rain alike (**Text colour**).
 
 ### Ticket
 

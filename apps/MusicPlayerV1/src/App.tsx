@@ -555,7 +555,11 @@ export default function App() {
                 : 'skip-next'
         }`}>
       {prefs.theme === 'terminal' ? (
-        <Terminal {...styleProps} />
+        <Terminal
+          {...styleProps}
+          colour={prefs.terminalColor}
+          onColour={() => setPref('terminalColor', prefs.terminalColor === 'album' ? 'green' : 'album')}
+        />
       ) : prefs.theme === 'ticket' ? (
         <Ticket {...styleProps} />
       ) : prefs.theme === 'film' ? (
@@ -1223,6 +1227,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   polaroidFrame: { values: [...FRAMES], labels: ['White', 'Black', 'Cream'] },
+  terminalColor: { values: ['green', 'album'], labels: ['Green', 'Album'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
   flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
   pocketBody: { values: [...POCKET_BODIES], labels: ['Silver', 'Black', 'Blue', 'Pink', 'Green', 'Red', 'Gold', 'Album'] },
