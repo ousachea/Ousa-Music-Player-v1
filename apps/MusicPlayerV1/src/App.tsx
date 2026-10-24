@@ -137,7 +137,7 @@ export default function App() {
     prefs.theme === 'flow'
       ? [...(queue?.items ?? []).slice(0, 3), ...(queue?.previous ?? []).slice(-3)].flatMap(t => (t.artworkId ? [t.artworkId] : []))
       : prefs.theme === 'jukebox'
-        ? (queue?.items ?? []).slice(0, 8).flatMap(t => (t.artworkId ? [t.artworkId] : []))
+        ? [...(queue?.items ?? []).slice(0, 8), ...(queue?.previous ?? []).slice(-9)].flatMap(t => (t.artworkId ? [t.artworkId] : []))
         : [],
   );
   const playback = state?.playback ?? null;

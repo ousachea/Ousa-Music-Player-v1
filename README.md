@@ -178,7 +178,9 @@ app restarts.
 ### Jukebox
 
 What is playing sits under a lit arch in the album's colours, and what is queued on the phone shows as
-the title strips of a jukebox selector. Tap a strip to play it.
+the title strips of a jukebox selector. Tap a strip to play it. A source with no queue of its own, such
+as a browser tab on the computer, shows what has recently played instead, where the latest can be tapped
+to go back to it.
 
 ### Polaroid
 
