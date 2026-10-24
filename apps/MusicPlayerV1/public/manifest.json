@@ -43,7 +43,13 @@
           "receipt",
           "jukebox",
           "polaroid",
-          "pixel"
+          "pixel",
+          "dashboard",
+          "neon",
+          "mosaic",
+          "ambient",
+          "tuner",
+          "typewriter"
         ],
         "default": "widget"
       }

@@ -31,6 +31,12 @@ export function fmt(ms: number) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
+// grapheme clusters, so a khmer consonant with its marks is one letter rather than several
+export function cells(text: string): string[] {
+  const seg = typeof Intl !== 'undefined' && 'Segmenter' in Intl ? new Intl.Segmenter(undefined, { granularity: 'grapheme' }) : null;
+  return seg ? Array.from(seg.segment(text), s => s.segment) : Array.from(text);
+}
+
 // a stable small number per string, so each track gets its own tilt or shade and keeps it
 export function hash(text: string) {
   let h = 2166136261;

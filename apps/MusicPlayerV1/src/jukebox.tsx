@@ -47,7 +47,7 @@ export function Jukebox({
           className={`relative flex shrink-0 flex-col items-center rounded-t-[160px] rounded-b-3xl p-[6px] ${upright ? 'w-full' : 'w-[300px]'}`}
           style={{
             background: `linear-gradient(180deg, ${glow}, ${glow2})`,
-            boxShadow: `0 0 40px ${glow}55`,
+            boxShadow: `0 0 40px color-mix(in srgb, ${glow} 33%, transparent)`,
           }}>
           <div className="flex h-full w-full flex-col items-center rounded-t-[154px] rounded-b-[20px] bg-gradient-to-b from-[#2a211d] to-[#140f0d] px-5 pt-8 pb-4">
             <div className="aspect-square w-[180px] shrink-0 overflow-hidden rounded-full ring-4 ring-[#d9d4cc]/70">

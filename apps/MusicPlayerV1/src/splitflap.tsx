@@ -2,18 +2,12 @@
 // ripple from the left, whenever what it shows changes, the time included
 import { useEffect, useRef, useState } from 'react';
 
-import { Transport, fmt, type StyleProps } from './style-kit';
+import { Transport, cells, fmt, type StyleProps } from './style-kit';
 
 const DRUM = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-.';
 const FLIP_MS = 55;
 // a ripple, not a wall: each cell starts this much after the one to its left
 const STAGGER_MS = 28;
-
-// grapheme clusters, so a khmer consonant with its marks stays in one cell
-function cells(text: string): string[] {
-  const seg = typeof Intl !== 'undefined' && 'Segmenter' in Intl ? new Intl.Segmenter(undefined, { granularity: 'grapheme' }) : null;
-  return seg ? Array.from(seg.segment(text), s => s.segment) : Array.from(text);
-}
 
 // fills rows of `cols` cells, breaking at spaces where it can; a word longer than a row is split
 function rows(text: string, cols: number, max: number): string[][] {

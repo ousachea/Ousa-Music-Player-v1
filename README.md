@@ -8,7 +8,7 @@ none, so Khmer in titles, quotes, names and captions displays properly.
 
 |  | App | What it does |
 | --- | --- | --- |
-| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in sixteen styles, coloured by the album art, on a screen that turns |
+| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in twenty-two styles, coloured by the album art, on a screen that turns |
 | <img src="apps/clock/public/icon.png" width="40" alt=""> | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
 | <img src="apps/network-monitor/public/icon.png" width="40" alt=""> | **O-System Monitor** | CPU, GPU, memory, network and storage for your machines |
 | <img src="apps/quote-flow/public/icon.png" width="40" alt=""> | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -47,7 +47,7 @@ update**.
 
 ## O-Music Player
 
-Sixteen player styles, all tinted by the album art, with music notes drifting up over them (**Display →
+Twenty-two player styles, all tinted by the album art, with music notes drifting up over them (**Display →
 Floating notes**). Switch styles with **Mode** or in the settings; a small tag at the bottom names
 the current one. Track changes cross-fade the blurred background, and Vinyl and CD swap in a new
 record or disc. In Cover, CD, Flow, Pocket and Poster a long song title shrinks to fit rather than being cut off.
@@ -160,7 +160,7 @@ instead.
 ### Night
 
 For driving after dark. Nothing is bright: a clock across the width of the screen leads, the track sits
-under it in a dimmer grey, and the cover is only a faint smear of its own colour behind them. The seek
+under it, all in a dim tint of the cover's colour, and the cover is only a faint smear of its own colour behind them. The seek
 bar and large outlined buttons share the bottom row, easy to hit without looking.
 
 ### Split-flap
@@ -194,6 +194,37 @@ for each track on a table tinted by the album.
 The cover taken down to 32 by 32 in a handheld's few colours, with the track in block letters and the
 progress as a row of cells.
 
+### Dashboard
+
+The song as a car's instrument cluster: the big gauge's needle sweeps the length of the track, the
+small one reads the volume, and the screen between them shows the cover, the title and an odometer of
+the time played.
+
+### Neon
+
+The title bent in glowing tube on a dark brick wall, in the album's colours. It flickers on when the song
+changes and buzzes now and then while it plays.
+
+### Mosaic
+
+A wall of what has recently played, newest nearest the middle, where the song playing now is large and
+lit. Tap it to play or pause.
+
+### Ambient
+
+Only the album's colours, drifting slowly. The song's name shows when it starts and fades away; tap the
+screen to bring the name and the buttons back for a few seconds. The presets work throughout.
+
+### Tuner
+
+An old radio: a red needle travels the FM scale as the song plays, the song is written on the station
+card, and the buttons are ivory preset keys.
+
+### Typewriter
+
+Each song typed onto the sheet a letter at a time when it starts, with the last few still on the page
+above, and the machine's round keys for the buttons.
+
 ### The queue
 
 ![The queue](apps/MusicPlayerV1/screenshots/08-queue.jpg)
@@ -209,7 +240,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel, Dashboard, Neon, Mosaic, Ambient, Tuner, Typewriter |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -237,7 +268,7 @@ Press the button under the wheel; it opens where you left it, section and scroll
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
-- **Style**: the sixteen styles as a grid, with the current one's own settings under it (backdrop, time
+- **Style**: the twenty-two styles as a grid, with the current one's own settings under it (backdrop, time
   remaining and the rest live there)
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
 - **Controls**: what the wheel does, seek step, the offer to hide the on-screen buttons, seek bar

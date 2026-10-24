@@ -18,12 +18,18 @@ import { activeIndex, useLyrics } from './lyrics';
 import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
 import { Cartridge } from './cartridge';
 import { CoverFlow } from './coverflow';
+import { Ambient } from './ambient';
+import { Dashboard } from './dashboard';
 import { Jukebox } from './jukebox';
+import { Mosaic } from './mosaic';
+import { Neon } from './neon';
 import { Night } from './night';
 import { Pixel } from './pixel';
 import { Polaroid } from './polaroid';
 import { Receipt } from './receipt';
 import { SplitFlap } from './splitflap';
+import { Tuner } from './tuner';
+import { Typewriter } from './typewriter';
 import type { StyleProps } from './style-kit';
 import { POCKET_BODIES, Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
@@ -59,6 +65,9 @@ const AUTO_SEEK: Partial<Record<Prefs['theme'], SeekKind>> = {
   flap: 'cells',
   jukebox: 'glow',
   polaroid: 'hand',
+  neon: 'glow',
+  tuner: 'ruler',
+  typewriter: 'ruler',
 };
 // how long a browsed lyric view stays put before it goes back to following the song
 const LYRIC_BROWSE_MS = 5000;
@@ -143,14 +152,21 @@ export default function App() {
   // the queue is only read while the sheet is up: it is the phone's, and nothing else here wants it
   // Flow fans the queue out either side of the cover, so it reads the queue the whole time it is on
   // Jukebox lays the queue out as its selector, so it reads it the whole time too
-  const queue = useQueue(client, sheet || prefs.theme === 'flow' || prefs.theme === 'jukebox', track?.persistentId ?? track?.title ?? null);
+  // Mosaic walls the screen with the history, so it reads the queue too
+  const queue = useQueue(
+    client,
+    sheet || prefs.theme === 'flow' || prefs.theme === 'jukebox' || prefs.theme === 'mosaic',
+    track?.persistentId ?? track?.title ?? null,
+  );
   const flowThumbs = useThumbs(
     client,
     prefs.theme === 'flow'
       ? [...(queue?.items ?? []).slice(0, 3), ...(queue?.previous ?? []).slice(-3)].flatMap(t => (t.artworkId ? [t.artworkId] : []))
       : prefs.theme === 'jukebox'
         ? [...(queue?.items ?? []).slice(0, 8), ...(queue?.previous ?? []).slice(-9)].flatMap(t => (t.artworkId ? [t.artworkId] : []))
-        : [],
+        : prefs.theme === 'mosaic'
+          ? (queue?.previous ?? []).slice(-22).flatMap(t => (t.artworkId ? [t.artworkId] : []))
+          : [],
   );
   const playback = state?.playback ?? null;
   const artworkId = track?.artworkId ?? null;
@@ -527,7 +543,19 @@ export default function App() {
                 ? 'skip-prev'
                 : 'skip-next'
         }`}>
-      {prefs.theme === 'night' ? (
+      {prefs.theme === 'dashboard' ? (
+        <Dashboard {...styleProps} volume={volume} />
+      ) : prefs.theme === 'neon' ? (
+        <Neon {...styleProps} />
+      ) : prefs.theme === 'mosaic' ? (
+        <Mosaic {...styleProps} queue={queue} thumbs={flowThumbs} />
+      ) : prefs.theme === 'ambient' ? (
+        <Ambient {...styleProps} />
+      ) : prefs.theme === 'tuner' ? (
+        <Tuner {...styleProps} />
+      ) : prefs.theme === 'typewriter' ? (
+        <Typewriter {...styleProps} />
+      ) : prefs.theme === 'night' ? (
         <Night {...styleProps} />
       ) : prefs.theme === 'flap' ? (
         <SplitFlap {...styleProps} />
@@ -1164,7 +1192,7 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
     values: [...THEMES],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel'],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel', 'Dashboard', 'Neon', 'Mosaic', 'Ambient', 'Tuner', 'Typewriter'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
@@ -1734,6 +1762,35 @@ const GLYPHS: Record<string, ReactNode> = {
     </>
   ),
   pixel: <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />,
+  dashboard: (
+    <>
+      <path d="M4.5 17a8 8 0 1 1 15 0" />
+      <path d="M12 15l4-5" />
+    </>
+  ),
+  neon: <path d="M4 16c2-6 4-9 5-9s1 4 0 8 1 2 3-3 3-5 4-3-1 5 0 7 2 0 4-2" />,
+  mosaic: <path d="M3 3h5v5H3zM10 3h11v11H10zM3 10h5v5H3zM3 17h5v4H3zM10 16h5v5h-5zM17 16h4v5h-4z" />,
+  ambient: (
+    <>
+      <circle cx="9" cy="10" r="5" />
+      <circle cx="15.5" cy="14.5" r="4.5" />
+    </>
+  ),
+  tuner: (
+    <>
+      <rect x="2.5" y="6" width="19" height="13" rx="2" />
+      <path d="M5.5 10h13M8 10v2M11 10v2M14 10v2M17 10v2M12.5 8.5v6" />
+      <circle cx="8" cy="16" r="1" />
+      <circle cx="16" cy="16" r="1" />
+    </>
+  ),
+  typewriter: (
+    <>
+      <path d="M7 3h10v6H7z" />
+      <rect x="3" y="9" width="18" height="11" rx="2" />
+      <path d="M7 13h1M10.5 13h1M14 13h1M17 13h.5M8 16.5h8" />
+    </>
+  ),
 };
 
 function Glyph({ name, className }: { name: string; className?: string }) {

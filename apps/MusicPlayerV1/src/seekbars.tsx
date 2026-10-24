@@ -1,3 +1,4 @@
+// colours arrive as hsl(), so any transparency goes through color-mix rather than a hex suffix.
 // the seek bars past the plain line and the wave. each only draws: the player wraps it in the one element that turns a
 // touch into a position, so dragging and the turned screen work the same for every kind
 import { useEffect, useId, useRef, useState } from 'react';
@@ -5,6 +6,8 @@ import { useEffect, useId, useRef, useState } from 'react';
 type Look = { progress: number; playing: boolean; dot: boolean; tint: string; tint2: string };
 
 const clamp = (n: number) => Math.min(1, Math.max(0, n));
+// the unplayed part in a faint take on the tint rather than white, so it still shows on a light page
+const faint = (tint: string) => `color-mix(in srgb, ${tint} 35%, transparent)`;
 
 function useWidth() {
   const box = useRef<HTMLDivElement>(null);
@@ -34,7 +37,7 @@ export function Cells({ progress, playing, tint, tint2 }: Look) {
             key={i}
             className={`h-full flex-1 rounded-[2px] transition-colors duration-300 ${head && playing ? 'animate-pulse' : ''}`}
             style={{
-              background: on ? `color-mix(in oklab, ${tint} ${100 - (i / count) * 100}%, ${tint2})` : head ? `${tint}66` : 'rgba(255,255,255,0.12)',
+              background: on ? `color-mix(in oklab, ${tint} ${100 - (i / count) * 100}%, ${tint2})` : head ? `color-mix(in srgb, ${tint} 40%, transparent)` : 'rgba(255,255,255,0.12)',
             }}
           />
         );
@@ -77,7 +80,7 @@ export function Glow({ progress, playing, dot, tint, tint2 }: Look) {
     <div className="relative h-[2px] w-full rounded-full bg-white/12">
       <div
         className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-300 ease-linear"
-        style={{ width: at, background: `linear-gradient(90deg, ${tint}, ${tint2})`, boxShadow: `0 0 8px ${tint2}, 0 0 18px ${tint2}88` }}
+        style={{ width: at, background: `linear-gradient(90deg, ${tint}, ${tint2})`, boxShadow: `0 0 8px ${tint2}, 0 0 18px color-mix(in srgb, ${tint2} 53%, transparent)` }}
       />
       {dot && (
         <div
@@ -114,7 +117,7 @@ export function Hand({ progress, dot, tint }: Look) {
             <rect x="0" y="-4" width={played} height={height + 8} />
           </clipPath>
         </defs>
-        <path d={d} stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeDasharray="4 5" strokeLinecap="round" fill="none" />
+        <path d={d} stroke={faint(tint)} strokeWidth="1.5" strokeDasharray="4 5" strokeLinecap="round" fill="none" />
         <path d={d} clipPath={`url(#${clip})`} stroke={tint} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         {dot && <circle cx={played} cy={headY} r="5.5" fill="none" stroke={tint} strokeWidth="2" />}
       </svg>
@@ -152,7 +155,7 @@ export function Ruler({ progress, dot, tint }: Look) {
         <div
           key={i}
           className="w-[1.5px] shrink-0 rounded-full"
-          style={{ height: i % 5 === 0 ? 14 : 7, background: i / (count - 1) <= at ? tint : 'rgba(255,255,255,0.28)' }}
+          style={{ height: i % 5 === 0 ? 14 : 7, background: i / (count - 1) <= at ? tint : faint(tint) }}
         />
       ))}
       {dot && (
@@ -188,7 +191,7 @@ export function Pulse({ progress, dot, tint }: Look) {
             <rect x="0" y="-4" width={played} height={height + 8} />
           </clipPath>
         </defs>
-        <path d={d} stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinejoin="round" fill="none" />
+        <path d={d} stroke={faint(tint)} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
         <path d={d} clipPath={`url(#${clip})`} stroke={tint} strokeWidth="2.2" strokeLinejoin="round" fill="none" />
         {dot && <circle cx={played} cy={mid} r="3.5" fill={tint} />}
       </svg>
