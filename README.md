@@ -249,7 +249,8 @@ lit in the projector's gate in the middle.
 ### Comic
 
 The cover as a halftone comic panel, the title in a speech bubble, the artist in a caption box, and a burst
-(POW!, BAM!, ZAP!) going off when the song changes.
+(POW!, BAM!, ZAP!) going off when the song changes. Tap the burst for another word. Turned upright, the
+panel fills the width as a square with everything else stacked under it.
 
 ### Magazine
 
