@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-04T06:38:49.188Z",
+  "updated_at": "2026-10-24T14:59:36.953Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -398,6 +398,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.41.0",
+          "released_at": "2026-10-24T14:59:35.882Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.41.0.zip",
+            "size": 1217701,
+            "sha256": "71f31384c39573c12d0b1ae035e0c2bb982ec47fd0c27b3edcf5f158eebc5801"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.41.0.html",
+            "size": 37639,
+            "sha256": "c432d32e9137fa3ef80191c0d9922e926061efc855d5babacac64dcc3b70ab34"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Khmer** shows properly. The Car Thing has no Khmer font, so titles like ដូចមេ came out as empty\nboxes; the player now carries its own.\n\n**Long titles show in full** in Cover, CD, Flow and Poster. Instead of being cut off after a few\nlines, a long title shrinks until all of it fits; short titles look the same as before.\n\n**HD album art** now works for music playing in a browser tab, which sends no album name: the cover\nis found by the song instead, and only used when the song and artist match.\n\n**Settings are tidier.** On the device, sections run down the left (Style, Display, Controls,\nClock, About) and the one you pick fills the screen. The style grid lives in Style, with that style's\nown settings under it. Settings that do nothing until another is turned on stay hidden until then,\nsuch as clock size with the clock off or seek step unless the wheel scrubs. The companion app\ngroups the same way, shows only the current style's settings, keeps each setting's explanation\nbehind its name, and saves changes as you make them."
+        },
         {
           "version": "0.40.0",
           "released_at": "2026-10-04T06:38:49.185Z",
@@ -2352,13 +2371,32 @@
       "name": "O-Map",
       "description": "Cambodia on the dash, with live traffic when you bring a key.",
       "author": "Ousa Chea",
-      "icon": null,
+      "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a08bd6-9df2-70c3-ab08-cac2951ebcb6.png",
       "screenshots": [
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/01-map.jpg"
       ],
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.1.1",
+          "released_at": "2026-10-24T14:59:36.409Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.1.zip",
+            "size": 901348,
+            "sha256": "0cdee1e34c2a49ac6263798fe2ebfef6369f4c652f3b8ed3bb9aeac4749fe8ac"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.1.html",
+            "size": 26913,
+            "sha256": "53118aeab454bd4afe9e983322ab0f2171993ceefbdab52c33f481539202f5a3"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "An icon in the store: a map pin over a folded map, in the same family as the other apps."
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-09-10T15:18:47.022Z",
@@ -2385,7 +2423,7 @@
       "name": "O-Photos",
       "description": "Your Immich library on the dash, as a photo frame.",
       "author": "Ousa Chea",
-      "icon": null,
+      "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a08be9-18e7-70a4-991d-5cb92145210f.png",
       "screenshots": [
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08be9-18e7-70a4-991d-5cb92145210f/01-grid.jpg",
         "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a08be9-18e7-70a4-991d-5cb92145210f/02-viewer.jpg",
@@ -2394,6 +2432,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.2.1",
+          "released_at": "2026-10-24T14:59:36.950Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.1.zip",
+            "size": 919274,
+            "sha256": "91b052bb1f32f2cdedbd39d8e2de30e353573557401f8fb0759f0ce7f3d17946"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.1.html",
+            "size": 26919,
+            "sha256": "5b622928000f24937407a8215230495ba3c808eed8dd7680286649fd57cc68fa"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "An icon in the store: a stack of photos, in the same family as the other apps."
+        },
         {
           "version": "0.2.0",
           "released_at": "2026-09-10T16:03:14.828Z",

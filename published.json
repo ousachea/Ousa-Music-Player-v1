@@ -868,6 +868,17 @@
         "size": 33596,
         "sha256": "8e4b2bfe7d4faa28cd3184723ec8b5a6b9520db8782b4ef02ba22ada0b503436"
       }
+    },
+    "0.41.0": {
+      "released_at": "2026-10-24T14:59:35.882Z",
+      "sha256": "71f31384c39573c12d0b1ae035e0c2bb982ec47fd0c27b3edcf5f158eebc5801",
+      "size": 1217701,
+      "file": "r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.41.0.zip",
+      "settings": {
+        "file": "s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.41.0.html",
+        "size": 37639,
+        "sha256": "c432d32e9137fa3ef80191c0d9922e926061efc855d5babacac64dcc3b70ab34"
+      }
     }
   },
   "01a07c16-be12-7003-91aa-482b107fdccb": {
@@ -1355,6 +1366,17 @@
         "size": 26913,
         "sha256": "53118aeab454bd4afe9e983322ab0f2171993ceefbdab52c33f481539202f5a3"
       }
+    },
+    "0.1.1": {
+      "released_at": "2026-10-24T14:59:36.409Z",
+      "sha256": "0cdee1e34c2a49ac6263798fe2ebfef6369f4c652f3b8ed3bb9aeac4749fe8ac",
+      "size": 901348,
+      "file": "r/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.1.zip",
+      "settings": {
+        "file": "s/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.1.html",
+        "size": 26913,
+        "sha256": "53118aeab454bd4afe9e983322ab0f2171993ceefbdab52c33f481539202f5a3"
+      }
     }
   },
   "01a08be9-18e7-70a4-991d-5cb92145210f": {
@@ -1376,6 +1398,17 @@
       "file": "r/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.0.zip",
       "settings": {
         "file": "s/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.0.html",
+        "size": 26919,
+        "sha256": "5b622928000f24937407a8215230495ba3c808eed8dd7680286649fd57cc68fa"
+      }
+    },
+    "0.2.1": {
+      "released_at": "2026-10-24T14:59:36.950Z",
+      "sha256": "91b052bb1f32f2cdedbd39d8e2de30e353573557401f8fb0759f0ce7f3d17946",
+      "size": 919274,
+      "file": "r/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.1.zip",
+      "settings": {
+        "file": "s/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.1.html",
         "size": 26919,
         "sha256": "5b622928000f24937407a8215230495ba3c808eed8dd7680286649fd57cc68fa"
       }
