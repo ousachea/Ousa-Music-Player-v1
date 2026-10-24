@@ -1,5 +1,10 @@
 # O-Music Player
 
+## 0.44.1
+
+**Mosaic** shows each cover only once, and now moves: every few seconds a tile turns over to another
+cover, and the one in the middle slowly pushes in and back.
+
 ## 0.44.0
 
 **Six more styles**, twenty-two in all:
