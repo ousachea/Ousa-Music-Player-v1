@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-24T16:11:52.169Z",
+  "updated_at": "2026-10-24T16:17:58.930Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -451,6 +451,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.44.1",
+          "released_at": "2026-10-24T16:17:58.928Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.44.1.zip",
+            "size": 1524583,
+            "sha256": "cd7ca1512b16facc944c9f0c999974a9c77ecdb8d614e4e2766998b6c29fde9a"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.44.1.html",
+            "size": 39545,
+            "sha256": "227ce0f80762a584cace8d743ee072114418f1cc252cbba202503005b339acd1"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Mosaic** shows each cover only once, and now moves: every few seconds a tile turns over to another\ncover, and the one in the middle slowly pushes in and back."
+        },
         {
           "version": "0.44.0",
           "released_at": "2026-10-24T16:11:52.166Z",
