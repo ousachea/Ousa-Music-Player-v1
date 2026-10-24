@@ -55,9 +55,8 @@ export function Receipt({
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#0e0d0c]">
       <div ref={paper} className="absolute inset-0 overflow-y-auto overscroll-contain font-mono text-[#2b2925] [scrollbar-width:none]">
-        <div className={`min-h-full bg-[#f3efe6] pt-7 pb-10 text-[13px] leading-[1.45] ${upright ? 'px-6' : 'px-10'}`}>
-          {/* the header leaves the top right to the buttons, which stay put while the roll scrolls */}
-          <div className={showTransport ? 'pr-52' : ''}>
+        <div className={`min-h-full bg-[#f3efe6] ${showTransport ? 'pb-28' : 'pb-10'} pt-7 text-[13px] leading-[1.45] ${upright ? 'px-6' : 'px-10'}`}>
+          <div>
             <div className="text-[15px] font-bold tracking-[0.3em]">O-MUSIC</div>
             <div className="truncate text-[11px] opacity-60">{album ?? 'now playing'}</div>
           </div>
@@ -110,7 +109,8 @@ export function Receipt({
           onToggle={onToggle}
           onPrev={onPrev}
           onNext={onNext}
-          className={`absolute top-4 gap-2 text-[#2b2925] ${upright ? 'right-4' : 'right-8'}`}
+          // over the foot of the roll, where they stay put while it scrolls; the roll's padding lets its last line clear them
+          className={`absolute bottom-6 gap-2 text-[#2b2925] ${upright ? 'right-4' : 'right-8'}`}
           play="grid h-14 w-14 place-items-center rounded-full bg-[#2b2925] text-[#f3efe6] shadow-[0_6px_16px_rgba(0,0,0,0.25)]"
           icon="h-7 w-7"
         />
