@@ -164,8 +164,9 @@ grey, and the cover is only a faint smear of its own colour behind them.
 
 ### Split-flap
 
-The track on a departures board. Each letter flips through the drum before it lands, in a ripple from
-the left, whenever the song changes, and the time flips along with it. Khmer and other joined scripts
+The track on a departures board that fills the screen: the cells are as big as the title allows in up
+to three rows, so a short title gets huge tiles. Each letter flips through the drum before it lands, in a
+ripple from the left, whenever the song changes, and the time flips along with it. Khmer and other joined scripts
 land whole rather than flipping.
 
 ### Receipt

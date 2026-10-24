@@ -36,6 +36,21 @@ function rows(text: string, cols: number, max: number): string[][] {
   return kept.map(r => [...r, ...Array(cols - r.length).fill(' ')]);
 }
 
+// a cell is this much as wide as it is tall, with this gap between cells
+const CELL_W = 0.74;
+const GAP = 3;
+// past this a cell stops reading as a flap and starts reading as a poster
+const MAX_CELL = 100;
+
+const cellFor = (width: number, cols: number) => (width + GAP) / cols / CELL_W - GAP / CELL_W;
+
+// the fewest columns, so the biggest cells, that still fit the title in three rows; a title too long even at the
+// widest board takes the widest and ends on its mark
+function fit(title: string, least: number, most: number) {
+  for (let cols = least; cols <= most; cols++) if (rows(title, cols, 99).length <= 3) return cols;
+  return most;
+}
+
 function Cell({ ch, delay, motion, size }: { ch: string; delay: number; motion: boolean; size: number }) {
   const [shown, setShown] = useState(ch);
   const first = useRef(true);
@@ -60,8 +75,8 @@ function Cell({ ch, delay, motion, size }: { ch: string; delay: number; motion: 
 
   return (
     <div
-      className="relative grid place-items-center overflow-hidden rounded-[4px] bg-[#1b1c1f] font-display font-semibold text-[#f1efe8] shadow-[inset_0_-1px_0_rgba(255,255,255,0.05)]"
-      style={{ width: size * 0.74, height: size, fontSize: size * 0.66 }}>
+      className="relative grid place-items-center overflow-hidden bg-[#1b1c1f] font-display font-semibold text-[#f1efe8] shadow-[inset_0_-1px_0_rgba(255,255,255,0.05)]"
+      style={{ width: size * CELL_W, height: size, fontSize: size * 0.66, borderRadius: Math.max(4, size / 12) }}>
       <span key={shown} className={motion ? 'animate-flap' : ''}>
         {shown === ' ' ? ' ' : shown}
       </span>
@@ -75,7 +90,7 @@ function Board({ lines, size, motion }: { lines: string[][]; size: number; motio
   return (
     <div className="flex flex-col gap-1">
       {lines.map((line, r) => (
-        <div key={r} className="flex gap-[3px]">
+        <div key={r} className="flex" style={{ gap: GAP }}>
           {line.map((ch, c) => (
             <Cell key={c} ch={ch} delay={(c + r * 3) * STAGGER_MS} motion={motion} size={size} />
           ))}
@@ -101,8 +116,16 @@ export function SplitFlap({
   onPrev,
   onNext,
 }: StyleProps) {
-  const cols = upright ? 13 : 20;
-  const size = upright ? 44 : 40;
+  // the board's width less its padding, and the biggest cell that keeps the whole title within three rows
+  const width = upright ? 440 : 720;
+  const fewest = fit(title, upright ? 7 : 9, upright ? 18 : 26);
+  // and no taller than the rows it needs leave room for, with the header, artist and time under it
+  const tall = (upright ? 470 : 250) / rows(title, fewest, 3).length - 4;
+  const size = Math.min(MAX_CELL, cellFor(width, fewest), tall);
+  // when the height is what held the cells back, more of them fit across, so the board still runs the full width
+  const cols = Math.max(fewest, Math.floor((width + GAP) / (size * CELL_W + GAP)));
+  const small = size * 0.62;
+  const artistCols = Math.floor((width + GAP) / (small * CELL_W + GAP));
   const time = remaining ? `-${fmt(Math.max(0, duration - elapsed))}` : fmt(elapsed);
   const tint = accent?.soft ?? '#f2c94c';
 
@@ -114,10 +137,10 @@ export function SplitFlap({
           <span>{playing ? 'On time' : 'Held'}</span>
         </div>
         <Board lines={rows(title, cols, 3)} size={size} motion={motion} />
-        <Board lines={rows(artist, cols, 1)} size={size * 0.7} motion={motion} />
+        <Board lines={rows(artist, artistCols, 1)} size={small} motion={motion} />
 
         <div className="mt-2 flex items-center gap-5">
-          <Board lines={[cells(time.padStart(6, ' '))]} size={size * 0.7} motion={motion} />
+          <Board lines={[cells(time.padStart(6, ' '))]} size={small} motion={motion} />
           <div className="min-w-0 flex-1">{seek(tint, tint)}</div>
           {showTransport && (
             <Transport playing={playing} onToggle={onToggle} onPrev={onPrev} onNext={onNext} className="gap-2 text-[#f1efe8]" icon="h-7 w-7" />
