@@ -167,7 +167,8 @@ export default function App() {
       : prefs.theme === 'jukebox'
         ? [...(queue?.items ?? []).slice(0, 8), ...(queue?.previous ?? []).slice(-9)].flatMap(t => (t.artworkId ? [t.artworkId] : []))
         : prefs.theme === 'mosaic'
-          ? (queue?.previous ?? []).slice(-22).flatMap(t => (t.artworkId ? [t.artworkId] : []))
+          ? // the whole history, since repeats are dropped from the wall and it still has to fill
+            [...new Set((queue?.previous ?? []).flatMap(t => (t.artworkId ? [t.artworkId] : [])))]
           : [],
   );
   const playback = state?.playback ?? null;

@@ -34,8 +34,15 @@ export function Mosaic({
   for (let r = 0; r < rowsN; r++) for (let c = 0; c < cols; c++) if (!taken(c, r)) free.push({ c, r, d: Math.hypot(c - cx, r - cy) });
   free.sort((a, b) => a.d - b.d);
 
-  // history arrives oldest first and can end on the song playing
-  const played = (queue?.previous ?? []).filter((item, i, all) => !(i === all.length - 1 && item.title === title)).reverse();
+  // history arrives newest last and repeats itself: a song played twice, or an album's tracks sharing one cover. each
+  // cover goes on the wall once, newest first, and never the one already large in the middle
+  const seen = new Set<string>([queue?.current?.artworkId ?? '', `${title}|${artist}`]);
+  const played = [...(queue?.previous ?? [])].reverse().filter(item => {
+    const keys = [item.artworkId ?? '', `${item.title ?? ''}|${item.artist ?? ''}`].filter(k => k && k !== '|');
+    if (keys.some(k => seen.has(k))) return false;
+    keys.forEach(k => seen.add(k));
+    return true;
+  });
   const tint = accent?.fill ?? '#ffffff';
   const place = (c: number, r: number, w = 1, h = 1) => ({ gridColumn: `${c + 1} / span ${w}`, gridRow: `${r + 1} / span ${h}` });
 
