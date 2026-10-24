@@ -5,7 +5,8 @@ type Theme = Prefs['theme'];
 // both pages can ask with the strings the daemon stores
 export type Read = (key: keyof Prefs) => string;
 // when hides a row whose setting does nothing until another one is changed
-export type Row = { key: keyof Prefs; label: string; only?: Theme[]; when?: (v: Read) => boolean };
+// hint is the one line the device shows under the label; the phone page keeps its longer help
+export type Row = { key: keyof Prefs; label: string; hint?: string; only?: Theme[]; when?: (v: Read) => boolean };
 
 const BACKDROP: Theme[] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'];
 // a picture disc has no sleeve to bring forward, no resin to colour, and keeps its clock centred over the track
@@ -43,8 +44,11 @@ export const GROUPS: { title: string; rows: Row[] }[] = [
     title: 'Display',
     rows: [
       // the one most reached for, so it leads the list instead of sitting a few screens down
-      { key: 'transport', label: 'On-screen buttons' },
-      { key: 'tip', label: 'Offer to hide them', when: v => v('transport') !== 'false' },
+      {
+        key: 'transport',
+        label: 'On-screen buttons',
+        hint: 'Previous, play and next. Double-press the button under the wheel to show or hide them.',
+      },
       { key: 'accent', label: 'Accent colour' },
       { key: 'hdArt', label: 'HD album art' },
       { key: 'motion', label: 'Animations' },
@@ -56,6 +60,12 @@ export const GROUPS: { title: string; rows: Row[] }[] = [
     title: 'Controls',
     rows: [
       { key: 'wheel', label: 'Rotary wheel' },
+      {
+        key: 'tip',
+        label: 'Offer to hide the buttons',
+        hint: 'A one-time note, a few seconds into a track, saying the presets do what the on-screen buttons do.',
+        when: v => v('transport') !== 'false',
+      },
       { key: 'seekSeconds', label: 'Seek step', when: v => v('wheel') === 'seek' },
       { key: 'seek', label: 'Seek bar' },
       { key: 'seekDot', label: 'Dot at the playhead' },

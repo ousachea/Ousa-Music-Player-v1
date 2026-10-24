@@ -179,6 +179,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Press it twice | Next track |
 | Press it three times | Previous track |
 | Button under the wheel | Opens and closes settings |
+| Double-press the button under the wheel | Shows or hides the on-screen buttons |
 | Tap the play button | Play or pause |
 | Drag the progress bar | Seek |
 | Swipe across the screen | Next track, or previous if you swipe the other way |
@@ -195,13 +196,15 @@ the physical buttons.
 
 ![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
-Press the button under the wheel. Sections run down the left, and the one you pick fills the rest of
-the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.)
+Press the button under the wheel. Sections run down the left, each with an icon, and the one you pick fills the rest of
+the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
+tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
 - **Style**: the ten styles as a grid, with the current one's own settings under it (backdrop, time
   remaining and the rest live there)
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
-- **Controls**: what the wheel does, seek step, seek bar style and playhead dot
+- **Controls**: what the wheel does, seek step, the offer to hide the on-screen buttons, seek bar
+  style and playhead dot
 - **Clock**: position, size, 12/24 hour, seconds
 - **About**: check for updates, and the size of the album art that arrived
 

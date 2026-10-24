@@ -84,7 +84,7 @@ const HINTS: Record<string, string> = {
   lyricsInfo: 'Which corner the artwork and track sit in on the Lyrics style. Play and pause take the other end of the same edge, and previous and next sit at the sides.',
   coverEdge: 'Drops the padding around the album art so it runs to the edges with square corners. Cover style only.',
   tip: 'A one-off note offering to hide the on-screen buttons, since the presets do the same job. It appears a few seconds after a track starts and only while the buttons are showing.',
-  transport: 'The previous, play and next buttons drawn on screen. The four preset buttons do the same job, so turning these off gives the artwork more room; a small legend takes their place showing which preset does what.',
+  transport: 'The previous, play and next buttons drawn on screen. The four preset buttons do the same job, so turning these off gives the artwork more room; a small legend takes their place showing which preset does what. Double-press the button under the wheel to show or hide them.',
   seekDot: 'The marker that rides the progress bar at the playhead: a dot on the line, a tick on the wave. Auto draws it everywhere except Cover, which reads cleaner without it. The bar still scrubs by dragging either way.',
   seek: 'Auto gives Classic and Poster the wave, and Vinyl and Cover a line. Pick one to use it everywhere.',
   backdrop: 'How strongly the blurred album art tints the screen behind the player. 0 turns it off. Poster does not use it.',

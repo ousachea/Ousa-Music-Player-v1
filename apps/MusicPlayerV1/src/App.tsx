@@ -39,6 +39,8 @@ const HINT_MS = 7000;
 // long enough that the note is not the first thing a track does, short enough to still be about it
 const TIP_DELAY_MS = 6000;
 const WHEEL_SCROLL_PX = 26;
+// a second press of the button under the wheel inside this shows or hides the on-screen buttons
+const DOUBLE_PRESS_MS = 300;
 // how long a browsed lyric view stays put before it goes back to following the song
 const LYRIC_BROWSE_MS = 5000;
 // how long the blurred art takes to dissolve from one track to the next
@@ -73,6 +75,7 @@ export default function App() {
   const stereoDay =
     prefs.stereoMode === 'light' || (prefs.stereoMode === 'auto' && Number(dayClock?.hour ?? NaN) % 24 < 12);
   const [panel, setPanel] = useState(false);
+  const backPress = useRef<ReturnType<typeof setTimeout> | null>(null);
   // the settings open on the general page; a style's own settings are a page of their own under it
   const [sheet, setSheet] = useState(false);
   const [pocketArt, setPocketArt] = useState(false);
@@ -367,7 +370,17 @@ export default function App() {
       if (e.key === ' ' || e.key === 'Enter') press();
       else if (e.key === 'Escape') {
         if (sheet) setSheet(false);
-        else setPanel(open => !open);
+        else if (backPress.current) {
+          clearTimeout(backPress.current);
+          backPress.current = null;
+          setPref('transport', prefs.transport ? 'false' : 'true');
+        } else {
+          // the settings wait out the double press window, so a double press never flashes them open
+          backPress.current = setTimeout(() => {
+            backPress.current = null;
+            setPanel(open => !open);
+          }, DOUBLE_PRESS_MS);
+        }
       }
       else if (e.key === 'ArrowLeft' || e.key === '1') goPrev(true);
       else if (e.key === '2') toggle();
@@ -438,7 +451,7 @@ export default function App() {
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
     };
-  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.wheel, press, scrub, seek, setPref, sheet, toggle]);
+  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.transport, prefs.wheel, press, scrub, seek, setPref, sheet, toggle]);
 
   if (!track)
     return (
@@ -1272,7 +1285,10 @@ function Panel({
     }
     return (
       <div key={row.key} className={`flex items-center justify-between gap-5 px-4 py-2 ${rule}`}>
-        <span className="min-w-0 truncate text-title text-near">{row.label}</span>
+        <div className="min-w-0">
+          <div className="truncate text-title text-near">{row.label}</div>
+          {row.hint && <div className="text-hint leading-snug text-dim">{row.hint}</div>}
+        </div>
         {control(row.key)}
       </div>
     );
@@ -1297,11 +1313,14 @@ function Panel({
               aria-pressed={on}
               onClick={() => setTab(name)}
               style={on ? { backgroundColor: tint, color: ink } : undefined}
-              className={`flex shrink-0 flex-col items-start rounded-xl px-3 py-2 text-left transition duration-200 active:scale-[0.97] ${
+              className={`flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-left transition duration-200 active:scale-[0.97] ${
                 on ? '' : 'text-near'
               }`}>
-              <span className="text-row-lg font-semibold">{name}</span>
-              {name === 'Style' && <span className={`text-hint ${on ? 'opacity-70' : 'text-dim'}`}>{styleName}</span>}
+              <Glyph name={name} className={`h-5 w-5 shrink-0 ${on ? '' : 'opacity-70'}`} />
+              <span className="flex flex-col">
+                <span className="text-row-lg font-semibold">{name}</span>
+                {name === 'Style' && <span className={`text-hint ${on ? 'opacity-70' : 'text-dim'}`}>{styleName}</span>}
+              </span>
             </button>
           );
         })}
@@ -1326,6 +1345,7 @@ function Panel({
               tint={tint}
               ink={ink}
               cols={upright ? 4 : 5}
+              icons
               onPick={next => setPref('theme', next)}
             />
           )}
@@ -1479,6 +1499,7 @@ function StyleGrid({
   tint,
   ink,
   cols = 4,
+  icons,
   onPick,
 }: {
   values: string[];
@@ -1487,6 +1508,8 @@ function StyleGrid({
   tint: string;
   ink: string;
   cols?: 4 | 5;
+  // each value names a Glyph, drawn over its label
+  icons?: boolean;
   onPick: (next: string) => void;
 }) {
   return (
@@ -1499,14 +1522,129 @@ function StyleGrid({
             aria-pressed={on}
             onClick={() => onPick(option)}
             style={on ? { backgroundColor: tint, color: ink } : undefined}
-            className={`flex h-11 items-center justify-center gap-1.5 rounded-xl text-row font-medium transition duration-200 active:scale-95 ${
-              on ? '' : 'bg-white/10 text-dim'
-            }`}>
+            className={`flex items-center justify-center rounded-xl text-row font-medium transition duration-200 active:scale-95 ${
+              icons ? 'h-16 flex-col gap-1' : 'h-11 gap-1.5'
+            } ${on ? '' : 'bg-white/10 text-dim'}`}>
+            {icons && <Glyph name={option} className="h-6 w-6" />}
             {labels[i]}
           </button>
         );
       })}
     </div>
+  );
+}
+
+// small line pictures for the settings: the sections by name, the styles by their stored value
+const GLYPHS: Record<string, ReactNode> = {
+  Style: (
+    <>
+      <path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-1-.8-1.4-.8-2.4s.8-1.6 1.8-1.6H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z" />
+      <circle cx="7.5" cy="11" r="1" fill="currentColor" />
+      <circle cx="11" cy="7" r="1" fill="currentColor" />
+      <circle cx="15.5" cy="8" r="1" fill="currentColor" />
+    </>
+  ),
+  Display: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+    </>
+  ),
+  Controls: (
+    <>
+      <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
+      <circle cx="16" cy="7" r="2" />
+      <circle cx="10" cy="17" r="2" />
+    </>
+  ),
+  Clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
+  About: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5.5M12 7.5v.01" />
+    </>
+  ),
+  widget: (
+    <>
+      <rect x="3" y="3" width="13" height="13" rx="2.5" />
+      <path d="M3 20.5h18" />
+    </>
+  ),
+  vinyl: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 12v.01" />
+    </>
+  ),
+  cd: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M12 5.5a6.5 6.5 0 0 1 6.5 6.5" />
+    </>
+  ),
+  cassette: (
+    <>
+      <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
+      <circle cx="9" cy="11.5" r="2" />
+      <circle cx="15" cy="11.5" r="2" />
+      <path d="M7 19l1.5-3h7l1.5 3" />
+    </>
+  ),
+  dial: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 12l3.5-3.5" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+    </>
+  ),
+  stereo: (
+    <>
+      <rect x="2" y="7" width="20" height="10" rx="2" />
+      <path d="M5.5 12h8" />
+      <circle cx="17.5" cy="12" r="1.8" />
+    </>
+  ),
+  flow: (
+    <>
+      <rect x="8" y="5" width="8" height="14" rx="1.5" />
+      <path d="M5 7.5 3 8.5v7l2 1M19 7.5l2 1v7l-2 1" />
+    </>
+  ),
+  pocket: (
+    <>
+      <rect x="6" y="2.5" width="12" height="19" rx="3" />
+      <rect x="8.5" y="5" width="7" height="5.5" rx="1" />
+      <circle cx="12" cy="15.5" r="2.6" />
+    </>
+  ),
+  poster: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="3" />
+      <path d="M3 17l5-5 4 4 3-3 6 6" />
+    </>
+  ),
+  lyrics: <path d="M4 6h16M4 11h11M4 16h14M4 21h8" />,
+};
+
+function Glyph({ name, className }: { name: string; className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round">
+      {GLYPHS[name]}
+    </svg>
   );
 }
 
