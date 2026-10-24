@@ -210,8 +210,9 @@ changes and buzzes now and then while it plays.
 
 ### Mosaic
 
-A wall of what has recently played, newest nearest the middle, where the song playing now is large and
-lit. Tap it to play or pause.
+A wall of what has recently played, each cover once, newest nearest the middle, where the song playing
+now is large and lit. Every few seconds a tile turns over to another cover, and the middle one slowly
+pushes in and back. Tap it to play or pause.
 
 ### Ambient
 

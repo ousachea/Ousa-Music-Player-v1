@@ -1,8 +1,14 @@
 // mosaic: a wall of what has played, the newest nearest the middle, where the song playing now is large and lit;
-// the further back a cover is, the darker it sits
+// the further back a cover is, the darker it sits. every so often a tile turns over to show another cover, and the
+// one in the middle slowly pushes in and back
+import { useEffect, useState } from 'react';
+
 import { FitTitle } from './fit-title';
 import type { Queue } from './queue';
 import { Transport, type StyleProps } from './style-kit';
+
+// how often a tile turns over
+const TURN_MS = 2600;
 
 export function Mosaic({
   artUrl,
@@ -10,6 +16,7 @@ export function Mosaic({
   artist,
   accent,
   playing,
+  motion,
   upright,
   showTransport,
   seek,
@@ -44,20 +51,61 @@ export function Mosaic({
     return true;
   });
   const tint = accent?.fill ?? '#ffffff';
+
+  // the covers there are to show, and which one each free cell shows; it starts newest nearest the middle
+  const pool = played.flatMap(item => (item.artworkId && thumbs[item.artworkId] ? [thumbs[item.artworkId]] : []));
+  const poolKey = pool.join('|');
+  const [shown, setShown] = useState<string[]>([]);
+  useEffect(() => {
+    setShown(prev => {
+      // a cell keeps its cover while it is still in the history; an empty one takes the newest not yet up
+      const kept = free.map((_, i) => (prev[i] && pool.includes(prev[i]) ? prev[i] : ''));
+      const used = new Set(kept);
+      return kept.map(u => {
+        if (u) return u;
+        const next = pool.find(p => !used.has(p)) ?? '';
+        used.add(next);
+        return next;
+      });
+    });
+    // keyed on the covers and the cell count; the arrays themselves are rebuilt every render
+  }, [poolKey, free.length]);
+  useEffect(() => {
+    if (!motion) return;
+    const timer = setInterval(
+      () =>
+        setShown(prev => {
+          const filled = prev.flatMap((u, i) => (u ? [i] : []));
+          if (filled.length === 0) return prev;
+          const at = filled[Math.floor(Math.random() * filled.length)];
+          const next = [...prev];
+          // a cover not on the wall yet if there is one, otherwise two tiles trade places
+          const spare = pool.filter(u => !prev.includes(u));
+          if (spare.length) next[at] = spare[Math.floor(Math.random() * spare.length)];
+          else if (filled.length > 1) {
+            const other = filled.filter(i => i !== at)[Math.floor(Math.random() * (filled.length - 1))];
+            [next[at], next[other]] = [next[other], next[at]];
+          }
+          return next;
+        }),
+      TURN_MS,
+    );
+    return () => clearInterval(timer);
+  }, [motion, poolKey]);
   const place = (c: number, r: number, w = 1, h = 1) => ({ gridColumn: `${c + 1} / span ${w}`, gridRow: `${r + 1} / span ${h}` });
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-black">
       <div className="grid h-full w-full gap-[3px] p-[3px]" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, gridTemplateRows: `repeat(${rowsN}, 1fr)` }}>
         {free.map(({ c, r }, i) => {
-          const item = played[i];
-          const url = item?.artworkId ? thumbs[item.artworkId] : null;
+          const url = shown[i] || null;
           return (
             <div
               key={`${c}-${r}`}
               className="overflow-hidden rounded-[6px] bg-white/[0.04] transition-opacity duration-700"
               style={{ ...place(c, r), opacity: url ? Math.max(0.22, 0.85 - i * 0.04) : 1 }}>
-              {url && <img src={url} alt="" className="h-full w-full object-cover" />}
+              {/* keyed on the cover, so a new one turns in rather than just appearing */}
+              {url && <img key={url} src={url} alt="" className={`h-full w-full object-cover ${motion ? 'animate-turn-in' : ''}`} />}
             </div>
           );
         })}
@@ -67,7 +115,7 @@ export function Mosaic({
           aria-label={playing ? 'pause' : 'play'}
           className="relative overflow-hidden rounded-[10px] ring-2 transition active:scale-[0.99]"
           style={{ ...place(middle.c, middle.r, middle.w, middle.h), ['--tw-ring-color' as string]: tint, boxShadow: `0 0 30px color-mix(in srgb, ${tint} 45%, transparent)` }}>
-          {artUrl && <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+          {artUrl && <img src={artUrl} alt="" className={`absolute inset-0 h-full w-full object-cover ${motion ? 'animate-push' : ''}`} />}
         </button>
 
         <div className="flex min-w-0 flex-col justify-center gap-5 rounded-[10px] bg-[#0c0d0f]/95 px-5 py-3 ring-1 ring-white/10" style={place(panel.c, panel.r, panel.w, panel.h)}>
