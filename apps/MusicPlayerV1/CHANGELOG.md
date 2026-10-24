@@ -1,5 +1,20 @@
 # O-Music Player
 
+## 0.45.0
+
+**Five more styles**, twenty-seven in all:
+
+- **Terminal**: the song on a command line while code rains down the screen behind it, the way it does in
+  The Matrix. The key in the bottom right trades the classic green for the cover's own colour (**Text
+  colour**), and the keys carry text icons.
+- **Ticket**: the song as a concert ticket, the whole cover as its poster. Tap the stub to tear it off.
+- **Film strip**: what has played runs past as frames of film, the song playing now lit in the gate.
+- **Comic**: the cover as a halftone panel with the title in a speech bubble. Tap the artwork for another
+  burst word, which also moves it to another corner.
+- **Magazine**: the song laid out as the front of a magazine.
+
+Terminal and Comic fill a portrait screen properly, and Magazine's cover lines now read on any cover.
+
 ## 0.44.1
 
 **Mosaic** shows each cover only once, and now moves: every few seconds a tile turns over to another
