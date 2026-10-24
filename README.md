@@ -170,9 +170,10 @@ land whole rather than flipping.
 
 ### Receipt
 
-Every song is printed on a till roll as it starts, with the time it came on, so what has played stacks
-up above what is playing, with a song count and total time at the foot. Drag the roll to read back.
-The roll lasts until the app restarts.
+Every song is printed on a till roll that fills the screen, with the time it came on, so what has
+played stacks up above what is playing, one line each, with a song count and total time at the foot.
+The torn edge stays at the bottom of the screen; drag the roll to read back. The roll lasts until the
+app restarts.
 
 ### Jukebox
 

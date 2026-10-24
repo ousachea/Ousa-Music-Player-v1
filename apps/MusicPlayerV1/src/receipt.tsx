@@ -47,70 +47,74 @@ export function Receipt({
 
   const earlier = roll.slice(0, -1);
   const total = roll.reduce((sum, line) => sum + line.ms, 0);
-  // the printed bar fills with the song, in the dotted rule a till prints
-  const dots = 28;
+  // the printed bar fills with the song, in the dotted rule a till prints, as wide as the roll allows
+  const dots = upright ? 50 : 86;
   const filled = Math.round(Math.min(1, Math.max(0, progress)) * dots);
+  const current = roll[roll.length - 1];
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[radial-gradient(ellipse_at_50%_30%,#2a2724,#0e0d0c)]">
-      <div className={`flex h-full ${upright ? 'flex-col items-center gap-4 pt-6 pb-4' : 'items-center justify-center gap-10'}`}>
-        <div
-          ref={paper}
-          className={`relative overflow-y-auto overscroll-contain bg-[#f3efe6] font-mono text-[#2b2925] shadow-[0_20px_50px_rgba(0,0,0,0.6)] [scrollbar-width:none] ${
-            upright ? 'w-[400px] flex-1' : 'h-full w-[380px]'
-          }`}>
-          <div className="px-6 pt-8 pb-6 text-[13px] leading-[1.45]">
-            <div className="text-center text-[15px] font-bold tracking-[0.3em]">O-MUSIC</div>
-            <div className="text-center text-[11px] opacity-60">{album ?? 'now playing'}</div>
-            <div className="my-3 border-t border-dashed border-[#2b2925]/40" />
-
-            {earlier.map(line => (
-              <div key={line.key + line.at} className="mb-2 opacity-55">
-                <div className="flex justify-between gap-3">
-                  <span>{line.at}</span>
-                  <span>{line.ms ? fmt(line.ms) : ''}</span>
-                </div>
-                <div className="break-words uppercase">{line.title}</div>
-                <div className="truncate text-[11px]">{line.artist}</div>
-              </div>
-            ))}
-
-            <div key={roll[roll.length - 1].key} className={`mb-2 ${motion ? 'animate-feed' : ''}`}>
-              <div className="flex justify-between gap-3 font-bold">
-                <span>{roll[roll.length - 1].at} {playing ? '>' : '||'}</span>
-                <span>{duration ? fmt(duration) : ''}</span>
-              </div>
-              <div className="text-[17px] leading-tight font-bold break-words uppercase">{title}</div>
-              <div className="text-[12px]">{artist}</div>
-              <div className="mt-1.5 tracking-[0.05em] whitespace-nowrap">
-                {'#'.repeat(filled)}
-                <span className="opacity-30">{'.'.repeat(dots - filled)}</span>
-              </div>
-              <div className="text-[11px] opacity-60">{fmt(elapsed)} played</div>
-            </div>
-
-            <div className="my-3 border-t border-dashed border-[#2b2925]/40" />
-            <div className="flex justify-between font-bold">
-              <span>{roll.length} {roll.length === 1 ? 'SONG' : 'SONGS'}</span>
-              <span>{fmt(total)}</span>
-            </div>
-            <div className="mt-3 text-center text-[11px] opacity-60">THANK YOU FOR LISTENING</div>
+    <div className="absolute inset-0 overflow-hidden bg-[#0e0d0c]">
+      <div ref={paper} className="absolute inset-0 overflow-y-auto overscroll-contain font-mono text-[#2b2925] [scrollbar-width:none]">
+        <div className={`min-h-full bg-[#f3efe6] pt-7 pb-10 text-[13px] leading-[1.45] ${upright ? 'px-6' : 'px-10'}`}>
+          {/* the header leaves the top right to the buttons, which stay put while the roll scrolls */}
+          <div className={showTransport ? 'pr-52' : ''}>
+            <div className="text-[15px] font-bold tracking-[0.3em]">O-MUSIC</div>
+            <div className="truncate text-[11px] opacity-60">{album ?? 'now playing'}</div>
           </div>
-          {/* the torn edge at the foot of the roll */}
-          <div className="h-3 bg-[linear-gradient(135deg,#f3efe6_25%,transparent_25%),linear-gradient(225deg,#f3efe6_25%,transparent_25%)] bg-[length:12px_12px]" />
-        </div>
+          <div className="my-3 border-t border-dashed border-[#2b2925]/40" />
 
-        {showTransport && (
-          <Transport
-            playing={playing}
-            onToggle={onToggle}
-            onPrev={onPrev}
-            onNext={onNext}
-            className={`text-[#f3efe6] ${upright ? 'gap-8' : 'flex-col gap-6'}`}
-            play="grid h-16 w-16 place-items-center rounded-full bg-[#f3efe6] text-[#2b2925]"
-          />
-        )}
+          {/* on a roll this wide an earlier song fits on one line: when it came on, what, who, how long */}
+          {earlier.map(line => (
+            <div key={line.key + line.at} className="flex items-baseline gap-4 py-0.5 opacity-55">
+              <span className="w-11 shrink-0">{line.at}</span>
+              <span className="min-w-0 flex-1 truncate uppercase">{line.title}</span>
+              {!upright && <span className="w-40 shrink-0 truncate text-[11px]">{line.artist}</span>}
+              <span className="w-10 shrink-0 text-right">{line.ms ? fmt(line.ms) : ''}</span>
+            </div>
+          ))}
+
+          <div key={current.key} className={`mt-2 ${motion ? 'animate-feed' : ''}`}>
+            <div className="flex justify-between gap-3 font-bold">
+              <span>
+                {current.at} {playing ? '>' : '||'}
+              </span>
+              <span>{duration ? fmt(duration) : ''}</span>
+            </div>
+            <div className="text-[22px] leading-tight font-bold break-words uppercase">{title}</div>
+            <div className="text-[13px]">{artist}</div>
+            <div className="mt-1.5 overflow-hidden tracking-[0.05em] whitespace-nowrap">
+              {'#'.repeat(filled)}
+              <span className="opacity-30">{'.'.repeat(dots - filled)}</span>
+            </div>
+            <div className="text-[11px] opacity-60">{fmt(elapsed)} played</div>
+          </div>
+
+          <div className="my-3 border-t border-dashed border-[#2b2925]/40" />
+          <div className="flex justify-between font-bold">
+            <span>
+              {roll.length} {roll.length === 1 ? 'SONG' : 'SONGS'}
+            </span>
+            <span>{fmt(total)}</span>
+          </div>
+          <div className="mt-3 text-center text-[11px] opacity-60">THANK YOU FOR LISTENING</div>
+        </div>
       </div>
+      {/* the torn edge, pinned to the foot of the screen so the roll always reads as torn off, whatever is scrolled */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3 bg-[#0e0d0c]">
+        <div className="h-full bg-[linear-gradient(135deg,#f3efe6_25%,transparent_25%),linear-gradient(225deg,#f3efe6_25%,transparent_25%)] bg-[length:12px_12px]" />
+      </div>
+
+      {showTransport && (
+        <Transport
+          playing={playing}
+          onToggle={onToggle}
+          onPrev={onPrev}
+          onNext={onNext}
+          className={`absolute top-4 gap-2 text-[#2b2925] ${upright ? 'right-4' : 'right-8'}`}
+          play="grid h-14 w-14 place-items-center rounded-full bg-[#2b2925] text-[#f3efe6] shadow-[0_6px_16px_rgba(0,0,0,0.25)]"
+          icon="h-7 w-7"
+        />
+      )}
     </div>
   );
 }
