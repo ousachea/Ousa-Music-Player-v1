@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-24T16:17:58.930Z",
+  "updated_at": "2026-10-24T16:39:34.779Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -451,6 +451,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.45.0",
+          "released_at": "2026-10-24T16:39:34.777Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.45.0.zip",
+            "size": 1540778,
+            "sha256": "c913d5a469790b4542beff5bce2ffd480fae793b4a6c2cdb431e2d3a123f351f"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.45.0.html",
+            "size": 40278,
+            "sha256": "2d174aa3d4266571c82cfe54d3a98f0126cd25e2ffd685e36f8bfa14403f1820"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Five more styles**, twenty-seven in all:\n\n- **Terminal**: the song on a command line while code rains down the screen behind it, the way it does in\n  The Matrix. The key in the bottom right trades the classic green for the cover's own colour (**Text\n  colour**), and the keys carry text icons.\n- **Ticket**: the song as a concert ticket, the whole cover as its poster. Tap the stub to tear it off.\n- **Film strip**: what has played runs past as frames of film, the song playing now lit in the gate.\n- **Comic**: the cover as a halftone panel with the title in a speech bubble. Tap the artwork for another\n  burst word, which also moves it to another corner.\n- **Magazine**: the song laid out as the front of a magazine.\n\nTerminal and Comic fill a portrait screen properly, and Magazine's cover lines now read on any cover."
+        },
         {
           "version": "0.44.1",
           "released_at": "2026-10-24T16:17:58.928Z",
