@@ -4,6 +4,7 @@ import { useRef, useState, type PointerEvent } from 'react';
 
 import type { Accent } from './artwork-color';
 import type { ClockParts } from './clock';
+import { FitTitle } from './fit-title';
 
 type Rotate = 0 | 90 | 180 | 270;
 
@@ -257,9 +258,7 @@ function Screen({
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="line-clamp-3 font-body text-[1.75rem] leading-[1.15] font-bold break-words text-white">
-                {title}
-              </div>
+              <FitTitle text={title} max={28} lines={3} className="font-body leading-[1.15] font-bold text-white" />
               <div className="mt-1.5 line-clamp-2 font-body text-[1.0625rem] leading-snug text-white/75">{artist}</div>
             </div>
           </div>

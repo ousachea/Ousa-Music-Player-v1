@@ -50,7 +50,7 @@ update**.
 Sixteen player styles, all tinted by the album art, with music notes drifting up over them (**Display →
 Floating notes**). Switch styles with **Mode** or in the settings; a small tag at the bottom names
 the current one. Track changes cross-fade the blurred background, and Vinyl and CD swap in a new
-record or disc. In Cover, CD, Flow and Poster a long song title shrinks to fit rather than being cut off.
+record or disc. In Cover, CD, Flow, Pocket and Poster a long song title shrinks to fit rather than being cut off.
 
 ### Vinyl
 
