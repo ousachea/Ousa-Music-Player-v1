@@ -16,6 +16,23 @@
   src: url("./fonts/Inter-Variable.ttf") format("truetype-variations");
 }
 
+/* the polaroid's handwriting and the pixel style's lettering; khmer falls through to noto in both */
+@font-face {
+  font-family: "Caveat";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: block;
+  src: url("./fonts/Caveat-Variable.ttf") format("truetype-variations");
+}
+
+@font-face {
+  font-family: "Press Start 2P";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("./fonts/PressStart2P-Regular.ttf") format("truetype");
+}
+
 /* the device has no khmer face at all, and song titles often carry it; the range keeps it from
    loading until a khmer character actually appears */
 @font-face {
@@ -64,6 +81,8 @@
 
   --font-display: "Outfit", "Noto Sans Khmer", system-ui, sans-serif;
   --font-body: "Inter", "Noto Sans Khmer", system-ui, sans-serif;
+  --font-hand: "Caveat", "Noto Sans Khmer", cursive;
+  --font-pixel: "Press Start 2P", "Noto Sans Khmer", monospace;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Noto Sans Khmer", monospace;
 
   --tracking-wordmark: -0.03em;
@@ -104,6 +123,24 @@
   --animate-tap: tap 300ms cubic-bezier(0.34, 1.5, 0.64, 1);
   /* a 33rpm turn is 1.8s; slowed here because a record spinning at speed on a dashboard reads as a strobe */
   --animate-platter: platter 3.4s linear infinite;
+  /* a split-flap card dropping from the top half onto the hinge */
+  --animate-flap: flap 90ms ease-in;
+  /* a receipt line feeding up out of the printer */
+  --animate-feed: feed 600ms cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  @keyframes flap {
+    from {
+      transform: scaleY(0.2) translateY(-30%);
+      opacity: 0.4;
+    }
+  }
+
+  @keyframes feed {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
 
   @keyframes platter {
     to {

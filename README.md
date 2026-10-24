@@ -8,7 +8,7 @@ none, so Khmer in titles, quotes, names and captions displays properly.
 
 |  | App | What it does |
 | --- | --- | --- |
-| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in ten styles, coloured by the album art, on a screen that turns |
+| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in sixteen styles, coloured by the album art, on a screen that turns |
 | <img src="apps/clock/public/icon.png" width="40" alt=""> | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
 | <img src="apps/network-monitor/public/icon.png" width="40" alt=""> | **O-System Monitor** | CPU, GPU, memory, network and storage for your machines |
 | <img src="apps/quote-flow/public/icon.png" width="40" alt=""> | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -47,7 +47,7 @@ update**.
 
 ## O-Music Player
 
-Ten player styles, all tinted by the album art, with music notes drifting up over them (**Display →
+Sixteen player styles, all tinted by the album art, with music notes drifting up over them (**Display →
 Floating notes**). Switch styles with **Mode** or in the settings; a small tag at the bottom names
 the current one. Track changes cross-fade the blurred background, and Vinyl and CD swap in a new
 record or disc. In Cover, CD, Flow and Poster a long song title shrinks to fit rather than being cut off.
@@ -157,6 +157,38 @@ runs as a hairline along the top. The art and track sit in a corner you pick (**
 plus and minus set the text size. Unsynced lyrics show as a page; with none, the art and track show
 instead.
 
+### Night
+
+For driving after dark. Nothing is bright: a large dim clock leads, the track sits under it in a dimmer
+grey, and the cover is only a faint smear of its own colour behind them.
+
+### Split-flap
+
+The track on a departures board. Each letter flips through the drum before it lands, in a ripple from
+the left, whenever the song changes, and the time flips along with it. Khmer and other joined scripts
+land whole rather than flipping.
+
+### Receipt
+
+Every song is printed on a till roll as it starts, with the time it came on, so what has played stacks
+up above what is playing, with a song count and total time at the foot. Drag the roll to read back.
+The roll lasts until the app restarts.
+
+### Jukebox
+
+What is playing sits under a lit arch in the album's colours, and what is queued on the phone shows as
+the title strips of a jukebox selector. Tap a strip to play it.
+
+### Polaroid
+
+The cover as an instant print, with the title written under it by hand, dropped at its own slight angle
+for each track on a table tinted by the album.
+
+### Pixel
+
+The cover taken down to 32 by 32 in a handheld's few colours, with the track in block letters and the
+progress as a row of cells.
+
 ### The queue
 
 ![The queue](apps/MusicPlayerV1/screenshots/08-queue.jpg)
@@ -172,7 +204,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -200,7 +232,7 @@ Press the button under the wheel. Sections run down the left, each with an icon,
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
-- **Style**: the ten styles as a grid, with the current one's own settings under it (backdrop, time
+- **Style**: the sixteen styles as a grid, with the current one's own settings under it (backdrop, time
   remaining and the rest live there)
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
 - **Controls**: what the wheel does, seek step, the offer to hide the on-screen buttons, seek bar

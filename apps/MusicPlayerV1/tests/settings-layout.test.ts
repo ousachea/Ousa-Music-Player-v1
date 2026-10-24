@@ -2,6 +2,7 @@
 import { expect, test } from 'bun:test';
 
 import manifest from '../public/manifest.json';
+import { THEMES } from '../src/config';
 import { GROUPS, STYLE_ROWS, shown, type Read } from '../src/settings-layout';
 
 const placed = [...STYLE_ROWS, ...GROUPS.flatMap(g => g.rows)].map(r => r.key as string);
@@ -21,4 +22,9 @@ test('dependent rows hide until their parent is on', () => {
   expect(shown(row('seekSeconds'), read({ theme: 'widget', wheel: 'volume' }))).toBe(false);
   expect(shown(row('blur'), read({ theme: 'widget', backdrop: '0' }))).toBe(false);
   expect(shown(row('tape'), read({ theme: 'widget' }))).toBe(false);
+});
+
+test('the manifest offers exactly the styles the player draws', () => {
+  const theme = (manifest.config as { data: { key: string; choices?: string[] } }[]).find(f => f.data.key === 'theme');
+  expect(theme?.data.choices).toEqual([...THEMES]);
 });

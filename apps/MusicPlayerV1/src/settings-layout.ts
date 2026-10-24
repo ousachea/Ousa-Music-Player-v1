@@ -8,7 +8,8 @@ export type Read = (key: keyof Prefs) => string;
 // hint is the one line the device shows under the label; the phone page keeps its longer help
 export type Row = { key: keyof Prefs; label: string; hint?: string; only?: Theme[]; when?: (v: Read) => boolean };
 
-const BACKDROP: Theme[] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'];
+// the styles drawn over the blurred artwork, which are the ones the backdrop settings mean anything in
+export const BACKDROP: Theme[] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'lyrics'];
 // a picture disc has no sleeve to bring forward, no resin to colour, and keeps its clock centred over the track
 const notPicture = (v: Read) => v('theme') !== 'vinyl' || v('vinylStyle') !== 'picture';
 
@@ -36,7 +37,11 @@ export const STYLE_ROWS: Row[] = [
   { key: 'backdrop', label: 'Backdrop', only: BACKDROP },
   { key: 'blur', label: 'Backdrop blur', only: BACKDROP, when: v => v('backdrop') !== '0' },
   { key: 'drift', label: 'Backdrop drift', only: BACKDROP, when: v => v('backdrop') !== '0' },
-  { key: 'remaining', label: 'Show time remaining', only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'pocket'] },
+  {
+    key: 'remaining',
+    label: 'Show time remaining',
+    only: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'pocket', 'night', 'flap', 'polaroid', 'pixel'],
+  },
 ];
 
 export const GROUPS: { title: string; rows: Row[] }[] = [

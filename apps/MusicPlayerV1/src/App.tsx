@@ -16,14 +16,21 @@ import { activeIndex, useLyrics } from './lyrics';
 import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
 import { Cartridge } from './cartridge';
 import { CoverFlow } from './coverflow';
+import { Jukebox } from './jukebox';
+import { Night } from './night';
+import { Pixel } from './pixel';
+import { Polaroid } from './polaroid';
+import { Receipt } from './receipt';
+import { SplitFlap } from './splitflap';
+import type { StyleProps } from './style-kit';
 import { POCKET_BODIES, Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
-import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
+import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, THEMES, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 import { FitTitle } from './fit-title';
-import { GROUPS, STYLE_ROWS, shown, type Row } from './settings-layout';
+import { BACKDROP, GROUPS, STYLE_ROWS, shown, type Row } from './settings-layout';
 
 const SCRUB_COMMIT_MS = 340;
 // one rotary detent lands around deltaX 1, so a detent is a volume step
@@ -123,12 +130,15 @@ export default function App() {
   );
   // the queue is only read while the sheet is up: it is the phone's, and nothing else here wants it
   // Flow fans the queue out either side of the cover, so it reads the queue the whole time it is on
-  const queue = useQueue(client, sheet || prefs.theme === 'flow', track?.persistentId ?? track?.title ?? null);
+  // Jukebox lays the queue out as its selector, so it reads it the whole time too
+  const queue = useQueue(client, sheet || prefs.theme === 'flow' || prefs.theme === 'jukebox', track?.persistentId ?? track?.title ?? null);
   const flowThumbs = useThumbs(
     client,
     prefs.theme === 'flow'
       ? [...(queue?.items ?? []).slice(0, 3), ...(queue?.previous ?? []).slice(-3)].flatMap(t => (t.artworkId ? [t.artworkId] : []))
-      : [],
+      : prefs.theme === 'jukebox'
+        ? (queue?.items ?? []).slice(0, 8).flatMap(t => (t.artworkId ? [t.artworkId] : []))
+        : [],
   );
   const playback = state?.playback ?? null;
   const artworkId = track?.artworkId ?? null;
@@ -389,8 +399,7 @@ export default function App() {
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
       else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        const order: Prefs['theme'][] = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics'];
-        setPref('theme', order[(order.indexOf(prefs.theme) + 1) % order.length]);
+        setPref('theme', THEMES[(THEMES.indexOf(prefs.theme) + 1) % THEMES.length]);
       }
     };
     // a flick across the screen skips a track. the seek bar and the buttons take their own pointer
@@ -461,6 +470,30 @@ export default function App() {
       </Stage>
     );
 
+  const styleProps: StyleProps = {
+    artUrl,
+    title: track.title ?? 'unknown',
+    artist: artistName ?? '—',
+    album: track.album ?? null,
+    explicit,
+    accent: accentOn,
+    playing,
+    motion: prefs.motion,
+    upright,
+    showTransport: prefs.transport,
+    progress,
+    elapsed,
+    duration,
+    remaining: prefs.remaining,
+    clock: (size, color) => <ClockView parts={wallClock} size={size} color={color} />,
+    seek: (tint, tint2) => (
+      <Seek style={seekStyle} rotate={prefs.rotate} dot={seekDot} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={ratio => seek(ratio * duration)} />
+    ),
+    onToggle: toggle,
+    onPrev: () => goPrev(true),
+    onNext: () => goNext(),
+  };
+
   // the cover only runs to the edge in the style that draws a cover at all
   const edge = prefs.theme === 'widget' && prefs.coverEdge;
 
@@ -469,7 +502,7 @@ export default function App() {
     <div className="relative h-full w-full overflow-hidden bg-screen">
       {/* outside the keyed wrapper: inside it, every track change tore the blurred art down and
           built it again, which showed as a flash while the new one decoded */}
-      {prefs.theme !== 'poster' && prefs.theme !== 'stereo' && prefs.theme !== 'flow' && prefs.theme !== 'pocket' && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
+      {BACKDROP.includes(prefs.theme) && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
 
       <div
         key={track.persistentId ?? track.title ?? ''}
@@ -482,7 +515,19 @@ export default function App() {
                 ? 'skip-prev'
                 : 'skip-next'
         }`}>
-      {prefs.theme === 'flow' ? (
+      {prefs.theme === 'night' ? (
+        <Night {...styleProps} />
+      ) : prefs.theme === 'flap' ? (
+        <SplitFlap {...styleProps} />
+      ) : prefs.theme === 'receipt' ? (
+        <Receipt {...styleProps} />
+      ) : prefs.theme === 'jukebox' ? (
+        <Jukebox {...styleProps} queue={queue} thumbs={flowThumbs} onSkipTo={index => client.player.skipToIndex({ index })} />
+      ) : prefs.theme === 'polaroid' ? (
+        <Polaroid {...styleProps} />
+      ) : prefs.theme === 'pixel' ? (
+        <Pixel {...styleProps} />
+      ) : prefs.theme === 'flow' ? (
         <CoverFlow
           artUrl={artUrl}
           title={track.title ?? 'unknown'}
@@ -1106,8 +1151,8 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
-    values: ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics'],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics'],
+    values: [...THEMES],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
@@ -1631,6 +1676,29 @@ const GLYPHS: Record<string, ReactNode> = {
     </>
   ),
   lyrics: <path d="M4 6h16M4 11h11M4 16h14M4 21h8" />,
+  night: <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />,
+  flap: (
+    <>
+      <rect x="2.5" y="5" width="8.5" height="14" rx="1.5" />
+      <rect x="13" y="5" width="8.5" height="14" rx="1.5" />
+      <path d="M2.5 12h8.5M13 12h8.5" />
+    </>
+  ),
+  receipt: <path d="M6 2.5h12v19l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5zM9 7h6M9 11h6M9 15h4" />,
+  jukebox: (
+    <>
+      <path d="M5 21V10a7 7 0 0 1 14 0v11z" />
+      <circle cx="12" cy="10.5" r="3" />
+      <path d="M8 17h8" />
+    </>
+  ),
+  polaroid: (
+    <>
+      <rect x="4" y="2.5" width="16" height="19" rx="1.5" />
+      <rect x="6.5" y="5" width="11" height="10.5" />
+    </>
+  ),
+  pixel: <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />,
 };
 
 function Glyph({ name, className }: { name: string; className?: string }) {

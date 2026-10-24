@@ -5,8 +5,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { POCKET_BODIES, type PocketBody } from './pocket';
 import { GLOWS, type Glow } from './stereo';
 
+// every player style, in the order Mode steps through them; widget, the first, is the default
+export const THEMES = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics', 'night', 'flap', 'receipt', 'jukebox', 'polaroid', 'pixel'] as const;
+
 export type Prefs = {
-  theme: 'widget' | 'vinyl' | 'cd' | 'cassette' | 'dial' | 'stereo' | 'flow' | 'pocket' | 'poster' | 'lyrics';
+  theme: (typeof THEMES)[number];
   rotate: 0 | 90 | 180 | 270;
   lyricsInfo: 'tl' | 'bl' | 'tr' | 'br';
   words: boolean;
@@ -69,18 +72,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
     case 'theme':
       return {
         ...prefs,
-        theme:
-          value === 'vinyl' ||
-          value === 'cd' ||
-          value === 'cassette' ||
-          value === 'dial' ||
-          value === 'stereo' ||
-          value === 'flow' ||
-          value === 'pocket' ||
-          value === 'poster' ||
-          value === 'lyrics'
-            ? value
-            : 'widget',
+        theme: (THEMES as readonly string[]).includes(value) ? (value as Prefs['theme']) : 'widget',
       };
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };

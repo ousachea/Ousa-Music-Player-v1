@@ -37,7 +37,13 @@
           "flow",
           "pocket",
           "poster",
-          "lyrics"
+          "lyrics",
+          "night",
+          "flap",
+          "receipt",
+          "jukebox",
+          "polaroid",
+          "pixel"
         ],
         "default": "widget"
       }
