@@ -111,15 +111,18 @@ export function Terminal({
     // keyed on the block's text; the letters are rebuilt from it every render
   }, [block, motion]);
 
-  const width = upright ? 22 : 40;
+  // the bar and its readout on one line: 40 cells fit across, 16 in the narrow turned column
+  const width = upright ? 16 : 40;
   const filled = Math.round(Math.min(1, Math.max(0, progress)) * width);
   const glow = { color: GREEN, textShadow: `0 0 6px color-mix(in srgb, ${GREEN} 60%, transparent)` };
-  const command = (label: string, onClick: () => void, extra = '') => (
+  // each key a text icon in keyboard characters, the word beside it where there is room for one
+  const command = (icon: string, label: string, onClick: () => void, extra = '', iconOnly = false) => (
     <button
       onClick={onClick}
-      className={`h-14 rounded-sm px-4 ring-1 transition active:bg-[#39ff7a] active:text-black ${extra}`}
+      className={`h-14 rounded-sm ring-1 transition active:bg-[#39ff7a] active:text-black ${upright ? 'w-full px-1 text-[15px]' : 'px-4'} ${extra}`}
       style={{ ...glow, ['--tw-ring-color' as string]: `color-mix(in srgb, ${GREEN} 45%, transparent)` }}>
-      [ {label} ]
+      [ {icon}
+      {iconOnly ? '' : ` ${label}`} ]
     </button>
   );
 
@@ -134,7 +137,8 @@ export function Terminal({
       />
       <div className={`relative flex h-full flex-col justify-end text-[17px] leading-[1.55] ${upright ? 'px-5 pb-6' : 'px-10 pb-7'}`} style={glow}>
         {earlier.map((l, i) => (
-          <div key={i + l.title} className="truncate opacity-35">
+          // turned, the column is narrow, so an earlier song gets two lines rather than being cut to one
+          <div key={i + l.title} className={`opacity-35 ${upright ? 'line-clamp-2 break-words' : 'truncate'}`}>
             $ now-playing · {l.title} — {l.artist}
           </div>
         ))}
@@ -151,15 +155,16 @@ export function Terminal({
           $ <span className="inline-block h-5 w-2.5 translate-y-1 animate-pulse" style={{ background: GREEN }} />
         </div>
         {/* the controls, and in the bottom right the colour key, which trades green for the cover's colour */}
-        <div className={`mt-5 flex items-center gap-3 ${upright ? 'flex-wrap' : ''}`}>
+        {/* turned, the column is too narrow for the row, so the keys share its width equally instead */}
+        <div className={`mt-5 ${upright ? 'grid grid-cols-4 gap-2' : 'flex items-center gap-3'}`}>
           {showTransport && (
             <>
-              {command('prev', onPrev)}
-              {command(playing ? 'pause' : 'play', onToggle)}
-              {command('next', onNext)}
+              {command('|<', 'prev', onPrev, '', upright)}
+              {command(playing ? '||' : '>', playing ? 'pause' : 'play', onToggle, '', upright)}
+              {command('>|', 'next', onNext, '', upright)}
             </>
           )}
-          {command(colour === 'album' ? 'album' : 'green', onColour, 'ml-auto animate-hint')}
+          {command('*', colour === 'album' ? 'album' : 'green', onColour, `animate-hint ${upright ? (showTransport ? '' : 'col-start-4') : 'ml-auto'}`)}
         </div>
       </div>
     </div>
