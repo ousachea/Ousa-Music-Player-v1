@@ -3,6 +3,7 @@
 import { useRef, type CSSProperties, type PointerEvent, type ReactNode } from 'react';
 
 import type { Accent } from './artwork-color';
+import { FitTitle } from './fit-title';
 import type { Queue } from './queue';
 
 // how many covers stand either side of the middle one
@@ -178,9 +179,12 @@ export function CoverFlow({
           style={{ width: size, height: size, marginLeft: -size / 2, marginTop: -size / 2, zIndex: 20 }}>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-6 pb-6 text-center">
-            <div className="line-clamp-2 font-display text-[1.65rem] leading-tight font-semibold tracking-display text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
-              {title}
-            </div>
+            <FitTitle
+              text={title}
+              max={26}
+              lines={2}
+              className="w-full font-display leading-tight font-semibold tracking-display text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
+            />
             <div className="mt-0.5 truncate text-row text-white/75">{artist}</div>
             {showTransport && !aside && <div className="mt-3">{transport(false)}</div>}
           </div>

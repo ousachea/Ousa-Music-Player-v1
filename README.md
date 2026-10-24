@@ -49,7 +49,7 @@ update**.
 Ten player styles, all tinted by the album art, with music notes drifting up over them (**Display →
 Floating notes**). Switch styles with **Mode** or in the settings; a small tag at the bottom names
 the current one. Track changes cross-fade the blurred background, and Vinyl and CD swap in a new
-record or disc.
+record or disc. In Cover, CD, Flow and Poster a long song title shrinks to fit rather than being cut off.
 
 ### Vinyl
 
@@ -136,7 +136,7 @@ and a click wheel beside it. Turned upright, the screen stands above the wheel.
 ![Poster style](apps/MusicPlayerV1/screenshots/04-poster.jpg)
 
 The artwork fills the screen with the track laid over it, a slowly turning play button, and a wavy
-progress line that travels while the music runs. A long title shrinks to fit rather than being cut off.
+progress line that travels while the music runs.
 
 ### Cover
 

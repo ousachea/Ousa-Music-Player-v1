@@ -2,7 +2,6 @@ import { BridgethingClient, type ConnectionState, type PlayerState } from '@brid
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -23,6 +22,7 @@ import { useClock, type ClockParts } from './clock';
 import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, usePrefs, type Prefs } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
+import { FitTitle } from './fit-title';
 import { GROUPS, STYLE_ROWS, shown, type Row } from './settings-layout';
 
 const SCRUB_COMMIT_MS = 340;
@@ -1521,45 +1521,6 @@ function Step({ label, onClick, children }: { label: string; onClick: () => void
   );
 }
 
-const TITLE_MAX_PX = 38;
-const TITLE_MIN_PX = 20;
-const TITLE_LINES = 3;
-
-// a long title shrinks until all of it fits the three lines a short one gets, rather than losing its end
-function FitTitle({ text, className }: { text: string; className?: string }) {
-  const box = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState(TITLE_MAX_PX);
-
-  useLayoutEffect(() => {
-    const el = box.current;
-    if (!el) return;
-    const fit = () => {
-      let px = TITLE_MAX_PX;
-      el.style.fontSize = `${px}px`;
-      // the room is what three lines take at full size, so a short title never changes
-      const room = TITLE_MAX_PX * 1.15 * TITLE_LINES + 1;
-      while (px > TITLE_MIN_PX && el.scrollHeight > room) {
-        px -= 2;
-        el.style.fontSize = `${px}px`;
-      }
-      setSize(px);
-    };
-    fit();
-    // the bundled faces land after first paint and change every width
-    document.fonts?.ready.then(fit).catch(() => {});
-    // watching the parent rather than the title, whose own height moves with every step of the fit
-    const observer = new ResizeObserver(fit);
-    if (el.parentElement) observer.observe(el.parentElement);
-    return () => observer.disconnect();
-  }, [text]);
-
-  return (
-    <div ref={box} className={className} style={{ fontSize: size }}>
-      {text}
-    </div>
-  );
-}
-
 // a marquee only earns its motion when the text actually overflows, so the width is measured rather than guessed
 function Roll({ text, className, wrap, lines = 3 }: { text: string; className?: string; wrap?: boolean; lines?: number }) {
   const outer = useRef<HTMLDivElement>(null);
@@ -2098,13 +2059,11 @@ function CdDeck({
       <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>
       {/* the track is centred in the space the controls leave, which is deep enough to wrap into
           whether or not the on-screen buttons are drawn */}
-      <Roll
+      <FitTitle
         text={title}
-        wrap
+        max={upright ? 28 : 26}
         lines={3}
-        className={`font-display font-semibold leading-[1.2] tracking-display text-off-white ${
-          upright ? 'text-[1.75rem]' : 'text-[1.625rem]'
-        }`}
+        className="font-display font-semibold leading-[1.2] tracking-display text-off-white"
       />
       <div className="mt-1 flex min-w-0 items-center gap-2">
         {explicit && <Explicit />}
@@ -2321,7 +2280,9 @@ function Poster({
         </div>
         <FitTitle
           text={title}
-          className="font-display leading-[1.15] font-semibold tracking-display break-words text-off-white"
+          max={38}
+          lines={3}
+          className="font-display leading-[1.15] font-semibold tracking-display text-off-white"
         />
         <div className="mt-1 flex min-w-0 items-center gap-2">
           {explicit && <Explicit />}
@@ -2492,13 +2453,11 @@ function Widget({
       {!small && <div className="mb-1 truncate font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{context}</div>}
       {/* the column is deep in either orientation, so a long track grows into it rather than
           scrolling past on one line */}
-      <Roll
+      <FitTitle
         text={title}
-        wrap
+        max={small ? 28 : 30}
         lines={3}
-        className={`font-display leading-[1.2] font-semibold tracking-display text-off-white ${
-          small ? 'text-[1.75rem]' : 'text-[1.875rem]'
-        }`}
+        className="font-display leading-[1.2] font-semibold tracking-display text-off-white"
       />
       <div className="mt-1.5 flex min-w-0 items-center gap-2">
         {explicit && <Explicit />}
