@@ -26,7 +26,7 @@ export function Neon({ title, artist, accent, playing, motion, upright, showTran
       {/* the wall lit by the sign, brightest behind the words */}
       <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 60% 50% at 50% 42%, color-mix(in srgb, ${tube} 18%, transparent), transparent 70%)` }} />
 
-      <div className={`relative flex h-full flex-col items-center justify-center text-center ${upright ? 'gap-6 px-6' : 'gap-5 px-12'}`}>
+      <div className={`relative flex h-full flex-col items-center justify-center text-center ${upright ? 'gap-10 px-6' : 'gap-10 px-12'}`}>
         <div key={title} className={`w-full ${motion ? 'animate-neon-on' : ''}`}>
           <div className={motion && playing ? 'animate-neon-buzz' : ''} style={{ color: '#fff', textShadow: glow(tube) }}>
             <FitTitle text={title} max={upright ? 60 : 72} lines={2} className="w-full font-hand leading-[1.02] font-bold" />

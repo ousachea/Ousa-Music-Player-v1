@@ -48,7 +48,7 @@ export function Typewriter({ title, artist, playing, motion, upright, showTransp
             {/* the carriage: a block where the next letter strikes, blinking once the line is done */}
             <span className={`ml-0.5 inline-block h-6 w-3 translate-y-1 bg-[#26231f] ${done ? 'animate-pulse' : ''}`} />
           </div>
-          <div className="mt-3">{seek('#26231f', '#26231f')}</div>
+          <div className="mt-6">{seek('#26231f', '#26231f')}</div>
         </div>
 
         {/* the machine's body across the foot, with its keys */}

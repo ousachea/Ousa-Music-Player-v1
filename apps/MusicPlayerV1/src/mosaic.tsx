@@ -63,7 +63,7 @@ export function Mosaic({
           {artUrl && <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
         </button>
 
-        <div className="flex min-w-0 flex-col justify-center gap-2 rounded-[10px] bg-[#0c0d0f]/95 px-5 py-3 ring-1 ring-white/10" style={place(panel.c, panel.r, panel.w, panel.h)}>
+        <div className="flex min-w-0 flex-col justify-center gap-5 rounded-[10px] bg-[#0c0d0f]/95 px-5 py-3 ring-1 ring-white/10" style={place(panel.c, panel.r, panel.w, panel.h)}>
           <div className="flex min-w-0 items-center gap-4">
             <div className="min-w-0 flex-1">
               <FitTitle text={title} max={24} lines={2} className="font-display leading-tight font-semibold text-white" />

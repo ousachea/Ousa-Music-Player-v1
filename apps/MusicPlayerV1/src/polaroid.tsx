@@ -63,7 +63,7 @@ export function Polaroid({
         <div className={`flex min-w-0 flex-col ${upright ? 'w-full items-center text-center' : 'flex-1'}`}>
           <div className="font-hand text-[30px] leading-tight text-[#f4efe6]">{artist}</div>
           {album && <div className="mt-1 truncate text-row text-[#f4efe6]/55">{album}</div>}
-          <div className="mt-6 flex w-full items-center gap-4">
+          <div className="mt-8 flex w-full items-center gap-4">
             <span className="font-mono text-hint tabular-nums text-[#f4efe6]/60">{fmt(elapsed)}</span>
             <div className="min-w-0 flex-1">{seek(accent?.soft ?? '#f4efe6', accent?.soft2 ?? '#f4efe6')}</div>
             <span className="font-mono text-hint tabular-nums text-[#f4efe6]/60">
@@ -76,7 +76,7 @@ export function Polaroid({
               onToggle={onToggle}
               onPrev={onPrev}
               onNext={onNext}
-              className={`mt-6 gap-5 text-[#f4efe6] ${upright ? 'justify-center' : '-ml-2'}`}
+              className={`mt-9 gap-5 text-[#f4efe6] ${upright ? 'justify-center' : '-ml-2'}`}
               play="grid h-16 w-16 place-items-center rounded-full bg-[#faf8f3] text-[#22324f]"
             />
           )}

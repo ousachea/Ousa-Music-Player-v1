@@ -128,7 +128,7 @@ export function SplitFlap({
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#0b0b0c]">
-      <div className={`flex h-full flex-col justify-center gap-4 ${upright ? 'px-5' : 'px-10'}`}>
+      <div className={`flex h-full flex-col justify-center gap-5 ${upright ? 'px-5' : 'px-10'}`}>
         <div className="flex items-baseline justify-between font-mono text-eyebrow tracking-[0.3em] uppercase" style={{ color: tint }}>
           <span>Now playing</span>
           <span>{playing ? 'On time' : 'Held'}</span>
@@ -136,7 +136,7 @@ export function SplitFlap({
         <Board lines={rows(title, cols, 3)} size={size} motion={motion} />
         <Board lines={rows(artist, artistCols, 1)} size={small} motion={motion} />
 
-        <div className="mt-2 flex items-center gap-5">
+        <div className="mt-3 flex items-center gap-6">
           <Board lines={[cells(time.padStart(6, ' '))]} size={small} motion={motion} />
           <div className="min-w-0 flex-1">{seek(tint, tint)}</div>
           {showTransport && (
@@ -147,9 +147,9 @@ export function SplitFlap({
               onPrev={onPrev}
               onNext={onNext}
               className="gap-[3px] text-[#f1efe8]"
-              button={`h-12 w-11 rounded-md ${FLAP_FACE}`}
-              play={`h-12 w-14 rounded-md ${FLAP_FACE}`}
-              icon="h-6 w-6"
+              button={`h-14 w-14 rounded-md ${FLAP_FACE}`}
+              play={`h-14 w-[4.5rem] rounded-md ${FLAP_FACE}`}
+              icon="h-7 w-7"
             />
           )}
         </div>

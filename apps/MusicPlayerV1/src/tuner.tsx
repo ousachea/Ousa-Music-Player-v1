@@ -64,7 +64,7 @@ export function Tuner({
             <div className="font-mono text-[10px] tracking-[0.3em] text-[#7a5a3a]">NOW ON {mhz}</div>
             <FitTitle text={title} max={26} lines={2} className="font-display leading-tight font-bold text-[#2a1a10]" />
             <div className="truncate font-hand text-[22px] leading-tight text-[#5a3720]">{artist}</div>
-            <div className="mt-2">{seek('#5a3720', '#2a1a10')}</div>
+            <div className="mt-5">{seek('#5a3720', '#2a1a10')}</div>
           </div>
 
           {showTransport && (

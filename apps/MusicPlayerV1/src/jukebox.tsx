@@ -70,7 +70,7 @@ export function Jukebox({
                 onPrev={onPrev}
                 onNext={onNext}
                 // chrome buttons on the cabinet, the middle one the big red select button
-                className="mt-1 justify-center gap-3"
+                className="mt-4 justify-center gap-3"
                 button="h-11 w-11 rounded-full bg-gradient-to-b from-[#f4f1ea] to-[#9a948a] text-[#2a1d16] shadow-[0_3px_8px_rgba(0,0,0,0.5)]"
                 play="h-14 w-14 rounded-full bg-gradient-to-b from-[#e8574c] to-[#9e1f17] text-white shadow-[0_4px_12px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.4)]"
                 icon="h-6 w-6"

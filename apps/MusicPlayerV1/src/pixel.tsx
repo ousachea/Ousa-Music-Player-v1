@@ -78,7 +78,7 @@ export function Pixel({
           <FitTitle text={title.toUpperCase()} max={22} lines={3} className="font-pixel leading-[1.4] text-white" />
           <div className="mt-3 truncate font-pixel text-[11px] leading-normal text-white/60">{artist.toUpperCase()}</div>
 
-          <div className="mt-6 flex gap-1">
+          <div className="mt-8 flex gap-1">
             {Array.from({ length: CELLS }, (_, i) => (
               <div key={i} className="h-4 flex-1" style={{ backgroundColor: i < lit ? tint : 'rgba(255,255,255,0.1)' }} />
             ))}
@@ -94,7 +94,7 @@ export function Pixel({
               onToggle={onToggle}
               onPrev={onPrev}
               onNext={onNext}
-              className="mt-5 -ml-2 gap-4 text-white"
+              className="mt-8 -ml-2 gap-4 text-white"
               play="grid h-14 w-14 place-items-center bg-white text-black shadow-[4px_4px_0_#000]"
               icon="h-7 w-7"
             />
