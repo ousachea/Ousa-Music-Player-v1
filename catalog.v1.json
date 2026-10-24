@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-24T15:28:46.688Z",
+  "updated_at": "2026-10-24T16:11:52.169Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -451,6 +451,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.44.0",
+          "released_at": "2026-10-24T16:11:52.166Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.44.0.zip",
+            "size": 1522789,
+            "sha256": "ead54af42ffe555abeaf44d96024928fa1d8b50c17e50f84eba86505801ae2bd"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.44.0.html",
+            "size": 39545,
+            "sha256": "227ce0f80762a584cace8d743ee072114418f1cc252cbba202503005b339acd1"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Six more styles**, twenty-two in all:\n\n- **Dashboard**: the song on a car's instrument cluster, the needle sweeping its length and a second gauge\n  showing the volume.\n- **Neon**: the title in glowing tube on a brick wall, flickering on with each song.\n- **Mosaic**: a wall of recently played covers around the one playing now.\n- **Ambient**: only the album's colours, drifting and swirling. Tap to see the song and the buttons.\n- **Tuner**: an old FM dial with a moving needle, a station card and ivory preset keys.\n- **Typewriter**: each song typed onto the page as it starts.\n\n**Ten seek bars**: alongside the line and the wave there are now cells, dots, a neon glow, a hand-drawn line,\na pill, a ruler, a heartbeat and stripes. **Auto** gives each style the one that suits it, and each tile in\nthe settings shows what it looks like.\n\n**Settings** open where you left them, and tapping a style slides its own settings in over the grid.\n\n**Night** fills the screen with a bigger clock and bigger buttons, in a dim tint of the cover's colour.\n**Split-flap** grows its board to the title, **Receipt** runs the full width with its buttons at the\nbottom right, **Pocket** shows the whole title, and **Jukebox** shows recently played songs when nothing\nis queued. Split-flap and Jukebox get controls to match their look.\n\nAnything you can tap to change a style's look lights up for a moment every so often, and the **Polaroid**\nphoto now changes its frame: white, black or cream. Spacing between the text, seek bar and buttons is\nroomier across the newer styles."
+        },
         {
           "version": "0.43.0",
           "released_at": "2026-10-24T15:28:46.685Z",
