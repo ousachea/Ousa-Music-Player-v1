@@ -41,24 +41,24 @@ export function Magazine({
         </div>
 
         <div className="mt-4 flex min-h-0 flex-1 justify-between gap-6">
-          {/* the cover lines down the side */}
+          {/* the cover lines down the side, labelled in white with a mark of the album's colour, so they read on any cover */}
           <div className="flex w-[220px] flex-col gap-4 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             <div>
-              <div className="font-mono text-[10px] tracking-[0.3em]" style={{ color: tint }}>
+              <div className="border-l-2 pl-1.5 font-mono text-[10px] tracking-[0.3em] text-white/80" style={{ borderColor: tint }}>
                 IN CONVERSATION
               </div>
               <div className="font-display text-[1.25rem] leading-tight font-bold">{artist}</div>
             </div>
             {album && (
               <div>
-                <div className="font-mono text-[10px] tracking-[0.3em]" style={{ color: tint }}>
+                <div className="border-l-2 pl-1.5 font-mono text-[10px] tracking-[0.3em] text-white/80" style={{ borderColor: tint }}>
                   THE RECORD
                 </div>
                 <div className="font-display text-row leading-tight font-semibold">{album}</div>
               </div>
             )}
             <div>
-              <div className="font-mono text-[10px] tracking-[0.3em]" style={{ color: tint }}>
+              <div className="border-l-2 pl-1.5 font-mono text-[10px] tracking-[0.3em] text-white/80" style={{ borderColor: tint }}>
                 PLUS
               </div>
               <div className="font-display text-row leading-tight font-semibold">

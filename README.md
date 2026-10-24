@@ -231,12 +231,13 @@ the last few still on the page above, and the machine's round keys for the butto
 
 ### Terminal
 
-The song printed on a green-on-black command line, each new one streaming in under the last few, with an
-ASCII progress bar, a cursor at the prompt, and bracketed commands for the buttons.
+The song printed on a green-on-black command line while code rains down the screen behind it non-stop,
+the way it does in The Matrix. Each new song streams in under the last few, with an ASCII progress bar, a
+cursor at the prompt, and bracketed commands for the buttons.
 
 ### Ticket
 
-The song as a concert ticket: the cover as the poster, the title as the act, the artist as the venue, and a
+The song as a concert ticket: the whole cover as a square poster, the title as the act, the artist as the venue, and a
 stub with a seat and barcode made from the song. Tap the stub to tear it off; a new one grows back.
 
 ### Film strip

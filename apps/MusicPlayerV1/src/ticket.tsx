@@ -51,14 +51,22 @@ export function Ticket({
         <div className={`flex w-full drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)] ${upright ? 'flex-col' : 'h-[300px]'}`}>
           {/* the main part: the poster and the bill */}
           <div className={`flex min-w-0 flex-1 overflow-hidden rounded-l-xl bg-[#f4ecdc] ${upright ? 'flex-col rounded-t-xl rounded-bl-none' : ''}`}>
-            <div className={`relative shrink-0 overflow-hidden bg-black ${upright ? 'h-[220px] w-full' : 'h-full w-[240px]'}`}>
-              {artUrl && <img src={artUrl} alt="" className="h-full w-full object-cover" />}
-              <div className="absolute inset-x-0 top-0 py-1.5 text-center font-mono text-[10px] font-bold tracking-[0.35em] text-white" style={{ background: tint }}>
-                ADMIT ONE
-              </div>
+            {/* the poster is square and shows the whole cover; a cover that is not square sits on a blur of itself */}
+            <div className={`relative shrink-0 overflow-hidden bg-black ${upright ? 'h-[220px] w-full' : 'aspect-square h-full'}`}>
+              {artUrl && (
+                <>
+                  <img src={artUrl} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl" />
+                  <img src={artUrl} alt="" className="relative h-full w-full object-contain" />
+                </>
+              )}
             </div>
             <div className="flex min-w-0 flex-1 flex-col justify-between p-5 text-[#2a211b]">
-              <div className="font-mono text-[11px] tracking-[0.3em] text-[#2a211b]/60">LIVE · ONE NIGHT ONLY</div>
+              <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.3em] text-[#2a211b]/60">
+                <span className="rounded-[3px] px-1.5 py-0.5 font-bold text-white" style={{ background: tint }}>
+                  ADMIT ONE
+                </span>
+                LIVE · ONE NIGHT
+              </div>
               <div className="min-w-0">
                 <FitTitle text={title} max={38} lines={2} className="font-display leading-[1.05] font-black tracking-tight uppercase" />
                 <div className="mt-1 truncate font-display text-[1.25rem] font-semibold" style={{ color: tint }}>
