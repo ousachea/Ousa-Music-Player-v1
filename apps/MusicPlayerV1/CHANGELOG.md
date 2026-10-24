@@ -1,5 +1,32 @@
 # O-Music Player
 
+## 0.44.0
+
+**Six more styles**, twenty-two in all:
+
+- **Dashboard**: the song on a car's instrument cluster, the needle sweeping its length and a second gauge
+  showing the volume.
+- **Neon**: the title in glowing tube on a brick wall, flickering on with each song.
+- **Mosaic**: a wall of recently played covers around the one playing now.
+- **Ambient**: only the album's colours, drifting and swirling. Tap to see the song and the buttons.
+- **Tuner**: an old FM dial with a moving needle, a station card and ivory preset keys.
+- **Typewriter**: each song typed onto the page as it starts.
+
+**Ten seek bars**: alongside the line and the wave there are now cells, dots, a neon glow, a hand-drawn line,
+a pill, a ruler, a heartbeat and stripes. **Auto** gives each style the one that suits it, and each tile in
+the settings shows what it looks like.
+
+**Settings** open where you left them, and tapping a style slides its own settings in over the grid.
+
+**Night** fills the screen with a bigger clock and bigger buttons, in a dim tint of the cover's colour.
+**Split-flap** grows its board to the title, **Receipt** runs the full width with its buttons at the
+bottom right, **Pocket** shows the whole title, and **Jukebox** shows recently played songs when nothing
+is queued. Split-flap and Jukebox get controls to match their look.
+
+Anything you can tap to change a style's look lights up for a moment every so often, and the **Polaroid**
+photo now changes its frame: white, black or cream. Spacing between the text, seek bar and buttons is
+roomier across the newer styles.
+
 ## 0.43.0
 
 **Six new styles**, sixteen in all:
