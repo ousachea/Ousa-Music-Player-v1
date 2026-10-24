@@ -2,6 +2,7 @@ import { BridgethingClient, type ConnectionState, type PlayerState } from '@brid
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -1520,6 +1521,45 @@ function Step({ label, onClick, children }: { label: string; onClick: () => void
   );
 }
 
+const TITLE_MAX_PX = 38;
+const TITLE_MIN_PX = 20;
+const TITLE_LINES = 3;
+
+// a long title shrinks until all of it fits the three lines a short one gets, rather than losing its end
+function FitTitle({ text, className }: { text: string; className?: string }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState(TITLE_MAX_PX);
+
+  useLayoutEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const fit = () => {
+      let px = TITLE_MAX_PX;
+      el.style.fontSize = `${px}px`;
+      // the room is what three lines take at full size, so a short title never changes
+      const room = TITLE_MAX_PX * 1.15 * TITLE_LINES + 1;
+      while (px > TITLE_MIN_PX && el.scrollHeight > room) {
+        px -= 2;
+        el.style.fontSize = `${px}px`;
+      }
+      setSize(px);
+    };
+    fit();
+    // the bundled faces land after first paint and change every width
+    document.fonts?.ready.then(fit).catch(() => {});
+    // watching the parent rather than the title, whose own height moves with every step of the fit
+    const observer = new ResizeObserver(fit);
+    if (el.parentElement) observer.observe(el.parentElement);
+    return () => observer.disconnect();
+  }, [text]);
+
+  return (
+    <div ref={box} className={className} style={{ fontSize: size }}>
+      {text}
+    </div>
+  );
+}
+
 // a marquee only earns its motion when the text actually overflows, so the width is measured rather than guessed
 function Roll({ text, className, wrap, lines = 3 }: { text: string; className?: string; wrap?: boolean; lines?: number }) {
   const outer = useRef<HTMLDivElement>(null);
@@ -2279,11 +2319,9 @@ function Poster({
         <div className="mb-2 truncate font-mono text-eyebrow tracking-[0.22em] text-off-white/65 uppercase">
           {context}
         </div>
-        <Roll
+        <FitTitle
           text={title}
-          wrap
-          lines={3}
-          className="font-display text-[2.375rem] leading-[1.15] font-semibold tracking-display text-off-white"
+          className="font-display leading-[1.15] font-semibold tracking-display break-words text-off-white"
         />
         <div className="mt-1 flex min-w-0 items-center gap-2">
           {explicit && <Explicit />}

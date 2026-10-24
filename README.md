@@ -136,7 +136,7 @@ and a click wheel beside it. Turned upright, the screen stands above the wheel.
 ![Poster style](apps/MusicPlayerV1/screenshots/04-poster.jpg)
 
 The artwork fills the screen with the track laid over it, a slowly turning play button, and a wavy
-progress line that travels while the music runs.
+progress line that travels while the music runs. A long title shrinks to fit rather than being cut off.
 
 ### Cover
 
