@@ -9,7 +9,7 @@ import { GLOWS, type Glow } from './stereo';
 export const THEMES = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics', 'night', 'flap', 'receipt', 'jukebox', 'polaroid', 'pixel'] as const;
 
 // the seek bar kinds; auto picks the one that suits the style
-export const SEEKS = ['bar', 'wave', 'cells', 'dots', 'glow', 'hand'] as const;
+export const SEEKS = ['bar', 'wave', 'cells', 'dots', 'glow', 'hand', 'pill', 'ruler', 'pulse', 'stripes'] as const;
 export type Seek = (typeof SEEKS)[number];
 
 export type Prefs = {

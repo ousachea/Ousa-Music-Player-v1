@@ -1,6 +1,6 @@
 // the seek bars past the plain line and the wave. each only draws: the player wraps it in the one element that turns a
 // touch into a position, so dragging and the turned screen work the same for every kind
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 type Look = { progress: number; playing: boolean; dot: boolean; tint: string; tint2: string };
 
@@ -92,6 +92,8 @@ export function Glow({ progress, playing, dot, tint, tint2 }: Look) {
 // ink drawn by hand: a line that wanders a little, the played part inked over in the tint and the rest pencilled in
 export function Hand({ progress, dot, tint }: Look) {
   const [box, width] = useWidth();
+  // the settings show several bars at once, so each clip needs an id of its own
+  const clip = useId();
   const height = 18;
   const mid = height / 2;
   // the wobble is fixed, so the line does not redraw itself as the song plays
@@ -108,14 +110,106 @@ export function Hand({ progress, dot, tint }: Look) {
     <div ref={box} className="h-[18px] w-full">
       <svg width="100%" height={height} viewBox={`0 0 ${Math.max(1, width)} ${height}`} className="overflow-visible">
         <defs>
-          <clipPath id="hand-played">
+          <clipPath id={clip}>
             <rect x="0" y="-4" width={played} height={height + 8} />
           </clipPath>
         </defs>
         <path d={d} stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeDasharray="4 5" strokeLinecap="round" fill="none" />
-        <path d={d} clipPath="url(#hand-played)" stroke={tint} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <path d={d} clipPath={`url(#${clip})`} stroke={tint} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         {dot && <circle cx={played} cy={headY} r="5.5" fill="none" stroke={tint} strokeWidth="2" />}
       </svg>
+    </div>
+  );
+}
+
+// a chunky rounded bar, filled from the left, with a knob at the playhead
+export function Pill({ progress, dot, tint, tint2 }: Look) {
+  const at = `${clamp(progress) * 100}%`;
+  return (
+    <div className="relative h-2.5 w-full rounded-full bg-white/15">
+      <div
+        className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-300 ease-linear"
+        style={{ width: at, background: `linear-gradient(90deg, ${tint}, ${tint2})` }}
+      />
+      {dot && (
+        <div
+          className="absolute top-1/2 h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.4)]"
+          style={{ left: at }}
+        />
+      )}
+    </div>
+  );
+}
+
+// a ruler: a tick every few pixels, a taller one every fifth, inked up to the playhead, with a pointer over it
+export function Ruler({ progress, dot, tint }: Look) {
+  const [box, width] = useWidth();
+  const count = Math.max(10, Math.floor(width / 7));
+  const at = clamp(progress);
+  return (
+    <div ref={box} className="relative flex h-4 w-full items-end justify-between">
+      {Array.from({ length: count }, (_, i) => (
+        <div
+          key={i}
+          className="w-[1.5px] shrink-0 rounded-full"
+          style={{ height: i % 5 === 0 ? 14 : 7, background: i / (count - 1) <= at ? tint : 'rgba(255,255,255,0.28)' }}
+        />
+      ))}
+      {dot && (
+        <div
+          className="absolute -top-2 h-0 w-0 -translate-x-1/2 border-x-[5px] border-t-[7px] border-x-transparent"
+          style={{ left: `${at * 100}%`, borderTopColor: tint }}
+        />
+      )}
+    </div>
+  );
+}
+
+// a heartbeat trace: flat with a beat every so often, the played part drawn in the tint
+export function Pulse({ progress, dot, tint }: Look) {
+  const [box, width] = useWidth();
+  const clip = useId();
+  const height = 22;
+  const mid = height / 2;
+  const beat = 56;
+  let d = `M 0 ${mid}`;
+  for (let x = 0; x < width; x += beat) {
+    const b = x + beat * 0.45;
+    // a beat that would run past the end is left off, so the trace never spills out of its box
+    if (b + 19 <= width) d += ` L ${b} ${mid} L ${b + 4} ${mid - 3} L ${b + 8} ${mid + 2} L ${b + 11} ${mid - 9} L ${b + 15} ${mid + 7} L ${b + 19} ${mid}`;
+    d += ` L ${Math.min(width, x + beat)} ${mid}`;
+  }
+  const played = clamp(progress) * width;
+  return (
+    <div ref={box} className="h-[22px] w-full">
+      <svg width="100%" height={height} viewBox={`0 0 ${Math.max(1, width)} ${height}`} className="overflow-visible">
+        <defs>
+          <clipPath id={clip}>
+            <rect x="0" y="-4" width={played} height={height + 8} />
+          </clipPath>
+        </defs>
+        <path d={d} stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinejoin="round" fill="none" />
+        <path d={d} clipPath={`url(#${clip})`} stroke={tint} strokeWidth="2.2" strokeLinejoin="round" fill="none" />
+        {dot && <circle cx={played} cy={mid} r="3.5" fill={tint} />}
+      </svg>
+    </div>
+  );
+}
+
+// a candy-striped bar whose stripes run while the song plays
+export function Stripes({ progress, playing, tint, tint2 }: Look) {
+  const at = `${clamp(progress) * 100}%`;
+  return (
+    <div className="relative h-3 w-full overflow-hidden rounded-full bg-white/12">
+      <div
+        className={`absolute inset-y-0 left-0 rounded-full transition-[width] duration-300 ease-linear ${playing ? 'animate-stripes' : ''}`}
+        style={{
+          width: at,
+          backgroundColor: tint,
+          backgroundImage: `repeating-linear-gradient(-45deg, transparent 0 6px, ${tint2} 6px 12px)`,
+          backgroundSize: '17px 17px',
+        }}
+      />
     </div>
   );
 }

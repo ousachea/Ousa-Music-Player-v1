@@ -232,7 +232,7 @@ the physical buttons.
 
 ![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
-Press the button under the wheel. Sections run down the left, each with an icon, and the one you pick fills the rest of
+Press the button under the wheel; it opens where you left it, section and scroll. Sections run down the left, each with an icon, and the one you pick fills the rest of
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
@@ -240,8 +240,9 @@ tile carries a small picture of the style, and a setting that needs explaining h
   remaining and the rest live there)
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
 - **Controls**: what the wheel does, seek step, the offer to hide the on-screen buttons, seek bar
-  style and playhead dot. The seek bar comes as a plain line, a wave, lit cells, dots, a neon glow or a
-  hand-drawn line; Auto gives each style the one that suits it (the wave in Poster, the glow in Night and
+  style and playhead dot. The seek bar comes as a plain line, a wave, lit cells, dots, a neon glow, a
+  hand-drawn line, a chunky pill, a ruler, a heartbeat or running stripes, each tile showing what it looks
+  like; Auto gives each style the one that suits it (the wave in Poster, the glow in Night and
   Jukebox, cells on Split-flap, the hand-drawn line on Polaroid)
 - **Clock**: position, size, 12/24 hour, seconds
 - **About**: check for updates, and the size of the album art that arrived

@@ -2,6 +2,8 @@ import { BridgethingClient, type ConnectionState, type PlayerState } from '@brid
 import {
   useCallback,
   useEffect,
+  useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -30,7 +32,7 @@ import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BP
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 import { FitTitle } from './fit-title';
-import { Cells, Dots, Glow, Hand } from './seekbars';
+import { Cells, Dots, Glow, Hand, Pill, Pulse, Ruler, Stripes } from './seekbars';
 import { BACKDROP, GROUPS, STYLE_ROWS, shown, type Row } from './settings-layout';
 
 const SCRUB_COMMIT_MS = 340;
@@ -1175,7 +1177,10 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   vinylStyle: { values: ['turntable', 'sleeve', 'picture'], labels: ['Turntable', 'Sleeve', 'Picture disc'] },
   vinylFront: { values: ['record', 'sleeve'], labels: ['Record', 'Sleeve'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
-  seek: { values: ['auto', 'bar', 'wave', 'cells', 'dots', 'glow', 'hand'], labels: ['Auto', 'Bar', 'Wave', 'Cells', 'Dots', 'Glow', 'Hand'] },
+  seek: {
+    values: ['auto', 'bar', 'wave', 'cells', 'dots', 'glow', 'hand', 'pill', 'ruler', 'pulse', 'stripes'],
+    labels: ['Auto', 'Bar', 'Wave', 'Cells', 'Dots', 'Glow', 'Hand', 'Pill', 'Ruler', 'Pulse', 'Stripes'],
+  },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
   clockPos: { values: ['left', 'center', 'right'], labels: ['Left', 'Centre', 'Right'] },
   clockFormat: { values: ['auto', 'h12', 'h24'], labels: ['Auto', '12h', '24h'] },
@@ -1216,19 +1221,24 @@ function Panel({
   const [scroll, setScroll] = useState({ shown: 1, at: 0 });
   const onScroll = useCallback(() => {
     const el = list.current;
+    if (el) PANEL_PLACE.scroll[PANEL_PLACE.tab] = el.scrollTop;
     if (!el || el.scrollHeight <= el.clientHeight) return setScroll({ shown: 1, at: 0 });
     setScroll({
       shown: el.clientHeight / el.scrollHeight,
       at: el.scrollTop / (el.scrollHeight - el.clientHeight),
     });
   }, []);
-  // the style leads because it is what this is opened for most, and it opens on the style's own settings
-  const [tab, setTab] = useState<string>('Style');
-  useEffect(onScroll, [onScroll, prefs.theme, tab]);
-  // each section starts at its top, rather than wherever the last one had been scrolled to
-  useEffect(() => {
-    if (list.current) list.current.scrollTop = 0;
+  // it opens where it was left, section and scroll both, so a setting just changed is still under the finger
+  const [tab, setTabState] = useState<string>(PANEL_PLACE.tab);
+  const setTab = (name: string) => {
+    PANEL_PLACE.tab = name;
+    setTabState(name);
+  };
+  // each section comes back at its own scroll, rather than wherever the last one had been
+  useLayoutEffect(() => {
+    if (list.current) list.current.scrollTop = PANEL_PLACE.scroll[tab] ?? 0;
   }, [tab]);
+  useEffect(onScroll, [onScroll, prefs.theme, tab]);
   const rows = (tab === 'Style' ? STYLE_ROWS : (GROUPS.find(g => g.title === tab)?.rows ?? [])).filter(r =>
     shown(r, read),
   );
@@ -1334,7 +1344,18 @@ function Panel({
       return (
         <div key={row.key} className={`flex flex-col gap-2 px-4 py-3 ${rule}`}>
           <span className="text-title text-near">{row.label}</span>
-          {choices.values.length > GRID_FROM ? <StyleGrid {...props} /> : <Segments {...props} />}
+          {choices.values.length > GRID_FROM ? (
+            <StyleGrid
+              {...props}
+              art={
+                row.key === 'seek'
+                  ? (value, on) => <SeekPreview kind={value} tint={on ? ink : tint} tint2={on ? ink : (accent?.fill2 ?? tint)} theme={prefs.theme} />
+                  : undefined
+              }
+            />
+          ) : (
+            <Segments {...props} />
+          )}
         </div>
       );
     }
@@ -1400,7 +1421,7 @@ function Panel({
               tint={tint}
               ink={ink}
               cols={upright ? 4 : 5}
-              icons
+              art={value => <Glyph name={value} className="h-6 w-6" />}
               onPick={next => setPref('theme', next)}
             />
           )}
@@ -1545,6 +1566,10 @@ const GRID_FROM = 6;
 
 const TABS = ['Style', ...GROUPS.map(g => g.title), 'About'];
 
+// where the settings panel was left; it unmounts on close, so this lives outside it, for as long as the app runs.
+// the style leads the first time because it is what the panel is opened for most
+const PANEL_PLACE: { tab: string; scroll: Record<string, number> } = { tab: 'Style', scroll: {} };
+
 // nine styles no longer fit a single row of pills, so the picker is a grid of tiles big enough to
 // hit without aiming
 function StyleGrid({
@@ -1554,7 +1579,7 @@ function StyleGrid({
   tint,
   ink,
   cols = 4,
-  icons,
+  art,
   onPick,
 }: {
   values: string[];
@@ -1563,8 +1588,8 @@ function StyleGrid({
   tint: string;
   ink: string;
   cols?: 4 | 5;
-  // each value names a Glyph, drawn over its label
-  icons?: boolean;
+  // a picture over each label, given the value and whether its tile is the chosen one
+  art?: (value: string, on: boolean) => ReactNode;
   onPick: (next: string) => void;
 }) {
   return (
@@ -1578,9 +1603,9 @@ function StyleGrid({
             onClick={() => onPick(option)}
             style={on ? { backgroundColor: tint, color: ink } : undefined}
             className={`flex items-center justify-center rounded-xl text-row font-medium transition duration-200 active:scale-95 ${
-              icons ? 'h-16 flex-col gap-1' : 'h-11 gap-1.5'
+              art ? 'h-16 flex-col gap-1' : 'h-11 gap-1.5'
             } ${on ? '' : 'bg-white/10 text-dim'}`}>
-            {icons && <Glyph name={option} className="h-6 w-6" />}
+            {art?.(option, on)}
             {labels[i]}
           </button>
         );
@@ -1723,6 +1748,16 @@ function Glyph({ name, className }: { name: string; className?: string }) {
       strokeLinejoin="round">
       {GLYPHS[name]}
     </svg>
+  );
+}
+
+// a seek bar as it will look, stopped part way, for its tile in the settings; auto shows the one this style gets
+function SeekPreview({ kind, tint, tint2, theme }: { kind: string; tint: string; tint2: string; theme: Prefs['theme'] }) {
+  const style = (kind === 'auto' ? (theme === 'widget' ? 'bar' : (AUTO_SEEK[theme] ?? 'bar')) : kind) as SeekKind;
+  return (
+    <div className="pointer-events-none flex h-6 w-full items-center px-3">
+      <Seek style={style} rotate={0} dot progress={0.6} playing={false} tint={tint} tint2={tint2} onSeek={() => {}} />
+    </div>
   );
 }
 
@@ -2859,6 +2894,8 @@ function Wave({
 }) {
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
+  // the settings preview draws a wave too, so the clip and gradient need ids of their own
+  const id = useId();
 
   useEffect(() => {
     if (!box.current) return;
@@ -2890,15 +2927,15 @@ function Wave({
         />
         <defs>
           {/* the wave is drawn long and clipped back to the playhead, so travel never spills past it */}
-          <clipPath id="wave-played">
+          <clipPath id={`${id}p`}>
             <rect x="0" y="0" width={Math.max(0, played)} height={height} />
           </clipPath>
-          <linearGradient id="wave-tint" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={Math.max(1, width)} y2="0">
+          <linearGradient id={`${id}t`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={Math.max(1, width)} y2="0">
             <stop offset="0%" stopColor={tint} />
             <stop offset="100%" stopColor={tint2} />
           </linearGradient>
         </defs>
-        <g clipPath="url(#wave-played)">
+        <g clipPath={`url(#${id}p)`}>
           <path
             className="wave-travel"
             style={{
@@ -2906,7 +2943,7 @@ function Wave({
               animationPlayState: playing ? 'running' : 'paused',
             }}
             d={wavePath(-WAVE_LENGTH, played + WAVE_LENGTH, mid)}
-            stroke="url(#wave-tint)"
+            stroke={`url(#${id}t)`}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -2944,7 +2981,7 @@ function Seek({
   if (style === 'bar') {
     return <Rail rotate={rotate} dot={dot} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />;
   }
-  const Look = { cells: Cells, dots: Dots, glow: Glow, hand: Hand }[style];
+  const Look = { cells: Cells, dots: Dots, glow: Glow, hand: Hand, pill: Pill, ruler: Ruler, pulse: Pulse, stripes: Stripes }[style];
   const pick = (e: PointerEvent<HTMLDivElement>) => onSeek(alongBar(e, rotate));
   // the drawings only draw; this is what makes them draggable, with room above and below for a finger
   return (

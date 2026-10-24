@@ -297,7 +297,11 @@
           "cells",
           "dots",
           "glow",
-          "hand"
+          "hand",
+          "pill",
+          "ruler",
+          "pulse",
+          "stripes"
         ],
         "default": "auto"
       }
