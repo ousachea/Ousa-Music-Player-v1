@@ -3,10 +3,15 @@
 import type { BridgethingClient } from '@bridgething/client';
 import { useEffect, useRef, useState } from 'react';
 
-// randomUUID only exists in a secure context, and the dev server reaches the device over plain http
+// randomUUID only exists in a secure context, and the dev server reaches the device over plain http.
+// the daemon parses the id as a 16 byte uuid, so the fallback has to be a real v4 one
 export function requestId(): string {
   if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const h = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
 
 export type QueueTrack = {
