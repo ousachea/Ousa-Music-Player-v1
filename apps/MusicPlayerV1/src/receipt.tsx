@@ -34,6 +34,8 @@ export function Receipt({
   // keyed on the title alone: the artist and the length can arrive after it, and must not print the song twice
   const key = title;
   if (roll[roll.length - 1]?.key !== key) {
+    // between songs the phone can send no title for a moment; that placeholder is overwritten, not kept on the roll
+    if (roll[roll.length - 1]?.key === 'unknown') roll.pop();
     roll.push({ key, title, artist, at: stamp(), ms: duration });
     if (roll.length > ROLL_MAX) roll.shift();
   }
@@ -55,7 +57,7 @@ export function Receipt({
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#0e0d0c]">
       <div ref={paper} className="absolute inset-0 overflow-y-auto overscroll-contain font-mono text-[#2b2925] [scrollbar-width:none]">
-        <div className={`min-h-full bg-[#f3efe6] ${showTransport ? 'pb-28' : 'pb-10'} pt-7 text-[13px] leading-[1.45] ${upright ? 'px-6' : 'px-10'}`}>
+        <div className={`min-h-full bg-[#f3efe6] ${showTransport ? 'pb-36' : 'pb-10'} pt-7 text-[13px] leading-[1.45] ${upright ? 'px-6' : 'px-10'}`}>
           <div>
             <div className="text-[15px] font-bold tracking-[0.3em]">O-MUSIC</div>
             <div className="truncate text-[11px] opacity-60">{album ?? 'now playing'}</div>
@@ -110,9 +112,9 @@ export function Receipt({
           onPrev={onPrev}
           onNext={onNext}
           // over the foot of the roll, where they stay put while it scrolls; the roll's padding lets its last line clear them
-          className={`absolute bottom-6 gap-2 text-[#2b2925] ${upright ? 'right-4' : 'right-8'}`}
-          play="grid h-14 w-14 place-items-center rounded-full bg-[#2b2925] text-[#f3efe6] shadow-[0_6px_16px_rgba(0,0,0,0.25)]"
-          icon="h-7 w-7"
+          className={`absolute bottom-6 gap-4 text-[#2b2925] ${upright ? 'right-4' : 'right-8'}`}
+          play="grid h-[76px] w-[76px] place-items-center rounded-full bg-[#2b2925] text-[#f3efe6] shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
+          icon="h-9 w-9"
         />
       )}
     </div>
