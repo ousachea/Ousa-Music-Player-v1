@@ -271,6 +271,19 @@
     {
       "type": "enum",
       "data": {
+        "key": "polaroidFrame",
+        "label": "Polaroid frame",
+        "choices": [
+          "white",
+          "black",
+          "cream"
+        ],
+        "default": "white"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
         "key": "wheel",
         "label": "Rotary wheel",
         "choices": [

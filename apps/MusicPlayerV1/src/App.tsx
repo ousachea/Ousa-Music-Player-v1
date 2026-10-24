@@ -34,7 +34,7 @@ import type { StyleProps } from './style-kit';
 import { POCKET_BODIES, Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
-import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, THEMES, usePrefs, type Prefs, type Seek as SeekKind } from './config';
+import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, FRAMES, THEMES, usePrefs, type Prefs, type Seek as SeekKind } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 import { FitTitle } from './fit-title';
@@ -527,7 +527,7 @@ export default function App() {
 
   return (
     <Stage rotate={prefs.rotate}>
-    <div className="relative h-full w-full overflow-hidden bg-screen">
+    <div className="relative h-full w-full overflow-hidden bg-screen" data-motion={prefs.motion ? undefined : 'off'}>
       {/* outside the keyed wrapper: inside it, every track change tore the blurred art down and
           built it again, which showed as a flash while the new one decoded */}
       {BACKDROP.includes(prefs.theme) && <Backdrop url={artUrl} intensity={prefs.backdrop} drift={prefs.drift} blur={prefs.blur} />}
@@ -564,7 +564,11 @@ export default function App() {
       ) : prefs.theme === 'jukebox' ? (
         <Jukebox {...styleProps} queue={queue} thumbs={flowThumbs} onSkipTo={index => client.player.skipToIndex({ index })} />
       ) : prefs.theme === 'polaroid' ? (
-        <Polaroid {...styleProps} />
+        <Polaroid
+          {...styleProps}
+          frame={prefs.polaroidFrame}
+          onFrame={() => setPref('polaroidFrame', FRAMES[(FRAMES.indexOf(prefs.polaroidFrame) + 1) % FRAMES.length])}
+        />
       ) : prefs.theme === 'pixel' ? (
         <Pixel {...styleProps} />
       ) : prefs.theme === 'flow' ? (
@@ -1195,6 +1199,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
     labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel', 'Dashboard', 'Neon', 'Mosaic', 'Ambient', 'Tuner', 'Typewriter'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
+  polaroidFrame: { values: [...FRAMES], labels: ['White', 'Black', 'Cream'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
   flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
   pocketBody: { values: [...POCKET_BODIES], labels: ['Silver', 'Black', 'Blue', 'Pink', 'Green', 'Red', 'Gold', 'Album'] },
@@ -1944,7 +1949,7 @@ function SleeveOut({
         <button
           aria-label="record layout"
           onClick={onLayout}
-          className="absolute top-1/2 left-1/2 grid h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full ring-1 ring-black/40 transition active:scale-95"
+          className="absolute top-1/2 left-1/2 grid h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 animate-hint place-items-center rounded-full ring-1 ring-black/40 transition active:scale-95"
           style={{ backgroundColor: accent?.fill ?? '#c0453f' }}>
           <span className="h-[13%] w-[13%] rounded-full bg-screen ring-1 ring-black/30" />
         </button>
@@ -2038,7 +2043,7 @@ function Turntable({
         <button
           aria-label="record layout"
           onClick={onLayout}
-          className="absolute top-1/2 left-1/2 h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full ring-1 ring-black/40 transition active:scale-95">
+          className="absolute top-1/2 left-1/2 h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 animate-hint overflow-hidden rounded-full ring-1 ring-black/40 transition active:scale-95">
           {artUrl ? (
             <img src={artUrl} alt="" className="h-full w-full scale-[1.6] object-cover" />
           ) : (
@@ -2199,7 +2204,7 @@ function PictureDisc({
           <button
             aria-label="record layout"
             onClick={onLayout}
-            className="absolute top-1/2 left-1/2 h-[36%] w-[36%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(150,155,162,0.5)] backdrop-blur-sm transition active:scale-95"
+            className="absolute top-1/2 left-1/2 h-[36%] w-[36%] -translate-x-1/2 -translate-y-1/2 animate-hint rounded-full bg-[rgba(150,155,162,0.5)] backdrop-blur-sm transition active:scale-95"
             style={{ mask: RING, WebkitMask: RING }}
           />
         </div>
@@ -4835,7 +4840,7 @@ function Cassette({
           ? `linear-gradient(180deg, color-mix(in oklab, ${skin.tint} 10%, #a4a4a0), color-mix(in oklab, ${skin.tint} 10%, #c0c0bc) 55%, color-mix(in oklab, ${skin.tint} 10%, #d2d2ce))`
           : `linear-gradient(180deg, color-mix(in oklab, ${skin.tint} 6%, #f9f9f7), color-mix(in oklab, ${skin.tint} 8%, #e3e3e0) 48%, color-mix(in oklab, ${skin.tint} 10%, #bebeba))`,
       }}
-      className={`grid place-items-center rounded-[3px] text-[#191715] ring-1 ring-black/40 transition active:translate-y-[2px] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.45)] ${
+      className={`grid place-items-center rounded-[3px] text-[#191715] ring-1 ring-black/40 transition active:translate-y-[2px] ${label === 'tape design' ? 'animate-hint' : ''} active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.45)] ${
         held
           ? 'translate-y-[2px] shadow-[inset_0_3px_6px_rgba(0,0,0,0.55),inset_0_-1px_0_rgba(255,255,255,0.5)]'
           : 'shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(0,0,0,0.2),0_2px_0_rgba(0,0,0,0.6),0_4px_5px_-2px_rgba(0,0,0,0.55)]'

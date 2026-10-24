@@ -153,7 +153,7 @@ export function Cartridge({
         <button
           aria-label={printed ? 'disc in the cover colours' : 'cover on the disc'}
           onClick={onPrint}
-          className="ml-[12%] aspect-square h-[82%] overflow-hidden rounded-[4px] bg-black ring-1 ring-white/10 transition active:scale-95">
+          className="ml-[12%] aspect-square h-[82%] animate-hint overflow-hidden rounded-[4px] bg-black ring-1 ring-white/10 transition active:scale-95">
           {artUrl ? <img src={artUrl} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full bg-white/10" />}
         </button>
       </div>
@@ -162,7 +162,7 @@ export function Cartridge({
       <button
         aria-label={printed ? 'disc in the cover colours' : 'cd look'}
         onClick={printed ? onPrint : onLook}
-        className="absolute top-[49%] left-[51%] grid aspect-square w-[35%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full transition active:scale-95"
+        className="absolute top-[49%] left-[51%] grid aspect-square w-[35%] -translate-x-1/2 -translate-y-1/2 animate-hint place-items-center rounded-full transition active:scale-95"
         style={{ background: 'repeating-radial-gradient(circle, #121212 0 2px, #1d1d1d 2px 3px)', boxShadow: '0 4px 14px rgba(0,0,0,0.35)' }}>
         <span
           className="grid aspect-square w-[56%] place-items-center rounded-full ring-1 ring-black/20"

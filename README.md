@@ -50,7 +50,9 @@ update**.
 Twenty-two player styles, all tinted by the album art, with music notes drifting up over them (**Display →
 Floating notes**). Switch styles with **Mode** or in the settings; a small tag at the bottom names
 the current one. Track changes cross-fade the blurred background, and Vinyl and CD swap in a new
-record or disc. In Cover, CD, Flow, Pocket and Poster a long song title shrinks to fit rather than being cut off.
+record or disc. Anything you can tap to change a style's look, such as the record's label, the CD's hub and
+slider, the tape-design key and the Polaroid's photo, lights up for a moment every so often so it gets found.
+In Cover, CD, Flow, Pocket and Poster a long song title shrinks to fit rather than being cut off.
 
 ### Vinyl
 
@@ -187,7 +189,8 @@ to go back to it.
 ### Polaroid
 
 The cover as an instant print, with the title written under it by hand, dropped at its own slight angle
-for each track on a table tinted by the album.
+for each track on a table tinted by the album. Tap the photo to change the frame: white, black or cream
+(**Frame**).
 
 ### Pixel
 

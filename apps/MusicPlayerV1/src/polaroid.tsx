@@ -3,6 +3,13 @@
 import { FitTitle } from './fit-title';
 import { Transport, fmt, hash, type StyleProps } from './style-kit';
 
+// the frame, the older print under it, and the ink the title is written in, per frame colour
+const FRAME = {
+  white: { face: '#faf8f3', under: '#ece8df', ink: '#22324f' },
+  black: { face: '#1a1a1a', under: '#2a2a2a', ink: '#f1ece2' },
+  cream: { face: '#efe3c8', under: '#e2d4b4', ink: '#4a3420' },
+};
+
 export function Polaroid({
   artUrl,
   title,
@@ -19,7 +26,10 @@ export function Polaroid({
   onToggle,
   onPrev,
   onNext,
-}: StyleProps) {
+  frame,
+  onFrame,
+}: StyleProps & { frame: keyof typeof FRAME; onFrame: () => void }) {
+  const f = FRAME[frame];
   const h = hash(title + artist);
   // between -4 and 4 degrees, fixed per track, so the print lands differently each time
   const tilt = ((h % 81) - 40) / 10;
@@ -28,19 +38,22 @@ export function Polaroid({
   const width = upright ? 330 : 300;
 
   const print = (
-    <div className="relative shrink-0" style={{ width, height: width * 1.26 }}>
-      <div className="absolute inset-0 bg-[#ece8df] shadow-[0_12px_30px_rgba(0,0,0,0.5)]" style={{ transform: `rotate(${under}deg)` }} />
+    // the print is the thing to tap: it steps the frame colour, and every so often lights up to say so
+    <button aria-label="frame colour" onClick={onFrame} className="relative shrink-0 animate-hint text-left transition active:scale-[0.98]" style={{ width, height: width * 1.26 }}>
+      <div className="absolute inset-0 shadow-[0_12px_30px_rgba(0,0,0,0.5)] transition-colors duration-500" style={{ transform: `rotate(${under}deg)`, background: f.under }} />
       <div
-        className="absolute inset-0 flex flex-col bg-[#faf8f3] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.55)]"
-        style={{ transform: `rotate(${tilt}deg)` }}>
+        className="absolute inset-0 flex flex-col p-4 shadow-[0_18px_40px_rgba(0,0,0,0.55)] transition-colors duration-500"
+        style={{ transform: `rotate(${tilt}deg)`, background: f.face }}>
         <div className="aspect-square w-full shrink-0 overflow-hidden bg-[#1a1a1a]">
           {artUrl && <img src={artUrl} alt="" className="h-full w-full object-cover saturate-[1.1] sepia-[0.08]" />}
         </div>
         <div className="flex min-h-0 flex-1 items-center justify-center px-1 text-center">
-          <FitTitle text={title} max={34} lines={2} className="w-full font-hand leading-[1.05] font-bold text-[#22324f]" />
+          <div className="w-full" style={{ color: f.ink }}>
+            <FitTitle text={title} max={34} lines={2} className="w-full font-hand leading-[1.05] font-bold" />
+          </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 
   return (
