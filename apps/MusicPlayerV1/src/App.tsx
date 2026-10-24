@@ -26,10 +26,11 @@ import type { StyleProps } from './style-kit';
 import { POCKET_BODIES, Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
-import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, THEMES, usePrefs, type Prefs } from './config';
+import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, THEMES, usePrefs, type Prefs, type Seek as SeekKind } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 import { FitTitle } from './fit-title';
+import { Cells, Dots, Glow, Hand } from './seekbars';
 import { BACKDROP, GROUPS, STYLE_ROWS, shown, type Row } from './settings-layout';
 
 const SCRUB_COMMIT_MS = 340;
@@ -48,6 +49,15 @@ const TIP_DELAY_MS = 6000;
 const WHEEL_SCROLL_PX = 26;
 // a second press of the button under the wheel inside this shows or hides the on-screen buttons
 const DOUBLE_PRESS_MS = 300;
+// the seek bar each style gets on Auto: the wave for Poster, a neon line in the dark and on the jukebox, cells on
+// the board, ink on the polaroid; the rest keep the plain line
+const AUTO_SEEK: Partial<Record<Prefs['theme'], SeekKind>> = {
+  poster: 'wave',
+  night: 'glow',
+  flap: 'cells',
+  jukebox: 'glow',
+  polaroid: 'hand',
+};
 // how long a browsed lyric view stays put before it goes back to following the song
 const LYRIC_BROWSE_MS = 5000;
 // how long the blurred art takes to dissolve from one track to the next
@@ -114,8 +124,8 @@ export default function App() {
   const accentOn = prefs.accent === 'artwork' ? accent : null;
   // Cover is drawn after a lock screen, which has a plain line and no room for a wave, so it keeps
   // one whatever the seek setting says; every other style honours the choice
-  const seekStyle =
-    prefs.theme === 'widget' ? 'bar' : prefs.seek === 'auto' ? (prefs.theme === 'poster' ? 'wave' : 'bar') : prefs.seek;
+  const seekStyle: SeekKind =
+    prefs.theme === 'widget' ? 'bar' : prefs.seek === 'auto' ? (AUTO_SEEK[prefs.theme] ?? 'bar') : prefs.seek;
   const seekDot = prefs.seekDot === 'auto' ? prefs.theme !== 'widget' : prefs.seekDot === 'on';
   const ownsVolume = (prefs.theme === 'widget' && prefs.coverVolume) || prefs.theme === 'stereo' || prefs.theme === 'pocket';
   // a quarter turn lays the player out portrait, where a square cover cannot sit beside the track
@@ -1165,7 +1175,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   vinylStyle: { values: ['turntable', 'sleeve', 'picture'], labels: ['Turntable', 'Sleeve', 'Picture disc'] },
   vinylFront: { values: ['record', 'sleeve'], labels: ['Record', 'Sleeve'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
-  seek: { values: ['auto', 'bar', 'wave'], labels: ['Auto', 'Bar', 'Wave'] },
+  seek: { values: ['auto', 'bar', 'wave', 'cells', 'dots', 'glow', 'hand'], labels: ['Auto', 'Bar', 'Wave', 'Cells', 'Dots', 'Glow', 'Hand'] },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
   clockPos: { values: ['left', 'center', 'right'], labels: ['Left', 'Centre', 'Right'] },
   clockFormat: { values: ['auto', 'h12', 'h24'], labels: ['Auto', '12h', '24h'] },
@@ -2424,7 +2434,7 @@ function Poster({
   accent: Accent | null;
   playing: boolean;
   motion: boolean;
-  seekStyle: 'bar' | 'wave';
+  seekStyle: SeekKind;
   dot: boolean;
   showTransport: boolean;
   wallClock: ClockParts | null;
@@ -2587,7 +2597,7 @@ function Widget({
   accent: Accent | null;
   playing: boolean;
   motion: boolean;
-  seekStyle: 'bar' | 'wave';
+  seekStyle: SeekKind;
   dot: boolean;
   showTransport: boolean;
   edge: boolean;
@@ -2919,7 +2929,7 @@ function Seek({
   tint2,
   onSeek,
 }: {
-  style: 'bar' | 'wave';
+  style: SeekKind;
   rotate: Prefs['rotate'];
   dot: boolean;
   progress: number;
@@ -2928,10 +2938,22 @@ function Seek({
   tint2: string;
   onSeek: (ratio: number) => void;
 }) {
-  return style === 'wave' ? (
-    <Wave rotate={rotate} dot={dot} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
-  ) : (
-    <Rail rotate={rotate} dot={dot} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />
+  if (style === 'wave') {
+    return <Wave rotate={rotate} dot={dot} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />;
+  }
+  if (style === 'bar') {
+    return <Rail rotate={rotate} dot={dot} progress={progress} playing={playing} tint={tint} tint2={tint2} onSeek={onSeek} />;
+  }
+  const Look = { cells: Cells, dots: Dots, glow: Glow, hand: Hand }[style];
+  const pick = (e: PointerEvent<HTMLDivElement>) => onSeek(alongBar(e, rotate));
+  // the drawings only draw; this is what makes them draggable, with room above and below for a finger
+  return (
+    <div
+      className="-my-3 flex h-11 w-full min-w-0 flex-1 cursor-pointer items-center py-3"
+      onPointerDown={pick}
+      onPointerMove={e => e.buttons === 1 && pick(e)}>
+      <Look progress={progress} playing={playing} dot={dot} tint={tint} tint2={tint2} />
+    </div>
   );
 }
 

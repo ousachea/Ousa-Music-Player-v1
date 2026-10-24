@@ -50,7 +50,7 @@ function Icon({ d, className }: { d: string; className?: string }) {
   );
 }
 
-// previous, play and next in a row; each style dresses the play button through `play`
+// previous, play and next in a row; each style dresses the play button through `play` and the other two through `button`
 export function Transport({
   playing,
   onToggle,
@@ -58,6 +58,7 @@ export function Transport({
   onNext,
   className,
   play,
+  button = 'p-2',
   icon = 'h-8 w-8',
 }: {
   playing: boolean;
@@ -66,11 +67,12 @@ export function Transport({
   onNext: () => void;
   className?: string;
   play?: string;
+  button?: string;
   icon?: string;
 }) {
   return (
     <div className={`flex items-center ${className ?? ''}`}>
-      <button aria-label="previous" onClick={onPrev} className="p-2 transition active:scale-90">
+      <button aria-label="previous" onClick={onPrev} className={`grid place-items-center transition active:scale-90 ${button}`}>
         <Icon d={NEXT} className={`-scale-x-100 ${icon}`} />
       </button>
       <button
@@ -81,7 +83,7 @@ export function Transport({
           <Icon d={playing ? PAUSE : PLAY} className={icon} />
         </span>
       </button>
-      <button aria-label="next" onClick={onNext} className="p-2 transition active:scale-90">
+      <button aria-label="next" onClick={onNext} className={`grid place-items-center transition active:scale-90 ${button}`}>
         <Icon d={NEXT} className={icon} />
       </button>
     </div>

@@ -293,7 +293,11 @@
         "choices": [
           "auto",
           "bar",
-          "wave"
+          "wave",
+          "cells",
+          "dots",
+          "glow",
+          "hand"
         ],
         "default": "auto"
       }

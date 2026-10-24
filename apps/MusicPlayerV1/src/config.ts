@@ -8,6 +8,10 @@ import { GLOWS, type Glow } from './stereo';
 // every player style, in the order Mode steps through them; widget, the first, is the default
 export const THEMES = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics', 'night', 'flap', 'receipt', 'jukebox', 'polaroid', 'pixel'] as const;
 
+// the seek bar kinds; auto picks the one that suits the style
+export const SEEKS = ['bar', 'wave', 'cells', 'dots', 'glow', 'hand'] as const;
+export type Seek = (typeof SEEKS)[number];
+
 export type Prefs = {
   theme: (typeof THEMES)[number];
   rotate: 0 | 90 | 180 | 270;
@@ -30,7 +34,7 @@ export type Prefs = {
   vinylFront: 'record' | 'sleeve';
   wheel: 'volume' | 'seek';
   seekSeconds: number;
-  seek: 'auto' | 'bar' | 'wave';
+  seek: 'auto' | Seek;
   seekDot: 'auto' | 'on' | 'off';
   accent: 'artwork' | 'mono';
   hdArt: boolean;
@@ -114,7 +118,7 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, seekSeconds: Math.min(SEEK_MAX, Math.max(SEEK_MIN, n)) };
     }
     case 'seek':
-      return { ...prefs, seek: value === 'bar' || value === 'wave' ? value : 'auto' };
+      return { ...prefs, seek: (SEEKS as readonly string[]).includes(value) ? (value as Seek) : 'auto' };
     case 'seekDot':
       return { ...prefs, seekDot: value === 'on' || value === 'off' ? value : 'auto' };
     case 'lyricsInfo':

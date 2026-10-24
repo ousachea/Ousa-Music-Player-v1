@@ -36,6 +36,9 @@ function rows(text: string, cols: number, max: number): string[][] {
   return kept.map(r => [...r, ...Array(cols - r.length).fill(' ')]);
 }
 
+// a flap's face: dark card, a black hinge line through the middle
+const FLAP_FACE = 'bg-[linear-gradient(#1b1c1f_49%,#000_49%,#000_51%,#1b1c1f_51%)]';
+
 // a cell is this much as wide as it is tall, with this gap between cells
 const CELL_W = 0.74;
 const GAP = 3;
@@ -143,7 +146,17 @@ export function SplitFlap({
           <Board lines={[cells(time.padStart(6, ' '))]} size={small} motion={motion} />
           <div className="min-w-0 flex-1">{seek(tint, tint)}</div>
           {showTransport && (
-            <Transport playing={playing} onToggle={onToggle} onPrev={onPrev} onNext={onNext} className="gap-2 text-[#f1efe8]" icon="h-7 w-7" />
+            // the buttons are flaps too: the same dark card with the hinge across it
+            <Transport
+              playing={playing}
+              onToggle={onToggle}
+              onPrev={onPrev}
+              onNext={onNext}
+              className="gap-[3px] text-[#f1efe8]"
+              button={`h-12 w-11 rounded-md ${FLAP_FACE}`}
+              play={`h-12 w-14 rounded-md ${FLAP_FACE}`}
+              icon="h-6 w-6"
+            />
           )}
         </div>
       </div>

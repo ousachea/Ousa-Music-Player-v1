@@ -240,7 +240,9 @@ tile carries a small picture of the style, and a setting that needs explaining h
   remaining and the rest live there)
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
 - **Controls**: what the wheel does, seek step, the offer to hide the on-screen buttons, seek bar
-  style and playhead dot
+  style and playhead dot. The seek bar comes as a plain line, a wave, lit cells, dots, a neon glow or a
+  hand-drawn line; Auto gives each style the one that suits it (the wave in Poster, the glow in Night and
+  Jukebox, cells on Split-flap, the hand-drawn line on Polaroid)
 - **Clock**: position, size, 12/24 hour, seconds
 - **About**: check for updates, and the size of the album art that arrived
 
