@@ -35,8 +35,9 @@ to your phone. Then:
 Updates show up in the same place. Music Player can also check for one under **Settings → Software
 update**.
 
-> Music Player and System Monitor ask for `net.proxy`. Music Player uses it for sharper album art,
-> missing artist names and explicit tags (all optional in its settings); System Monitor uses it to
+> Music Player and System Monitor ask for `net.proxy`. Music Player uses it for sharper album art
+> (found by song when the source, like a browser tab, sends no album), missing artist names and explicit
+> tags (all optional in its settings); System Monitor uses it to
 > time its measurements.
 
 > System Monitor also ships a desktop extension, which reads the computer your Car Thing is plugged

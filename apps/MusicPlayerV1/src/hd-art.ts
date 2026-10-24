@@ -42,19 +42,25 @@ export async function hdArtwork(
 ): Promise<Found | null> {
   const artist = track.artist?.trim();
   const album = track.album?.trim();
-  // the album alone is enough to search on, which is the only way tracks with no artist get a cover
-  if (!album) return null;
+  const title = track.title?.trim();
+  // the album alone is enough to search on, which is the only way tracks with no artist get a cover.
+  // a browser tab sends no album, so the song is searched instead and has to match by name
+  if (!album && !title) return null;
 
-  const key = `${artist ?? ''}|${album}`.toLowerCase();
+  const key = (album ? `${artist ?? ''}|${album}` : `${artist ?? ''}|song|${title}`).toLowerCase();
   const cached = cache.get(key);
   if (cached) return cached;
 
-  const term = artist ? `${artist} ${album}` : album;
-  const query = `${SEARCH}?term=${encodeURIComponent(term)}&entity=album&limit=1`;
+  const name = album ?? title!;
+  const term = artist ? `${artist} ${name}` : name;
+  const query = `${SEARCH}?term=${encodeURIComponent(term)}&entity=${album ? 'album' : 'song'}&limit=1`;
   const found = await get(client, query);
-  const results = JSON.parse(new TextDecoder().decode(found.bytes))?.results;
-  const small: string | undefined = results?.[0]?.artworkUrl100;
-  const named: string | undefined = results?.[0]?.artistName;
+  const hit = JSON.parse(new TextDecoder().decode(found.bytes))?.results?.[0];
+  if (!album && (!hit || !samish(hit.trackName ?? '', title!) || (artist && !samish(hit.artistName ?? '', artist)))) {
+    return null;
+  }
+  const small: string | undefined = hit?.artworkUrl100;
+  const named: string | undefined = hit?.artistName;
   if (!small) return null;
 
   // the url carries its own size, so a bigger one is a substitution rather than a separate lookup

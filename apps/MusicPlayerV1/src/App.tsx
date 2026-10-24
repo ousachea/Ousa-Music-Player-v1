@@ -159,10 +159,10 @@ export default function App() {
 
   // the daemon's 512 shows immediately; the sharper copy replaces it when it arrives
   useEffect(() => {
-    if (!prefs.hdArt || !track?.album) return;
+    if (!prefs.hdArt || (!track?.album && !track?.title)) return;
     let stale = false;
     setFoundArtist(null);
-    hdArtwork(client, { artist: track.artist ?? null, album: track.album, title: track.title ?? null })
+    hdArtwork(client, { artist: track.artist ?? null, album: track.album ?? null, title: track.title ?? null })
       .then(async found => {
         if (stale || !found) return;
         setArtUrl(found.url);
@@ -175,7 +175,7 @@ export default function App() {
     return () => {
       stale = true;
     };
-  }, [client, prefs.hdArt, track?.artist, track?.album]);
+  }, [client, prefs.hdArt, track?.artist, track?.album, track?.title]);
 
   useEffect(() => setBrowse(0), [track?.persistentId, track?.title, prefs.theme]);
 
