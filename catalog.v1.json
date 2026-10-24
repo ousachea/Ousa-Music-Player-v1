@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-24T15:13:09.807Z",
+  "updated_at": "2026-10-24T15:28:46.688Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -451,6 +451,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.43.0",
+          "released_at": "2026-10-24T15:28:46.685Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.43.0.zip",
+            "size": 1495687,
+            "sha256": "b3727d70cc94f4703d1345900431e8fa73d1cf1bbc4bf000e798a6180140af57"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.43.0.html",
+            "size": 38424,
+            "sha256": "acf61c3c04f935f0f1b8ed1a8a826420ccf54598ac28f4210cd7068d1b90925a"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "**Six new styles**, sixteen in all:\n\n- **Night**: nothing bright, for driving after dark. A large dim clock, the track in grey.\n- **Split-flap**: the track flips in letter by letter on a departures board.\n- **Receipt**: each song printed on a till roll as it starts, with the time it came on.\n- **Jukebox**: the song under a lit arch, and the phone's queue as selector strips you can tap.\n- **Polaroid**: the cover as an instant photo with the title handwritten under it.\n- **Pixel**: the cover in big square pixels, with block lettering.\n\nEach has its own picture in the style grid, and Mode steps through all sixteen."
+        },
         {
           "version": "0.42.0",
           "released_at": "2026-10-24T15:13:09.804Z",
