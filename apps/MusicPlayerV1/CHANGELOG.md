@@ -1,5 +1,18 @@
 # O-Music Player
 
+## 0.43.0
+
+**Six new styles**, sixteen in all:
+
+- **Night**: nothing bright, for driving after dark. A large dim clock, the track in grey.
+- **Split-flap**: the track flips in letter by letter on a departures board.
+- **Receipt**: each song printed on a till roll as it starts, with the time it came on.
+- **Jukebox**: the song under a lit arch, and the phone's queue as selector strips you can tap.
+- **Polaroid**: the cover as an instant photo with the title handwritten under it.
+- **Pixel**: the cover in big square pixels, with block lettering.
+
+Each has its own picture in the style grid, and Mode steps through all sixteen.
+
 ## 0.42.0
 
 **Double-press the button under the wheel** to show or hide the on-screen buttons. A single press
