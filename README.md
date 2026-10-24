@@ -159,8 +159,9 @@ instead.
 
 ### Night
 
-For driving after dark. Nothing is bright: a large dim clock leads, the track sits under it in a dimmer
-grey, and the cover is only a faint smear of its own colour behind them.
+For driving after dark. Nothing is bright: a clock across the width of the screen leads, the track sits
+under it in a dimmer grey, and the cover is only a faint smear of its own colour behind them. The seek
+bar and large outlined buttons share the bottom row, easy to hit without looking.
 
 ### Split-flap
 

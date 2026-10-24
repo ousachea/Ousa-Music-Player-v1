@@ -33,38 +33,49 @@ export function Night({
         />
       )}
 
-      <div className={`relative flex h-full flex-col justify-center ${upright ? 'px-8' : 'px-14'}`} style={{ color: INK }}>
-        <div className="mb-6">{clock(upright ? 64 : 88, INK)}</div>
-        <FitTitle
-          text={title}
-          max={upright ? 30 : 34}
-          lines={2}
-          className="font-display leading-[1.15] font-medium tracking-display"
-        />
-        <div className="mt-1 truncate text-title" style={{ color: DIM }}>
-          {artist}
-        </div>
+      {/* clock at the top, the song in the middle, the bar and the buttons along the foot, so it fills the screen */}
+      <div
+        className={`relative flex h-full flex-col justify-between ${upright ? 'px-8 py-10' : 'px-12 py-7'}`}
+        style={{ color: INK }}>
+        <div>{clock(upright ? 60 : 114, INK)}</div>
 
-        <div className="mt-8 flex items-center gap-5">
-          <span className="font-mono text-hint tabular-nums" style={{ color: DIM }}>
-            {fmt(elapsed)}
-          </span>
-          <div className="min-w-0 flex-1">{seek(DIM, DIM)}</div>
-          <span className="font-mono text-hint tabular-nums" style={{ color: DIM }}>
-            {remaining ? `-${fmt(Math.max(0, duration - elapsed))}` : fmt(duration)}
-          </span>
-        </div>
-
-        {showTransport && (
-          <Transport
-            playing={playing}
-            onToggle={onToggle}
-            onPrev={onPrev}
-            onNext={onNext}
-            className="mt-6 -ml-2 gap-6"
-            icon="h-7 w-7"
+        <div className="min-w-0">
+          <FitTitle
+            text={title}
+            max={upright ? 40 : 48}
+            lines={2}
+            className="font-display leading-[1.12] font-medium tracking-display"
           />
-        )}
+          <div className="mt-1.5 truncate text-[1.5rem]" style={{ color: DIM }}>
+            {artist}
+          </div>
+        </div>
+
+        <div className={`flex gap-6 ${upright ? 'flex-col items-stretch' : 'items-center'}`}>
+          <div className="flex min-w-0 flex-1 items-center gap-4">
+            <span className="font-mono text-row tabular-nums" style={{ color: DIM }}>
+              {fmt(elapsed)}
+            </span>
+            <div className="min-w-0 flex-1">{seek(DIM, DIM)}</div>
+            <span className="font-mono text-row tabular-nums" style={{ color: DIM }}>
+              {remaining ? `-${fmt(Math.max(0, duration - elapsed))}` : fmt(duration)}
+            </span>
+          </div>
+
+          {showTransport && (
+            // big enough to hit without looking, and still dim: an outline rather than a lit button
+            <Transport
+              playing={playing}
+              onToggle={onToggle}
+              onPrev={onPrev}
+              onNext={onNext}
+              className={`shrink-0 gap-3 ${upright ? 'justify-center' : ''}`}
+              button="h-16 w-16"
+              play="h-20 w-20 rounded-full ring-2 ring-current"
+              icon="h-11 w-11"
+            />
+          )}
+        </div>
       </div>
     </div>
   );
