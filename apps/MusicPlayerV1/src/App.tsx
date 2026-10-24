@@ -103,6 +103,8 @@ export default function App() {
   const stereoDay =
     prefs.stereoMode === 'light' || (prefs.stereoMode === 'auto' && Number(dayClock?.hour ?? NaN) % 24 < 12);
   const [panel, setPanel] = useState(false);
+  // a style's own settings slide over the style grid; the button under the wheel steps back from them first
+  const [stylePage, setStylePage] = useState(false);
   const backPress = useRef<ReturnType<typeof setTimeout> | null>(null);
   // the settings open on the general page; a style's own settings are a page of their own under it
   const [sheet, setSheet] = useState(false);
@@ -408,6 +410,7 @@ export default function App() {
       if (e.key === ' ' || e.key === 'Enter') press();
       else if (e.key === 'Escape') {
         if (sheet) setSheet(false);
+        else if (panel && stylePage) setStylePage(false);
         else if (backPress.current) {
           clearTimeout(backPress.current);
           backPress.current = null;
@@ -488,7 +491,7 @@ export default function App() {
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
     };
-  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.transport, prefs.wheel, press, scrub, seek, setPref, sheet, toggle]);
+  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.transport, prefs.wheel, press, scrub, seek, setPref, sheet, stylePage, toggle]);
 
   if (!track)
     return (
@@ -1023,6 +1026,8 @@ export default function App() {
           setPref={setPref}
           accent={accentOn}
           artUrl={artUrl}
+          stylePage={stylePage}
+          onStylePage={setStylePage}
         />
       )}
     </div>
@@ -1238,12 +1243,16 @@ function Panel({
   setPref,
   accent,
   artUrl,
+  stylePage,
+  onStylePage,
 }: {
   client: BridgethingClient;
   prefs: Prefs;
   setPref: (key: keyof Prefs, value: string) => void;
   accent: Accent | null;
   artUrl: string | null;
+  stylePage: boolean;
+  onStylePage: (open: boolean) => void;
 }) {
   // the pixel size is what tells you whether the sharper lookup actually landed
   const [artPx, setArtPx] = useState<string | null>(null);
@@ -1254,7 +1263,7 @@ function Panel({
   const [scroll, setScroll] = useState({ shown: 1, at: 0 });
   const onScroll = useCallback(() => {
     const el = list.current;
-    if (el) PANEL_PLACE.scroll[PANEL_PLACE.tab] = el.scrollTop;
+    if (el) PANEL_PLACE.scroll[PANEL_PLACE.page] = el.scrollTop;
     if (!el || el.scrollHeight <= el.clientHeight) return setScroll({ shown: 1, at: 0 });
     setScroll({
       shown: el.clientHeight / el.scrollHeight,
@@ -1268,10 +1277,18 @@ function Panel({
     setTabState(name);
   };
   // each section comes back at its own scroll, rather than wherever the last one had been
+  const page = tab === 'Style' && stylePage ? 'Style/settings' : tab;
+  PANEL_PLACE.page = page;
   useLayoutEffect(() => {
-    if (list.current) list.current.scrollTop = PANEL_PLACE.scroll[tab] ?? 0;
-  }, [tab]);
-  useEffect(onScroll, [onScroll, prefs.theme, tab]);
+    if (list.current) list.current.scrollTop = PANEL_PLACE.scroll[page] ?? 0;
+  }, [page]);
+  useEffect(onScroll, [onScroll, prefs.theme, page]);
+  // the grid slides back in from the left only when a style's page is what it is coming back from
+  const was = useRef(stylePage);
+  const backing = was.current && !stylePage;
+  useEffect(() => {
+    was.current = stylePage;
+  }, [stylePage]);
   const rows = (tab === 'Style' ? STYLE_ROWS : (GROUPS.find(g => g.title === tab)?.rows ?? [])).filter(r =>
     shown(r, read),
   );
@@ -1436,7 +1453,7 @@ function Panel({
         {!upright && (
           <span className="mt-auto flex items-start gap-2 px-3 text-hint text-dim">
             <BackGlyph className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            the button under the wheel closes this
+            {tab === 'Style' && stylePage ? 'the button under the wheel goes back' : 'the button under the wheel closes this'}
           </span>
         )}
       </nav>
@@ -1446,27 +1463,46 @@ function Panel({
           ref={list}
           onScroll={onScroll}
           className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pl-4 [scrollbar-width:none]">
-          {tab === 'Style' && (
-            <StyleGrid
-              values={ENUMS.theme.values}
-              labels={ENUMS.theme.labels}
-              value={prefs.theme}
-              tint={tint}
-              ink={ink}
-              cols={upright ? 4 : 5}
-              art={value => <Glyph name={value} className="h-6 w-6" />}
-              onPick={next => setPref('theme', next)}
-            />
+          {/* the grid picks a style and slides its own settings over, rather than piling them under 22 tiles */}
+          {tab === 'Style' && !stylePage && (
+            <div key="grid" className={prefs.motion && backing ? 'animate-slide-from-left' : ''}>
+              <StyleGrid
+                values={ENUMS.theme.values}
+                labels={ENUMS.theme.labels}
+                value={prefs.theme}
+                tint={tint}
+                ink={ink}
+                cols={upright ? 4 : 5}
+                art={value => <Glyph name={value} className="h-6 w-6" />}
+                onPick={next => {
+                  setPref('theme', next);
+                  onStylePage(true);
+                }}
+              />
+            </div>
           )}
-          {tab === 'Style' && (
-            <h2 className="-mb-2 font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">{styleName} settings</h2>
+          {tab === 'Style' && stylePage && (
+            <div key="page" className={`flex flex-col gap-4 ${prefs.motion ? 'animate-slide-from-right' : ''}`}>
+              <button
+                onClick={() => onStylePage(false)}
+                className="flex h-12 shrink-0 items-center gap-3 rounded-xl bg-white/10 px-4 transition active:scale-[0.98]">
+                <svg viewBox="0 0 24 24" className="h-5 w-5 text-dim" fill="none" stroke="currentColor" strokeWidth="2.4">
+                  <path d="M15 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className="text-row text-dim">All styles</span>
+                <span className="ml-auto flex items-center gap-2 text-row font-semibold" style={{ color: tint }}>
+                  <Glyph name={prefs.theme} className="h-5 w-5" />
+                  {styleName}
+                </span>
+              </button>
+              {rows.length === 0 ? (
+                <p className="rounded-2xl bg-white/4 px-4 py-5 text-center text-row text-dim">{styleName} has no settings of its own.</p>
+              ) : (
+                <div className="shrink-0 rounded-2xl bg-white/4">{rows.map((row, i) => rowView(row, i === rows.length - 1))}</div>
+              )}
+            </div>
           )}
-          {tab === 'Style' && rows.length === 0 && (
-            <p className="rounded-2xl bg-white/4 px-4 py-5 text-center text-row text-dim">
-              {styleName} has no settings of its own.
-            </p>
-          )}
-          {rows.length > 0 && (
+          {tab !== 'Style' && rows.length > 0 && (
             <div className="shrink-0 rounded-2xl bg-white/4">{rows.map((row, i) => rowView(row, i === rows.length - 1))}</div>
           )}
 
@@ -1601,7 +1637,7 @@ const TABS = ['Style', ...GROUPS.map(g => g.title), 'About'];
 
 // where the settings panel was left; it unmounts on close, so this lives outside it, for as long as the app runs.
 // the style leads the first time because it is what the panel is opened for most
-const PANEL_PLACE: { tab: string; scroll: Record<string, number> } = { tab: 'Style', scroll: {} };
+const PANEL_PLACE: { tab: string; page: string; scroll: Record<string, number> } = { tab: 'Style', page: 'Style', scroll: {} };
 
 // nine styles no longer fit a single row of pills, so the picker is a grid of tiles big enough to
 // hit without aiming

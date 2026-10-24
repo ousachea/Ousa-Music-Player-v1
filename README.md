@@ -215,7 +215,7 @@ lit. Tap it to play or pause.
 
 ### Ambient
 
-Only the album's colours, drifting slowly. The song's name shows when it starts and fades away; tap the
+Only the album's colours, drifting and swirling across the screen. The song's name shows when it starts and fades away; tap the
 screen to bring the name and the buttons back for a few seconds. The presets work throughout.
 
 ### Tuner
@@ -225,8 +225,8 @@ card, and the buttons are ivory preset keys.
 
 ### Typewriter
 
-Each song typed onto the sheet a letter at a time when it starts, with the last few still on the page
-above, and the machine's round keys for the buttons.
+Each song typed onto a sheet that runs the width of the screen, a letter at a time when it starts, with
+the last few still on the page above, and the machine's round keys for the buttons.
 
 ### The queue
 
@@ -271,8 +271,9 @@ Press the button under the wheel; it opens where you left it, section and scroll
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
-- **Style**: the twenty-two styles as a grid, with the current one's own settings under it (backdrop, time
-  remaining and the rest live there)
+- **Style**: the twenty-two styles as a grid. Tap one to switch to it, and its own settings (backdrop,
+  time remaining and the rest) slide in over the grid; **All styles**, or the button under the wheel, goes
+  back
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
 - **Controls**: what the wheel does, seek step, the offer to hide the on-screen buttons, seek bar
   style and playhead dot. The seek bar comes as a plain line, a wave, lit cells, dots, a neon glow, a

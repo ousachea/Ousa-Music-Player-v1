@@ -35,9 +35,9 @@ export function Typewriter({ title, artist, playing, motion, upright, showTransp
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#1b1a18]">
-      <div className={`flex h-full flex-col ${upright ? 'px-5 pt-5' : 'px-12 pt-6'}`}>
+      <div className="flex h-full flex-col">
         {/* the sheet, ruled faintly, with the typing line near its foot as on a real platen */}
-        <div className="relative flex min-h-0 flex-1 flex-col justify-end overflow-hidden rounded-t-sm bg-[#f6f1e4] px-8 pb-5 font-mono text-[#26231f] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] [background-image:repeating-linear-gradient(transparent_0_31px,rgba(80,110,160,0.12)_31px_32px)]">
+        <div className={`relative flex min-h-0 flex-1 flex-col justify-end overflow-hidden bg-[#f6f1e4] pb-5 ${upright ? 'px-6' : 'px-10'} font-mono text-[#26231f] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] [background-image:repeating-linear-gradient(transparent_0_31px,rgba(80,110,160,0.12)_31px_32px)]`}>
           {earlier.map((l, i) => (
             <div key={i + l.title} className="truncate text-[17px] leading-8 opacity-45">
               {l.title} — {l.artist}
@@ -52,7 +52,7 @@ export function Typewriter({ title, artist, playing, motion, upright, showTransp
         </div>
 
         {/* the machine's body across the foot, with its keys */}
-        <div className="flex h-[96px] shrink-0 items-center justify-center rounded-b-2xl bg-gradient-to-b from-[#2e2c29] to-[#151413] ring-1 ring-white/5">
+        <div className="flex h-[96px] shrink-0 items-center justify-center bg-gradient-to-b from-[#2e2c29] to-[#151413]">
           {showTransport && (
             <Transport
               playing={playing}
