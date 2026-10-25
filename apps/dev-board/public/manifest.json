@@ -1,0 +1,23 @@
+{
+  "id": "01a17177-9188-7022-a6d4-1760e6fd7434",
+  "name": "O-Dev Board",
+  "version": "0.1.0",
+  "description": "GitHub at a glance: your repos and their checks, open pull requests, reviews waiting on you and your inbox.",
+  "icon": "icon.png",
+  "settings": "settings.html",
+  "config": [],
+  "permissions": [],
+  "art": {
+    "heroPx": 248,
+    "thumbPx": 96
+  },
+  "extension": {
+    "entry": "extension/desktop.mjs",
+    "permissions": [
+      "run:/opt/homebrew/bin/gh",
+      "run:/usr/local/bin/gh",
+      "run:/usr/bin/open"
+    ],
+    "api": 1
+  }
+}

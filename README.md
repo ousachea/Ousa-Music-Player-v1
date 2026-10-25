@@ -1,6 +1,6 @@
 # Ousa apps for the Car Thing
 
-Nine apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
+Eleven apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
 source once and all of them are available. Every app carries its own Khmer font, since the device has
 none, so Khmer in titles, quotes, names and captions displays properly.
 
@@ -17,6 +17,8 @@ none, so Khmer in titles, quotes, names and captions displays properly.
 | <img src="apps/o-map/public/icon.png" width="40" alt=""> | **O-Map** | Cambodia on the dash, with live traffic when you bring a key |
 | <img src="apps/o-photos/public/icon.png" width="40" alt=""> | **O-Photos** | An Immich library on the dash, as a photo frame |
 | <img src="apps/pixel-art/public/icon.png" width="40" alt=""> | **O-Pixel Art** | A glowing LED wall: animated scenes, and pixel art you draw yourself |
+| <img src="apps/deck/public/icon.png" width="40" alt=""> | **O-Deck** | Big tiles that work your Mac: shortcuts, apps, volume, mic, screenshot, sleep |
+| <img src="apps/dev-board/public/icon.png" width="40" alt=""> | **O-Dev Board** | GitHub at a glance: repos and their checks, pull requests, reviews and inbox |
 
 ## Put it on your Car Thing
 
@@ -601,6 +603,50 @@ phone needed.
 | Preset button 4 | Draw, or edit the drawing on screen; while drawing, done |
 | Mode, or the button under the wheel | All the scenes; while drawing, the button under the wheel is done |
 | Touch | Show the scene's name and buttons |
+
+## O-Deck
+
+Big tiles that work the Mac your Car Thing is plugged into. Install it from the bridgething desktop app on that Mac
+and allow its extension; the Car Thing can only run what the Mac lists for it.
+
+- **Controls**: mute the mic, mute sound, volume up and down, a screenshot to the Desktop, Mission Control, lock the
+  screen, sleep the Mac. The Mac's volume and mic sit above them, and the wheel turns the volume
+- **Shortcuts**: every shortcut in the Mac's Shortcuts app, one tap to run
+- **Apps**: every installed app, one tap to open
+- **Pinned**: hold any tile to pin it here
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Preset buttons 1-4 | Controls, Shortcuts, Apps, Pinned |
+| Mode | The next page |
+| Turn the wheel | The Mac's volume on Controls; scroll on the other pages |
+| Tap a tile | Run it |
+| Hold a tile | Pin it, or unpin it |
+
+## O-Dev Board
+
+GitHub at a glance, read on the Mac through the GitHub CLI signed in there (`gh auth login`), so no token lives on
+the Car Thing. Install it from the bridgething desktop app and allow its extension.
+
+- **Repos**: the repositories pushed to most lately, with the latest commit, its checks and open pull requests and
+  issues
+- **My PRs**: your open pull requests, with checks and review state
+- **Reviews**: pull requests waiting on you
+- **Inbox**: your notifications
+
+It refreshes every two minutes, and the last board stays on the Car Thing, marked with its age, while the Mac is away.
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Preset buttons 1-4 | Repos, My PRs, Reviews, Inbox |
+| Mode | The next page |
+| Turn the wheel | Move down the list |
+| Press the wheel, or tap a row | Open it on the Mac |
+| The refresh chip | Read GitHub again now |
 
 ## Working on it
 

@@ -50,6 +50,17 @@ G = {
       <circle cx="304" cy="222" r="18" fill="C"/>
       <path d="M176 322 L 232 252 L 272 298 L 296 272 L 336 322 Z" fill="C"/>'''),
     'pixel-art': ('#fb923c', None),
+    'deck': ('#ff6b6b', '''
+      <g fill="C">
+        <rect x="166" y="166" width="80" height="80" rx="18"/><rect x="266" y="166" width="80" height="80" rx="18" opacity=".7"/>
+        <rect x="166" y="266" width="80" height="80" rx="18" opacity=".7"/><rect x="266" y="266" width="80" height="80" rx="18"/>
+      </g>'''),
+    'dev-board': ('#a3e635', '''
+      <g fill="none" stroke="C" stroke-width="20" stroke-linecap="round">
+        <circle cx="196" cy="176" r="26"/><circle cx="196" cy="336" r="26"/><circle cx="316" cy="336" r="26"/>
+        <path d="M196 202 V 310 M316 310 V 240 C 316 210, 296 196, 266 196 H 236"/>
+        <path d="M256 172 L 230 196 L 256 220"/>
+      </g>'''),
 }
 
 # pixel art: a little flame in led cells, the one glyph that is its own subject
@@ -90,7 +101,8 @@ for slug, (accent, glyph) in G.items():
                    check=True, capture_output=True)
     png = os.path.join(OUT, slug + '.png')
     public = os.path.join(ROOT, 'apps', slug, 'public')
-    icon = next(f for f in os.listdir(public) if f.startswith('icon.'))
+    # a new app has no icon yet, so it gets a png
+    icon = next((f for f in os.listdir(public) if f.startswith('icon.')), 'icon.png')
     fmt = ['-s', 'format', 'jpeg', '-s', 'formatOptions', '90'] if icon.endswith('.jpg') else []
     subprocess.run(['sips', '-Z', '256', *fmt, png, '--out', os.path.join(public, icon)], check=True, capture_output=True)
     size = os.path.getsize(os.path.join(public, icon))
