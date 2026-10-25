@@ -9,6 +9,18 @@ import { GLOWS, type Glow } from './stereo';
 // the artwork, records and tapes, devices, the road, words, screens, signs, then paper. widget, the first, is the default
 export const THEMES = ['widget', 'poster', 'ambient', 'mosaic', 'flow', 'polaroid', 'vinyl', 'cd', 'cassette', 'film', 'stereo', 'tuner', 'dial', 'jukebox', 'pocket', 'handheld', 'pixel', 'dashboard', 'speedo', 'night', 'lyrics', 'typewriter', 'sheet', 'terminal', 'scope', 'flap', 'departures', 'neon', 'vapor', 'receipt', 'ticket', 'stamp', 'magazine', 'comic'] as const;
 
+// the heading each run of kin starts under in the picker, keyed by its first style
+export const STYLE_GROUPS: Partial<Record<(typeof THEMES)[number], string>> = {
+  widget: 'Artwork',
+  vinyl: 'Records & tapes',
+  stereo: 'Devices',
+  dashboard: 'On the road',
+  lyrics: 'Words',
+  terminal: 'Screens',
+  flap: 'Signs',
+  receipt: 'Paper',
+};
+
 // the seek bar kinds; auto picks the one that suits the style
 export const SEEKS = ['bar', 'wave', 'cells', 'dots', 'glow', 'hand', 'pill', 'ruler', 'pulse', 'stripes'] as const;
 export type Seek = (typeof SEEKS)[number];

@@ -336,8 +336,9 @@ Press the button under the wheel; it opens where you left it, section and scroll
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
-- **Style**: the thirty-four styles as a numbered grid, kin kept together (the artwork, records and tapes,
-  devices, the road, words, screens, signs, then paper), in the order Mode steps through them. Tap one to switch to it: the settings close so you see the
+- **Style**: the thirty-four styles as a numbered grid, kin kept together under a heading for each group
+  (Artwork, Records & tapes, Devices, On the road, Words, Screens, Signs, Paper), in the order Mode steps
+  through them. Tap one to switch to it: the settings close so you see the
   style first, and next time they open on its own settings (backdrop, time remaining and the rest), or on
   the grid for a style with none; **All styles**, or the button under the wheel, goes back
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation

@@ -1,5 +1,6 @@
 import { BridgethingClient, type ConnectionState, type PlayerState } from '@bridgething/client';
 import {
+  Fragment,
   useCallback,
   useEffect,
   useId,
@@ -47,7 +48,7 @@ import { version } from '../public/manifest.json';
 import { POCKET_BODIES, Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
-import { AUTO_PULSE_BPM, BUTTONS, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, FRAMES, THEMES, usePrefs, type Prefs, type Seek as SeekKind } from './config';
+import { AUTO_PULSE_BPM, BUTTONS, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, FRAMES, STYLE_GROUPS, THEMES, usePrefs, type Prefs, type Seek as SeekKind } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 import { FitTitle } from './fit-title';
@@ -1538,6 +1539,7 @@ function Panel({
                 cols={upright ? 4 : 5}
                 art={value => <Glyph name={value} className="h-6 w-6" />}
                 numbered
+                groups={STYLE_GROUPS}
                 // the panel gets out of the way so the style is seen first; its settings, if it has any, are
                 // where the panel opens next time
                 onPick={next => {
@@ -1713,6 +1715,7 @@ function StyleGrid({
   cols = 4,
   art,
   numbered,
+  groups,
   onPick,
 }: {
   values: string[];
@@ -1725,15 +1728,21 @@ function StyleGrid({
   art?: (value: string, on: boolean) => ReactNode;
   // the styles carry their place in the order, which is the one Mode steps through
   numbered?: boolean;
+  // a heading across the grid before the value that starts each group
+  groups?: Partial<Record<string, string>>;
   onPick: (next: string) => void;
 }) {
   return (
     <div className={`grid gap-1.5 ${cols === 5 ? 'grid-cols-5' : 'grid-cols-4'}`}>
       {values.map((option, i) => {
         const on = option === value;
+        const heading = groups?.[option];
         return (
+          <Fragment key={option}>
+            {heading && (
+              <div className={`col-span-full px-1 font-mono text-hint tracking-[0.2em] text-dim uppercase ${i ? 'pt-3' : ''}`}>{heading}</div>
+            )}
           <button
-            key={option}
             aria-pressed={on}
             onClick={() => onPick(option)}
             style={on ? { backgroundColor: tint, color: ink } : undefined}
@@ -1745,6 +1754,7 @@ function StyleGrid({
             {art?.(option, on)}
             {labels[i]}
           </button>
+          </Fragment>
         );
       })}
     </div>
