@@ -1,19 +1,20 @@
 // polaroid: the cover as an instant print with the title written under it by hand, dropped at its own slight angle
-// on a table, an older print showing beneath it
+// on a table, the prints in the other frames piled beneath it in the order a tap brings them up
 import { useRef, useState, type CSSProperties } from 'react';
 
+import { FRAMES } from './config';
 import { FitTitle } from './fit-title';
 import { Transport, fmt, hash, type StyleProps } from './style-kit';
 
-// the frame, the older print under it, and the ink the title is written in, per frame colour
+// the frame and the ink the title is written in, per frame colour
 const FRAME = {
-  white: { face: '#faf8f3', under: '#ece8df', ink: '#22324f' },
-  black: { face: '#1a1a1a', under: '#2a2a2a', ink: '#f1ece2' },
-  cream: { face: '#efe3c8', under: '#e2d4b4', ink: '#4a3420' },
+  white: { face: '#faf8f3', ink: '#22324f' },
+  black: { face: '#1a1a1a', ink: '#f1ece2' },
+  cream: { face: '#efe3c8', ink: '#4a3420' },
 };
 
-// a tap shuffles the print to the bottom of the pile, the way the top card of a deck is: it slides out, tucks in
-// behind, and the next print, already in the new frame, rises from underneath into its place
+// a tap shuffles the top print to the bottom of the pile, the way the top card of a deck is: it slides out and tucks
+// in at the back, while every print under it moves up a place
 const SHUFFLE_MS = 720;
 
 export function Polaroid({
@@ -35,20 +36,18 @@ export function Polaroid({
   onNext,
   frame,
   onFrame,
-}: StyleProps & { frame: keyof typeof FRAME | 'album'; onFrame: () => void }) {
+}: StyleProps & { frame: (typeof FRAMES)[number]; onFrame: () => void }) {
   // the album frame is the cover's own colour, with the ink it carries for text on it
-  const f =
-    frame === 'album'
-      ? { face: accent?.fill ?? FRAME.white.face, under: `color-mix(in oklab, ${accent?.fill ?? FRAME.white.under} 75%, #000)`, ink: accent?.ink ?? FRAME.white.ink }
-      : FRAME[frame];
-  // the print being shuffled away keeps the frame it had
-  const [leaving, setLeaving] = useState<typeof f | null>(null);
+  const colours = (name: (typeof FRAMES)[number]) =>
+    name === 'album' ? { face: accent?.fill ?? FRAME.white.face, ink: accent?.ink ?? FRAME.white.ink } : FRAME[name];
+  // the print going to the back keeps its picture until it is tucked in
+  const [leaving, setLeaving] = useState<(typeof FRAMES)[number] | null>(null);
   const busy = useRef(false);
   const shuffle = () => {
     if (!motion) return onFrame();
     if (busy.current) return;
     busy.current = true;
-    setLeaving(f);
+    setLeaving(frame);
     onFrame();
     setTimeout(() => {
       busy.current = false;
@@ -62,26 +61,49 @@ export function Polaroid({
   const table = accent ? `color-mix(in oklab, ${accent.fill2} 30%, #17120f)` : '#17120f';
   const width = upright ? 330 : 300;
 
-  const face = (colours: typeof f, className: string, style?: CSSProperties) => (
-    <div className={`absolute inset-0 flex flex-col p-4 shadow-[0_18px_40px_rgba(0,0,0,0.55)] ${className}`} style={{ transform: `rotate(${tilt}deg)`, background: colours.face, ...style }}>
-      <div className="aspect-square w-full shrink-0 overflow-hidden bg-[#1a1a1a]">
-        {artUrl && <img src={artUrl} alt="" className="h-full w-full object-cover saturate-[1.1] sepia-[0.08]" />}
-      </div>
-      <div className="flex min-h-0 flex-1 items-center justify-center px-1 text-center">
-        <div className="w-full" style={{ color: colours.ink }}>
-          <FitTitle text={title} max={34} lines={2} className="w-full font-hand leading-[1.05] font-bold" />
-        </div>
-      </div>
-    </div>
-  );
-  const angles = { '--tilt': `${tilt}deg`, '--under': `${under}deg` } as CSSProperties;
+  // where a print lies by its depth in the pile: the top at the track's tilt, the rest fanned either side under it
+  const lie = (depth: number) =>
+    depth === 0 ? `rotate(${tilt}deg)` : `translate(${depth * 3}px, ${depth * 3}px) rotate(${[under, -under * 0.6, under * 1.5][depth - 1]}deg)`;
+  const at = FRAMES.indexOf(frame);
 
   const print = (
     // the print is the thing to tap: it shuffles to the next frame colour, and every so often lights up to say so
-    <button aria-label="frame colour" onClick={shuffle} className="relative isolate shrink-0 animate-hint text-left transition active:scale-[0.98]" style={{ width, height: width * 1.26, ...angles }}>
-      <div className="absolute inset-0 shadow-[0_12px_30px_rgba(0,0,0,0.5)]" style={{ transform: `rotate(${under}deg)`, background: f.under }} />
-      {face(f, leaving ? 'animate-polaroid-in' : '')}
-      {leaving && face(leaving, 'z-[3] animate-polaroid-out')}
+    <button aria-label="frame colour" onClick={shuffle} className="relative isolate shrink-0 animate-hint text-left transition active:scale-[0.98]" style={{ width, height: width * 1.26 }}>
+      {/* one print per frame, kept by name, so a shuffle moves the same prints rather than redrawing them */}
+      {FRAMES.map((name, i) => {
+        const depth = (i - at + FRAMES.length) % FRAMES.length;
+        const going = name === leaving;
+        const c = colours(name);
+        return (
+          <div
+            key={name}
+            className={`absolute inset-0 flex flex-col p-4 shadow-[0_14px_34px_rgba(0,0,0,0.5)] transition-[transform,filter] duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${going ? 'animate-polaroid-out' : ''}`}
+            style={
+              {
+                zIndex: FRAMES.length - depth,
+                transform: lie(depth),
+                background: c.face,
+                // the deeper a print lies, the more of the pile's shadow is on it
+                filter: depth && !going ? `brightness(${1 - depth * 0.06})` : undefined,
+                '--tilt': `${tilt}deg`,
+                '--rest': lie(depth),
+              } as CSSProperties
+            }>
+            {(depth === 0 || going) && (
+              <>
+                <div className="aspect-square w-full shrink-0 overflow-hidden bg-[#1a1a1a]">
+                  {artUrl && <img src={artUrl} alt="" className="h-full w-full object-cover saturate-[1.1] sepia-[0.08]" />}
+                </div>
+                <div className="flex min-h-0 flex-1 items-center justify-center px-1 text-center">
+                  <div className="w-full" style={{ color: c.ink }}>
+                    <FitTitle text={title} max={34} lines={2} className="w-full font-hand leading-[1.05] font-bold" />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        );
+      })}
     </button>
   );
 
