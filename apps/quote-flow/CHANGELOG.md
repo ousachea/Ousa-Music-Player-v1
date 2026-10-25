@@ -1,5 +1,9 @@
 # O-Quote Flow
 
+## 0.6.9
+
+Bigger icon: the ring and its glyph now fill the tile.
+
 ## 0.6.8
 
 New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.

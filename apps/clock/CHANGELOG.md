@@ -1,5 +1,9 @@
 # O-Clock
 
+## 0.5.4
+
+Bigger icon: the ring and its glyph now fill the tile.
+
 ## 0.5.3
 
 New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.

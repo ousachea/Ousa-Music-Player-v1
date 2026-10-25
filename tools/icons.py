@@ -7,7 +7,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = tempfile.mkdtemp()
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
-# every glyph is drawn in a 512 box, centred on 256,256, inside the ring (radius ~150 usable)
+# every glyph is drawn in a 512 box, centred on 256,256, for a ring of radius 172 (~150 usable), then scaled with the
+# ring, which runs to within a stroke of the tile's edge so the mark fills the icon
 G = {
     'MusicPlayerV1': ('#b26bff', '''
       <ellipse cx="222" cy="318" rx="46" ry="36" transform="rotate(-22 222 318)" fill="C"/>
@@ -73,9 +74,9 @@ def svg(accent, glyph):
   </defs>
   <rect width="512" height="512" fill="#0b0b12"/><rect width="512" height="512" fill="url(#dots)"/><rect width="512" height="512" fill="url(#bg)"/>
   <g filter="url(#glow)">
-    <path d="M 405 170 A 172 172 0 1 1 342 107" fill="none" stroke="{accent}" stroke-width="26" stroke-linecap="round"/>
-    <circle cx="377.6" cy="134.4" r="15" fill="{accent}"/>
-    <g>{glyph}</g>
+    <path d="M 451.7 143 A 226 226 0 1 1 369 60.3" fill="none" stroke="{accent}" stroke-width="34" stroke-linecap="round"/>
+    <circle cx="415.8" cy="96.2" r="20" fill="{accent}"/>
+    <g transform="translate(256 256) scale(1.314) translate(-256 -256)">{glyph}</g>
   </g>
 </svg>'''
 

@@ -1,5 +1,9 @@
 # O-Gold Tracker
 
+## 0.3.6
+
+Bigger icon: the ring and its glyph now fill the tile.
+
 ## 0.3.5
 
 New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.

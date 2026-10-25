@@ -1,7 +1,7 @@
 {
   "id": "01a08bd6-9df2-70c3-ab08-cac2951ebcb6",
   "name": "O-Map",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Cambodia on the dash, with live traffic when you bring a key.",
   "icon": "icon.png",
   "settings": "settings.html",

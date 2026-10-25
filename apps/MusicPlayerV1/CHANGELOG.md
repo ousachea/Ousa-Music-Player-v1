@@ -28,6 +28,8 @@ front panel keys in Oscilloscope.
 
 Film strip's frames and the lit cover in the gate are bigger, so the strip fills the height of the screen.
 
+A bigger icon: the ring and its note now fill the tile.
+
 ## 0.45.2
 
 New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.
