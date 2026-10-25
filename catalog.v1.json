@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-25T04:08:55.513Z",
+  "updated_at": "2026-10-25T04:16:27.494Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -591,6 +591,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.47.1",
+          "released_at": "2026-10-25T04:16:27.492Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.47.1.zip",
+            "size": 1518727,
+            "sha256": "50ed515057f8102f491792517d5b9fa7592787d4d4b44ce78dcad2458d60806e"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.47.1.html",
+            "size": 41503,
+            "sha256": "e4eae8c89000ab321e746a6e50b24e147d93da5ac8f8884f037f4c0ec3437e71"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "A phone link that drops for a moment keeps the song on screen, paused, with a Reconnecting note, instead of flashing the empty screen. With no phone connected, the screen says so, the player asks the Car Thing to reconnect your paired phone on its own, and Reconnect now tries straight away."
+        },
         {
           "version": "0.47.0",
           "released_at": "2026-10-25T04:08:55.510Z",
