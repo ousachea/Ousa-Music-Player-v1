@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-25T06:50:31.813Z",
+  "updated_at": "2026-10-25T06:52:04.971Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -213,6 +213,40 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.1.1",
+          "released_at": "2026-10-25T06:52:04.968Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a17177-893e-7726-bed0-f3e3b3847724/0.1.1.zip",
+            "size": 1099825,
+            "sha256": "21cd323d28a83192c7c09e16e390fd835b8886f193f24926f2d9014525039bec"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a17177-893e-7726-bed0-f3e3b3847724/0.1.1.html",
+            "size": 39768,
+            "sha256": "1e928c423617b3c138cb19a25655aeb224966c173e373be8495e5b01d655e0f1"
+          },
+          "permissions": [],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/osascript",
+              "run:/usr/bin/shortcuts",
+              "run:/usr/bin/open",
+              "run:/usr/bin/pmset",
+              "run:/usr/sbin/screencapture",
+              "read:/Applications",
+              "read:/System/Applications",
+              "env:HOME",
+              "run:/usr/bin/caffeinate",
+              "run:/usr/sbin/networksetup",
+              "run:/usr/bin/defaults",
+              "run:/usr/sbin/ipconfig"
+            ]
+          },
+          "min_libbridgething_version": "0.14.0",
+          "changelog": "- On Clipboard, each Copy button and the Clear button sit on the left"
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-10-25T06:50:31.202Z",
