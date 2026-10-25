@@ -317,19 +317,19 @@ export default function App() {
   return (
     <div className="flex h-full w-full flex-col gap-3.5 px-5 pt-4 pb-4 text-off-white" style={{ background: 'radial-gradient(120% 90% at 50% -20%, #1d2535, #0a0c10 62%)' }}>
       <div className="flex items-center gap-3">
-        <div className="flex gap-1 rounded-full border border-white/8 bg-white/5 p-1">
+        <div className="flex gap-0.5 rounded-full border border-white/8 bg-white/5 p-0.5">
           {PAGES.map((p, i) => (
             <button
               key={p}
               onClick={() => setPage(p)}
-              className={`flex items-center gap-2 rounded-full px-3.5 py-2 text-[0.92rem] font-semibold transition duration-200 ${p === page ? 'bg-white text-screen shadow-[0_4px_14px_rgba(0,0,0,0.35)]' : 'text-soft'}`}>
-              <Svg className="h-4 w-4">{TAB_GLYPH[p]}</Svg>
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.8rem] font-semibold transition duration-200 ${p === page ? 'bg-white text-screen shadow-[0_4px_14px_rgba(0,0,0,0.35)]' : 'text-soft'}`}>
+              <Svg className="h-3.5 w-3.5">{TAB_GLYPH[p]}</Svg>
               {p}
               <span className={`font-mono text-[10px] ${p === page ? 'text-screen/45' : 'text-dim'}`}>{i + 1}</span>
             </button>
           ))}
         </div>
-        <div className="ml-auto flex items-center gap-2 rounded-full border border-white/8 bg-white/5 px-3 py-2 font-mono text-[10px] tracking-[0.2em] text-soft uppercase">
+        <div className="ml-auto flex items-center gap-2 rounded-full border border-white/8 bg-white/5 px-2.5 py-1.5 font-mono text-[10px] tracking-[0.2em] text-soft uppercase">
           <span className={`h-2 w-2 rounded-full ${linked ? 'bg-ok shadow-[0_0_8px_#3ddc84]' : 'bg-warn'}`} />
           {linked ? 'mac' : 'no mac'}
         </div>
