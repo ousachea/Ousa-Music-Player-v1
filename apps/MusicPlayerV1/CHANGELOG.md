@@ -24,6 +24,8 @@ in Calendar, film frames in Film strip, a gold karaoke button, square blocks in 
 stamps and a wax seal in Stamp, stubs in Ticket, a shutter button in Polaroid, till keys in Receipt, and
 front panel keys in Oscilloscope.
 
+Film strip's frames and the lit cover in the gate are bigger, so the strip fills the height of the screen.
+
 ## 0.45.2
 
 New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.
