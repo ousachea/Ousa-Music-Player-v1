@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-25T03:46:16.627Z",
+  "updated_at": "2026-10-25T03:48:57.254Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -591,6 +591,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.46.2",
+          "released_at": "2026-10-25T03:48:57.249Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.46.2.zip",
+            "size": 1520399,
+            "sha256": "2316ca9ae72ea8063d3be422188fe8635d0675524876bf4138601f51792d0327"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.46.2.html",
+            "size": 41691,
+            "sha256": "af46f74f2d3cc1c3407bcc3b97dad57753a5fb5765f61fad76a8cc09762624ab"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Picking a style closes the settings so you see it first; they open on its own settings next time, and a style with none no longer opens an empty page. The installed version sits under the About tab's name."
+        },
         {
           "version": "0.46.1",
           "released_at": "2026-10-25T03:46:16.624Z",
