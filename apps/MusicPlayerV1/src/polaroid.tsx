@@ -67,8 +67,9 @@ export function Polaroid({
   const at = FRAMES.indexOf(frame);
 
   const print = (
-    // the print is the thing to tap: it shuffles to the next frame colour, and every so often lights up to say so
-    <button aria-label="frame colour" onClick={shuffle} className="relative isolate shrink-0 animate-hint text-left transition active:scale-[0.98]" style={{ width, height: width * 1.26 }}>
+    // the print is the thing to tap: it shuffles to the next frame colour, and every so often lights up to say so.
+    // it sits above the controls, so a print shuffled out across them passes over the buttons rather than under
+    <button aria-label="frame colour" onClick={shuffle} className="relative z-10 isolate shrink-0 animate-hint text-left transition active:scale-[0.98]" style={{ width, height: width * 1.26 }}>
       {/* one print per frame, kept by name, so a shuffle moves the same prints rather than redrawing them */}
       {FRAMES.map((name, i) => {
         const depth = (i - at + FRAMES.length) % FRAMES.length;

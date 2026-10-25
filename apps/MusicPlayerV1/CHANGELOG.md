@@ -1,5 +1,9 @@
 # O-Music Player
 
+## 0.46.3
+
+Polaroid's print passes over the buttons when it is shuffled out across them, rather than under.
+
 ## 0.46.2
 
 Picking a style closes the settings so you see it first; they open on its own settings next time, and a style with none no longer opens an empty page. The installed version sits under the About tab's name.
