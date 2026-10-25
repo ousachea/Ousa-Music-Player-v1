@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-25T03:11:38.399Z",
+  "updated_at": "2026-10-25T03:42:17.007Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -26,6 +26,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.5.4",
+          "released_at": "2026-10-25T03:42:12.429Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.5.4.zip",
+            "size": 1100144,
+            "sha256": "b6d39c46f13585958071ccc6c9708502fd41ad570c64282f6214fde5ec5f2278"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.5.4.html",
+            "size": 26915,
+            "sha256": "a01042926a46239c50d17b4eb87c3017b8a2c028b9532b5bfb0c5079fa44ae63"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Bigger icon: the ring and its glyph now fill the tile."
+        },
         {
           "version": "0.5.3",
           "released_at": "2026-10-25T03:11:33.948Z",
@@ -196,6 +213,23 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.2.4",
+          "released_at": "2026-10-25T03:42:12.979Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.2.4.zip",
+            "size": 1064466,
+            "sha256": "c66bbb14bb06db62b484085726ff87856b4c4d0d4079ec249385a6a6d93a0841"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.2.4.html",
+            "size": 27799,
+            "sha256": "cbf2e5139bb442dc53438484d569e45217eb6f26f5960f8861edbf433d5ce6fd"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Bigger icon: the ring and its glyph now fill the tile."
+        },
+        {
           "version": "0.2.3",
           "released_at": "2026-10-25T03:11:34.485Z",
           "download": {
@@ -348,6 +382,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.3.6",
+          "released_at": "2026-10-25T03:42:13.554Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.6.zip",
+            "size": 1069554,
+            "sha256": "a7d7cfc7b8115d7d612c7d6220113356eca10101e0c86839aaef9f1c032d0045"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.6.html",
+            "size": 32646,
+            "sha256": "e79721740b8404a99f838edc5cd640e21a96bf1ce6ef2f85ba7b27ca93010a3a"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Bigger icon: the ring and its glyph now fill the tile."
+        },
         {
           "version": "0.3.5",
           "released_at": "2026-10-25T03:11:35.038Z",
@@ -524,7 +577,7 @@
     {
       "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
       "name": "O-Music Player",
-      "description": "Now playing from your phone, in five styles coloured by the album art, and turnable to any mounting.",
+      "description": "Now playing from your phone, in thirty-six styles coloured by the album art, and turnable to any mounting.",
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.jpg",
       "screenshots": [
@@ -538,6 +591,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.46.0",
+          "released_at": "2026-10-25T03:42:14.198Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.46.0.zip",
+            "size": 1520142,
+            "sha256": "e6ae3e0f7aca1f7fa7645e14cec3908959a8352f2c00e7f9607de9fa724573a8"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.46.0.html",
+            "size": 41691,
+            "sha256": "af46f74f2d3cc1c3407bcc3b97dad57753a5fb5765f61fad76a8cc09762624ab"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Nine new styles:\n\n- **Speedometer**: one big sports car dial, the needle sweeping the song's minutes to the red line.\n- **Sheet music**: the song as a score, its notes inked in as it plays.\n- **Departures**: an airport board, with what is queued on the phone as the later flights. When the phone\n  shares no up next, as with autoplay, the board lists the songs that have already departed. The board's\n  lamps and panel take the cover's colour, amber when there is none.\n- **Handheld**: an old pocket console's four shade green screen; the pad, A and B work the player.\n- **Vaporwave**: a striped sun, a running grid and a chrome title.\n- **Oscilloscope**: a green trace on a CRT; tap it for an X-Y circle.\n- **Stamp**: the cover as a postage stamp, cancelled with today's date.\n- **Karaoke**: the words filling with colour as they are sung, when the phone has them.\n- **Calendar**: the song as today's page on a tear-off calendar.\n\nA Button style setting under Controls draws previous, play and next as Round, Square, Outline, Glass, Pill\nor Minimal, each tile showing the look. Polaroid lies on a pile of prints in its other frames, in the order they come up; a tap shuffles the top print to\nthe back like a card and the next one rises in its place. It also gains an Album frame in the\ncover's colour. About shows the installed version.\n\nPrevious, play and next now look like part of their style: an engine start button in Speedometer, date tiles\nin Calendar, film frames in Film strip, a gold karaoke button, square blocks in Magazine, tiles in Mosaic,\nstamps and a wax seal in Stamp, stubs in Ticket, a shutter button in Polaroid, till keys in Receipt, and\nfront panel keys in Oscilloscope.\n\nFilm strip's frames and the lit cover in the gate are bigger, so the strip fills the height of the screen.\n\nA bigger icon: the ring and its note now fill the tile."
+        },
         {
           "version": "0.45.2",
           "released_at": "2026-10-25T03:11:35.655Z",
@@ -2206,6 +2278,60 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.4.5",
+          "released_at": "2026-10-25T03:42:14.810Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c16-be12-7003-91aa-482b107fdccb/0.4.5.zip",
+            "size": 1215428,
+            "sha256": "4811515769cd06a3b3f291f014319363649303bda633878b189618050fe347b6"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c16-be12-7003-91aa-482b107fdccb/0.4.5.html",
+            "size": 26935,
+            "sha256": "40613e2f3a9aad26b2e2687dd27ebcc57fcf5322563b72fbf68732c427e13313"
+          },
+          "permissions": [
+            "net.proxy",
+            "geo"
+          ],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/vm_stat",
+              "run:/usr/sbin/sysctl",
+              "run:/usr/sbin/ioreg",
+              "run:/usr/sbin/netstat",
+              "run:/bin/ps",
+              "run:/usr/bin/pmset",
+              "run:/bin/df",
+              "run:/sbin/ping",
+              "run:/sbin/route",
+              "run:/usr/sbin/system_profiler",
+              "run:/usr/bin/sw_vers",
+              "run:/usr/sbin/scutil",
+              "run:/sbin/ifconfig",
+              "run:/usr/sbin/networksetup",
+              "read:/proc",
+              "read:/sys",
+              "read:/etc/os-release",
+              "run:df",
+              "run:ping",
+              "run:nvidia-smi",
+              "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+              "read:~/.claude",
+              "read:~/.config/claude",
+              "env:HOME",
+              "env:USERPROFILE",
+              "env:CLAUDE_CONFIG_DIR",
+              "net:api.anthropic.com",
+              "run:/usr/bin/security",
+              "sys"
+            ]
+          },
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Bigger icon: the ring and its glyph now fill the tile."
+        },
+        {
           "version": "0.4.4",
           "released_at": "2026-10-25T03:11:36.233Z",
           "download": {
@@ -2760,6 +2886,25 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.1.5",
+          "released_at": "2026-10-25T03:42:15.352Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.5.zip",
+            "size": 1049551,
+            "sha256": "56bf80cbceecaf439b6c18ec408612412e9c9aeed75bb9f3483c709efe722090"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.5.html",
+            "size": 26913,
+            "sha256": "53118aeab454bd4afe9e983322ab0f2171993ceefbdab52c33f481539202f5a3"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Bigger icon: the ring and its glyph now fill the tile."
+        },
+        {
           "version": "0.1.4",
           "released_at": "2026-10-25T03:11:36.783Z",
           "download": {
@@ -2870,6 +3015,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.2.5",
+          "released_at": "2026-10-25T03:42:15.903Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.5.zip",
+            "size": 1071873,
+            "sha256": "badd79a0a46a11f54cd48e0c5f29d1c68657e2d6b06bba8af7a54bd76744c03d"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.5.html",
+            "size": 26919,
+            "sha256": "5b622928000f24937407a8215230495ba3c808eed8dd7680286649fd57cc68fa"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Bigger icon: the ring and its glyph now fill the tile."
+        },
         {
           "version": "0.2.4",
           "released_at": "2026-10-25T03:11:37.320Z",
@@ -3001,6 +3165,23 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.1.5",
+          "released_at": "2026-10-25T03:42:16.454Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a102bb-1d76-7739-a093-ffb81f205f9b/0.1.5.zip",
+            "size": 1062188,
+            "sha256": "72f707237026d0e1a64ecb7776ab94c2bc37d0fbc48167689c53a22f1604afe7"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a102bb-1d76-7739-a093-ffb81f205f9b/0.1.5.html",
+            "size": 26777,
+            "sha256": "33fe2350021c92e188ac0440877dc64caf113c66f6acd507c1a443c1868a6de0"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Bigger icon: the ring and its glyph now fill the tile."
+        },
+        {
           "version": "0.1.4",
           "released_at": "2026-10-25T03:11:37.856Z",
           "download": {
@@ -3100,6 +3281,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.6.9",
+          "released_at": "2026-10-25T03:42:17.004Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c31-5053-72cd-a790-a2be27c8bc79/0.6.9.zip",
+            "size": 1082983,
+            "sha256": "155d4035508015c49dfa37e55b0c986c4efd03ab08870194bdd0cc6e4ce5bbd5"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c31-5053-72cd-a790-a2be27c8bc79/0.6.9.html",
+            "size": 28609,
+            "sha256": "60a959919bc669e02e0d329b2034c1a0064923f9d011f1eb0816bbb6864447dc"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Bigger icon: the ring and its glyph now fill the tile."
+        },
         {
           "version": "0.6.8",
           "released_at": "2026-10-25T03:11:38.397Z",
