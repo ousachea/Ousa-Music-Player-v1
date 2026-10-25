@@ -28,6 +28,26 @@
 }
 
 @theme {
+  /* the running apps in edit mode, rocking on the spot as a phone's home screen does */
+  --animate-wiggle: wiggle 0.28s ease-in-out infinite alternate;
+  --animate-pop: pop 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  @keyframes wiggle {
+    from {
+      transform: rotate(-1.6deg);
+    }
+    to {
+      transform: rotate(1.6deg);
+    }
+  }
+
+  @keyframes pop {
+    from {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+  }
+
   /* the bar under a running app filling while it is held towards quitting */
   @keyframes hold-fill {
     from {

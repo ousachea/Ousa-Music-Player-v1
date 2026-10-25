@@ -23,6 +23,8 @@ const ARM_MS = 3000;
 const SWIPE_PX = 50;
 // how long a running app is held down before it quits
 const QUIT_HOLD_MS = 1000;
+// how long empty space on the running apps is held to enter edit mode
+const WIGGLE_HOLD_MS = 600;
 const RUNNING_EVERY_MS = 3000;
 // what the music card shows: the car thing's own player, which the desktop app feeds with whatever the mac plays,
 // or failing that what spotify or music reports on the mac
@@ -539,16 +541,39 @@ export default function App() {
   // a running app answers a tap by opening its shortcuts and a hold by quitting; the hold fills a bar as it goes, and
   // letting go early, or sliding off, lets it be
   const [holding, setHolding] = useState<string | null>(null);
+  // the running apps' edit mode, entered by holding empty space: the apps wiggle, each with its close button, and
+  // quit all waits for a second tap
+  const [wiggle, setWiggle] = useState(false);
+  const [quitAllArmed, setQuitAllArmed] = useState(false);
+  const wiggleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const quittable = (app: Running) => app.name !== 'Finder' && !/bridgething/i.test(app.name);
+  const quitApp = (app: Running) => {
+    setFlash(f => ({ ...f, [`quit:${app.path}`]: 'busy' }));
+    send({ type: 'quit-app', path: app.path });
+  };
+  const quitAll = () => {
+    if (!quitAllArmed) {
+      setQuitAllArmed(true);
+      setTimeout(() => setQuitAllArmed(false), ARM_MS);
+      return;
+    }
+    setQuitAllArmed(false);
+    running.filter(quittable).forEach(quitApp);
+  };
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const held = useRef(false);
   const startHold = (app: Running) => {
+    // in edit mode a press does nothing but what its close button says
+    if (wiggle) {
+      held.current = true;
+      return;
+    }
     held.current = false;
     setHolding(app.path);
     holdTimer.current = setTimeout(() => {
       held.current = true;
       setHolding(null);
-      setFlash(f => ({ ...f, [`quit:${app.path}`]: 'busy' }));
-      send({ type: 'quit-app', path: app.path });
+      quitApp(app);
     }, QUIT_HOLD_MS);
   };
   const stopHold = (app: Running | null) => {
@@ -738,6 +763,7 @@ export default function App() {
   const go = (next: Page) => {
     setPage(next);
     setShortcutsOf(null);
+    setWiggle(false);
     setQuery('');
     setTyping(false);
   };
@@ -747,6 +773,10 @@ export default function App() {
       // on the running apps and the clipboard a press of the wheel chooses the row it is on
       if (page === 'Running' && shortcutsOf && e.key === 'Escape') {
         setShortcutsOf(null);
+        return;
+      }
+      if (page === 'Running' && wiggle && e.key === 'Escape') {
+        setWiggle(false);
         return;
       }
       if (clipSheet && (e.key === 'Enter' || e.key === ' ')) {
@@ -780,7 +810,7 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, typing, switcher, clipSheet, running, clips, pick, shortcutsOf]);
+  }, [page, typing, switcher, clipSheet, running, clips, pick, shortcutsOf, wiggle]);
 
   useEffect(() => {
     sheetList.current?.querySelector(`[data-pick="${pick}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -1073,14 +1103,34 @@ export default function App() {
               );
             })()
           ) : (
-          <div className="relative min-h-0 flex-1">
+          <div
+            className="relative min-h-0 flex-1"
+            // holding empty space, not an app, enters edit mode
+            onPointerDown={e => {
+              if ((e.target as HTMLElement).closest('button') || wiggle) return;
+              wiggleTimer.current = setTimeout(() => setWiggle(true), WIGGLE_HOLD_MS);
+            }}
+            onPointerUp={() => wiggleTimer.current && clearTimeout(wiggleTimer.current)}
+            onPointerLeave={() => wiggleTimer.current && clearTimeout(wiggleTimer.current)}>
+            {wiggle && (
+              <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2">
+                <button
+                  onClick={quitAll}
+                  className={`rounded-full px-4 py-1.5 text-[0.8rem] font-semibold transition active:scale-95 ${quitAllArmed ? 'bg-err text-white' : 'bg-err-soft text-err'}`}>
+                  {quitAllArmed ? `Tap again to quit ${running.filter(quittable).length} apps` : 'Quit all'}
+                </button>
+                <button onClick={() => setWiggle(false)} className="rounded-full bg-white px-4 py-1.5 text-[0.8rem] font-semibold text-screen transition active:scale-95">
+                  Done
+                </button>
+              </div>
+            )}
             {/* every app open on the mac, the one in front in the middle, centred both ways; a tap brings it forward
                 and opens its shortcuts. the inner block centres itself with auto margins, which give way once it
                 outgrows the page, so a long list scrolls from its top */}
             <div ref={sheetList} className="absolute inset-0 flex flex-col overflow-y-auto [scrollbar-width:none]">
               <div className="my-auto flex flex-wrap justify-center gap-2">
-                {running.map(app => (
-                  <div key={app.path} className="relative">
+                {running.map((app, i) => (
+                  <div key={app.path} className={`relative ${wiggle ? 'animate-wiggle' : ''}`} style={wiggle ? { animationDelay: `${(i % 4) * -0.07}s` } : undefined}>
                   <button
                     onPointerDown={() => startHold(app)}
                     onPointerUp={() => stopHold(app)}
@@ -1109,12 +1159,21 @@ export default function App() {
                       </span>
                     )}
                   </button>
+                  {/* in edit mode, each app that can be quit carries its close button, as the phone's home screen does */}
+                  {wiggle && quittable(app) && (
+                    <button
+                      aria-label={`quit ${app.name}`}
+                      onClick={() => quitApp(app)}
+                      className="absolute top-1 left-1 grid h-7 w-7 animate-pop place-items-center rounded-full bg-[#3a3f49] text-white shadow-[0_3px_8px_rgba(0,0,0,0.5)] ring-1 ring-white/20 active:scale-90">
+                      <Svg className="h-3.5 w-3.5">{GLYPH.quit}</Svg>
+                    </button>
+                  )}
                   </div>
                 ))}
               </div>
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 text-center font-mono text-[10px] tracking-[0.2em] text-dim uppercase">
-              tap an app for its shortcuts · hold to quit it
+              {wiggle ? 'tap ✕ to quit an app · done or back to finish' : 'tap an app for its shortcuts · hold to quit it · hold empty space to edit'}
             </div>
           </div>
           )
