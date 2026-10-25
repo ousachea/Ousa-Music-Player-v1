@@ -1,5 +1,23 @@
 # O-Music Player
 
+## 0.46.0
+
+Nine new styles:
+
+- **Speedometer**: one big sports car dial, the needle sweeping the song's minutes to the red line.
+- **Sheet music**: the song as a score, its notes inked in as it plays.
+- **Departures**: an airport board, with what is queued on the phone as the later flights.
+- **Handheld**: an old pocket console's four shade green screen; the pad, A and B work the player.
+- **Vaporwave**: a striped sun, a running grid and a chrome title.
+- **Oscilloscope**: a green trace on a CRT; tap it for an X-Y circle.
+- **Stamp**: the cover as a postage stamp, cancelled with today's date.
+- **Karaoke**: the words filling with colour as they are sung, when the phone has them.
+- **Calendar**: the song as today's page on a tear-off calendar.
+
+A Button style setting under Controls draws previous, play and next as Round, Square, Outline, Glass, Pill
+or Minimal, each tile showing the look. Polaroid flips over when tapped and gains an Album frame in the
+cover's colour. About shows the installed version.
+
 ## 0.45.2
 
 New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.

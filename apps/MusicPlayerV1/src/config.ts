@@ -6,14 +6,17 @@ import { POCKET_BODIES, type PocketBody } from './pocket';
 import { GLOWS, type Glow } from './stereo';
 
 // every player style, in the order Mode steps through them; widget, the first, is the default
-export const THEMES = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics', 'night', 'flap', 'receipt', 'jukebox', 'polaroid', 'pixel', 'dashboard', 'neon', 'mosaic', 'ambient', 'tuner', 'typewriter', 'terminal', 'ticket', 'film', 'comic', 'magazine'] as const;
+export const THEMES = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics', 'night', 'flap', 'receipt', 'jukebox', 'polaroid', 'pixel', 'dashboard', 'neon', 'mosaic', 'ambient', 'tuner', 'typewriter', 'terminal', 'ticket', 'film', 'comic', 'magazine', 'speedo', 'sheet', 'departures', 'handheld', 'vapor', 'scope', 'stamp', 'karaoke', 'calendar'] as const;
 
 // the seek bar kinds; auto picks the one that suits the style
 export const SEEKS = ['bar', 'wave', 'cells', 'dots', 'glow', 'hand', 'pill', 'ruler', 'pulse', 'stripes'] as const;
 export type Seek = (typeof SEEKS)[number];
 
+// how the previous, play and next buttons are drawn; auto keeps each style's own
+export const BUTTONS = ['auto', 'round', 'square', 'outline', 'glass', 'pill', 'minimal'] as const;
+
 // the polaroid's frame colours, in the order a tap on the print steps through them
-export const FRAMES = ['white', 'black', 'cream'] as const;
+export const FRAMES = ['white', 'black', 'cream', 'album'] as const;
 
 export type Prefs = {
   theme: (typeof THEMES)[number];
@@ -41,6 +44,7 @@ export type Prefs = {
   seekSeconds: number;
   seek: 'auto' | Seek;
   seekDot: 'auto' | 'on' | 'off';
+  buttons: (typeof BUTTONS)[number];
   accent: 'artwork' | 'mono';
   hdArt: boolean;
   pulse: boolean;
@@ -60,7 +64,7 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, lyricSize: 100, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', polaroidFrame: 'white', terminalColor: 'green', vinylTint: 'black', deckGlow: 'album', flowBg: 'album', pocketBody: 'silver', cdStyle: 'tray', cdDisc: 'colour', stereoMode: 'dark', vinylStyle: 'turntable', vinylFront: 'record', wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, lyricSize: 100, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', polaroidFrame: 'white', terminalColor: 'green', vinylTint: 'black', deckGlow: 'album', flowBg: 'album', pocketBody: 'silver', cdStyle: 'tray', cdDisc: 'colour', stereoMode: 'dark', vinylStyle: 'turntable', vinylFront: 'record', wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', buttons: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
@@ -126,6 +130,8 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       return { ...prefs, seek: (SEEKS as readonly string[]).includes(value) ? (value as Seek) : 'auto' };
     case 'seekDot':
       return { ...prefs, seekDot: value === 'on' || value === 'off' ? value : 'auto' };
+    case 'buttons':
+      return { ...prefs, buttons: (BUTTONS as readonly string[]).includes(value) ? (value as Prefs['buttons']) : 'auto' };
     case 'lyricsInfo':
       return { ...prefs, lyricsInfo: value === 'bl' || value === 'tr' || value === 'br' ? value : 'tl' };
     case 'accent':

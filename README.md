@@ -8,7 +8,7 @@ none, so Khmer in titles, quotes, names and captions displays properly.
 
 |  | App | What it does |
 | --- | --- | --- |
-| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in twenty-seven styles, coloured by the album art, on a screen that turns |
+| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in thirty-six styles, coloured by the album art, on a screen that turns |
 | <img src="apps/clock/public/icon.png" width="40" alt=""> | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
 | <img src="apps/network-monitor/public/icon.png" width="40" alt=""> | **O-System Monitor** | CPU, GPU, memory, network and storage for your machines |
 | <img src="apps/quote-flow/public/icon.png" width="40" alt=""> | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -189,8 +189,8 @@ to go back to it.
 ### Polaroid
 
 The cover as an instant print, with the title written under it by hand, dropped at its own slight angle
-for each track on a table tinted by the album. Tap the photo to change the frame: white, black or cream
-(**Frame**).
+for each track on a table tinted by the album. Tap the photo and it flips over to the next frame: white,
+black, cream, or album, which takes the frame's colour from the cover (**Frame**).
 
 ### Pixel
 
@@ -257,6 +257,51 @@ panel fills the width as a square with everything else stacked under it.
 The song as the front of a magazine: a masthead, the art full bleed, the title as the cover story, and the
 artist, album and running time as the cover lines.
 
+### Speedometer
+
+One big sports car dial. The needle sweeps the song's length, the dial is marked in its minutes, and the
+last stretch is the red line.
+
+### Sheet music
+
+The song engraved as a score: the title heads the page, the artist signs it, and a tune made from the song
+runs across the staff, inked in as the song plays past each note.
+
+### Departures
+
+An airport board. The song playing is the flight boarding now, and what is queued on the phone lines up
+under it, each due when the songs before it have played.
+
+### Handheld
+
+An old pocket console with a four shade green screen. The cover is sampled down to a few dozen pixels in
+the four greens, the pad skips, A plays or pauses and B goes to the next song.
+
+### Vaporwave
+
+A striped sun behind a grid running to the horizon, a chrome title, and the cover in an old desktop
+window.
+
+### Oscilloscope
+
+A green trace on a CRT with its graticule, made from the song and moving while it plays. Tap the screen
+for an X-Y circle.
+
+### Postage stamp
+
+The cover as a perforated stamp on an airmail envelope, the artist as its country and the length as its
+value, cancelled by a postmark with today's date.
+
+### Karaoke
+
+The words two lines at a time, the sung line filling with colour as the song reaches it, when the phone
+has timed lyrics. Before the first line, and for songs without them, a title card.
+
+### Calendar
+
+A tear-off desk calendar with the song as today's entry, the cover taped to the page. Tap the page to
+tear it off.
+
 ### The queue
 
 ![The queue](apps/MusicPlayerV1/screenshots/08-queue.jpg)
@@ -272,7 +317,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel, Dashboard, Neon, Mosaic, Ambient, Tuner, Typewriter, Terminal, Ticket, Film strip, Comic, Magazine |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel, Dashboard, Neon, Mosaic, Ambient, Tuner, Typewriter, Terminal, Ticket, Film strip, Comic, Magazine, Speedometer, Sheet music, Departures, Handheld, Vaporwave, Oscilloscope, Stamp, Karaoke, Calendar |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -300,7 +345,7 @@ Press the button under the wheel; it opens where you left it, section and scroll
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
-- **Style**: the twenty-seven styles as a grid. Tap one to switch to it, and its own settings (backdrop,
+- **Style**: the thirty-six styles as a grid. Tap one to switch to it, and its own settings (backdrop,
   time remaining and the rest) slide in over the grid; **All styles**, or the button under the wheel, goes
   back
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
@@ -308,9 +353,12 @@ tile carries a small picture of the style, and a setting that needs explaining h
   style and playhead dot. The seek bar comes as a plain line, a wave, lit cells, dots, a neon glow, a
   hand-drawn line, a chunky pill, a ruler, a heartbeat or running stripes, each tile showing what it looks
   like; Auto gives each style the one that suits it (the wave in Poster, the glow in Night and
-  Jukebox, cells on Split-flap, the hand-drawn line on Polaroid)
+  Jukebox, cells on Split-flap, the hand-drawn line on Polaroid). Button style draws previous, play and
+  next as Round, Square, Outline, Glass, Pill or Minimal, again each tile showing the look; Auto keeps
+  each style's own. Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Terminal
+  and Handheld draw their own buttons and keep them
 - **Clock**: position, size, 12/24 hour, seconds
-- **About**: check for updates, and the size of the album art that arrived
+- **About**: the installed version, check for updates, and the size of the album art that arrived
 
 A setting that only matters once another is on stays hidden until then: clock size with the clock on,
 seek step with the wheel set to scrub, backdrop blur with a backdrop at all.

@@ -1,6 +1,6 @@
 // what every newer style is handed. the clock and the seek bar come in as render functions so the styles reuse the
 // player's own, which live in App, without importing App back
-import type { ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 
 import type { Accent } from './artwork-color';
 
@@ -56,6 +56,22 @@ function Icon({ d, className }: { d: string; className?: string }) {
   );
 }
 
+// the button look picked in settings, handed down by the player so no style has to pass it along
+export const ButtonLook = createContext<string>('auto');
+
+// each look replaces the style's own button and play classes; the style's colour and spacing still apply
+const LOOKS: Record<string, { button: string; play: string; wrap?: string }> = {
+  round: { button: 'h-14 w-14 rounded-full bg-white/12', play: 'h-16 w-16 rounded-full bg-white text-black' },
+  square: { button: 'h-14 w-14 rounded-xl bg-white/12', play: 'h-16 w-16 rounded-2xl bg-white text-black' },
+  outline: { button: 'h-14 w-14 rounded-full ring-2 ring-current', play: 'h-16 w-16 rounded-full ring-[3px] ring-current' },
+  glass: {
+    button: 'h-14 w-14 rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-md',
+    play: 'h-16 w-16 rounded-full bg-white/25 ring-1 ring-white/40 backdrop-blur-md',
+  },
+  pill: { button: 'h-14 w-14', play: 'h-14 w-16', wrap: 'rounded-full bg-black/45 px-2 ring-1 ring-white/15 backdrop-blur-md' },
+  minimal: { button: 'h-14 w-12 opacity-80', play: 'h-16 w-14' },
+};
+
 // previous, play and next in a row; each style dresses the play button through `play` and the other two through `button`
 export function Transport({
   playing,
@@ -76,8 +92,13 @@ export function Transport({
   button?: string;
   icon?: string;
 }) {
+  const look = LOOKS[useContext(ButtonLook)];
+  if (look) {
+    button = look.button;
+    play = look.play;
+  }
   return (
-    <div className={`flex items-center ${className ?? ''}`}>
+    <div className={`flex items-center ${className ?? ''} ${look?.wrap ?? ''}`}>
       <button aria-label="previous" onClick={onPrev} className={`grid place-items-center transition active:scale-90 ${button}`}>
         <Icon d={NEXT} className={`-scale-x-100 ${icon}`} />
       </button>

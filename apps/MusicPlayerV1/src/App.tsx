@@ -24,6 +24,15 @@ import { Dashboard } from './dashboard';
 import { FilmStrip } from './filmstrip';
 import { Jukebox } from './jukebox';
 import { Magazine } from './magazine';
+import { Calendar } from './calendar';
+import { Departures } from './departures';
+import { Handheld } from './handheld';
+import { Karaoke } from './karaoke';
+import { Scope } from './scope';
+import { SheetMusic } from './sheet';
+import { Speedo } from './speedo';
+import { Stamp } from './stamp';
+import { Vapor } from './vapor';
 import { Mosaic } from './mosaic';
 import { Neon } from './neon';
 import { Night } from './night';
@@ -35,11 +44,12 @@ import { Terminal } from './terminal';
 import { Ticket } from './ticket';
 import { Tuner } from './tuner';
 import { Typewriter } from './typewriter';
-import type { StyleProps } from './style-kit';
+import { ButtonLook, Transport, type StyleProps } from './style-kit';
+import { version } from '../public/manifest.json';
 import { POCKET_BODIES, Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
-import { AUTO_PULSE_BPM, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, FRAMES, THEMES, usePrefs, type Prefs, type Seek as SeekKind } from './config';
+import { AUTO_PULSE_BPM, BUTTONS, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, FRAMES, THEMES, usePrefs, type Prefs, type Seek as SeekKind } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 import { FitTitle } from './fit-title';
@@ -156,7 +166,7 @@ export default function App() {
   const artistName = track?.artist ?? foundArtist;
   const lyrics = useLyrics(
     client,
-    prefs.theme === 'lyrics' || prefs.theme === 'dial' ? (track?.persistentId ?? track?.title ?? null) : null,
+    prefs.theme === 'lyrics' || prefs.theme === 'dial' || prefs.theme === 'karaoke' ? (track?.persistentId ?? track?.title ?? null) : null,
   );
   // the queue is only read while the sheet is up: it is the phone's, and nothing else here wants it
   // Flow fans the queue out either side of the cover, so it reads the queue the whole time it is on
@@ -164,7 +174,7 @@ export default function App() {
   // Mosaic walls the screen with the history, so it reads the queue too
   const queue = useQueue(
     client,
-    sheet || prefs.theme === 'flow' || prefs.theme === 'jukebox' || prefs.theme === 'mosaic' || prefs.theme === 'film',
+    sheet || prefs.theme === 'flow' || prefs.theme === 'jukebox' || prefs.theme === 'mosaic' || prefs.theme === 'film' || prefs.theme === 'departures',
     track?.persistentId ?? track?.title ?? null,
   );
   const flowThumbs = useThumbs(
@@ -538,6 +548,7 @@ export default function App() {
 
   return (
     <Stage rotate={prefs.rotate}>
+    <ButtonLook.Provider value={prefs.buttons}>
     <div className="relative h-full w-full overflow-hidden bg-screen" data-motion={prefs.motion ? undefined : 'off'}>
       {/* outside the keyed wrapper: inside it, every track change tore the blurred art down and
           built it again, which showed as a flash while the new one decoded */}
@@ -568,6 +579,24 @@ export default function App() {
         <Comic {...styleProps} />
       ) : prefs.theme === 'magazine' ? (
         <Magazine {...styleProps} />
+      ) : prefs.theme === 'speedo' ? (
+        <Speedo {...styleProps} />
+      ) : prefs.theme === 'sheet' ? (
+        <SheetMusic {...styleProps} />
+      ) : prefs.theme === 'departures' ? (
+        <Departures {...styleProps} queue={queue} />
+      ) : prefs.theme === 'handheld' ? (
+        <Handheld {...styleProps} />
+      ) : prefs.theme === 'vapor' ? (
+        <Vapor {...styleProps} />
+      ) : prefs.theme === 'scope' ? (
+        <Scope {...styleProps} />
+      ) : prefs.theme === 'stamp' ? (
+        <Stamp {...styleProps} />
+      ) : prefs.theme === 'karaoke' ? (
+        <Karaoke {...styleProps} lyrics={lyrics} />
+      ) : prefs.theme === 'calendar' ? (
+        <Calendar {...styleProps} />
       ) : prefs.theme === 'dashboard' ? (
         <Dashboard {...styleProps} volume={volume} />
       ) : prefs.theme === 'neon' ? (
@@ -1053,6 +1082,7 @@ export default function App() {
         />
       )}
     </div>
+    </ButtonLook.Provider>
     </Stage>
   );
 }
@@ -1223,10 +1253,10 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
     values: [...THEMES],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel', 'Dashboard', 'Neon', 'Mosaic', 'Ambient', 'Tuner', 'Typewriter', 'Terminal', 'Ticket', 'Film strip', 'Comic', 'Magazine'],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel', 'Dashboard', 'Neon', 'Mosaic', 'Ambient', 'Tuner', 'Typewriter', 'Terminal', 'Ticket', 'Film strip', 'Comic', 'Magazine', 'Speedometer', 'Sheet music', 'Departures', 'Handheld', 'Vaporwave', 'Oscilloscope', 'Stamp', 'Karaoke', 'Calendar'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
-  polaroidFrame: { values: [...FRAMES], labels: ['White', 'Black', 'Cream'] },
+  polaroidFrame: { values: [...FRAMES], labels: ['White', 'Black', 'Cream', 'Album'] },
   terminalColor: { values: ['green', 'album'], labels: ['Green', 'Album'] },
   vinylTint: { values: ['black', 'album', 'marble'], labels: ['Black', 'Album', 'Marble'] },
   flowBg: { values: ['album', 'black'], labels: ['Album colour', 'Black'] },
@@ -1243,6 +1273,7 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
     labels: ['Auto', 'Bar', 'Wave', 'Cells', 'Dots', 'Glow', 'Hand', 'Pill', 'Ruler', 'Pulse', 'Stripes'],
   },
   seekDot: { values: ['auto', 'on', 'off'], labels: ['Auto', 'On', 'Off'] },
+  buttons: { values: [...BUTTONS], labels: ['Auto', 'Round', 'Square', 'Outline', 'Glass', 'Pill', 'Minimal'] },
   clockPos: { values: ['left', 'center', 'right'], labels: ['Left', 'Centre', 'Right'] },
   clockFormat: { values: ['auto', 'h12', 'h24'], labels: ['Auto', '12h', '24h'] },
   accent: { values: ['artwork', 'mono'], labels: ['Album art', 'White'] },
@@ -1423,7 +1454,9 @@ function Panel({
               art={
                 row.key === 'seek'
                   ? (value, on) => <SeekPreview kind={value} tint={on ? ink : tint} tint2={on ? ink : (accent?.fill2 ?? tint)} theme={prefs.theme} />
-                  : undefined
+                  : row.key === 'buttons'
+                    ? (value, on) => <ButtonPreview look={value} tint={on ? ink : tint} />
+                    : undefined
               }
             />
           ) : (
@@ -1532,6 +1565,15 @@ function Panel({
           {tab === 'About' && (
             <>
               <div className="shrink-0 rounded-2xl bg-white/4">
+                <div className="flex items-center justify-between gap-5 border-b border-white/6 px-4 py-2">
+                  <div className="min-w-0">
+                    <div className="truncate text-title text-near">Version</div>
+                    <div className="truncate text-hint text-dim">O-Music Player, installed on this Car Thing</div>
+                  </div>
+                  <span className="shrink-0 rounded-full px-5 py-2 font-mono text-row font-medium tabular-nums" style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
+                    {version}
+                  </span>
+                </div>
                 <div className="flex items-center justify-between gap-5 border-b border-white/6 px-4 py-2">
                   <div className="min-w-0">
                     <div className="truncate text-title text-near">Software update</div>
@@ -1868,6 +1910,47 @@ const GLYPHS: Record<string, ReactNode> = {
       <path d="M7 6.5h10M7 17h7" />
     </>
   ),
+  speedo: <path d="M4 17a8 8 0 1 1 16 0M12 15l-4-5" />,
+  sheet: <path d="M3 6h18M3 9.5h18M3 13h18M3 16.5h18M9 17.5V6M17 14.5V3.5M9 17.5a2 2 0 1 1-2-2M17 14.5a2 2 0 1 1-2-2" />,
+  departures: <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" />,
+  handheld: (
+    <>
+      <rect x="5" y="2.5" width="14" height="19" rx="2" />
+      <rect x="7.5" y="5" width="9" height="7" />
+      <path d="M8 16.5h3M9.5 15v3M15 15.5h.5M14 18h.5" />
+    </>
+  ),
+  vapor: (
+    <>
+      <path d="M7 11a5 5 0 0 1 10 0" />
+      <path d="M3 13h18M5 17h14M2.5 21h19M12 13v8M8 13l-3 8M16 13l3 8" />
+    </>
+  ),
+  scope: (
+    <>
+      <rect x="2.5" y="4" width="19" height="16" rx="2" />
+      <path d="M5 12c1.5-4 3-4 4.5 0s3 4 4.5 0 3-4 4.5 0" />
+    </>
+  ),
+  stamp: (
+    <>
+      <path d="M5 3h14v18H5z" strokeDasharray="2 2" />
+      <rect x="8" y="6" width="8" height="8" />
+      <path d="M8 17.5h8" />
+    </>
+  ),
+  karaoke: (
+    <>
+      <rect x="9" y="2.5" width="6" height="11" rx="3" />
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" />
+    </>
+  ),
+  calendar: (
+    <>
+      <rect x="3.5" y="5" width="17" height="16" rx="2" />
+      <path d="M3.5 10h17M8 3v4M16 3v4M10 15h4" />
+    </>
+  ),
   typewriter: (
     <>
       <path d="M7 3h10v6H7z" />
@@ -1893,6 +1976,17 @@ function Glyph({ name, className }: { name: string; className?: string }) {
 }
 
 // a seek bar as it will look, stopped part way, for its tile in the settings; auto shows the one this style gets
+// the three buttons in a look, shrunk to fit a tile. auto shows them bare, since each style dresses them its own way
+function ButtonPreview({ look, tint }: { look: string; tint: string }) {
+  return (
+    <div className="pointer-events-none flex h-9 w-full items-center justify-center overflow-visible" style={{ color: tint }}>
+      <ButtonLook.Provider value={look}>
+        <Transport playing={false} onToggle={() => {}} onPrev={() => {}} onNext={() => {}} className="shrink-0 scale-[0.5] gap-2" />
+      </ButtonLook.Provider>
+    </div>
+  );
+}
+
 function SeekPreview({ kind, tint, tint2, theme }: { kind: string; tint: string; tint2: string; theme: Prefs['theme'] }) {
   const style = (kind === 'auto' ? (theme === 'widget' ? 'bar' : (AUTO_SEEK[theme] ?? 'bar')) : kind) as SeekKind;
   return (

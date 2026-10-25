@@ -76,6 +76,7 @@ export const GROUPS: { title: string; rows: Row[] }[] = [
       { key: 'seekSeconds', label: 'Seek step', when: v => v('wheel') === 'seek' },
       { key: 'seek', label: 'Seek bar' },
       { key: 'seekDot', label: 'Dot at the playhead' },
+      { key: 'buttons', label: 'Button style', when: v => v('transport') !== 'false' },
     ],
   },
   {

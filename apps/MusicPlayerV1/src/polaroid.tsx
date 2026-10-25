@@ -1,5 +1,7 @@
 // polaroid: the cover as an instant print with the title written under it by hand, dropped at its own slight angle
 // on a table, an older print showing beneath it
+import { useRef, useState } from 'react';
+
 import { FitTitle } from './fit-title';
 import { Transport, fmt, hash, type StyleProps } from './style-kit';
 
@@ -10,6 +12,9 @@ const FRAME = {
   cream: { face: '#efe3c8', under: '#e2d4b4', ink: '#4a3420' },
 };
 
+// the flip turns the print a full circle; the frame changes at the half, when the print is edge on
+const FLIP_MS = 800;
+
 export function Polaroid({
   artUrl,
   title,
@@ -17,6 +22,7 @@ export function Polaroid({
   album,
   accent,
   playing,
+  motion,
   upright,
   showTransport,
   elapsed,
@@ -28,8 +34,22 @@ export function Polaroid({
   onNext,
   frame,
   onFrame,
-}: StyleProps & { frame: keyof typeof FRAME; onFrame: () => void }) {
-  const f = FRAME[frame];
+}: StyleProps & { frame: keyof typeof FRAME | 'album'; onFrame: () => void }) {
+  // the album frame is the cover's own colour, with the ink it carries for text on it
+  const f =
+    frame === 'album'
+      ? { face: accent?.fill ?? FRAME.white.face, under: `color-mix(in oklab, ${accent?.fill ?? FRAME.white.under} 75%, #000)`, ink: accent?.ink ?? FRAME.white.ink }
+      : FRAME[frame];
+  const [flips, setFlips] = useState(0);
+  const busy = useRef(false);
+  const flip = () => {
+    if (!motion) return onFrame();
+    if (busy.current) return;
+    busy.current = true;
+    setFlips(n => n + 1);
+    setTimeout(onFrame, FLIP_MS / 2);
+    setTimeout(() => (busy.current = false), FLIP_MS);
+  };
   const h = hash(title + artist);
   // between -4 and 4 degrees, fixed per track, so the print lands differently each time
   const tilt = ((h % 81) - 40) / 10;
@@ -38,8 +58,9 @@ export function Polaroid({
   const width = upright ? 330 : 300;
 
   const print = (
-    // the print is the thing to tap: it steps the frame colour, and every so often lights up to say so
-    <button aria-label="frame colour" onClick={onFrame} className="relative shrink-0 animate-hint text-left transition active:scale-[0.98]" style={{ width, height: width * 1.26 }}>
+    // the print is the thing to tap: it flips over to the next frame colour, and every so often lights up to say so
+    <button aria-label="frame colour" onClick={flip} className="relative shrink-0 animate-hint text-left transition active:scale-[0.98] [perspective:1000px]" style={{ width, height: width * 1.26 }}>
+      <div key={flips} className={`absolute inset-0 ${flips ? 'animate-polaroid-flip' : ''}`}>
       <div className="absolute inset-0 shadow-[0_12px_30px_rgba(0,0,0,0.5)] transition-colors duration-500" style={{ transform: `rotate(${under}deg)`, background: f.under }} />
       <div
         className="absolute inset-0 flex flex-col p-4 shadow-[0_18px_40px_rgba(0,0,0,0.55)] transition-colors duration-500"
@@ -52,6 +73,7 @@ export function Polaroid({
             <FitTitle text={title} max={34} lines={2} className="w-full font-hand leading-[1.05] font-bold" />
           </div>
         </div>
+      </div>
       </div>
     </button>
   );

@@ -1,8 +1,8 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "O-Music Player",
-  "version": "0.45.2",
-  "description": "Now playing from your phone, in five styles coloured by the album art, and turnable to any mounting.",
+  "version": "0.46.0",
+  "description": "Now playing from your phone, in thirty-six styles coloured by the album art, and turnable to any mounting.",
   "icon": "icon.jpg",
   "settings": "settings.html",
   "config": [
@@ -54,7 +54,16 @@
           "ticket",
           "film",
           "comic",
-          "magazine"
+          "magazine",
+          "speedo",
+          "sheet",
+          "departures",
+          "handheld",
+          "vapor",
+          "scope",
+          "stamp",
+          "karaoke",
+          "calendar"
         ],
         "default": "widget"
       }
@@ -293,7 +302,8 @@
         "choices": [
           "white",
           "black",
-          "cream"
+          "cream",
+          "album"
         ],
         "default": "white"
       }
@@ -351,6 +361,23 @@
           "auto",
           "on",
           "off"
+        ],
+        "default": "auto"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "buttons",
+        "label": "Button style",
+        "choices": [
+          "auto",
+          "round",
+          "square",
+          "outline",
+          "glass",
+          "pill",
+          "minimal"
         ],
         "default": "auto"
       }
