@@ -330,7 +330,7 @@ the physical buttons.
 
 ### Settings
 
-![Settings](apps/MusicPlayerV1/screenshots/06-settings.jpg)
+![Settings: the style picker, numbered and grouped](apps/MusicPlayerV1/screenshots/06-settings.jpg)
 
 Press the button under the wheel; it opens where you left it, section and scroll. Sections run down the left, each with an icon, and the one you pick fills the rest of
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
@@ -350,6 +350,9 @@ tile carries a small picture of the style, and a setting that needs explaining h
   next as Round, Square, Outline, Glass, Pill or Minimal, again each tile showing the look; Auto keeps
   each style's own. Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Terminal
   and Handheld draw their own buttons and keep them
+
+  ![Settings: Controls, with the seek bar and button style tiles](apps/MusicPlayerV1/screenshots/12-settings-controls.jpg)
+
 - **Clock**: position, size, 12/24 hour, seconds
 - **About**: check for updates, and the size of the album art that arrived. The installed version is
   under the About tab's name
