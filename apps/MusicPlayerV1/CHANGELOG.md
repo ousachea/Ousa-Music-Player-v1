@@ -1,5 +1,9 @@
 # O-Music Player
 
+## 0.46.1
+
+The settings tiles keep their names clear of the tile's edge: Speedometer, Oscilloscope, Sheet music and the other long names no longer touch it.
+
 ## 0.46.0
 
 Nine new styles:

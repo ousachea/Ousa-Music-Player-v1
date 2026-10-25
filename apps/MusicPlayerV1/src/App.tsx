@@ -1736,8 +1736,9 @@ function StyleGrid({
             aria-pressed={on}
             onClick={() => onPick(option)}
             style={on ? { backgroundColor: tint, color: ink } : undefined}
-            className={`flex items-center justify-center rounded-xl text-row font-medium transition duration-200 active:scale-95 ${
-              art ? 'h-16 flex-col gap-1' : 'h-11 gap-1.5'
+            // padded so the longest names stop short of the tile's edge, set a size down under a picture to fit
+            className={`flex min-w-0 items-center justify-center rounded-xl px-1.5 text-center font-medium whitespace-nowrap transition duration-200 active:scale-95 ${
+              art ? 'h-16 flex-col gap-1 text-[0.8125rem] leading-tight' : 'h-11 gap-1.5 text-row'
             } ${on ? '' : 'bg-white/10 text-dim'}`}>
             {art?.(option, on)}
             {labels[i]}
