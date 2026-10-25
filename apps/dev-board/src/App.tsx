@@ -192,7 +192,8 @@ export default function App() {
       ) : shown.length === 0 ? (
         <div className="grid flex-1 place-items-center text-title text-soft">{EMPTY[page]}</div>
       ) : (
-        <div ref={list} className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto [scrollbar-width:none]">
+        // padded inside and pulled back out, so the chosen row's border and shadow are not clipped by the scroll edge
+        <div ref={list} className="-m-2 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto p-2 [scroll-padding:8px] [scrollbar-width:none]">
           {shown.map((r, i) => (
             <button
               key={r.key}

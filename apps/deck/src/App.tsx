@@ -350,18 +350,18 @@ export default function App() {
         of('shortcut').length === 0 ? (
           empty('No shortcuts yet. Make one in the Shortcuts app on the Mac and it appears here.')
         ) : (
-          <div ref={list} className="grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto pb-1 [scrollbar-width:none]">
+          <div ref={list} className="-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto p-2 [scrollbar-width:none]">
             {of('shortcut').map(a => tile(a))}
           </div>
         )
       ) : page === 'Apps' ? (
-        <div ref={list} className="grid min-h-0 flex-1 auto-rows-min grid-cols-6 gap-x-2 gap-y-1 overflow-y-auto pb-1 [scrollbar-width:none]">
+        <div ref={list} className="-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-6 gap-x-2 gap-y-1 overflow-y-auto p-2 [scrollbar-width:none]">
           {of('app').map(a => tile(a))}
         </div>
       ) : pinned.length === 0 ? (
         empty('Hold any tile on the other pages to pin it here.')
       ) : (
-        <div ref={list} className="grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto pb-1 [scrollbar-width:none]">
+        <div ref={list} className="-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto p-2 [scrollbar-width:none]">
           {pinned.map(a => (a.kind === 'control' ? <div key={a.id} className="h-[112px] [&>button]:h-full">{tile(a)}</div> : tile(a, true)))}
         </div>
       )}
