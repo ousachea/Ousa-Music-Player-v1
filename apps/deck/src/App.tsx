@@ -168,13 +168,13 @@ function ShortcutTile({ action, flash, pinned, onRun, onPin }: { action: Action;
   );
 }
 
-// an icon's main colour: its pixels averaged, the vivid ones counting most, so a press can glow in it
+// an image's main colour: its pixels averaged, the vivid ones counting most, so a press or a slider can glow in it
 const TINTS = new Map<string, string>();
-function useIconTint(png: string | undefined) {
-  const [tint, setTint] = useState(() => (png ? TINTS.get(png) : undefined));
+function useTint(src: string | null | undefined) {
+  const [tint, setTint] = useState(() => (src ? TINTS.get(src) : undefined));
   useEffect(() => {
-    if (!png) return;
-    if (TINTS.has(png)) return setTint(TINTS.get(png));
+    if (!src) return setTint(undefined);
+    if (TINTS.has(src)) return setTint(TINTS.get(src));
     const img = new Image();
     img.onload = () => {
       const c = document.createElement('canvas');
@@ -196,18 +196,18 @@ function useIconTint(png: string | undefined) {
       if (!w) return;
       // lifted towards white so a dark icon still glows
       const found = `color-mix(in oklab, rgb(${Math.round(r / w)} ${Math.round(gr / w)} ${Math.round(b / w)}) 80%, white)`;
-      TINTS.set(png, found);
+      TINTS.set(src, found);
       setTint(found);
     };
-    img.src = `data:image/png;base64,${png}`;
-  }, [png]);
+    img.src = src;
+  }, [src]);
   return tint;
 }
 
 function AppTile({ action, icon, flash, pinned, card, onRun, onPin }: { action: Action; icon: string | undefined; flash: Flash | null; pinned: boolean; card?: boolean; onRun: () => void; onPin: () => void }) {
   const press = usePress(onRun, onPin);
   const h = hue(action.label);
-  const tint = useIconTint(icon) ?? `hsl(${h} 70% 60%)`;
+  const tint = useTint(icon ? `data:image/png;base64,${icon}` : null) ?? `hsl(${h} 70% 60%)`;
   return (
     <button
       {...press}
@@ -227,17 +227,19 @@ function AppTile({ action, icon, flash, pinned, card, onRun, onPin }: { action: 
   );
 }
 
-// the volume as a tall panel that fills from the bottom, dragged up and down or turned with the wheel, with what
-// spotify or music is playing under it. a drag shows its own level at once and sends it a few times a second
+// the song and the mac's volume as one card: the cover large, blurred behind the whole card too, the song and its
+// transport under it, and the volume a slim pill at the foot that takes the cover's colour. the pill is dragged
+// sideways or turned with the wheel; a drag shows its own level at once and sends it a few times a second
 const SEND_EVERY_MS = 90;
 
-function Volume({ mac, media, onSet, onMedia }: { mac: Mac | null; media: Playing | null; onSet: (level: number) => void; onMedia: (command: 'playpause' | 'next' | 'previous') => void }) {
+function NowPlaying({ mac, media, onSet, onMedia }: { mac: Mac | null; media: Playing | null; onSet: (level: number) => void; onMedia: (command: 'playpause' | 'next' | 'previous') => void }) {
   const [drag, setDrag] = useState<number | null>(null);
   const sent = useRef(0);
+  const tint = useTint(media?.art) ?? '#7c9cff';
   const level = drag ?? (mac ? (mac.muted ? 0 : mac.volume) : 0);
-  const at = (e: { clientY: number; currentTarget: Element }) => {
+  const at = (e: { clientX: number; currentTarget: Element }) => {
     const box = e.currentTarget.getBoundingClientRect();
-    return Math.round(Math.max(0, Math.min(1, (box.bottom - e.clientY) / box.height)) * 100);
+    return Math.round(Math.max(0, Math.min(1, (e.clientX - box.left) / box.width)) * 100);
   };
   const move = (next: number, force = false) => {
     setDrag(next);
@@ -246,18 +248,46 @@ function Volume({ mac, media, onSet, onMedia }: { mac: Mac | null; media: Playin
       onSet(next);
     }
   };
-  // the speaker draws as many waves as the level earns
   const waves = level === 0 ? 0 : level < 34 ? 1 : level < 67 ? 2 : 3;
   return (
-    <div className="flex w-[230px] shrink-0 flex-col gap-3 rounded-[26px] border border-white/8 bg-[linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-      <div className="flex items-baseline justify-between px-1">
-        <span className="font-mono text-[10px] tracking-[0.3em] text-dim">VOLUME</span>
-        <span className="font-display text-[1.9rem] leading-none font-semibold tabular-nums">
-          {mac?.muted && drag === null ? 'off' : level}
-        </span>
+    <div className="relative isolate flex w-[230px] shrink-0 flex-col items-center overflow-hidden rounded-[26px] border border-white/10 p-4 shadow-[0_14px_36px_rgba(0,0,0,0.45)]" style={{ ['--tint' as string]: tint }}>
+      {/* the cover again, blurred to fill the card, so the card is the song's colour */}
+      <div className="absolute inset-0 -z-10 bg-[#141821]">
+        {media?.art && <img src={media.art} alt="" className="h-full w-full scale-150 object-cover opacity-55 blur-2xl" />}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/70" />
       </div>
+
+      <div className="aspect-square w-[176px] shrink-0 overflow-hidden rounded-2xl bg-white/10 shadow-[0_12px_28px_rgba(0,0,0,0.55)]">
+        {media?.art ? (
+          <img src={media.art} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="grid h-full w-full place-items-center bg-[linear-gradient(150deg,#2b3a67,#5a3f8f)] text-white/70">
+            <Svg className="h-12 w-12">
+              <path d="M9 18V6l10-2v12M9 18a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0zM19 16a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z" />
+            </Svg>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3 w-full text-center">
+        <div className="line-clamp-2 text-[0.95rem] leading-tight font-semibold">{media ? media.title : 'Nothing playing'}</div>
+        <div className="mt-0.5 truncate text-[11px] text-white/60">{media ? [media.artist, media.source].filter(Boolean).join(' · ') : 'Play something on the Mac'}</div>
+      </div>
+
+      <div className={`mt-auto flex items-center justify-center gap-3 pt-2 ${media ? '' : 'opacity-35'}`}>
+        {(['previous', 'playpause', 'next'] as const).map(c => (
+          <button
+            key={c}
+            disabled={!media}
+            onClick={() => onMedia(c)}
+            className={`grid place-items-center rounded-full transition active:scale-90 ${c === 'playpause' ? 'h-12 w-12 bg-white text-screen shadow-[0_6px_16px_rgba(0,0,0,0.4)]' : 'h-9 w-9 text-white'}`}>
+            <Svg className="h-5 w-5">{GLYPH[c === 'playpause' ? (media?.playing ? 'pause' : 'play') : c]}</Svg>
+          </button>
+        ))}
+      </div>
+
       <div
-        className="relative min-h-0 flex-1 cursor-ns-resize touch-none overflow-hidden rounded-[22px] bg-white/8"
+        className="relative mt-3 h-9 w-full shrink-0 cursor-ew-resize touch-none overflow-hidden rounded-full bg-white/12 backdrop-blur-sm"
         onPointerDown={e => {
           e.currentTarget.setPointerCapture(e.pointerId);
           move(at(e), true);
@@ -269,45 +299,18 @@ function Volume({ mac, media, onSet, onMedia }: { mac: Mac | null; media: Playin
           setTimeout(() => setDrag(null), 600);
         }}>
         <div
-          className={`absolute inset-x-0 bottom-0 ${drag === null ? 'transition-[height] duration-300' : ''}`}
-          style={{ height: `${level}%`, background: 'linear-gradient(to top, #00a8e8, #7c5cff)', boxShadow: '0 -6px 24px rgba(124,92,255,0.45)' }}
+          className={`absolute inset-y-0 left-0 rounded-full ${drag === null ? 'transition-[width] duration-300' : ''}`}
+          style={{ width: `${Math.max(level, 12)}%`, background: 'var(--tint)', boxShadow: '0 0 18px color-mix(in srgb, var(--tint) 55%, transparent)', opacity: level === 0 ? 0.35 : 1 }}
         />
-        {/* notches every quarter, so a level can be judged at a glance */}
-        {[25, 50, 75].map(n => (
-          <div key={n} className="absolute inset-x-3 h-px bg-white/10" style={{ bottom: `${n}%` }} />
-        ))}
-        <div className={`absolute bottom-3 left-3.5 ${level > 12 ? 'text-white' : 'text-soft'}`}>
-          <Svg className="h-7 w-7">
+        <div className="absolute inset-0 flex items-center justify-between px-2.5 text-screen">
+          <Svg className="h-[18px] w-[18px]">
             <path d="M4 9v6h4l5 4V5L8 9z" />
             {waves >= 1 && <path d="M16 9.5a3.5 3.5 0 0 1 0 5" />}
             {waves >= 2 && <path d="M18.5 7.5a6.5 6.5 0 0 1 0 9" />}
             {waves >= 3 && <path d="M21 5.5a9.5 9.5 0 0 1 0 13" />}
             {waves === 0 && <path d="M16 10l4 4M20 10l-4 4" />}
           </Svg>
-        </div>
-        <div className="absolute right-3.5 bottom-3.5 font-mono text-[10px] tracking-[0.15em] text-white/60">DRAG · WHEEL</div>
-      </div>
-      {/* what spotify or music is playing on the mac, with its transport */}
-      <div className="w-full">
-        <div className="flex items-center gap-3">
-          <div className="h-[68px] w-[68px] shrink-0 overflow-hidden rounded-xl bg-white/10 shadow-[0_6px_16px_rgba(0,0,0,0.45)]">
-            {media?.art && <img src={media.art} alt="" className="h-full w-full object-cover" />}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="line-clamp-2 text-[0.92rem] leading-tight font-semibold">{media ? media.title : 'Nothing playing'}</div>
-            <div className="mt-0.5 truncate text-[11px] text-dim">{media ? [media.artist, media.source].filter(Boolean).join(' · ') : 'Play something on the Mac'}</div>
-          </div>
-        </div>
-        <div className={`mt-2 flex items-center justify-center gap-2 ${media ? '' : 'opacity-35'}`}>
-          {(['previous', 'playpause', 'next'] as const).map(c => (
-            <button
-              key={c}
-              disabled={!media}
-              onClick={() => onMedia(c)}
-              className={`grid place-items-center rounded-full transition active:scale-90 ${c === 'playpause' ? 'h-11 w-11 bg-white text-screen' : 'h-9 w-9 bg-white/8 text-white'}`}>
-              <Svg className={c === 'playpause' ? 'h-5 w-5' : 'h-4 w-4'}>{GLYPH[c === 'playpause' ? (media?.playing ? 'pause' : 'play') : c]}</Svg>
-            </button>
-          ))}
+          <span className={`font-mono text-[11px] font-semibold tabular-nums ${level > 82 ? 'text-screen' : 'text-white/80'}`}>{mac?.muted && drag === null ? 'off' : level}</span>
         </div>
       </div>
     </div>
@@ -599,7 +602,7 @@ export default function App() {
         )
       ) : page === 'Controls' ? (
         <div className="flex min-h-0 flex-1 gap-3.5">
-          <Volume mac={mac} media={playing} onSet={level => send({ type: 'set-volume', level })} onMedia={media} />
+          <NowPlaying mac={mac} media={playing} onSet={level => send({ type: 'set-volume', level })} onMedia={media} />
           <div className="grid flex-1 grid-cols-3 grid-rows-2 gap-3">{of('control').filter(a => a.id !== 'vol-up' && a.id !== 'vol-down').map(a => tile(a))}</div>
         </div>
       ) : page === 'Shortcuts' ? (
