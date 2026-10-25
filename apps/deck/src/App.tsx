@@ -1105,9 +1105,10 @@ export default function App() {
           ) : (
           <div
             className="relative min-h-0 flex-1"
-            // holding empty space, not an app, enters edit mode
+            // holding empty space, not an app, enters edit mode, and in edit mode a tap on empty space leaves it
             onPointerDown={e => {
-              if ((e.target as HTMLElement).closest('button') || wiggle) return;
+              if ((e.target as HTMLElement).closest('button')) return;
+              if (wiggle) return setWiggle(false);
               wiggleTimer.current = setTimeout(() => setWiggle(true), WIGGLE_HOLD_MS);
             }}
             onPointerUp={() => wiggleTimer.current && clearTimeout(wiggleTimer.current)}
@@ -1173,7 +1174,7 @@ export default function App() {
               </div>
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 text-center font-mono text-[10px] tracking-[0.2em] text-dim uppercase">
-              {wiggle ? 'tap ✕ to quit an app · done or back to finish' : 'tap an app for its shortcuts · hold to quit it · hold empty space to edit'}
+              {wiggle ? 'tap ✕ to quit an app · tap empty space, done or back to finish' : 'tap an app for its shortcuts · hold to quit it · hold empty space to edit'}
             </div>
           </div>
           )
