@@ -1,5 +1,9 @@
 # O-Deck
 
+## 0.1.2
+
+- Installs on Car Things running bridgething 0.13.1, which it works with, instead of asking for 0.14.0
+
 ## 0.1.1
 
 - On Clipboard, each Copy button and the Clear button sit on the left

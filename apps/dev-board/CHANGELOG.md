@@ -1,5 +1,9 @@
 # O-Dev Board
 
+## 0.1.1
+
+- Installs on Car Things running bridgething 0.13.1, which it works with, instead of asking for 0.14.0
+
 ## 0.1.0
 
 First release: GitHub at a glance, read on the Mac through the GitHub CLI signed in there.
