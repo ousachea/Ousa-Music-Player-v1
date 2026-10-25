@@ -160,19 +160,24 @@ export default function App() {
             : null;
 
   return (
-    <div className="flex h-full w-full flex-col gap-3 bg-bg px-5 pt-4 pb-4 text-off-white">
-      <div className="flex items-center gap-2">
-        {PAGES.map((p, i) => (
-          <button
-            key={p}
-            onClick={() => setPage(p)}
-            className={`flex items-center gap-2 rounded-full px-3.5 py-2 text-[0.95rem] font-semibold transition ${p === page ? 'bg-accent text-screen' : 'bg-white/8 text-soft'}`}>
-            <span className="font-mono text-[11px] opacity-60">{i + 1}</span>
-            {p}
-            {counts[p] > 0 && p !== 'Repos' && <span className={`rounded-full px-1.5 font-mono text-[11px] ${p === page ? 'bg-screen/20' : 'bg-white/12'}`}>{counts[p]}</span>}
-          </button>
-        ))}
-        <button onClick={() => send({ type: 'refresh' })} className="ml-auto flex items-center gap-2 rounded-full bg-white/8 px-3 py-2 font-mono text-[11px] text-soft">
+    <div className="flex h-full w-full flex-col gap-3 px-5 pt-4 pb-4 text-off-white" style={{ background: 'radial-gradient(120% 90% at 50% -20%, #1d2535, #0a0c10 62%)' }}>
+      <div className="flex items-center gap-3">
+        <div className="flex gap-1 rounded-full border border-white/8 bg-white/5 p-1">
+          {PAGES.map((p, i) => (
+            <button
+              key={p}
+              onClick={() => setPage(p)}
+              className={`flex items-center gap-2 rounded-full px-3.5 py-2 text-[0.92rem] font-semibold transition duration-200 ${p === page ? 'bg-white text-screen shadow-[0_4px_14px_rgba(0,0,0,0.35)]' : 'text-soft'}`}>
+              {p}
+              {counts[p] > 0 && p !== 'Repos' ? (
+                <span className={`rounded-full px-1.5 font-mono text-[10px] ${p === page ? 'bg-screen/12' : 'bg-white/12'}`}>{counts[p]}</span>
+              ) : (
+                <span className={`font-mono text-[10px] ${p === page ? 'text-screen/45' : 'text-dim'}`}>{i + 1}</span>
+              )}
+            </button>
+          ))}
+        </div>
+        <button onClick={() => send({ type: 'refresh' })} className="ml-auto flex items-center gap-2 rounded-full border border-white/8 bg-white/5 px-3 py-2 font-mono text-[11px] text-soft">
           <svg viewBox="0 0 24 24" className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
             <path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4" />
           </svg>
@@ -196,7 +201,9 @@ export default function App() {
                 setAt(i);
                 open(r.url);
               }}
-              className={`flex shrink-0 items-center gap-3.5 rounded-xl px-4 py-2.5 text-left transition ${i === at ? 'bg-white/14 ring-1 ring-accent' : 'bg-white/5'}`}>
+              className={`flex shrink-0 items-center gap-3.5 rounded-2xl border px-4 py-2.5 text-left transition duration-200 ${
+                i === at ? 'border-white/25 bg-white/14 shadow-[0_8px_22px_rgba(0,0,0,0.35)]' : 'border-white/6 bg-white/5'
+              }`}>
               <span
                 className="h-3 w-3 shrink-0 rounded-full"
                 title={r.ci === 'none' ? 'no checks' : r.ci ?? ''}
