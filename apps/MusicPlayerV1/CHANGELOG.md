@@ -1,5 +1,9 @@
 # O-Music Player
 
+## 0.47.1
+
+A phone link that drops for a moment keeps the song on screen, paused, with a Reconnecting note, instead of flashing the empty screen. With no phone connected, the screen says so, the player asks the Car Thing to reconnect your paired phone on its own, and Reconnect now tries straight away.
+
 ## 0.47.0
 
 The Calendar and Karaoke styles are gone. If either was your style, the player opens in Cover.

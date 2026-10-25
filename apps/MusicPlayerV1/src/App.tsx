@@ -15,6 +15,7 @@ import {
 
 import { accentFrom, type Accent } from './artwork-color';
 import { explicitFor, hdArtwork } from './hd-art';
+import { holdDrops, usePhoneLink, type PhoneLink } from './link';
 import { activeIndex, useLyrics } from './lyrics';
 import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
 import { Cartridge } from './cartridge';
@@ -63,6 +64,8 @@ const MAX_STEPS_PER_EVENT = 3;
 const HUD_MS = 1400;
 // how long a knob press waits for a second or third one before it commits to an action
 const MULTI_CLICK_MS = 300;
+// a phone link that drops this briefly keeps the last song on screen, paused, rather than flashing the empty screen
+const HOLD_MS = 20000;
 // the panel is only reachable by a hardware button, so say so once and then stop
 const HINT_KEY = 'hint.settingsSeen';
 const HINT_MS = 7000;
@@ -131,10 +134,22 @@ export default function App() {
   const hintSaved = useRef(false);
   const [conn, setConn] = useState<ConnectionState>(client.connectionState);
   const [state, setState] = useState<PlayerState | null>(null);
+  const link = usePhoneLink(client);
+  // set while a dropped song is being held on screen in case the phone comes straight back
+  const [held, setHeld] = useState(false);
+  // lets the hold go early, with the empty state the phone sent
+  const release = useRef<() => void>(() => {});
   const [artUrl, setArtUrl] = useState<string | null>(null);
   const [accent, setAccent] = useState<Accent | null>(null);
   const [volume, setVolume] = useState<Volume | null>(null);
   const [hud, setHud] = useState(false);
+
+  // a phone that is still connected stopped the song rather than dropped it, so the hold lets go after a beat
+  useEffect(() => {
+    if (!held || link.linked !== true) return;
+    const timer = setTimeout(() => release.current(), 4000);
+    return () => clearTimeout(timer);
+  }, [held, link.linked]);
 
   useEffect(() => {
     const offConn = client.on(event => {
@@ -142,11 +157,15 @@ export default function App() {
         setConn(client.connectionState);
       }
     });
-    const offSnapshot = client.player.onSnapshot(reply => setState(reply.state));
-    client.player.stateGet().then(r => r.ok && setState(r.response.state));
+    const drops = holdDrops(setState, setHeld, HOLD_MS);
+    release.current = drops.release;
+    const take = drops.take;
+    const offSnapshot = client.player.onSnapshot(reply => take(reply.state));
+    client.player.stateGet().then(r => r.ok && take(r.response.state));
     return () => {
       offConn();
       offSnapshot();
+      drops.cancel();
     };
   }, [client]);
 
@@ -513,7 +532,7 @@ export default function App() {
   if (!track)
     return (
       <Stage rotate={prefs.rotate}>
-        <Empty conn={conn} />
+        <Empty conn={conn} link={link} />
         <VolumeHud show={hud} volume={volume} accent={accentOn} />
       </Stage>
     );
@@ -1030,6 +1049,12 @@ export default function App() {
       )}
 
       <VolumeHud show={hud && !ownsVolume} volume={volume} accent={accentOn} />
+      {held && link.linked !== true && (
+        <div className="pointer-events-none absolute top-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/75 px-4 py-1.5 text-hint text-off-white backdrop-blur-sm">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-[#ffb627]" />
+          Reconnecting to {link.phone ?? 'your phone'}...
+        </div>
+      )}
       <div
         className={`pointer-events-none absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded-full bg-black/78 px-4 py-2.5 text-hint text-near ring-1 ring-white/12 backdrop-blur-md transition-opacity duration-500 ${
           hint && !panel ? 'opacity-100' : 'opacity-0'
@@ -5112,17 +5137,30 @@ function Speaker({ className, muted }: { className?: string; muted?: boolean }) 
   );
 }
 
-function Empty({ conn }: { conn: ConnectionState }) {
+function Empty({ conn, link }: { conn: ConnectionState; link: PhoneLink }) {
+  // no phone at all is a different problem from a phone with nothing playing, so it says which
+  const lost = conn === 'open' && link.linked === false;
   return (
     <div className="grid h-full w-full place-items-center bg-screen px-16 text-center">
       <div className="flex flex-col items-center gap-5">
         <Disc className="h-14 w-14 text-off-white/20" />
         <div className="font-display text-screen-title font-medium tracking-display text-off-white">
-          {conn === 'open' ? 'Nothing playing' : 'Waiting for the daemon'}
+          {conn !== 'open' ? 'Waiting for the daemon' : lost ? 'No phone connected' : 'Nothing playing'}
         </div>
         <div className="text-title text-dim">
-          {conn === 'open' ? 'Start a track on your phone to see it here.' : `link ${conn}`}
+          {conn !== 'open'
+            ? `link ${conn}`
+            : lost
+              ? link.phone
+                ? `Trying ${link.phone} again on its own. Bluetooth on the phone has to be on.`
+                : 'Pair a phone from the bridgething companion app.'
+              : 'Start a track on your phone to see it here.'}
         </div>
+        {lost && link.phone && (
+          <button onClick={link.reconnect} className="rounded-full bg-white/10 px-6 py-2.5 text-row font-medium text-off-white transition active:scale-95">
+            Reconnect now
+          </button>
+        )}
       </div>
     </div>
   );

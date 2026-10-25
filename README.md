@@ -322,6 +322,14 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Swipe up from the bottom edge | Open the queue |
 | Swipe it back down, or Back | Close the queue |
 
+### When the phone drops
+
+If the link to the phone blinks, the song stays on screen, paused, with a small **Reconnecting** note for up to
+twenty seconds, rather than flashing the empty screen. If no phone is connected at all, the screen says so, the
+player asks the Car Thing to reconnect the default paired phone on its own (after 10, 30 and 60 seconds, then every
+two minutes), and **Reconnect now** tries straight away. It never redials while a phone, or the desktop app, is
+connected; the link itself belongs to the Car Thing and the phone.
+
 ### Screen orientation
 
 Preset 4 (or **Display → Screen rotation**) turns the screen for a device mounted on its side. Each
