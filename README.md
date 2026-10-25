@@ -609,10 +609,10 @@ phone needed.
 Big tiles that work the Mac your Car Thing is plugged into. Install it from the bridgething desktop app on that Mac
 and allow its extension; the Car Thing can only run what the Mac lists for it.
 
-- **Controls**: mute the mic, mute sound, volume up and down, a screenshot to the Desktop, Mission Control, lock the
-  screen, sleep the Mac. The Mac's volume and mic sit above them, and the wheel turns the volume
+- **Controls**: a volume dial the wheel turns, beside tiles to mute the mic, mute sound, take a screenshot to the
+  Desktop, open Mission Control, lock the screen and sleep the Mac; the mic and sound tiles light up while muted
 - **Shortcuts**: every shortcut in the Mac's Shortcuts app, one tap to run
-- **Apps**: every installed app, one tap to open
+- **Apps**: every installed app with its own icon, one tap to open
 - **Pinned**: hold any tile to pin it here
 
 ### Controls

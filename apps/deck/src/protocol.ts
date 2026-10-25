@@ -7,6 +7,8 @@ export type ToMac = { type: 'hello' } | { type: 'run'; id: string } | { type: 'v
 export type ToDeck =
   | { type: 'catalog'; actions: Action[] }
   | { type: 'state'; volume: number; muted: boolean; micMuted: boolean }
+  // an app's own icon as base64 png, keyed by its action id; sent in batches after the catalogue
+  | { type: 'icons'; icons: Record<string, string> }
   | { type: 'result'; id: string; ok: boolean };
 
 // the built-in controls, in the order the first page shows them
@@ -35,6 +37,12 @@ export function readToDeck(raw: unknown): ToDeck | null {
   }
   if (m.type === 'state' && typeof m.volume === 'number')
     return { type: 'state', volume: Math.max(0, Math.min(100, m.volume)), muted: m.muted === true, micMuted: m.micMuted === true };
+  if (m.type === 'icons' && m.icons && typeof m.icons === 'object') {
+    const icons: Record<string, string> = {};
+    for (const [id, png] of Object.entries(m.icons as Record<string, unknown>))
+      if (typeof png === 'string' && /^[A-Za-z0-9+/]+=*$/.test(png)) icons[id] = png;
+    return { type: 'icons', icons };
+  }
   if (m.type === 'result' && typeof m.id === 'string') return { type: 'result', id: m.id, ok: m.ok === true };
   return null;
 }

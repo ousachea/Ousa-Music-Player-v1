@@ -2,8 +2,6 @@
 // the installed apps, and runs only what is on that list: the deck sends an id, never a command, path or script.
 // every program runs from a fixed path with fixed arguments and no shell, and the only value from the deck that
 // reaches a script is a volume step, clamped to a whole number first
-import { homedir } from 'node:os';
-
 import { asJson, defineExtension, json, type ExtensionContext } from '@bridgething/extension';
 
 import { CONTROLS, type Action, type ToDeck, type ToMac } from '../src/protocol';
@@ -14,6 +12,23 @@ const CATALOG_EVERY_MS = 5 * 60_000;
 // volume can change from the keyboard too, so it is read again while a deck is watching
 const STATE_EVERY_MS = 3000;
 const APP_DIRS = ['/Applications', '/System/Applications', '/System/Applications/Utilities'];
+const ICONS_PER_MESSAGE = 16;
+// draws each app's own icon, as the finder shows it, into a 64 pixel png. the paths come from this extension's own
+// reading of the applications folders and arrive as arguments, never as part of the script
+const ICON_SCRIPT = `ObjC.import('AppKit');
+function run(argv) {
+  const out = {};
+  for (const path of argv) {
+    const icon = $.NSWorkspace.sharedWorkspace.iconForFile(path);
+    const rep = $.NSBitmapImageRep.alloc.initWithBitmapDataPlanesPixelsWidePixelsHighBitsPerSampleSamplesPerPixelHasAlphaIsPlanarColorSpaceNameBytesPerRowBitsPerPixel(null, 64, 64, 8, 4, true, false, $.NSDeviceRGBColorSpace, 0, 0);
+    $.NSGraphicsContext.saveGraphicsState;
+    $.NSGraphicsContext.setCurrentContext($.NSGraphicsContext.graphicsContextWithBitmapImageRep(rep));
+    icon.drawInRectFromRectOperationFraction($.NSMakeRect(0, 0, 64, 64), $.NSZeroRect, $.NSCompositingOperationSourceOver, 1);
+    $.NSGraphicsContext.restoreGraphicsState;
+    out[path] = ObjC.unwrap(rep.representationUsingTypeProperties($.NSBitmapImageFileTypePNG, $()).base64EncodedStringWithOptions(0));
+  }
+  return JSON.stringify(out);
+}`;
 
 async function run(binary: string, args: string[], timeoutMs = 8000): Promise<string | null> {
   try {
@@ -47,16 +62,30 @@ async function listShortcuts(): Promise<string[]> {
   return (out ?? '').split('\n').filter(s => s.trim());
 }
 
-async function listApps(): Promise<string[]> {
-  const names = new Set<string>();
+// app name to its bundle path, the first found winning, as `open -a` would
+async function listApps(): Promise<Map<string, string>> {
+  const found = new Map<string, string>();
   for (const dir of APP_DIRS) {
     try {
-      for await (const entry of Deno.readDir(dir)) if (entry.name.endsWith('.app')) names.add(entry.name.slice(0, -4));
+      for await (const entry of Deno.readDir(dir)) {
+        const name = entry.name.slice(0, -4);
+        if (entry.name.endsWith('.app') && !found.has(name)) found.set(name, `${dir}/${entry.name}`);
+      }
     } catch {
       // a folder this mac lacks, or one the permissions leave out, just adds nothing
     }
   }
-  return [...names].sort((a, b) => a.localeCompare(b));
+  return new Map([...found].sort(([a], [b]) => a.localeCompare(b)));
+}
+
+async function drawIcons(paths: string[]): Promise<Record<string, string>> {
+  if (!paths.length) return {};
+  const out = await run('/usr/bin/osascript', ['-l', 'JavaScript', '-e', ICON_SCRIPT, ...paths], 30_000);
+  try {
+    return out ? JSON.parse(out) : {};
+  } catch {
+    return {};
+  }
 }
 
 let timers: ReturnType<typeof setInterval>[] = [];
@@ -64,7 +93,9 @@ let timers: ReturnType<typeof setInterval>[] = [];
 defineExtension({
   start(ctx: ExtensionContext) {
     let shortcuts: string[] = [];
-    let apps: string[] = [];
+    let apps = new Map<string, string>();
+    // drawn once per app path, and only again for an app that is new
+    const icons = new Map<string, string>();
     const send = (message: ToDeck) => ctx.broadcast(json(message));
     const watching = () => ctx.devices.some(d => d.connected && d.active);
 
@@ -73,9 +104,13 @@ defineExtension({
       const actions: Action[] = [
         ...CONTROLS,
         ...shortcuts.map(name => ({ id: `shortcut:${name}`, label: name.trim(), kind: 'shortcut' as const })),
-        ...apps.map(name => ({ id: `app:${name}`, label: name, kind: 'app' as const })),
+        ...[...apps.keys()].map(name => ({ id: `app:${name}`, label: name, kind: 'app' as const })),
       ];
       send({ type: 'catalog', actions });
+      const missing = [...apps.values()].filter(path => !icons.has(path));
+      for (const [path, png] of Object.entries(await drawIcons(missing))) icons.set(path, png);
+      const all = [...apps].flatMap(([name, path]) => (icons.has(path) ? [[`app:${name}`, icons.get(path)!] as const] : []));
+      for (let i = 0; i < all.length; i += ICONS_PER_MESSAGE) send({ type: 'icons', icons: Object.fromEntries(all.slice(i, i + ICONS_PER_MESSAGE)) });
     };
     const state = async () => send({ type: 'state', ...(await readState()) });
 
@@ -94,7 +129,8 @@ defineExtension({
       }
       if (id === 'screenshot') {
         const stamp = new Date().toISOString().slice(0, 19).replace('T', ' at ').replaceAll(':', '.');
-        return (await run('/usr/sbin/screencapture', ['-x', `${homedir()}/Desktop/Deck ${stamp}.png`])) !== null;
+        const home = Deno.env.get('HOME');
+        return !!home && (await run('/usr/sbin/screencapture', ['-x', `${home}/Desktop/Deck ${stamp}.png`])) !== null;
       }
       if (id === 'mission') return (await run('/usr/bin/open', ['-a', 'Mission Control'])) !== null;
       if (id === 'display-sleep') return (await run('/usr/bin/pmset', ['displaysleepnow'])) !== null;
@@ -105,7 +141,7 @@ defineExtension({
       }
       if (id.startsWith('app:')) {
         const name = id.slice('app:'.length);
-        return apps.includes(name) && (await run('/usr/bin/open', ['-a', name])) !== null;
+        return apps.has(name) && (await run('/usr/bin/open', ['-a', name])) !== null;
       }
       return false;
     };
@@ -125,7 +161,8 @@ defineExtension({
       if (!m || typeof m !== 'object') return;
       if (m.type === 'hello') catalog().then(state);
       else if (m.type === 'run' && typeof m.id === 'string') {
-        perform(m.id).then(ok => {
+        // an action that throws counts as failed, so the tile says so rather than waiting forever
+        perform(m.id).catch(() => false).then(ok => {
           ctx.log.info(`ran ${m.id}: ${ok ? 'ok' : 'failed'}`);
           send({ type: 'result', id: m.id, ok });
           state();

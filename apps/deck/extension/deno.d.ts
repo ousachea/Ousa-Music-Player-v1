@@ -2,6 +2,7 @@
 // browser, without pulling in deno's whole lib
 declare namespace Deno {
   const build: { os: 'darwin' | 'linux' | 'windows' | 'freebsd' | 'netbsd' | 'aix' | 'solaris' | 'illumos' | 'android'; arch: string };
+  const env: { get(key: string): string | undefined };
   function readDir(path: string): AsyncIterable<{ name: string; isDirectory: boolean; isSymlink: boolean }>;
   class Command {
     constructor(
@@ -10,8 +11,4 @@ declare namespace Deno {
     );
     output(): Promise<{ code: number; success: boolean; stdout: Uint8Array; stderr: Uint8Array }>;
   }
-}
-
-declare module 'node:os' {
-  export function homedir(): string;
 }

@@ -28,6 +28,16 @@
 }
 
 @theme {
+  /* a tile's done or failed mark arriving */
+  --animate-pop: pop 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  @keyframes pop {
+    from {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+  }
+
   --color-off-white: #efefef;
   --color-bg: #0a0c0e;
   --color-screen: #060809;
