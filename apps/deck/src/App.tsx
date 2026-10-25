@@ -21,6 +21,8 @@ type Mac = { volume: number; muted: boolean; micMuted: boolean; media: Media | n
 const ARM_MS = 3000;
 // how far a finger travels before it is a swipe rather than a tap
 const SWIPE_PX = 50;
+// how long one tap on a running app waits to see whether more are coming
+const TAP_WAIT_MS = 320;
 const RUNNING_EVERY_MS = 3000;
 // what the music card shows: the car thing's own player, which the desktop app feeds with whatever the mac plays,
 // or failing that what spotify or music reports on the mac
@@ -534,16 +536,29 @@ export default function App() {
   // the app whose shortcuts are open on the running page, or 'front' for whichever comes forward after opening one
   // from apps; null shows the running apps themselves
   const [shortcutsOf, setShortcutsOf] = useState<Running | 'front' | null>(null);
-  // the running app whose close button has had its first tap, waiting for the second
-  const [quitting, setQuitting] = useState<string | null>(null);
-  const closeApp = (app: Running) => {
-    if (quitting !== app.path) {
-      setQuitting(app.path);
-      setTimeout(() => setQuitting(q => (q === app.path ? null : q)), ARM_MS);
+  // a running app answers one tap by opening its shortcuts and three by quitting; the one tap waits a moment, so the
+  // start of a triple tap is not taken for it
+  const tapping = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // taps are counted here rather than read from the click, since a touch screen does not always count them
+  const taps = useRef({ path: '', count: 0 });
+  const tapApp = (app: Running) => {
+    if (tapping.current) clearTimeout(tapping.current);
+    taps.current = taps.current.path === app.path ? { path: app.path, count: taps.current.count + 1 } : { path: app.path, count: 1 };
+    if (taps.current.count >= 3) {
+      taps.current = { path: '', count: 0 };
+      setFlash(f => ({ ...f, [`quit:${app.path}`]: 'busy' }));
+      send({ type: 'quit-app', path: app.path });
       return;
     }
-    setQuitting(null);
-    send({ type: 'quit-app', path: app.path });
+    tapping.current = setTimeout(() => {
+      const count = taps.current.count;
+      taps.current = { path: '', count: 0 };
+      // two taps that never became three count as one
+      if (count) {
+        switchTo(app);
+        openShortcuts(app);
+      }
+    }, TAP_WAIT_MS);
   };
   const [pick, setPick] = useState(0);
   // set on arriving at the running apps, so the first list to come puts the wheel on the app in front
@@ -1066,13 +1081,10 @@ export default function App() {
                 {running.map(app => (
                   <div key={app.path} className="relative">
                   <button
-                    onClick={() => {
-                      switchTo(app);
-                      openShortcuts(app);
-                    }}
+                    onClick={() => tapApp(app)}
                     className={`relative flex w-[140px] flex-col items-center justify-start gap-2 rounded-2xl p-3 transition duration-200 active:scale-95 ${
                       app.active ? 'bg-white/12 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : ''
-                    } ${flash[`quit:${app.path}`] === 'fail' ? 'animate-tile-fail' : ''}`}>
+                    } ${flash[`quit:${app.path}`] === 'fail' ? 'animate-tile-fail' : ''} ${flash[`quit:${app.path}`] === 'busy' ? 'scale-90 opacity-40' : ''}`}>
                     {icons[`run:${app.path}`] ? (
                       <img src={`data:image/png;base64,${icons[`run:${app.path}`]}`} alt="" className={`h-[72px] w-[72px] ${app.hidden ? 'opacity-55' : ''}`} draggable={false} />
                     ) : (
@@ -1082,21 +1094,12 @@ export default function App() {
                     {app.active && <span className="rounded-full bg-ok-soft px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] text-ok uppercase">in front</span>}
                     {!app.active && app.hidden && <span className="font-mono text-[9px] tracking-[0.15em] text-dim uppercase">hidden</span>}
                   </button>
-                  {/* the close button: a first tap asks, a second within a few seconds quits the app */}
-                  {app.name !== 'Finder' && !/bridgething/i.test(app.name) && (
-                    <button
-                      aria-label={`quit ${app.name}`}
-                      onClick={() => closeApp(app)}
-                      className={`absolute top-1.5 right-1.5 flex h-7 items-center justify-center gap-1 rounded-full text-[0.72rem] font-semibold transition active:scale-90 ${
-                        quitting === app.path ? 'bg-err px-2.5 text-white' : 'w-7 bg-black/50 text-white/80 ring-1 ring-white/15'
-                      }`}>
-                      <Svg className="h-3.5 w-3.5">{GLYPH.quit}</Svg>
-                      {quitting === app.path && 'Quit?'}
-                    </button>
-                  )}
                   </div>
                 ))}
               </div>
+            </div>
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 text-center font-mono text-[10px] tracking-[0.2em] text-dim uppercase">
+              tap an app for its shortcuts · triple-tap to quit it
             </div>
           </div>
           )
