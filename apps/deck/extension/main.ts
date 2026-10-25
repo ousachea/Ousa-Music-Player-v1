@@ -5,7 +5,7 @@
 // three
 import { asJson, defineExtension, json, type ExtensionContext } from '@bridgething/extension';
 
-import { CONTROLS, FOCUS_SHORTCUT, MEDIA_APPS, MEDIA_COMMANDS, categoryOf, readBattery, type Action, type Clip, type Copied, type Extras, type Front, type Media, type Running, type ToDeck, type ToMac } from '../src/protocol';
+import { CONTROLS, FOCUS_SHORTCUT, MEDIA_APPS, MEDIA_COMMANDS, categoryOf, readBattery, type Action, type Clip, type Copied, type Extras, type Front, type Key, type Media, type Running, type ToDeck, type ToMac } from '../src/protocol';
 
 const decoder = new TextDecoder();
 // the catalogue is read again this often, so a new shortcut or app turns up without a restart
@@ -90,6 +90,36 @@ const SHOW_SCRIPT = `function run(argv) {
   const se = Application('System Events');
   for (const n of argv) try { se.applicationProcesses.byName(n).visible = true; } catch (e) {}
 }`;
+// every menu item with a keyboard shortcut in the app in front, read through system events in a few batched calls
+// per menu; it needs accessibility access, and answers with none without it
+const MENU_SCRIPT = `function run() {
+  const se = Application('System Events');
+  const p = se.applicationProcesses.whose({ frontmost: true })[0];
+  const out = [];
+  const bars = p.menuBars[0].menuBarItems;
+  const menus = bars.name();
+  for (let i = 1; i < menus.length; i++) {
+    try {
+      const items = bars[i].menus[0].menuItems;
+      const titles = items.name();
+      const keys = items.attributes.byName('AXMenuItemCmdChar').value();
+      const mods = items.attributes.byName('AXMenuItemCmdModifiers').value();
+      const enabled = items.enabled();
+      for (let j = 0; j < titles.length; j++)
+        if (titles[j] && keys[j]) out.push({ menu: menus[i], title: titles[j], key: keys[j], mods: mods[j] || 0, enabled: enabled[j] });
+    } catch (e) {}
+  }
+  return JSON.stringify({ app: p.name(), items: out });
+}`;
+// clicks one menu item in an app, by its process name, menu and title, all three arriving as arguments
+const PRESS_SCRIPT = `function run(argv) {
+  const p = Application('System Events').applicationProcesses.byName(argv[0]);
+  p.frontmost = true;
+  p.menuBars[0].menuBarItems.byName(argv[1]).menus[0].menuItems.byName(argv[2]).click();
+  return 'ok';
+}`;
+const KEYS_EVERY_MS = 30_000;
+
 // puts a piece of text back on the clipboard; the text arrives as an argument, never as part of the script
 const COPY_SCRIPT = `ObjC.import('AppKit');
 function run(argv) {
@@ -286,6 +316,17 @@ defineExtension({
     let running: Running[] = [];
     // the running apps' icons already sent to this page, since the list is asked for every few seconds
     let runSent = new Set<string>();
+    // the last shortcuts read, and for which app, so a press can only name one of them
+    let keys: { app: string; items: Key[]; at: number } = { app: '', items: [], at: 0 };
+    const listKeys = async () => {
+      try {
+        const read = JSON.parse((await jxa(MENU_SCRIPT, [], 20_000)) ?? '{}');
+        if (typeof read.app === 'string') keys = { app: read.app, items: Array.isArray(read.items) ? read.items : [], at: Date.now() };
+      } catch {
+        // no accessibility access, or the app in front went away while it was read
+      }
+      send({ type: 'keys', app: keys.app, items: keys.items });
+    };
     // copied text, newest first, in memory only, so it is gone when the extension stops
     let clips: Copied[] = [];
     let clipId = 0;
@@ -443,6 +484,15 @@ defineExtension({
       } else if (m.type === 'set-volume' && typeof m.level === 'number' && Number.isFinite(m.level)) {
         const level = Math.max(0, Math.min(100, Math.round(m.level)));
         osa(`set volume output volume ${level}`).then(() => state());
+      } else if (m.type === 'keys') {
+        // the same app asked again soon after is answered from the last read, which is slow for a big menu
+        if (keys.app && Date.now() - keys.at < KEYS_EVERY_MS) send({ type: 'keys', app: keys.app, items: keys.items });
+        listKeys();
+      } else if (m.type === 'press' && typeof m.app === 'string' && m.app === keys.app && keys.items.some(k => k.menu === m.menu && k.title === m.title)) {
+        jxa(PRESS_SCRIPT, [m.app, m.menu, m.title]).then(out => {
+          const id = `key:${m.menu}/${m.title}`;
+          send({ type: 'result', id, ok: out?.trim() === 'ok' });
+        });
       } else if (m.type === 'clips') listClips();
       else if (m.type === 'clear-clips') {
         clips = [];

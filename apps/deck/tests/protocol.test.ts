@@ -1,7 +1,7 @@
 // the deck only believes messages that check out, and drops actions of a kind it does not know
 import { expect, test } from 'bun:test';
 
-import { categoryOf, readBattery, readToDeck } from '../src/protocol';
+import { categoryOf, combo, readBattery, readToDeck } from '../src/protocol';
 
 test('catalog keeps only well formed actions, with their group and last use', () => {
   const m = readToDeck({
@@ -67,4 +67,17 @@ test('wifi details, the switcher list and the clipboard history are checked too'
     apps: [{ name: 'Code', path: '/Applications/Visual Studio Code.app', active: true, hidden: false }],
   });
   expect(readToDeck({ type: 'clips', items: [{ id: 2, text: 'b', at: 5 }, { id: 'x', text: 'a', at: 1 }] })).toEqual({ type: 'clips', items: [{ id: 2, text: 'b', at: 5 }] });
+});
+
+test('shortcuts read the way the mac writes them on its menus', () => {
+  expect(combo({ key: 'S', mods: 0 })).toBe('⌘S');
+  expect(combo({ key: 'p', mods: 1 })).toBe('⇧⌘P');
+  expect(combo({ key: 'H', mods: 2 })).toBe('⌥⌘H');
+  expect(combo({ key: 'N', mods: 6 })).toBe('⌃⌥⌘N');
+  expect(combo({ key: '\u001b', mods: 8 })).toBe('⎋');
+  expect(readToDeck({ type: 'keys', app: 'Code', items: [{ menu: 'File', title: 'Save', key: 'S', mods: 0 }, { menu: 'File' }] })).toEqual({
+    type: 'keys',
+    app: 'Code',
+    items: [{ menu: 'File', title: 'Save', key: 'S', mods: 0, enabled: true }],
+  });
 });

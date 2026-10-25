@@ -610,25 +610,29 @@ Big tiles that work the Mac your Car Thing is plugged into. Install it from the 
 and allow its extension; the Car Thing can only run what the Mac lists for it.
 
 - **Controls**: the song playing with its cover, transport and the Mac's volume (drag it or turn the wheel), beside
-  two swipeable pages of nine: mute mic, mute sound, screenshot, lock screen,
-  Mission Control, keep awake, dark mode, show desktop, Wi-Fi, battery, Focus, screen saver, quit app, brightness,
-  empty Trash and sleep; the ones that switch something light up while on. Focus runs a shortcut called "Toggle
-  Focus", since macOS has no command for it; dark mode, show desktop, quit app, brightness and empty Trash ask
-  macOS once for permission
-- **In the nav**: the app in front on the Mac (tap for a command-tab switcher) and the clipboard (tap for the
-  history of what you copied, kept on the Mac in memory, each with a Copy button)
+  two swipeable pages of nine: mute mic, Bluetooth (with what is connected; a tap opens its settings), mute sound,
+  screenshot, lock screen, Mission Control, keep awake, dark mode, show desktop, Wi-Fi (with its IP), battery,
+  Focus, screen saver, quit app, brightness, empty Trash and sleep; the ones that switch something light up while
+  on. Focus runs a shortcut called "Toggle Focus", since macOS has no command for it; dark mode, show desktop, quit
+  app, brightness and empty Trash ask macOS once for permission
 - **Shortcuts**: your own shortcuts from the Mac's Shortcuts app (not Apple's starters or untitled drafts), with
   search
 - **Apps**: every installed app with its own icon, grouped by category or sorted A to Z or by last opened, with
-  search on an on-screen keyboard
-- **Pinned**: hold any tile to pin it here
+  search on an on-screen keyboard. Opening one takes you to its keyboard shortcuts
+- **Running**: the apps open on the Mac in a strip, the one in front in the middle, a tap bringing another forward;
+  under it, the front app's keyboard shortcuts, read from its own menus with their keys, narrowed by menu, a tap
+  doing that one. Reading menus needs Accessibility for bridgething, which macOS asks for once
+- **Clipboard**: the text you copied lately, kept on the Mac in memory and never a password manager's, each with a
+  Copy button
+
+Hold any tile to pin it; pinned ones lead their own list.
 
 ### Controls
 
 | What you do | What happens |
 | --- | --- |
-| Preset buttons 1-4 | Controls, Shortcuts, Apps, Pinned |
-| Mode | The next page |
+| Preset buttons 1-4 | Controls, Shortcuts, Apps, Running |
+| Mode | The next page, Clipboard included |
 | Turn the wheel | The Mac's volume on Controls; scroll on the other pages |
 | Tap a tile | Run it |
 | Hold a tile | Pin it, or unpin it |

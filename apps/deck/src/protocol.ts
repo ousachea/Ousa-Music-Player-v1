@@ -25,6 +25,9 @@ export type Front = { name: string; file: string };
 export type Clip = { kind: 'text' | 'image' | 'hidden' | 'empty'; text: string | null };
 // an app running on the mac, as the command-tab switcher lists it; its icon arrives keyed `run:<path>`
 export type Running = { name: string; path: string; active: boolean; hidden: boolean };
+// a menu item in the app in front that has a keyboard shortcut: its menu, its name, the key and the modifiers as
+// the menu reports them (a bitmask: 1 shift, 2 option, 4 control, 8 no command)
+export type Key = { menu: string; title: string; key: string; mods: number; enabled: boolean };
 // a piece of text copied on the mac, kept by the extension in memory only; the deck asks for one back by its id
 export type Copied = { id: number; text: string; at: number };
 
@@ -41,7 +44,10 @@ export type ToMac =
   // the clipboard sheet asks for the history, puts one entry back by its id, or clears the lot
   | { type: 'clips' }
   | { type: 'copy'; id: number }
-  | { type: 'clear-clips' };
+  | { type: 'clear-clips' }
+  // the shortcuts of the app in front, and one of them pressed, named by its menu and title from that list
+  | { type: 'keys' }
+  | { type: 'press'; app: string; menu: string; title: string };
 
 export type ToDeck =
   | { type: 'catalog'; actions: Action[] }
@@ -50,7 +56,8 @@ export type ToDeck =
   | { type: 'icons'; icons: Record<string, string> }
   | { type: 'result'; id: string; ok: boolean }
   | { type: 'running'; apps: Running[] }
-  | { type: 'clips'; items: Copied[] };
+  | { type: 'clips'; items: Copied[] }
+  | { type: 'keys'; app: string; items: Key[] };
 
 // the built-in controls, in the order the pages show them, nine to a page
 export const CONTROLS: Action[] = [
@@ -147,6 +154,14 @@ export function readToDeck(raw: unknown): ToDeck | null {
     return { type: 'icons', icons };
   }
   if (m.type === 'result' && typeof m.id === 'string') return { type: 'result', id: m.id, ok: m.ok === true };
+  if (m.type === 'keys' && typeof m.app === 'string' && Array.isArray(m.items))
+    return {
+      type: 'keys',
+      app: m.app,
+      items: (m.items as Record<string, unknown>[])
+        .filter(k => k && typeof k.menu === 'string' && typeof k.title === 'string' && typeof k.key === 'string' && typeof k.mods === 'number')
+        .map(k => ({ menu: k.menu as string, title: k.title as string, key: k.key as string, mods: k.mods as number, enabled: k.enabled !== false })),
+    };
   if (m.type === 'clips' && Array.isArray(m.items))
     return {
       type: 'clips',
@@ -165,6 +180,13 @@ export function readToDeck(raw: unknown): ToDeck | null {
 }
 
 // an app's category from the type its bundle declares, in words a person would group by
+// a shortcut's modifiers and key as the mac writes them on its menus, control, option, shift and command in that order
+export function combo(k: Pick<Key, 'key' | 'mods'>): string {
+  const keys: Record<string, string> = { '\u001b': '⎋', '\b': '⌫', '\u007f': '⌫', '\r': '↩', '\t': '⇥', ' ': 'Space' };
+  const mods = (k.mods & 4 ? '⌃' : '') + (k.mods & 2 ? '⌥' : '') + (k.mods & 1 ? '⇧' : '') + (k.mods & 8 ? '' : '⌘');
+  return mods + (keys[k.key] ?? k.key.toUpperCase());
+}
+
 // `pmset -g batt` read into a battery, or null on a mac without one
 export function readBattery(text: string): Battery | null {
   const m = /(\d+)%;\s*([^;]+);?\s*([^\n]*)/.exec(text);
