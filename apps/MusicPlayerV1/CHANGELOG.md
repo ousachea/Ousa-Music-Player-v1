@@ -2,12 +2,7 @@
 
 ## 0.47.0
 
-Four new styles:
-
-- **Aquarium**: the cover as a glowing rock on the sand of a tank, fish in the album's colours swimming while it plays.
-- **Night city**: a skyline whose windows light up left to right as the song plays, the title on a rooftop billboard.
-- **Weather**: the song as a forecast in a weather app, with what is queued as the forecast.
-- **Chat**: the song as messages from the artist, the words arriving as they are sung.
+The Calendar and Karaoke styles are gone. If either was your style, the player opens in Cover.
 
 ## 0.46.3
 
