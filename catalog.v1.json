@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-25T03:48:57.254Z",
+  "updated_at": "2026-10-25T04:08:55.513Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -577,7 +577,7 @@
     {
       "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
       "name": "O-Music Player",
-      "description": "Now playing from your phone, in thirty-six styles coloured by the album art, and turnable to any mounting.",
+      "description": "Now playing from your phone, in thirty-four styles coloured by the album art, and turnable to any mounting.",
       "author": "Ousa Chea",
       "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a07715-9963-72b3-9c4e-edcc6f6ebb6f.jpg",
       "screenshots": [
@@ -591,6 +591,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.47.0",
+          "released_at": "2026-10-25T04:08:55.510Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.47.0.zip",
+            "size": 1515167,
+            "sha256": "96ad8cb8913c329376ee06924793075be54e1e5f8a1e314399e85206566b3021"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.47.0.html",
+            "size": 41503,
+            "sha256": "e4eae8c89000ab321e746a6e50b24e147d93da5ac8f8884f037f4c0ec3437e71"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The Calendar and Karaoke styles are gone. If either was your style, the player opens in Cover.\n\nThe styles are numbered and reordered so similar ones sit together: the artwork, records and tapes, devices,\nthe road, words, screens, signs, then paper. Mode steps through them in the same order, the picker heads each group\nwith its name, and the Style tab shows the number with the name."
+        },
         {
           "version": "0.46.2",
           "released_at": "2026-10-25T03:48:57.249Z",
