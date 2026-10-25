@@ -1,7 +1,7 @@
 {
   "id": "01a08be9-18e7-70a4-991d-5cb92145210f",
   "name": "O-Photos",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Your Immich library on the dash, as a photo frame.",
   "icon": "icon.png",
   "settings": "settings.html",

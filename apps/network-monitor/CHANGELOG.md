@@ -1,5 +1,9 @@
 # O-System Monitor
 
+## 0.4.4
+
+New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.
+
 ## 0.4.3
 
 Khmer text displays on the device. The Car Thing has no Khmer font, so Khmer in your own text

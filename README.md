@@ -576,5 +576,8 @@ Pushing to main publishes the catalog. Published versions never change, so bump 
 
 > `push` fails if the repository path contains spaces.
 
-> Keep `public/icon.*` under 64 KiB. The device silently drops a bigger icon and the app shows in the
-> launcher without one; `sips -Z 256 <file>` usually brings it under.
+Every icon shares one look: a dark dotted tile and a glowing ring with a dot at its top right, with
+the app's glyph inside in its own colour. `python3 tools/icons.py` draws them all into
+`apps/<slug>/public` (it needs Google Chrome); add a new app's glyph and colour there. It renders at
+256px because the device silently drops an icon over 64 KiB, and the app then shows in the launcher
+without one.

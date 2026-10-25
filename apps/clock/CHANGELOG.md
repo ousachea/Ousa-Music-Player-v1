@@ -1,5 +1,9 @@
 # O-Clock
 
+## 0.5.3
+
+New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.
+
 ## 0.5.2
 
 Icon shrunk under the device's 64 KiB limit so it shows in the launcher.
