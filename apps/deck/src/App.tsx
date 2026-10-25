@@ -347,7 +347,7 @@ function AppTile({ action, icon, flash, pinned, card, onRun, onPin }: { action: 
     <button
       {...press}
       // pressed, the tile is edged and lit in the icon's own colour
-      className={`relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-[22px] px-1 py-2.5 transition duration-200 active:scale-[0.94] active:bg-[color-mix(in_oklab,var(--glow)_14%,transparent)] active:shadow-[inset_0_0_0_2px_var(--glow),0_0_18px_color-mix(in_oklab,var(--glow)_45%,transparent)] ${card ? 'h-[112px] border border-white/8 bg-white/6' : ''} ${flash ? FLASH_CLASS[flash] : ''}`}
+      className={`relative flex flex-col items-center justify-start gap-2 overflow-hidden rounded-[22px] px-1 py-2.5 transition duration-200 active:scale-[0.94] active:bg-[color-mix(in_oklab,var(--glow)_14%,transparent)] active:shadow-[inset_0_0_0_2px_var(--glow),0_0_18px_color-mix(in_oklab,var(--glow)_45%,transparent)] ${card ? 'h-[112px] border border-white/8 bg-white/6' : ''} ${flash ? FLASH_CLASS[flash] : ''}`}
       style={{ ['--glow' as string]: tint }}>
       {icon ? (
         <img src={`data:image/png;base64,${icon}`} alt="" className={`${card ? 'h-[60px] w-[60px]' : 'h-[80px] w-[80px]'} drop-shadow-[0_6px_10px_rgba(0,0,0,0.45)]`} draggable={false} />
@@ -356,7 +356,8 @@ function AppTile({ action, icon, flash, pinned, card, onRun, onPin }: { action: 
           {action.label.slice(0, 1).toUpperCase()}
         </span>
       )}
-      <span className={`w-full truncate text-center font-medium text-white/85 ${card ? 'text-[0.8rem]' : 'text-[0.85rem]'}`}>{action.label}</span>
+      {/* the whole name, over two lines where it needs them, the icons kept level along the top */}
+      <span className={`line-clamp-2 w-full text-center leading-tight font-medium break-words text-white/85 ${card ? 'text-[0.8rem]' : 'text-[0.85rem]'}`}>{action.label}</span>
       <Badge flash={flash} pinned={pinned} />
     </button>
   );
@@ -936,7 +937,7 @@ export default function App() {
                       key={app.path}
                       data-pick={i}
                       onClick={() => switchTo(app)}
-                      className={`flex w-[104px] shrink-0 flex-col items-center gap-2 rounded-2xl p-3 transition duration-200 active:scale-95 ${
+                      className={`flex w-[116px] shrink-0 flex-col items-center justify-start gap-2 rounded-2xl p-3 transition duration-200 active:scale-95 ${
                         i === pick ? 'bg-white/12 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28),0_6px_18px_rgba(0,0,0,0.35)]' : ''
                       }`}>
                       {icons[`run:${app.path}`] ? (
@@ -949,7 +950,7 @@ export default function App() {
                       ) : (
                         <span className="grid h-[72px] w-[72px] place-items-center rounded-[18px] bg-white/10 text-[1.6rem] font-bold">{app.name.slice(0, 1)}</span>
                       )}
-                      <span className={`w-full truncate text-center text-[0.8rem] ${i === pick ? 'font-semibold text-white' : 'text-white/70'}`}>{app.name}</span>
+                      <span className={`line-clamp-3 w-full text-center text-[0.8rem] leading-tight break-words ${i === pick ? 'font-semibold text-white' : 'text-white/70'}`}>{app.name}</span>
                     </button>
                   ))}
                 </div>
