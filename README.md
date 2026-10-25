@@ -619,9 +619,9 @@ and allow its extension; the Car Thing can only run what the Mac lists for it.
   search
 - **Apps**: every installed app with its own icon, grouped by category or sorted A to Z or by last opened, with
   search on an on-screen keyboard. Opening one takes you to its keyboard shortcuts
-- **Running**: the apps open on the Mac in a strip, the one in front in the middle, a tap bringing another forward;
-  under it, the front app's keyboard shortcuts, read from its own menus with their keys, narrowed by menu, a tap
-  doing that one. Reading menus needs Accessibility for bridgething, which macOS asks for once
+- **Running**: the apps open on the Mac, the one in front in the middle. Tap one to bring it forward and open its
+  keyboard shortcuts, read from its own menus with their keys, narrowed by menu, a tap doing that one; Back, or the
+  back button, returns to the apps. Reading menus needs Accessibility for bridgething, which macOS asks for once
 - **Clipboard**: the text you copied lately, kept on the Mac in memory and never a password manager's, each with a
   Copy button
 

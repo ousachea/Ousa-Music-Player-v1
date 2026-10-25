@@ -531,6 +531,9 @@ export default function App() {
   // the shortcuts of the app in front, read from its menus, and the menu they are narrowed to
   const [keys, setKeys] = useState<{ app: string; items: Key[] } | null>(null);
   const [keyMenu, setKeyMenu] = useState<string | null>(null);
+  // the app whose shortcuts are open on the running page, or 'front' for whichever comes forward after opening one
+  // from apps; null shows the running apps themselves
+  const [shortcutsOf, setShortcutsOf] = useState<Running | 'front' | null>(null);
   const [pick, setPick] = useState(0);
   // set on arriving at the running apps, so the first list to come puts the wheel on the app in front
   const aim = useRef(false);
@@ -644,11 +647,14 @@ export default function App() {
   // the front app's shortcuts are read on arriving and again whenever another app comes to the front
   const frontName = mac?.front?.name ?? null;
   useEffect(() => {
-    if (page !== 'Running') return;
-    setKeyMenu(null);
+    if (page !== 'Running' || !shortcutsOf) return;
     send({ type: 'keys' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, frontName]);
+  }, [page, frontName, shortcutsOf]);
+  const openShortcuts = (app: Running | 'front') => {
+    setKeyMenu(null);
+    setShortcutsOf(app);
+  };
   const pressKey = (k: Key) => {
     if (!keys || !k.enabled) return;
     const id = `key:${k.menu}/${k.title}`;
@@ -684,7 +690,11 @@ export default function App() {
     setFlash(f => ({ ...f, [id]: 'busy' }));
     send({ type: 'run', id });
     // opening an app takes you to its shortcuts once it has come to the front
-    if (id.startsWith('app:')) setTimeout(() => go('Running'), 900);
+    if (id.startsWith('app:'))
+      setTimeout(() => {
+        go('Running');
+        openShortcuts('front');
+      }, 900);
   };
   const pin = (id: string) => {
     setPins(prev => {
@@ -700,6 +710,7 @@ export default function App() {
   };
   const go = (next: Page) => {
     setPage(next);
+    setShortcutsOf(null);
     setQuery('');
     setTyping(false);
   };
@@ -707,6 +718,10 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       // on the running apps and the clipboard a press of the wheel chooses the row it is on
+      if (page === 'Running' && shortcutsOf && e.key === 'Escape') {
+        setShortcutsOf(null);
+        return;
+      }
       if (clipSheet && (e.key === 'Enter' || e.key === ' ')) {
         if (clips[pick]) copyBack(clips[pick]);
         return;
@@ -738,7 +753,7 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, typing, switcher, clipSheet, running, clips, pick]);
+  }, [page, typing, switcher, clipSheet, running, clips, pick, shortcutsOf]);
 
   useEffect(() => {
     sheetList.current?.querySelector(`[data-pick="${pick}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -954,71 +969,100 @@ export default function App() {
         running.length === 0 ? (
           empty('Asking the Mac what is running…')
         ) : (
-          <div className="flex min-h-0 flex-1 flex-col gap-2.5">
-            {/* every app open on the mac in a strip, the one in front in the middle; a tap brings one forward */}
-            <div className="-mx-5 shrink-0 overflow-x-auto px-5 [scrollbar-width:none]">
-              <div className="mx-auto flex w-max gap-1">
+          shortcutsOf ? (
+            // one app's shortcuts, from its own menus, narrowed by menu; a tap clicks that menu item, back returns
+            (() => {
+              const front = running.find(a => a.active);
+              const app = shortcutsOf === 'front' ? front : shortcutsOf;
+              const name = shortcutsOf === 'front' ? (keys?.app ?? front?.name ?? 'the app') : shortcutsOf.name;
+              const ready = keys && keys.app === name && keys.app === mac?.front?.name;
+              const menus = ready ? [...new Set(keys.items.map(k => k.menu))] : [];
+              const shown = ready ? keys.items.filter(k => !keyMenu || k.menu === keyMenu) : [];
+              return (
+                <div className="flex min-h-0 flex-1 flex-col gap-2.5">
+                  <div className="flex shrink-0 items-center gap-2.5">
+                    <button onClick={() => setShortcutsOf(null)} className="flex items-center gap-1.5 rounded-full bg-white/10 py-1.5 pr-3.5 pl-2.5 text-[0.8rem] font-semibold transition active:scale-95">
+                      <Svg className="h-4 w-4">
+                        <path d="M15 5l-7 7 7 7" />
+                      </Svg>
+                      Apps
+                    </button>
+                    {app && icons[`run:${app.path}`] && <img src={`data:image/png;base64,${icons[`run:${app.path}`]}`} alt="" className="h-8 w-8" draggable={false} />}
+                    <span className="truncate text-[1rem] font-semibold">{name}</span>
+                    {ready && <span className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">{keys.items.length} shortcuts</span>}
+                  </div>
+                  {!ready ? (
+                    empty(`Reading ${name}’s shortcuts…`)
+                  ) : keys.items.length === 0 ? (
+                    empty('No shortcuts to show. Deck reads them from the app’s menus, which needs Accessibility: allow bridgething in System Settings › Privacy & Security › Accessibility.')
+                  ) : (
+                    <>
+                      <div className="-mx-5 flex shrink-0 gap-1 overflow-x-auto px-5 [scrollbar-width:none]">
+                        {[null, ...menus].map(m => (
+                          <button
+                            key={m ?? 'all'}
+                            onClick={() => setKeyMenu(m)}
+                            className={`shrink-0 rounded-full px-3 py-1.5 text-[0.75rem] font-semibold transition ${keyMenu === m ? 'bg-white text-screen' : 'bg-white/8 text-soft'}`}>
+                            {m ?? 'All'}
+                          </button>
+                        ))}
+                      </div>
+                      <div ref={list} className="-m-1 grid min-h-0 flex-1 auto-rows-min grid-cols-3 gap-2 overflow-y-auto p-1 [scrollbar-width:none]">
+                        {shown.map(k => {
+                          const state = flash[`key:${k.menu}/${k.title}`];
+                          return (
+                            <button
+                              key={`${k.menu}/${k.title}`}
+                              disabled={!k.enabled}
+                              onClick={() => pressKey(k)}
+                              className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-left transition active:scale-[0.97] disabled:opacity-35 ${
+                                state === 'ok' ? 'bg-ok-soft' : state === 'fail' ? 'bg-err-soft' : 'bg-white/6'
+                              } ${state === 'busy' ? 'animate-pulse' : ''}`}>
+                              <span className="min-w-0 flex-1">
+                                <span className="block truncate text-[0.82rem] font-medium">{k.title}</span>
+                                {!keyMenu && <span className="block truncate text-[10px] text-dim">{k.menu}</span>}
+                              </span>
+                              <kbd className="shrink-0 rounded-md bg-white/10 px-1.5 py-0.5 font-sans text-[0.78rem] tracking-[0.05em] text-white/90">{combo(k)}</kbd>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })()
+          ) : (
+          <div className="relative min-h-0 flex-1">
+            {/* every app open on the mac, the one in front in the middle, centred both ways; a tap brings it forward
+                and opens its shortcuts. the inner block centres itself with auto margins, which give way once it
+                outgrows the page, so a long list scrolls from its top */}
+            <div ref={sheetList} className="absolute inset-0 flex flex-col overflow-y-auto [scrollbar-width:none]">
+              <div className="my-auto flex flex-wrap justify-center gap-2">
                 {running.map(app => (
                   <button
                     key={app.path}
-                    onClick={() => switchTo(app)}
-                    className={`flex w-[84px] flex-col items-center gap-1 rounded-2xl px-1 py-1.5 transition active:scale-95 ${
+                    onClick={() => {
+                      switchTo(app);
+                      openShortcuts(app);
+                    }}
+                    className={`relative flex w-[140px] flex-col items-center justify-start gap-2 rounded-2xl p-3 transition duration-200 active:scale-95 ${
                       app.active ? 'bg-white/12 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : ''
                     }`}>
                     {icons[`run:${app.path}`] ? (
-                      <img src={`data:image/png;base64,${icons[`run:${app.path}`]}`} alt="" className={`h-12 w-12 ${app.hidden ? 'opacity-55' : ''}`} draggable={false} />
+                      <img src={`data:image/png;base64,${icons[`run:${app.path}`]}`} alt="" className={`h-[72px] w-[72px] ${app.hidden ? 'opacity-55' : ''}`} draggable={false} />
                     ) : (
-                      <span className="grid h-12 w-12 place-items-center rounded-xl bg-white/10 text-[1.2rem] font-bold">{app.name.slice(0, 1)}</span>
+                      <span className="grid h-[72px] w-[72px] place-items-center rounded-[18px] bg-white/10 text-[1.6rem] font-bold">{app.name.slice(0, 1)}</span>
                     )}
-                    <span className={`w-full truncate text-center text-[0.72rem] ${app.active ? 'font-semibold text-white' : 'text-white/70'}`}>{app.name}</span>
+                    <span className="line-clamp-2 w-full text-center text-[0.82rem] leading-tight font-medium break-words text-white/85">{app.name}</span>
+                    {app.active && <span className="rounded-full bg-ok-soft px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] text-ok uppercase">in front</span>}
+                    {!app.active && app.hidden && <span className="font-mono text-[9px] tracking-[0.15em] text-dim uppercase">hidden</span>}
                   </button>
                 ))}
               </div>
             </div>
-
-            {/* the front app's shortcuts, from its own menus, narrowed by menu; a tap clicks that menu item */}
-            {(() => {
-              if (!keys || keys.app !== mac?.front?.name) return empty(`Reading ${mac?.front?.name ?? 'the app'}’s shortcuts…`);
-              if (keys.items.length === 0)
-                return empty('No shortcuts to show. Deck reads them from the app’s menus, which needs Accessibility: allow bridgething in System Settings › Privacy & Security › Accessibility.');
-              const menus = [...new Set(keys.items.map(k => k.menu))];
-              const shown = keys.items.filter(k => !keyMenu || k.menu === keyMenu);
-              return (
-                <>
-                  <div className="-mx-5 flex shrink-0 gap-1 overflow-x-auto px-5 [scrollbar-width:none]">
-                    {[null, ...menus].map(m => (
-                      <button
-                        key={m ?? 'all'}
-                        onClick={() => setKeyMenu(m)}
-                        className={`shrink-0 rounded-full px-3 py-1.5 text-[0.75rem] font-semibold transition ${keyMenu === m ? 'bg-white text-screen' : 'bg-white/8 text-soft'}`}>
-                        {m ?? `All · ${keys.items.length}`}
-                      </button>
-                    ))}
-                  </div>
-                  <div ref={list} className="-m-1 grid min-h-0 flex-1 auto-rows-min grid-cols-3 gap-2 overflow-y-auto p-1 [scrollbar-width:none]">
-                    {shown.map(k => {
-                      const state = flash[`key:${k.menu}/${k.title}`];
-                      return (
-                        <button
-                          key={`${k.menu}/${k.title}`}
-                          disabled={!k.enabled}
-                          onClick={() => pressKey(k)}
-                          className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-left transition active:scale-[0.97] disabled:opacity-35 ${
-                            state === 'ok' ? 'bg-ok-soft' : state === 'fail' ? 'bg-err-soft' : 'bg-white/6'
-                          } ${state === 'busy' ? 'animate-pulse' : ''}`}>
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[0.82rem] font-medium">{k.title}</span>
-                            {!keyMenu && <span className="block truncate text-[10px] text-dim">{k.menu}</span>}
-                          </span>
-                          <kbd className="shrink-0 rounded-md bg-white/10 px-1.5 py-0.5 font-sans text-[0.78rem] tracking-[0.05em] text-white/90">{combo(k)}</kbd>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              );
-            })()}
           </div>
+          )
         )
       ) : page === 'Clipboard' ? (
         <div className="flex min-h-0 flex-1 flex-col gap-2.5">
