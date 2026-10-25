@@ -3,6 +3,7 @@
 ## 0.45.2
 
 New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.
+Magazine leaves more room between the title and the seek bar.
 
 ## 0.45.1
 
