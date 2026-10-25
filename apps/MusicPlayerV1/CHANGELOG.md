@@ -6,7 +6,8 @@ Nine new styles:
 
 - **Speedometer**: one big sports car dial, the needle sweeping the song's minutes to the red line.
 - **Sheet music**: the song as a score, its notes inked in as it plays.
-- **Departures**: an airport board, with what is queued on the phone as the later flights.
+- **Departures**: an airport board, with what is queued on the phone as the later flights. When the phone
+  shares no up next, as with autoplay, the board lists the songs that have already departed.
 - **Handheld**: an old pocket console's four shade green screen; the pad, A and B work the player.
 - **Vaporwave**: a striped sun, a running grid and a chrome title.
 - **Oscilloscope**: a green trace on a CRT; tap it for an X-Y circle.

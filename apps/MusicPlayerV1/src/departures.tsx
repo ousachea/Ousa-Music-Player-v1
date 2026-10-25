@@ -1,5 +1,6 @@
 // departures: the airport board. the song playing is the flight boarding now, and what is queued on the phone
-// lines up under it as the later departures, each due when the ones before it have played
+// lines up under it as the later departures, each due when the ones before it have played. a source that shares
+// no up next, autoplay or a browser tab say, still has a history, so the board then lists what has already left
 import type { Queue } from './queue';
 import { Transport, fmt, hash, type StyleProps } from './style-kit';
 
@@ -33,14 +34,27 @@ export function Departures({
   queue,
 }: StyleProps & { queue: Queue | null }) {
   const tint = accent?.fill ?? AMBER;
-  const next = (queue?.items ?? []).slice(0, upright ? 6 : 4);
+  const room = upright ? 6 : 4;
+  const next = (queue?.items ?? []).slice(0, room);
+  const queued = next.length > 0;
   // each later song leaves once this one and every one before it has played
   let wait = Math.max(0, duration - elapsed);
-  const later = next.map(t => {
-    const row = { title: t.title ?? 'unknown', artist: t.artist ?? '', due: wait };
-    wait += t.durationMs ?? 0;
-    return row;
-  });
+  // history arrives oldest first, and can end on the song that is playing; each left that long before this one
+  let ago = elapsed;
+  const later = queued
+    ? next.map(t => {
+        const row = { title: t.title ?? 'unknown', artist: t.artist ?? '', due: `+${fmt(wait)}` };
+        wait += t.durationMs ?? 0;
+        return row;
+      })
+    : (queue?.previous ?? [])
+        .filter((t, i, all) => !(i === all.length - 1 && t.title === title))
+        .slice(-room)
+        .reverse()
+        .map(t => {
+          ago += t.durationMs ?? 0;
+          return { title: t.title ?? 'unknown', artist: t.artist ?? '', due: `-${fmt(ago)}` };
+        });
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#0a0f1c] font-mono" style={{ color: AMBER }}>
@@ -81,15 +95,18 @@ export function Departures({
 
         <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-hidden">
           {later.length === 0 && <div className="px-2 pt-2 text-[13px] tracking-[0.2em] text-white/40">NO FURTHER DEPARTURES · QUEUE SONGS ON YOUR PHONE</div>}
+          {!queued && later.length > 0 && <div className="px-2 text-[10px] tracking-[0.25em] text-white/40">NOTHING QUEUED · EARLIER DEPARTURES</div>}
           {later.map((t, i) => (
             <div
               key={i}
               className={`grid items-center gap-3 border-b border-white/5 px-2 py-1.5 ${upright ? 'grid-cols-[1fr_auto]' : 'grid-cols-[76px_100px_1fr_56px_120px]'}`}>
-              {!upright && <div className="text-[15px] text-white/80">+{fmt(t.due)}</div>}
+              {!upright && <div className="text-[15px] text-white/80">{t.due}</div>}
               {!upright && <div className="text-[14px]">{flight(t.title + t.artist)}</div>}
-              <div className="truncate text-[16px] text-white/90 uppercase">{t.title}</div>
+              <div className={`truncate text-[16px] uppercase ${queued ? 'text-white/90' : 'text-white/55'}`}>{t.title}</div>
               {!upright && <div className="text-[14px]">{gate(t.title)}</div>}
-              <div className="text-right text-[13px] tracking-[0.15em]">{upright ? `+${fmt(t.due)}` : i === 0 ? 'GO TO GATE' : 'ON TIME'}</div>
+              <div className={`text-right text-[13px] tracking-[0.15em] ${queued ? '' : 'text-white/45'}`}>
+                {upright ? t.due : !queued ? 'DEPARTED' : i === 0 ? 'GO TO GATE' : 'ON TIME'}
+              </div>
             </div>
           ))}
         </div>
