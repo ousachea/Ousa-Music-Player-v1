@@ -929,19 +929,27 @@ export default function App() {
               <div className="px-10 py-6 text-title text-soft">Asking the Mac what is running…</div>
             ) : (
               <>
-                <div ref={sheetList} className="flex gap-2 overflow-x-auto [scrollbar-width:none]">
+                {/* padded inside so the chosen app's lift is never clipped by the row's scrolling edge */}
+                <div ref={sheetList} className="-m-2 flex gap-2 overflow-x-auto p-2 [scrollbar-width:none]">
                   {running.map((app, i) => (
                     <button
                       key={app.path}
                       data-pick={i}
                       onClick={() => switchTo(app)}
-                      className={`flex w-[104px] shrink-0 flex-col items-center gap-2 rounded-2xl p-3 transition active:scale-95 ${i === pick ? 'bg-white/14 ring-1 ring-white/25' : ''}`}>
+                      className={`flex w-[104px] shrink-0 flex-col items-center gap-2 rounded-2xl p-3 transition duration-200 active:scale-95 ${
+                        i === pick ? 'bg-white/12 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28),0_6px_18px_rgba(0,0,0,0.35)]' : ''
+                      }`}>
                       {icons[`run:${app.path}`] ? (
-                        <img src={`data:image/png;base64,${icons[`run:${app.path}`]}`} alt="" className={`h-[72px] w-[72px] ${app.hidden ? 'opacity-60' : ''}`} draggable={false} />
+                        <img
+                          src={`data:image/png;base64,${icons[`run:${app.path}`]}`}
+                          alt=""
+                          className={`h-[72px] w-[72px] transition-transform duration-200 ${i === pick ? 'scale-110' : ''} ${app.hidden ? 'opacity-60' : ''}`}
+                          draggable={false}
+                        />
                       ) : (
                         <span className="grid h-[72px] w-[72px] place-items-center rounded-[18px] bg-white/10 text-[1.6rem] font-bold">{app.name.slice(0, 1)}</span>
                       )}
-                      <span className="w-full truncate text-center text-[0.8rem] text-white/85">{app.name}</span>
+                      <span className={`w-full truncate text-center text-[0.8rem] ${i === pick ? 'font-semibold text-white' : 'text-white/70'}`}>{app.name}</span>
                     </button>
                   ))}
                 </div>
@@ -971,13 +979,15 @@ export default function App() {
             {clips.length === 0 ? (
               <div className="grid flex-1 place-items-center text-center text-title text-soft">Nothing copied yet. Text you copy on the Mac turns up here.</div>
             ) : (
-              <div ref={sheetList} className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto [scrollbar-width:none]">
+              <div ref={sheetList} className="-m-1.5 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto p-1.5 [scrollbar-width:none]">
                 {clips.map((c, i) => (
                   <button
                     key={c.id}
                     data-pick={i}
                     onClick={() => copyBack(c)}
-                    className={`flex shrink-0 items-start gap-3 rounded-2xl px-3.5 py-2.5 text-left transition active:scale-[0.98] ${i === pick ? 'bg-white/14 ring-1 ring-white/25' : 'bg-white/5'}`}>
+                    className={`flex shrink-0 items-start gap-3 rounded-2xl px-3.5 py-2.5 text-left transition active:scale-[0.98] ${
+                      i === pick ? 'bg-white/14 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : 'bg-white/5'
+                    }`}>
                     <span className="line-clamp-2 min-w-0 flex-1 text-[0.88rem] break-all whitespace-pre-wrap">{c.text}</span>
                     <span className="shrink-0 pt-0.5 font-mono text-[10px] text-dim">{i === 0 ? 'now' : ago(c.at)}</span>
                   </button>
