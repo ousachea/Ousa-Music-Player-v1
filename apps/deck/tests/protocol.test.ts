@@ -1,7 +1,7 @@
 // the deck only believes messages that check out, and drops actions of a kind it does not know
 import { expect, test } from 'bun:test';
 
-import { categoryOf, readToDeck } from '../src/protocol';
+import { categoryOf, readBattery, readToDeck } from '../src/protocol';
 
 test('catalog keeps only well formed actions, with their group and last use', () => {
   const m = readToDeck({
@@ -15,7 +15,19 @@ test('catalog keeps only well formed actions, with their group and last use', ()
 });
 
 test('state is clamped, media must name a known player, and results need an id', () => {
-  expect(readToDeck({ type: 'state', volume: 140, muted: true, micMuted: 'yes' })).toEqual({ type: 'state', volume: 100, muted: true, micMuted: false, media: null });
+  expect(readToDeck({ type: 'state', volume: 140, muted: true, micMuted: 'yes' })).toEqual({
+    type: 'state',
+    volume: 100,
+    muted: true,
+    micMuted: false,
+    media: null,
+    front: null,
+    clip: { kind: 'empty', text: null },
+    awake: false,
+    wifi: null,
+    dark: null,
+    battery: null,
+  });
   expect(readToDeck({ type: 'state', volume: 5, media: { app: 'Spotify', title: 'Song', artist: 'Band', playing: true } })).toMatchObject({ media: { app: 'Spotify', title: 'Song', playing: true } });
   expect(readToDeck({ type: 'state', volume: 5, media: { app: 'VLC', title: 'Song' } })).toMatchObject({ media: null });
   expect(readToDeck({ type: 'result', ok: true })).toBeNull();
@@ -28,4 +40,17 @@ test('categories read the way a person groups apps', () => {
   expect(categoryOf('public.app-category.productivity', '/System/Applications/Utilities/Terminal.app')).toBe('Utilities');
   expect(categoryOf(null, '/Applications/Chrome.app')).toBe('Other');
   expect(categoryOf('public.app-category.music', '/Applications/Spotify.app')).toBe('Music');
+});
+
+test('a hidden clipboard never carries its text, and odd kinds read as empty', () => {
+  expect(readToDeck({ type: 'state', volume: 1, clip: { kind: 'hidden', text: 'hunter2' } })).toMatchObject({ clip: { kind: 'hidden', text: null } });
+  expect(readToDeck({ type: 'state', volume: 1, clip: { kind: 'text', text: 'hello' } })).toMatchObject({ clip: { kind: 'text', text: 'hello' } });
+  expect(readToDeck({ type: 'state', volume: 1, clip: { kind: 'secret', text: 'x' } })).toMatchObject({ clip: { kind: 'empty', text: null } });
+});
+
+test('battery reads from pmset, and a mac without one gives none', () => {
+  expect(readBattery("Now drawing from 'AC Power'\n -InternalBattery-0 (id=1)\t80%; AC attached; not charging present: true")).toEqual({ percent: 80, charging: false, plugged: true, remaining: null });
+  expect(readBattery("Now drawing from 'Battery Power'\n -InternalBattery-0 (id=1)\t54%; discharging; 3:12 remaining present: true")).toEqual({ percent: 54, charging: false, plugged: false, remaining: '3:12' });
+  expect(readBattery("Now drawing from 'AC Power'\n -InternalBattery-0 (id=1)\t31%; charging; 1:05 remaining present: true")).toMatchObject({ charging: true, remaining: '1:05' });
+  expect(readBattery("Now drawing from 'AC Power'")).toBeNull();
 });

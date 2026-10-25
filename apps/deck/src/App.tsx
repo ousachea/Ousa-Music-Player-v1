@@ -5,7 +5,7 @@ import { BridgethingClient, type PlayerState } from '@bridgething/client';
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { daemonUrl } from './daemon';
-import { CONTROLS, readToDeck, type Action, type Media, type ToMac } from './protocol';
+import { CONTROLS, FOCUS_SHORTCUT, readToDeck, type Action, type Clip, type Extras, type Front, type Media, type ToMac } from './protocol';
 
 const PAGES = ['Controls', 'Shortcuts', 'Apps', 'Pinned'] as const;
 type Page = (typeof PAGES)[number];
@@ -15,7 +15,11 @@ const WAIT_MS = 4000;
 const PINS_KEY = 'pins';
 
 type Flash = 'ok' | 'fail' | 'busy';
-type Mac = { volume: number; muted: boolean; micMuted: boolean; media: Media | null };
+type Mac = { volume: number; muted: boolean; micMuted: boolean; media: Media | null; front: Front | null; clip: Clip } & Extras;
+// how long the trash stays armed after a first tap, waiting for the second
+const ARM_MS = 3000;
+// how far a finger travels before it is a swipe rather than a tap
+const SWIPE_PX = 50;
 // what the music card shows: the car thing's own player, which the desktop app feeds with whatever the mac plays,
 // or failing that what spotify or music reports on the mac
 type Playing = { title: string; artist: string; source: string; playing: boolean; art: string | null; via: 'player' | 'mac' };
@@ -50,6 +54,19 @@ const GLYPH: Record<string, ReactNode> = {
   'display-sleep': <path d="M6 11V8a6 6 0 0 1 12 0v3M5 11h14v10H5zM12 15v2" />,
   sleep: <path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z" />,
   shortcut: <path d="M13 3L4 14h7l-1 7 9-11h-7z" />,
+  awake: <path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M9 3v3M12 3v3" />,
+  dark: <path d="M12 3a9 9 0 1 0 0 18zM12 3a9 9 0 0 1 0 18" />,
+  desktop: <path d="M3 5h18v11H3zM8 20h8M12 16v4" />,
+  wifi: <path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01" />,
+  battery: <path d="M3 8h16v8H3zM19 10.5h2v3h-2" />,
+  focus: <path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5zM17 3v4M15 5h4" />,
+  screensaver: <path d="M3 5h18v12H3zM7 13l3-3 3 3 2-2 3 3M9 20h6" />,
+  quit: <path d="M6 6l12 12M18 6L6 18" />,
+  'bright-down': <path d="M12 9a3 3 0 1 0 0 6 3 3 0 1 0 0-6zM12 5v1M12 18v1M5 12h1M18 12h1" />,
+  'bright-up': <path d="M12 8a4 4 0 1 0 0 8 4 4 0 1 0 0-8zM12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" />,
+  trash: <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />,
+  clipboard: <path d="M9 4h6v3H9zM9 5.5H6v15h12v-15h-3M9 11h6M9 14.5h6M9 18h3" />,
+  front: <path d="M4 5h16v14H4zM4 9h16M7 7h.01M9.5 7h.01" />,
   pin: <path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7" />,
   minus: <path d="M5 12h14" />,
   play: <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none" />,
@@ -69,6 +86,20 @@ const CONTROL_TINT: Record<string, string> = {
   mission: '#a78bfa',
   'display-sleep': '#94a3b8',
   sleep: '#818cf8',
+  awake: '#f59e0b',
+  dark: '#8b9cff',
+  desktop: '#38bdf8',
+  wifi: '#22d3ee',
+  battery: '#3ddc84',
+  focus: '#c084fc',
+  screensaver: '#f472b6',
+  quit: '#fb7185',
+  'bright-down': '#facc15',
+  'bright-up': '#fde047',
+  trash: '#f87171',
+  front: '#60a5fa',
+  clipboard: '#a3e635',
+  brightness: '#facc15',
 };
 
 // the press handling every tile shares: a tap runs, a hold pins, and only a press that began on the tile counts
@@ -76,12 +107,18 @@ function usePress(onRun: () => void, onPin: () => void) {
   const hold = useRef<ReturnType<typeof setTimeout> | null>(null);
   const held = useRef(false);
   const pressed = useRef(false);
+  const from = useRef({ x: 0, y: 0 });
   const cancel = () => {
     pressed.current = false;
     if (hold.current) clearTimeout(hold.current);
   };
   return {
-    onPointerDown: () => {
+    // a finger that travels is swiping or scrolling, not pressing
+    onPointerMove: (e: { clientX: number; clientY: number }) => {
+      if (pressed.current && Math.hypot(e.clientX - from.current.x, e.clientY - from.current.y) > 10) cancel();
+    },
+    onPointerDown: (e: { clientX: number; clientY: number }) => {
+      from.current = { x: e.clientX, y: e.clientY };
       pressed.current = true;
       held.current = false;
       hold.current = setTimeout(() => {
@@ -121,27 +158,118 @@ function Badge({ flash, pinned }: { flash: Flash | null; pinned: boolean }) {
   );
 }
 
-function ControlTile({ action, mac, flash, pinned, onRun, onPin }: { action: Action; mac: Mac | null; flash: Flash | null; pinned: boolean; onRun: () => void; onPin: () => void }) {
+function ControlTile({
+  action,
+  mac,
+  flash,
+  pinned,
+  armed,
+  missing,
+  icon,
+  onRun,
+  onStep,
+  onPin,
+}: {
+  action: Action;
+  mac: Mac | null;
+  flash: Flash | null;
+  pinned: boolean;
+  armed?: boolean;
+  missing?: boolean;
+  icon?: string;
+  onRun: () => void;
+  onStep: (id: 'bright-up' | 'bright-down') => void;
+  onPin: () => void;
+}) {
   const press = usePress(onRun, onPin);
   const tint = CONTROL_TINT[action.id] ?? '#94a3b8';
-  // the two toggles show what they are set to, lit while on
-  const on = (action.id === 'mic' && mac?.micMuted) || (action.id === 'mute' && mac?.muted);
-  const glyph = action.id === 'mic' && mac?.micMuted ? 'mic-off' : action.id === 'mute' && !mac?.muted ? 'sound' : action.id;
-  const label = action.id === 'mic' ? (mac?.micMuted ? 'Mic is off' : 'Mute mic') : action.id === 'mute' ? (mac?.muted ? 'Sound is off' : 'Mute sound') : action.label;
+  const id = action.id;
+  const battery = mac?.battery ?? null;
+  // the toggles show what they are set to, lit while on; the trash lights red while it waits for its second tap
+  const on =
+    (id === 'mic' && mac?.micMuted) ||
+    (id === 'mute' && mac?.muted) ||
+    (id === 'awake' && mac?.awake) ||
+    (id === 'dark' && mac?.dark) ||
+    (id === 'wifi' && mac?.wifi) ||
+    (id === 'trash' && armed);
+  const glyph = id === 'mic' && mac?.micMuted ? 'mic-off' : id === 'mute' && !mac?.muted ? 'sound' : id;
+  const label =
+    id === 'mic'
+      ? mac?.micMuted ? 'Mic is off' : 'Mute mic'
+      : id === 'mute'
+        ? mac?.muted ? 'Sound is off' : 'Mute sound'
+        : id === 'awake'
+          ? mac?.awake ? 'Staying awake' : 'Keep awake'
+          : id === 'wifi'
+            ? mac?.wifi === null ? 'No Wi-Fi' : mac?.wifi ? 'Wi-Fi on' : 'Wi-Fi off'
+            : id === 'battery'
+              ? battery ? `${battery.percent}%` : 'No battery'
+              : id === 'trash' && armed
+                ? 'Tap again'
+                : id === 'front'
+                  ? mac?.front?.name ?? 'Nothing in front'
+                  : action.label;
+  // a second line where the tile has more to say
+  const sub =
+    id === 'battery' && battery
+      ? battery.charging ? `Charging${battery.remaining ? ` · ${battery.remaining}` : ''}` : battery.plugged ? 'On power' : battery.remaining ? `${battery.remaining} left` : 'On battery'
+      : id === 'focus' && missing
+        ? `Make a “${FOCUS_SHORTCUT}” shortcut`
+        : id === 'trash' && armed
+          ? 'to empty the Trash'
+          : id === 'front' && mac?.front
+            ? 'Tap to hide it'
+            : null;
+  const clip = mac?.clip ?? null;
   return (
     <button
       {...press}
-      className={`relative flex flex-col justify-between overflow-hidden rounded-[22px] border p-4 text-left transition duration-200 active:scale-[0.96] ${flash ? FLASH_CLASS[flash] : ''}`}
+      className={`relative flex flex-col justify-between overflow-hidden rounded-[20px] border p-3 text-left transition duration-200 active:scale-[0.96] ${flash ? FLASH_CLASS[flash] : ''}`}
       style={{
         ['--glow' as string]: tint,
         background: on ? `linear-gradient(150deg, ${tint}, color-mix(in oklab, ${tint} 55%, #000))` : 'linear-gradient(150deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03))',
         borderColor: on ? 'transparent' : 'rgba(255,255,255,0.08)',
-        boxShadow: on ? `0 10px 30px color-mix(in srgb, ${tint} 40%, transparent)` : '0 8px 22px rgba(0,0,0,0.3)',
       }}>
-      <span className="grid h-11 w-11 place-items-center rounded-2xl" style={{ background: on ? 'rgba(255,255,255,0.22)' : `color-mix(in srgb, ${tint} 20%, transparent)`, color: on ? '#fff' : tint }}>
-        <Svg className="h-6 w-6">{GLYPH[glyph]}</Svg>
+      {id === 'front' && icon ? (
+        <img src={`data:image/png;base64,${icon}`} alt="" className="h-9 w-9 drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]" draggable={false} />
+      ) : (
+      <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-xl" style={{ background: on ? 'rgba(255,255,255,0.22)' : `color-mix(in srgb, ${tint} 20%, transparent)`, color: on ? '#fff' : tint }}>
+        <Svg className="h-5 w-5">{GLYPH[id === 'brightness' ? 'bright-up' : glyph]}</Svg>
+        {/* the battery's charge drawn inside its outline */}
+        {id === 'battery' && battery && <span className="absolute top-[15px] left-[10.5px] h-[7px] rounded-[1px] bg-current" style={{ width: `${(battery.percent / 100) * 12}px` }} />}
       </span>
-      <span className="text-[1rem] leading-tight font-semibold text-white">{label}</span>
+      )}
+      {id === 'clipboard' ? (
+        // the clipboard's text itself, or what kind of thing it holds
+        <span className="min-w-0 leading-tight">
+          <span className={`line-clamp-2 block break-all text-white ${clip?.kind === 'text' ? 'text-[0.8rem]' : 'text-[0.92rem] font-semibold'}`}>
+            {clip?.kind === 'text' ? clip.text : clip?.kind === 'image' ? 'An image' : clip?.kind === 'hidden' ? 'Hidden' : 'Empty'}
+          </span>
+          <span className="mt-0.5 block text-[10px] text-white/60">{clip?.kind === 'hidden' ? 'from a password manager' : 'Clipboard'}</span>
+        </span>
+      ) : id === 'brightness' ? (
+        // two halves, dimmer and brighter, each its own button
+        <span className="text-[0.92rem] leading-tight font-semibold text-white">Brightness</span>
+      ) : (
+        <span className="leading-tight">
+          <span className="block text-[0.92rem] font-semibold text-white">{label}</span>
+          {sub && <span className="mt-0.5 line-clamp-2 block text-[10px] text-white/60">{sub}</span>}
+        </span>
+      )}
+      {id === 'brightness' && (
+          <span className="absolute top-3 right-3 flex w-[96px] gap-1.5" onPointerDown={e => e.stopPropagation()} onPointerUp={e => e.stopPropagation()}>
+            {(['bright-down', 'bright-up'] as const).map(step => (
+              <span
+                key={step}
+                role="button"
+                onClick={() => onStep(step)}
+                className="grid h-9 flex-1 place-items-center rounded-xl bg-white/10 text-white transition active:scale-90 active:bg-white/20">
+                <Svg className="h-4 w-4">{GLYPH[step === 'bright-up' ? 'plus' : 'minus']}</Svg>
+              </span>
+            ))}
+          </span>
+      )}
       <Badge flash={flash} pinned={pinned} />
     </button>
   );
@@ -384,6 +512,9 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [typing, setTyping] = useState(false);
   const [player, setPlayer] = useState<PlayerState | null>(null);
+  const [ctlPage, setCtlPage] = useState(0);
+  const [armed, setArmed] = useState(false);
+  const swipe = useRef<number | null>(null);
   const [art, setArt] = useState<string | null>(null);
   const list = useRef<HTMLDivElement>(null);
 
@@ -395,7 +526,10 @@ export default function App() {
       if (!m) return;
       if (m.type === 'catalog') setActions(m.actions);
       else if (m.type === 'icons') setIcons(prev => ({ ...prev, ...m.icons }));
-      else if (m.type === 'state') setMac({ volume: m.volume, muted: m.muted, micMuted: m.micMuted, media: m.media });
+      else if (m.type === 'state') {
+        const { type: _type, ...now } = m;
+        setMac(now);
+      }
       else {
         setFlash(f => ({ ...f, [m.id]: m.ok ? 'ok' : 'fail' }));
         setTimeout(() => setFlash(({ [m.id]: _gone, ...rest }) => rest), 1100);
@@ -463,6 +597,13 @@ export default function App() {
   };
 
   const run = (id: string) => {
+    // emptying the trash cannot be undone, so the first tap only arms it
+    if (id === 'trash' && !armed) {
+      setArmed(true);
+      setTimeout(() => setArmed(false), ARM_MS);
+      return;
+    }
+    if (id === 'trash') setArmed(false);
     setFlash(f => ({ ...f, [id]: 'busy' }));
     send({ type: 'run', id });
   };
@@ -519,10 +660,25 @@ export default function App() {
 
   const tile = (a: Action, card = false) => {
     const common = { flash: flash[a.id] ?? null, pinned: pins.includes(a.id), onRun: () => run(a.id), onPin: () => pin(a.id) };
-    if (a.kind === 'control') return <ControlTile key={a.id} {...common} action={a} mac={mac} />;
+    if (a.kind === 'control')
+      return (
+        <ControlTile
+          key={a.id}
+          {...common}
+          action={a}
+          mac={mac}
+          armed={a.id === 'trash' && armed}
+          missing={a.id === 'focus' && !all.some(s => s.id === `shortcut:${FOCUS_SHORTCUT}`)}
+          icon={a.id === 'front' && mac?.front ? icons[`app:${mac.front.file}`] : undefined}
+          onStep={step => send({ type: 'run', id: step })}
+        />
+      );
     if (a.kind === 'shortcut') return <ShortcutTile key={a.id} {...common} action={a} />;
     return <AppTile key={a.id} {...common} action={a} icon={icons[a.id]} card={card} />;
   };
+
+  const controlPages: Action[][] = [];
+  of('control').forEach((a, i) => (i % 9 ? controlPages[controlPages.length - 1].push(a) : controlPages.push([a])));
 
   const empty = (text: string) => <div className="grid flex-1 place-items-center px-10 text-center text-title text-soft">{text}</div>;
 
@@ -638,7 +794,33 @@ export default function App() {
       ) : page === 'Controls' ? (
         <div className="flex min-h-0 flex-1 gap-3.5">
           <NowPlaying mac={mac} media={playing} onSet={level => send({ type: 'set-volume', level })} onMedia={media} />
-          <div className="grid flex-1 grid-cols-3 grid-rows-2 gap-3">{of('control').filter(a => a.id !== 'vol-up' && a.id !== 'vol-down').map(a => tile(a))}</div>
+          {/* the controls in pages of nine, three by three, swiped sideways, with a dot for each page under them */}
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <div
+              // room round the pages for a tapped tile's ring of light, which the clipping would otherwise cut
+              className="-m-4 min-h-0 flex-1 touch-pan-y overflow-hidden p-4"
+              onPointerDown={e => (swipe.current = e.clientX)}
+              onPointerUp={e => {
+                if (swipe.current === null) return;
+                const dx = e.clientX - swipe.current;
+                swipe.current = null;
+                if (dx < -SWIPE_PX) setCtlPage(p => Math.min(controlPages.length - 1, p + 1));
+                else if (dx > SWIPE_PX) setCtlPage(p => Math.max(0, p - 1));
+              }}>
+              <div className="flex h-full gap-8 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ transform: `translateX(calc(${-ctlPage} * (100% + 32px)))` }}>
+                {controlPages.map((pageTiles, i) => (
+                  <div key={i} className="grid h-full w-full shrink-0 grid-cols-3 grid-rows-3 gap-2.5">
+                    {pageTiles.map(a => tile(a))}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-center gap-1.5">
+              {controlPages.map((_, i) => (
+                <button key={i} onClick={() => setCtlPage(i)} aria-label={`controls page ${i + 1}`} className={`h-1.5 rounded-full transition-all ${i === ctlPage ? 'w-5 bg-white' : 'w-1.5 bg-white/30'}`} />
+              ))}
+            </div>
+          </div>
         </div>
       ) : page === 'Shortcuts' ? (
         of('shortcut').length === 0 ? (

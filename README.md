@@ -609,9 +609,12 @@ phone needed.
 Big tiles that work the Mac your Car Thing is plugged into. Install it from the bridgething desktop app on that Mac
 and allow its extension; the Car Thing can only run what the Mac lists for it.
 
-- **Controls**: a volume panel you drag or turn with the wheel, with the song playing and its previous, play or
-  pause and next, beside tiles to mute the mic, mute sound, take a screenshot, open Mission Control, lock the
-  screen and sleep the Mac; the mic and sound tiles light up while muted
+- **Controls**: the song playing with its cover, transport and the Mac's volume (drag it or turn the wheel), beside
+  two swipeable pages of nine: the app in front, the clipboard, mute mic, mute sound, screenshot, lock screen,
+  Mission Control, keep awake, dark mode, show desktop, Wi-Fi, battery, Focus, screen saver, quit app, brightness,
+  empty Trash and sleep; the ones that switch something light up while on. Focus runs a shortcut called "Toggle
+  Focus", since macOS has no command for it; dark mode, show desktop, quit app, brightness and empty Trash ask
+  macOS once for permission
 - **Shortcuts**: your own shortcuts from the Mac's Shortcuts app (not Apple's starters or untitled drafts), with
   search
 - **Apps**: every installed app with its own icon, grouped by category or sorted A to Z or by last opened, with

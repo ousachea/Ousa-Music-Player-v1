@@ -5,13 +5,14 @@
 // three
 import { asJson, defineExtension, json, type ExtensionContext } from '@bridgething/extension';
 
-import { CONTROLS, MEDIA_APPS, MEDIA_COMMANDS, categoryOf, type Action, type Media, type ToDeck, type ToMac } from '../src/protocol';
+import { CONTROLS, FOCUS_SHORTCUT, MEDIA_APPS, MEDIA_COMMANDS, categoryOf, readBattery, type Action, type Clip, type Extras, type Front, type Media, type ToDeck, type ToMac } from '../src/protocol';
 
 const decoder = new TextDecoder();
 // the catalogue is read again this often, so a new shortcut or app turns up without a restart
 const CATALOG_EVERY_MS = 5 * 60_000;
 // volume can change from the keyboard too, so it is read again while a deck is watching
 const STATE_EVERY_MS = 3000;
+const EXTRAS_EVERY_MS = 15_000;
 const APP_DIRS = ['/Applications', '/System/Applications', '/System/Applications/Utilities'];
 const ICONS_PER_MESSAGE = 16;
 // draws each app's own icon, as the finder shows it, into a 96 pixel png, sharp at the deck's 80. the paths come from this extension's own
@@ -46,7 +47,8 @@ function run(argv) {
 }`;
 // the volume, the mic, and what spotify or music is playing, the one that is playing winning. an app that is not
 // running is never started by asking
-const STATE_SCRIPT = `function run() {
+const STATE_SCRIPT = `ObjC.import('AppKit');
+function run() {
   const me = Application.currentApplication();
   me.includeStandardAdditions = true;
   const v = me.getVolumeSettings();
@@ -62,7 +64,46 @@ const STATE_SCRIPT = `function run() {
       if (!media || found.playing) media = found;
     } catch (e) {}
   }
-  return JSON.stringify({ volume: v.outputVolume, muted: v.outputMuted, input: v.inputVolume, media });
+  const fa = $.NSWorkspace.sharedWorkspace.frontmostApplication;
+  const front = fa.isNil() ? null : { name: ObjC.unwrap(fa.localizedName), file: fa.bundleURL.isNil() ? '' : ObjC.unwrap(fa.bundleURL.path).split('/').pop().replace(/\\.app$/, '') };
+  const pb = $.NSPasteboard.generalPasteboard;
+  const types = ObjC.deepUnwrap(pb.types) || [];
+  let clip = { kind: 'empty', text: null };
+  if (types.includes('org.nspasteboard.ConcealedType')) clip = { kind: 'hidden', text: null };
+  else {
+    const s = pb.stringForType($.NSPasteboardTypeString);
+    if (!s.isNil()) clip = { kind: 'text', text: ObjC.unwrap(s).slice(0, 240) };
+    else if (types.some(t => /png|tiff|jpeg/i.test(t))) clip = { kind: 'image', text: null };
+  }
+  return JSON.stringify({ volume: v.outputVolume, muted: v.outputMuted, input: v.inputVolume, media, front, clip });
+}`;
+// show desktop hides every app the user can see but finder, and says which, so a second tap can bring those back.
+// the names come from system events itself and go back to it as arguments
+const HIDE_SCRIPT = `function run() {
+  const se = Application('System Events');
+  const names = se.applicationProcesses.whose({ visible: true, backgroundOnly: false }).name().filter(n => n !== 'Finder');
+  for (const n of names) se.applicationProcesses.byName(n).visible = false;
+  return JSON.stringify(names);
+}`;
+const SHOW_SCRIPT = `function run(argv) {
+  const se = Application('System Events');
+  for (const n of argv) try { se.applicationProcesses.byName(n).visible = true; } catch (e) {}
+}`;
+// hides the app in front, as command h would, never finder nor the desktop app
+const HIDE_FRONT_SCRIPT = `function run() {
+  const front = Application('System Events').applicationProcesses.whose({ frontmost: true })[0];
+  const name = front.name();
+  if (name === 'Finder' || /bridgething/i.test(name)) return '';
+  front.visible = false;
+  return name;
+}`;
+// quits the app in front, never finder, nor the desktop app this extension lives in
+const QUIT_SCRIPT = `function run() {
+  const front = Application('System Events').applicationProcesses.whose({ frontmost: true })[0];
+  const name = front.name();
+  if (name === 'Finder' || /bridgething/i.test(name)) return '';
+  Application(name).quit();
+  return name;
 }`;
 // the player and the command arrive as arguments, each checked against a fixed list before this runs
 const MEDIA_SCRIPT = `function run(argv) {
@@ -102,14 +143,35 @@ async function capture(args: string[]): Promise<boolean> {
 
 const osa = (...lines: string[]) => run('/usr/bin/osascript', lines.flatMap(line => ['-e', line]));
 
+// the status tiles' readings, all from commands that need no permission to answer
+let wifiDevice: string | null | undefined;
+async function readExtras(awake: boolean): Promise<Extras> {
+  if (wifiDevice === undefined) {
+    const ports = (await run('/usr/sbin/networksetup', ['-listallhardwareports'])) ?? '';
+    wifiDevice = /Hardware Port: Wi-Fi\nDevice: (\S+)/.exec(ports)?.[1] ?? null;
+  }
+  const [power, style, batt] = await Promise.all([
+    wifiDevice ? run('/usr/sbin/networksetup', ['-getairportpower', wifiDevice]) : null,
+    // the key is missing in light mode, which reads as a failed command
+    run('/usr/bin/defaults', ['read', '-g', 'AppleInterfaceStyle']),
+    run('/usr/bin/pmset', ['-g', 'batt']),
+  ]);
+  return {
+    awake,
+    wifi: power === null ? null : /: On/.test(power),
+    dark: (style ?? '').trim() === 'Dark',
+    battery: batt ? readBattery(batt) : null,
+  };
+}
+
 const jxa = (script: string, args: string[] = [], timeoutMs = 8000) => run('/usr/bin/osascript', ['-l', 'JavaScript', '-e', script, ...args], timeoutMs);
 
-async function readState(): Promise<{ volume: number; muted: boolean; micMuted: boolean; input: number; media: Media | null }> {
+async function readState(): Promise<{ volume: number; muted: boolean; micMuted: boolean; input: number; media: Media | null; front: Front | null; clip: Clip }> {
   try {
     const s = JSON.parse((await jxa(STATE_SCRIPT)) ?? '{}');
-    return { volume: Number(s.volume) || 0, muted: s.muted === true, micMuted: Number(s.input) === 0, input: Number(s.input) || 0, media: s.media ?? null };
+    return { volume: Number(s.volume) || 0, muted: s.muted === true, micMuted: Number(s.input) === 0, input: Number(s.input) || 0, media: s.media ?? null, front: s.front ?? null, clip: s.clip ?? { kind: 'empty', text: null } };
   } catch {
-    return { volume: 0, muted: false, micMuted: false, input: 0, media: null };
+    return { volume: 0, muted: false, micMuted: false, input: 0, media: null, front: null, clip: { kind: 'empty', text: null } };
   }
 }
 
@@ -156,6 +218,8 @@ async function jxaJson<T>(script: string, paths: string[]): Promise<Record<strin
 }
 
 let timers: ReturnType<typeof setInterval>[] = [];
+// the extension stopping lets the mac sleep again, rather than leaving caffeinate behind
+let stopAwake = () => {};
 
 defineExtension({
   start(ctx: ExtensionContext) {
@@ -166,6 +230,12 @@ defineExtension({
     const icons = new Map<string, string>();
     let sent = new Set<string>();
     let media: Media | null = null;
+    // keep awake is a caffeinate child kept running until it is turned off
+    let awake: { kill(signal?: string): void } | null = null;
+    let hidden: string[] = [];
+    stopAwake = () => awake?.kill('SIGTERM');
+    let extras: Extras | null = null;
+    let extrasAt = 0;
     const send = (message: ToDeck) => ctx.broadcast(json(message));
     const watching = () => ctx.devices.some(d => d.connected && d.active);
 
@@ -196,12 +266,17 @@ defineExtension({
     // a page that has just opened has no icons yet, so they all go again
     const fresh = () => {
       sent = new Set();
-      catalog().then(state);
+      catalog().then(() => state());
     };
-    const state = async () => {
-      const { input: _input, ...now } = await readState();
+    // the status readings change slowly, so they are read again only every so often, or after a tile changes one
+    const state = async (fresh = false) => {
+      const [{ input: _input, ...now }, more] = await Promise.all([
+        readState(),
+        fresh || !extras || Date.now() - extrasAt > EXTRAS_EVERY_MS ? readExtras(!!awake) : extras,
+      ]);
+      if (more !== extras) [extras, extrasAt] = [more, Date.now()];
       media = now.media;
-      send({ type: 'state', ...now });
+      send({ type: 'state', ...now, ...more, awake: !!awake });
     };
 
     // each id maps to one fixed program; a shortcut or app has to be one the mac listed itself
@@ -224,6 +299,40 @@ defineExtension({
       if (id === 'mission') return (await run('/usr/bin/open', ['-a', 'Mission Control'])) !== null;
       if (id === 'display-sleep') return (await run('/usr/bin/pmset', ['displaysleepnow'])) !== null;
       if (id === 'sleep') return (await run('/usr/bin/pmset', ['sleepnow'])) !== null;
+      if (id === 'awake') {
+        if (awake) {
+          awake.kill('SIGTERM');
+          awake = null;
+        } else awake = new Deno.Command('/usr/bin/caffeinate', { args: ['-di'], stdout: 'null', stderr: 'null', stdin: 'null' }).spawn();
+        return true;
+      }
+      if (id === 'dark') return (await osa('tell application "System Events" to tell appearance preferences to set dark mode to not dark mode')) !== null;
+      if (id === 'desktop') {
+        if (hidden.length) {
+          await jxa(SHOW_SCRIPT, hidden);
+          hidden = [];
+          return true;
+        }
+        try {
+          hidden = JSON.parse((await jxa(HIDE_SCRIPT)) ?? '[]');
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      if (id === 'wifi') {
+        const now = await readExtras(!!awake);
+        if (!wifiDevice || now.wifi === null) return false;
+        return (await run('/usr/sbin/networksetup', ['-setairportpower', wifiDevice, now.wifi ? 'off' : 'on'], 15_000)) !== null;
+      }
+      if (id === 'battery' || id === 'clipboard') return true;
+      if (id === 'front') return !!(await jxa(HIDE_FRONT_SCRIPT))?.trim();
+      if (id === 'focus') return shortcuts.includes(FOCUS_SHORTCUT) && (await run('/usr/bin/shortcuts', ['run', FOCUS_SHORTCUT], 30_000)) !== null;
+      if (id === 'screensaver') return (await run('/usr/bin/open', ['-a', 'ScreenSaverEngine'])) !== null;
+      if (id === 'quit') return !!(await jxa(QUIT_SCRIPT))?.trim();
+      // the keyboard's own brightness keys, pressed through system events
+      if (id === 'bright-up' || id === 'bright-down') return (await osa(`tell application "System Events" to key code ${id === 'bright-up' ? 144 : 145}`)) !== null;
+      if (id === 'trash') return (await osa('tell application "Finder" to empty trash')) !== null;
       if (id.startsWith('shortcut:')) {
         const name = id.slice('shortcut:'.length);
         return shortcuts.includes(name) && (await run('/usr/bin/shortcuts', ['run', name], 120_000)) !== null;
@@ -254,13 +363,13 @@ defineExtension({
         perform(m.id).catch(() => false).then(ok => {
           ctx.log.info(`ran ${m.id}: ${ok ? 'ok' : 'failed'}`);
           send({ type: 'result', id: m.id, ok });
-          state();
+          state(true);
         });
       } else if (m.type === 'volume' && typeof m.delta === 'number' && Number.isFinite(m.delta)) {
-        step(Math.max(-20, Math.min(20, m.delta))).then(state);
+        step(Math.max(-20, Math.min(20, m.delta))).then(() => state());
       } else if (m.type === 'set-volume' && typeof m.level === 'number' && Number.isFinite(m.level)) {
         const level = Math.max(0, Math.min(100, Math.round(m.level)));
-        osa(`set volume output volume ${level}`).then(state);
+        osa(`set volume output volume ${level}`).then(() => state());
       } else if (m.type === 'media' && MEDIA_COMMANDS.includes(m.command) && media && MEDIA_APPS.includes(media.app)) {
         // only the player already reported as playing or paused is told what to do
         jxa(MEDIA_SCRIPT, [media.app, m.command]).then(() => setTimeout(state, 300));
@@ -274,5 +383,6 @@ defineExtension({
   },
   stop() {
     timers.forEach(clearInterval);
+    stopAwake();
   },
 });

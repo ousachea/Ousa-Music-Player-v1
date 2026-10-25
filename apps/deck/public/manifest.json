@@ -21,7 +21,10 @@
       "run:/usr/sbin/screencapture",
       "read:/Applications",
       "read:/System/Applications",
-      "env:HOME"
+      "env:HOME",
+      "run:/usr/bin/caffeinate",
+      "run:/usr/sbin/networksetup",
+      "run:/usr/bin/defaults"
     ],
     "api": 1
   }
