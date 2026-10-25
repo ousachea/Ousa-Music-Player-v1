@@ -82,7 +82,7 @@ export function Magazine({
         <div className="flex items-end gap-6">
           <div className="min-w-0 flex-1">
             <FitTitle text={title} max={54} lines={2} className="font-display leading-[0.95] font-black tracking-[-0.02em] text-white uppercase" />
-            <div className="mt-4">{seek(tint, accent?.fill2 ?? tint)}</div>
+            <div className="mt-8">{seek(tint, accent?.fill2 ?? tint)}</div>
           </div>
           {showTransport && (
             <Transport
