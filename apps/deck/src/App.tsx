@@ -2,10 +2,10 @@
 // each app's own icon, and this page only ever names one of those. presets pick the page, the wheel turns the mac's
 // volume on the first page and scrolls the others, and holding a tile pins it to the last page
 import { BridgethingClient } from '@bridgething/client';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { daemonUrl } from './daemon';
-import { CONTROLS, readToDeck, type Action, type ToMac } from './protocol';
+import { CONTROLS, readToDeck, type Action, type Media, type ToMac } from './protocol';
 
 const PAGES = ['Controls', 'Shortcuts', 'Apps', 'Pinned'] as const;
 type Page = (typeof PAGES)[number];
@@ -15,7 +15,15 @@ const WAIT_MS = 4000;
 const PINS_KEY = 'pins';
 
 type Flash = 'ok' | 'fail' | 'busy';
-type Mac = { volume: number; muted: boolean; micMuted: boolean };
+type Mac = { volume: number; muted: boolean; micMuted: boolean; media: Media | null };
+type Sort = 'category' | 'az' | 'recent';
+const SORTS: { id: Sort; label: string }[] = [
+  { id: 'category', label: 'Category' },
+  { id: 'az', label: 'A–Z' },
+  { id: 'recent', label: 'Recent' },
+];
+const SORT_KEY = 'sort';
+const KEYS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 
 function hue(text: string) {
   let h = 0;
@@ -41,9 +49,13 @@ const GLYPH: Record<string, ReactNode> = {
   shortcut: <path d="M13 3L4 14h7l-1 7 9-11h-7z" />,
   pin: <path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7" />,
   minus: <path d="M5 12h14" />,
+  play: <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" />,
+  pause: <path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor" />,
+  next: <path d="M6 6v12l8.5-6zM16 6h2.5v12H16z" fill="currentColor" />,
+  previous: <path d="M18 6v12l-8.5-6zM8 6H5.5v12H8z" fill="currentColor" />,
+  search: <path d="M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 1 0 0-13zM15.5 15.5L20 20" />,
+  back: <path d="M21 6H9l-6 6 6 6h12zM11.5 9.5l5 5M16.5 9.5l-5 5" />,
   plus: <path d="M5 12h14M12 5v14" />,
-  check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
-  cross: <path d="M6 6l12 12M18 6L6 18" />,
 };
 
 // each control keeps its own colour, the way a hardware deck labels its keys
@@ -84,18 +96,26 @@ function usePress(onRun: () => void, onPin: () => void) {
   };
 }
 
+// how a tile answers a press, in its own colour: a sheen runs across it while the mac works, then a ring of light
+// spreads off it when done, or it shakes with a red edge when not
+const FLASH_CLASS: Record<Flash, string> = { busy: '', ok: 'animate-tile-done', fail: 'animate-tile-fail ring-2 ring-err' };
+
 function Badge({ flash, pinned }: { flash: Flash | null; pinned: boolean }) {
-  if (flash === 'ok' || flash === 'fail')
-    return (
-      <span className={`absolute top-2 right-2 grid h-6 w-6 animate-pop place-items-center rounded-full ${flash === 'ok' ? 'bg-ok text-screen' : 'bg-err text-white'}`}>
-        <Svg className="h-4 w-4">{GLYPH[flash === 'ok' ? 'check' : 'cross']}</Svg>
-      </span>
-    );
-  return pinned ? (
-    <span className="absolute top-2.5 right-2.5 text-white/55">
-      <Svg className="h-4 w-4">{GLYPH.pin}</Svg>
-    </span>
-  ) : null;
+  return (
+    <>
+      {flash === 'busy' && (
+        <span
+          className="pointer-events-none absolute inset-0 animate-tile-sheen"
+          style={{ backgroundImage: 'linear-gradient(100deg, transparent 35%, rgba(255,255,255,0.3) 50%, transparent 65%)', backgroundSize: '250% 100%' }}
+        />
+      )}
+      {pinned && (
+        <span className="absolute top-2.5 right-2.5 text-white/55">
+          <Svg className="h-4 w-4">{GLYPH.pin}</Svg>
+        </span>
+      )}
+    </>
+  );
 }
 
 function ControlTile({ action, mac, flash, pinned, onRun, onPin }: { action: Action; mac: Mac | null; flash: Flash | null; pinned: boolean; onRun: () => void; onPin: () => void }) {
@@ -108,8 +128,9 @@ function ControlTile({ action, mac, flash, pinned, onRun, onPin }: { action: Act
   return (
     <button
       {...press}
-      className={`relative flex flex-col justify-between overflow-hidden rounded-[22px] border p-4 text-left transition duration-200 active:scale-[0.96] ${flash === 'busy' ? 'animate-pulse' : ''}`}
+      className={`relative flex flex-col justify-between overflow-hidden rounded-[22px] border p-4 text-left transition duration-200 active:scale-[0.96] ${flash ? FLASH_CLASS[flash] : ''}`}
       style={{
+        ['--glow' as string]: tint,
         background: on ? `linear-gradient(150deg, ${tint}, color-mix(in oklab, ${tint} 55%, #000))` : 'linear-gradient(150deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03))',
         borderColor: on ? 'transparent' : 'rgba(255,255,255,0.08)',
         boxShadow: on ? `0 10px 30px color-mix(in srgb, ${tint} 40%, transparent)` : '0 8px 22px rgba(0,0,0,0.3)',
@@ -129,8 +150,9 @@ function ShortcutTile({ action, flash, pinned, onRun, onPin }: { action: Action;
   return (
     <button
       {...press}
-      className={`relative flex h-[112px] flex-col justify-between overflow-hidden rounded-[22px] p-4 text-left text-white transition duration-200 active:scale-[0.96] ${flash === 'busy' ? 'animate-pulse' : ''}`}
+      className={`relative flex h-[112px] flex-col justify-between overflow-hidden rounded-[22px] p-4 text-left text-white transition duration-200 active:scale-[0.96] ${flash ? FLASH_CLASS[flash] : ''}`}
       style={{
+        ['--glow' as string]: `hsl(${h} 80% 62%)`,
         background: `linear-gradient(150deg, hsl(${h} 78% 58%), hsl(${(h + 35) % 360} 72% 38%))`,
         boxShadow: `0 10px 24px hsl(${h} 70% 20% / 0.45), inset 0 1px 0 rgba(255,255,255,0.25)`,
       }}>
@@ -143,35 +165,75 @@ function ShortcutTile({ action, flash, pinned, onRun, onPin }: { action: Action;
   );
 }
 
+// an icon's main colour: its pixels averaged, the vivid ones counting most, so a press can glow in it
+const TINTS = new Map<string, string>();
+function useIconTint(png: string | undefined) {
+  const [tint, setTint] = useState(() => (png ? TINTS.get(png) : undefined));
+  useEffect(() => {
+    if (!png) return;
+    if (TINTS.has(png)) return setTint(TINTS.get(png));
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 24;
+      const g = c.getContext('2d', { willReadFrequently: true });
+      if (!g) return;
+      g.drawImage(img, 0, 0, 24, 24);
+      const d = g.getImageData(0, 0, 24, 24).data;
+      let r = 0, gr = 0, b = 0, w = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        const max = Math.max(d[i], d[i + 1], d[i + 2]);
+        const sat = max ? (max - Math.min(d[i], d[i + 1], d[i + 2])) / max : 0;
+        const weight = (d[i + 3] / 255) * (0.05 + sat * sat) * (max / 255);
+        r += d[i] * weight;
+        gr += d[i + 1] * weight;
+        b += d[i + 2] * weight;
+        w += weight;
+      }
+      if (!w) return;
+      // lifted towards white so a dark icon still glows
+      const found = `color-mix(in oklab, rgb(${Math.round(r / w)} ${Math.round(gr / w)} ${Math.round(b / w)}) 80%, white)`;
+      TINTS.set(png, found);
+      setTint(found);
+    };
+    img.src = `data:image/png;base64,${png}`;
+  }, [png]);
+  return tint;
+}
+
 function AppTile({ action, icon, flash, pinned, card, onRun, onPin }: { action: Action; icon: string | undefined; flash: Flash | null; pinned: boolean; card?: boolean; onRun: () => void; onPin: () => void }) {
   const press = usePress(onRun, onPin);
   const h = hue(action.label);
+  const tint = useIconTint(icon) ?? `hsl(${h} 70% 60%)`;
   return (
     <button
       {...press}
-      className={`relative flex flex-col items-center justify-center gap-2 rounded-[22px] px-1 py-2.5 transition duration-200 active:scale-[0.92] ${card ? 'h-[112px] border border-white/8 bg-white/6' : ''} ${flash === 'busy' ? 'animate-pulse' : ''}`}>
+      // pressed, the tile is edged and lit in the icon's own colour
+      className={`relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-[22px] px-1 py-2.5 transition duration-200 active:scale-[0.94] active:bg-[color-mix(in_oklab,var(--glow)_14%,transparent)] active:shadow-[inset_0_0_0_2px_var(--glow),0_0_18px_color-mix(in_oklab,var(--glow)_45%,transparent)] ${card ? 'h-[112px] border border-white/8 bg-white/6' : ''} ${flash ? FLASH_CLASS[flash] : ''}`}
+      style={{ ['--glow' as string]: tint }}>
       {icon ? (
-        <img src={`data:image/png;base64,${icon}`} alt="" className="h-[60px] w-[60px] drop-shadow-[0_6px_10px_rgba(0,0,0,0.45)]" draggable={false} />
+        <img src={`data:image/png;base64,${icon}`} alt="" className={`${card ? 'h-[60px] w-[60px]' : 'h-[80px] w-[80px]'} drop-shadow-[0_6px_10px_rgba(0,0,0,0.45)]`} draggable={false} />
       ) : (
-        <span className="grid h-[52px] w-[52px] place-items-center rounded-[14px] text-[1.4rem] font-bold text-white" style={{ background: `linear-gradient(150deg, hsl(${h} 60% 55%), hsl(${h} 60% 38%))` }}>
+        <span className={`grid place-items-center rounded-[18px] font-bold text-white ${card ? 'h-[52px] w-[52px] text-[1.4rem]' : 'h-[70px] w-[70px] text-[1.8rem]'}`} style={{ background: `linear-gradient(150deg, hsl(${h} 60% 55%), hsl(${h} 60% 38%))` }}>
           {action.label.slice(0, 1).toUpperCase()}
         </span>
       )}
-      <span className="w-full truncate text-center text-[0.8rem] font-medium text-white/85">{action.label}</span>
+      <span className={`w-full truncate text-center font-medium text-white/85 ${card ? 'text-[0.8rem]' : 'text-[0.85rem]'}`}>{action.label}</span>
       <Badge flash={flash} pinned={pinned} />
     </button>
   );
 }
 
 // the volume as a dial, with the wheel's job written under it
-function Volume({ mac, onStep }: { mac: Mac | null; onStep: (delta: number) => void }) {
+function Volume({ mac, onStep, onMedia }: { mac: Mac | null; onStep: (delta: number) => void; onMedia: (command: 'playpause' | 'next' | 'previous') => void }) {
+  const media = mac?.media ?? null;
   const level = mac ? (mac.muted ? 0 : mac.volume) : 0;
   const r = 52;
   const arc = 2 * Math.PI * r * 0.75;
   return (
     <div className="flex w-[230px] shrink-0 flex-col items-center justify-between rounded-[26px] border border-white/8 bg-[linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
       <div className="font-mono text-[10px] tracking-[0.3em] text-dim">MAC VOLUME</div>
-      <div className="relative h-[140px] w-[140px]">
+      <div className="relative h-[118px] w-[118px]">
         <svg viewBox="0 0 120 120" className="h-full w-full rotate-[135deg]">
           <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="10" strokeLinecap="round" strokeDasharray={`${arc} 999`} />
           <circle
@@ -194,17 +256,33 @@ function Volume({ mac, onStep }: { mac: Mac | null; onStep: (delta: number) => v
         </svg>
         <div className="absolute inset-0 grid place-items-center">
           <div className="text-center">
-            <div className="font-display text-[2.6rem] leading-none font-semibold tabular-nums">{mac ? (mac.muted ? '–' : mac.volume) : '··'}</div>
-            <div className="mt-1 text-[11px] text-dim">{mac?.muted ? 'muted' : 'turn the wheel'}</div>
+            <div className="font-display text-[2.2rem] leading-none font-semibold tabular-nums">{mac ? (mac.muted ? '–' : mac.volume) : '··'}</div>
+            <div className="mt-0.5 text-[10px] text-dim">{mac?.muted ? 'muted' : 'turn the wheel'}</div>
           </div>
         </div>
       </div>
       <div className="flex w-full gap-2">
         {[-6, 6].map(d => (
-          <button key={d} onClick={() => onStep(d)} className="grid h-11 flex-1 place-items-center rounded-2xl bg-white/8 text-white transition active:scale-95 active:bg-white/15">
-            <Svg className="h-5 w-5">{GLYPH[d < 0 ? 'minus' : 'plus']}</Svg>
+          <button key={d} onClick={() => onStep(d)} className="grid h-9 flex-1 place-items-center rounded-xl bg-white/8 text-white transition active:scale-95 active:bg-white/15">
+            <Svg className="h-4 w-4">{GLYPH[d < 0 ? 'minus' : 'plus']}</Svg>
           </button>
         ))}
+      </div>
+      {/* what spotify or music is playing on the mac, with its transport */}
+      <div className="w-full border-t border-white/8 pt-2.5">
+        <div className="truncate text-center text-[0.85rem] font-semibold">{media ? media.title : 'Nothing playing'}</div>
+        <div className="truncate text-center text-[11px] text-dim">{media ? `${media.artist} · ${media.app}` : 'in Spotify or Music'}</div>
+        <div className={`mt-2 flex items-center justify-center gap-2 ${media ? '' : 'opacity-35'}`}>
+          {(['previous', 'playpause', 'next'] as const).map(c => (
+            <button
+              key={c}
+              disabled={!media}
+              onClick={() => onMedia(c)}
+              className={`grid place-items-center rounded-full transition active:scale-90 ${c === 'playpause' ? 'h-11 w-11 bg-white text-screen' : 'h-9 w-9 bg-white/8 text-white'}`}>
+              <Svg className={c === 'playpause' ? 'h-5 w-5' : 'h-4 w-4'}>{GLYPH[c === 'playpause' ? (media?.playing ? 'pause' : 'play') : c]}</Svg>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -227,6 +305,9 @@ export default function App() {
   const [waited, setWaited] = useState(false);
   const [pins, setPins] = useState<string[]>([]);
   const [flash, setFlash] = useState<Record<string, Flash>>({});
+  const [sort, setSort] = useState<Sort>('category');
+  const [query, setQuery] = useState('');
+  const [typing, setTyping] = useState(false);
   const list = useRef<HTMLDivElement>(null);
 
   const send = (m: ToMac) => client.forward.json(m).catch(() => {});
@@ -237,7 +318,7 @@ export default function App() {
       if (!m) return;
       if (m.type === 'catalog') setActions(m.actions);
       else if (m.type === 'icons') setIcons(prev => ({ ...prev, ...m.icons }));
-      else if (m.type === 'state') setMac({ volume: m.volume, muted: m.muted, micMuted: m.micMuted });
+      else if (m.type === 'state') setMac({ volume: m.volume, muted: m.muted, micMuted: m.micMuted, media: m.media });
       else {
         setFlash(f => ({ ...f, [m.id]: m.ok ? 'ok' : 'fail' }));
         setTimeout(() => setFlash(({ [m.id]: _gone, ...rest }) => rest), 1100);
@@ -253,6 +334,10 @@ export default function App() {
       } catch {
         // a pin list that will not parse is started over
       }
+    });
+    client.store.get({ key: SORT_KEY }).then(r => {
+      const saved = r.ok ? r.response.value : null;
+      if (saved === 'category' || saved === 'az' || saved === 'recent') setSort(saved);
     });
     // the mac answers hello with its catalogue; asking again on reconnect covers a daemon or extension restart
     const offConn = client.on(e => e.type === 'open' && send({ type: 'hello' }));
@@ -279,12 +364,28 @@ export default function App() {
     });
   };
   const step = (delta: number) => send({ type: 'volume', delta });
+  const sortBy = (next: Sort) => {
+    setSort(next);
+    client.store.put({ key: SORT_KEY, value: next }).catch(() => {});
+  };
+  const go = (next: Page) => {
+    setPage(next);
+    setQuery('');
+    setTyping(false);
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // with the keyboard up, a real keyboard types too, and back closes it
+      if (typing) {
+        if (e.key === 'Escape' || e.key === 'Enter') setTyping(false);
+        else if (e.key === 'Backspace') setQuery(q => q.slice(0, -1));
+        else if (e.key.length === 1 && /[\p{L}\p{N} ]/u.test(e.key)) setQuery(q => q + e.key);
+        return;
+      }
       const i = ['1', '2', '3', '4'].indexOf(e.key);
-      if (i >= 0) setPage(PAGES[i]);
-      else if (e.key === 'm') setPage(p => PAGES[(PAGES.indexOf(p) + 1) % PAGES.length]);
+      if (i >= 0) go(PAGES[i]);
+      else if (e.key === 'm') go(PAGES[(PAGES.indexOf(page) + 1) % PAGES.length]);
     };
     const onWheel = (e: WheelEvent) => {
       if (e.deltaX === 0 || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
@@ -298,12 +399,13 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, typing]);
 
   const all = actions ?? CONTROLS;
   const of = (kind: Action['kind']) => all.filter(a => a.kind === kind);
   const pinned = pins.map(id => all.find(a => a.id === id)).filter((a): a is Action => !!a);
   const linked = actions !== null;
+  const searchable = (page === 'Apps' || page === 'Shortcuts') && of(page === 'Apps' ? 'app' : 'shortcut').length > 0;
 
   const tile = (a: Action, card = false) => {
     const common = { flash: flash[a.id] ?? null, pinned: pins.includes(a.id), onRun: () => run(a.id), onPin: () => pin(a.id) };
@@ -314,24 +416,103 @@ export default function App() {
 
   const empty = (text: string) => <div className="grid flex-1 place-items-center px-10 text-center text-title text-soft">{text}</div>;
 
+  const found = (kind: 'shortcut' | 'app') => {
+    const q = query.trim().toLowerCase();
+    return of(kind).filter(a => !q || a.label.toLowerCase().includes(q));
+  };
+  // apps grouped under their category, biggest groups first and other last, or one list by name or by last opened
+  const appSections = (): { title: string | null; items: Action[] }[] => {
+    const apps = found('app');
+    const byName = (a: Action, b: Action) => a.label.localeCompare(b.label);
+    if (sort === 'az') return [{ title: null, items: [...apps].sort(byName) }];
+    if (sort === 'recent') return [{ title: null, items: [...apps].sort((a, b) => (b.used ?? 0) - (a.used ?? 0) || byName(a, b)) }];
+    const groups = new Map<string, Action[]>();
+    for (const a of apps) groups.set(a.group ?? 'Other', [...(groups.get(a.group ?? 'Other') ?? []), a]);
+    return [...groups]
+      .sort(([a, x], [b, y]) => (a === 'Other' ? 1 : b === 'Other' ? -1 : y.length - x.length || a.localeCompare(b)))
+      .map(([title, items]) => ({ title: `${title} · ${items.length}`, items: items.sort(byName) }));
+  };
+
+  // search and, for apps, the sort; the field opens the on-screen keyboard
+  const toolbar = (sorts: boolean) => (
+    <div className="flex min-w-0 flex-1 items-center gap-1.5">
+      <button
+        onClick={() => setTyping(true)}
+        className={`flex h-8 min-w-0 flex-1 items-center gap-2 rounded-full border px-3 text-left text-[0.8rem] transition ${typing ? 'border-accent bg-white/10' : 'border-white/8 bg-white/5'}`}>
+        <Svg className="h-4 w-4 shrink-0 text-dim">{GLYPH.search}</Svg>
+        <span className={`truncate ${query ? 'text-white' : 'text-dim'}`}>{query || (sorts ? 'Search apps' : 'Search shortcuts')}</span>
+        {typing && <span className="h-4 w-px animate-pulse bg-accent" />}
+      </button>
+      {query && (
+        <button onClick={() => setQuery('')} className="h-8 shrink-0 rounded-full bg-white/8 px-2.5 text-[0.75rem] text-soft">
+          Clear
+        </button>
+      )}
+      {sorts && (
+        <div className="flex shrink-0 gap-0.5">
+          {SORTS.map(s => (
+            <button
+              key={s.id}
+              onClick={() => sortBy(s.id)}
+              className={`rounded-full px-2.5 py-1.5 text-[0.75rem] font-semibold transition ${sort === s.id ? 'bg-white/90 text-screen' : 'text-soft'}`}>
+              {s.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const keyboard = (
+    <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-1.5 border-t border-white/10 bg-[#11151d]/95 px-3 pt-2.5 pb-3 backdrop-blur-md">
+      {KEYS.map((row, r) => (
+        <div key={r} className="flex justify-center gap-1.5">
+          {[...row].map(k => (
+            <button key={k} onClick={() => setQuery(q => q + k.toLowerCase())} className="h-11 w-[66px] rounded-xl bg-white/10 text-[1.05rem] font-semibold transition active:scale-90 active:bg-white/25">
+              {k}
+            </button>
+          ))}
+          {r === 2 && (
+            <button onClick={() => setQuery(q => q.slice(0, -1))} className="grid h-11 w-[100px] place-items-center rounded-xl bg-white/6 text-soft transition active:scale-90">
+              <Svg className="h-5 w-5">{GLYPH.back}</Svg>
+            </button>
+          )}
+        </div>
+      ))}
+      <div className="flex justify-center gap-1.5">
+        <button onClick={() => setQuery('')} className="h-11 w-[100px] rounded-xl bg-white/6 text-[0.85rem] text-soft">
+          Clear
+        </button>
+        <button onClick={() => setQuery(q => q + ' ')} className="h-11 w-[360px] rounded-xl bg-white/10 text-[0.85rem] text-soft">
+          space
+        </button>
+        <button onClick={() => setTyping(false)} className="h-11 w-[100px] rounded-xl bg-accent text-[0.9rem] font-semibold text-screen">
+          Done
+        </button>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex h-full w-full flex-col gap-3.5 px-5 pt-4 pb-4 text-off-white" style={{ background: 'radial-gradient(120% 90% at 50% -20%, #1d2535, #0a0c10 62%)' }}>
-      <div className="flex items-center gap-3">
-        <div className="flex gap-0.5 rounded-full border border-white/8 bg-white/5 p-0.5">
+    <div className="relative flex h-full w-full flex-col gap-3 px-5 pt-4 pb-4 text-off-white" style={{ background: 'radial-gradient(120% 90% at 50% -20%, #1d2535, #0a0c10 62%)' }}>
+      <div className="flex items-center gap-2">
+        <div className="flex shrink-0 gap-0.5">
           {PAGES.map((p, i) => (
             <button
               key={p}
-              onClick={() => setPage(p)}
+              onClick={() => go(p)}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.8rem] font-semibold transition duration-200 ${p === page ? 'bg-white text-screen shadow-[0_4px_14px_rgba(0,0,0,0.35)]' : 'text-soft'}`}>
               <Svg className="h-3.5 w-3.5">{TAB_GLYPH[p]}</Svg>
-              {p}
+              {/* beside search and sort only the page you are on keeps its name, the others their icon */}
+              {(p === page || !searchable) && p}
               <span className={`font-mono text-[10px] ${p === page ? 'text-screen/45' : 'text-dim'}`}>{i + 1}</span>
             </button>
           ))}
         </div>
-        <div className="ml-auto flex items-center gap-2 rounded-full border border-white/8 bg-white/5 px-2.5 py-1.5 font-mono text-[10px] tracking-[0.2em] text-soft uppercase">
+        {searchable && linked && toolbar(page === 'Apps')}
+        <div className={`flex shrink-0 items-center gap-2 px-1 py-1.5 font-mono text-[10px] tracking-[0.2em] text-soft uppercase ${searchable && linked ? '' : 'ml-auto'}`} title={linked ? 'mac linked' : 'no mac'}>
           <span className={`h-2 w-2 rounded-full ${linked ? 'bg-ok shadow-[0_0_8px_#3ddc84]' : 'bg-warn'}`} />
-          {linked ? 'mac' : 'no mac'}
+          {!searchable && (linked ? 'mac' : 'no mac')}
         </div>
       </div>
 
@@ -343,21 +524,38 @@ export default function App() {
         )
       ) : page === 'Controls' ? (
         <div className="flex min-h-0 flex-1 gap-3.5">
-          <Volume mac={mac} onStep={step} />
+          <Volume mac={mac} onStep={step} onMedia={command => send({ type: 'media', command })} />
           <div className="grid flex-1 grid-cols-3 grid-rows-2 gap-3">{of('control').filter(a => a.id !== 'vol-up' && a.id !== 'vol-down').map(a => tile(a))}</div>
         </div>
       ) : page === 'Shortcuts' ? (
         of('shortcut').length === 0 ? (
           empty('No shortcuts yet. Make one in the Shortcuts app on the Mac and it appears here.')
         ) : (
-          <div ref={list} className="-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto p-2 [scrollbar-width:none]">
-            {of('shortcut').map(a => tile(a))}
-          </div>
+          <>
+            {found('shortcut').length === 0 ? (
+              empty(`No shortcut matches “${query}”.`)
+            ) : (
+              <div ref={list} className={`-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto p-2 [scrollbar-width:none] ${typing ? 'pb-[230px]' : ''}`}>
+                {found('shortcut').map(a => tile(a))}
+              </div>
+            )}
+          </>
         )
       ) : page === 'Apps' ? (
-        <div ref={list} className="-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-6 gap-x-2 gap-y-1 overflow-y-auto p-2 [scrollbar-width:none]">
-          {of('app').map(a => tile(a))}
-        </div>
+        <>
+          {found('app').length === 0 ? (
+            empty(`No app matches “${query}”.`)
+          ) : (
+            <div ref={list} className={`-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-5 gap-x-2 gap-y-2 overflow-y-auto p-2 [scrollbar-width:none] ${typing ? 'pb-[230px]' : ''}`}>
+              {appSections().map(s => (
+                <Fragment key={s.title ?? 'all'}>
+                  {s.title && <div className="col-span-full px-1 pt-2 font-mono text-[10px] tracking-[0.25em] text-dim uppercase first:pt-0">{s.title}</div>}
+                  {s.items.map(a => tile(a))}
+                </Fragment>
+              ))}
+            </div>
+          )}
+        </>
       ) : pinned.length === 0 ? (
         empty('Hold any tile on the other pages to pin it here.')
       ) : (
@@ -365,6 +563,7 @@ export default function App() {
           {pinned.map(a => (a.kind === 'control' ? <div key={a.id} className="h-[112px] [&>button]:h-full">{tile(a)}</div> : tile(a, true)))}
         </div>
       )}
+      {typing && (page === 'Apps' || page === 'Shortcuts') && keyboard}
     </div>
   );
 }

@@ -162,7 +162,7 @@ export default function App() {
   return (
     <div className="flex h-full w-full flex-col gap-3 px-5 pt-4 pb-4 text-off-white" style={{ background: 'radial-gradient(120% 90% at 50% -20%, #1d2535, #0a0c10 62%)' }}>
       <div className="flex items-center gap-3">
-        <div className="flex gap-0.5 rounded-full border border-white/8 bg-white/5 p-0.5">
+        <div className="flex gap-0.5">
           {PAGES.map((p, i) => (
             <button
               key={p}
@@ -177,7 +177,7 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button onClick={() => send({ type: 'refresh' })} className="ml-auto flex items-center gap-1.5 rounded-full border border-white/8 bg-white/5 px-2.5 py-1.5 font-mono text-[10px] text-soft">
+        <button onClick={() => send({ type: 'refresh' })} className="ml-auto flex items-center gap-1.5 rounded-full px-2.5 py-1.5 font-mono text-[10px] text-soft transition active:bg-white/10">
           <svg viewBox="0 0 24 24" className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
             <path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4" />
           </svg>
