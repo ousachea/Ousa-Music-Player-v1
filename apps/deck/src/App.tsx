@@ -8,6 +8,17 @@ import { daemonUrl } from './daemon';
 import { CONTROLS, FOCUS_SHORTCUT, combo, readToDeck, type Action, type Clip, type Copied, type Extras, type Front, type Key, type Media, type Running, type ToMac } from './protocol';
 
 // presets 1 to 4 reach the first four; the clipboard is a tap or the mode button away
+// randomUUID only exists in a secure context, and the dev server reaches the device over plain http.
+// the daemon parses the id as a 16 byte uuid, so the fallback has to be a real v4 one
+function requestId(): string {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const h = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}
+
 const PAGES = ['Controls', 'Shortcuts', 'Apps', 'Running', 'Clipboard'] as const;
 type Page = (typeof PAGES)[number];
 const HOLD_MS = 550;
@@ -663,7 +674,7 @@ export default function App() {
     if (!artworkId) return setArt(null);
     let url: string | null = null;
     let gone = false;
-    client.asset.get({ id: artworkId, requestId: crypto.randomUUID() }).then(r => {
+    client.asset.get({ id: artworkId, requestId: requestId() }).then(r => {
       if (gone || !r.ok) return;
       url = URL.createObjectURL(new Blob([new Uint8Array(r.response.bytes as unknown as number[])], { type: r.response.mime ?? 'image/jpeg' }));
       setArt(url);

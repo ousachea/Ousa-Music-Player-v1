@@ -609,6 +609,8 @@ phone needed.
 Big tiles that work the Mac your Car Thing is plugged into. Install it from the bridgething desktop app on that Mac
 and allow its extension; the Car Thing can only run what the Mac lists for it.
 
+![O-Deck Apps page](apps/deck/screenshots/01-apps.jpg)
+
 - **Controls**: the song playing with its cover, transport and the Mac's volume (drag it or turn the wheel), beside
   two swipeable pages of nine: mute mic, Bluetooth (with what is connected; a tap opens its settings), mute sound,
   screenshot, lock screen, Mission Control, keep awake, dark mode, show desktop, Wi-Fi (with its IP), battery,
@@ -627,6 +629,10 @@ and allow its extension; the Car Thing can only run what the Mac lists for it.
   Copy button
 
 Hold any tile to pin it; pinned ones lead their own list.
+
+| Controls | Shortcuts | Running |
+| --- | --- | --- |
+| ![Controls](apps/deck/screenshots/02-controls.jpg) | ![Shortcuts](apps/deck/screenshots/03-shortcuts.jpg) | ![Running](apps/deck/screenshots/04-running.jpg) |
 
 ### Controls
 
