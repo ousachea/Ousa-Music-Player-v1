@@ -41,6 +41,8 @@ export type ToMac =
   // the switcher asks for what is running, then names one by the path the mac gave it
   | { type: 'running' }
   | { type: 'switch'; path: string }
+  // one of the running apps asked to quit, as command-q would, by the path the mac gave it
+  | { type: 'quit-app'; path: string }
   // the clipboard sheet asks for the history, puts one entry back by its id, or clears the lot
   | { type: 'clips' }
   | { type: 'copy'; id: number }
@@ -182,9 +184,29 @@ export function readToDeck(raw: unknown): ToDeck | null {
 // an app's category from the type its bundle declares, in words a person would group by
 // a shortcut's modifiers and key as the mac writes them on its menus, control, option, shift and command in that order
 export function combo(k: Pick<Key, 'key' | 'mods'>): string {
-  const keys: Record<string, string> = { '\u001b': '⎋', '\b': '⌫', '\u007f': '⌫', '\r': '↩', '\t': '⇥', ' ': 'Space' };
+  const keys: Record<string, string> = {
+    '\u001b': '⎋',
+    '\b': '⌫',
+    '\u007f': '⌫',
+    '\r': '↩',
+    '\t': '⇥',
+    ' ': 'Space',
+    // appkit's private-use codes for the keys that have no character: arrows, delete forward, home, end, pages
+    '\uf700': '↑',
+    '\uf701': '↓',
+    '\uf702': '←',
+    '\uf703': '→',
+    '\uf728': '⌦',
+    '\uf729': '↖',
+    '\uf72b': '↘',
+    '\uf72c': '⇞',
+    '\uf72d': '⇟',
+  };
+  const code = k.key.charCodeAt(0);
+  // the function keys run from f1 at u+f704 to f35
+  const key = code >= 0xf704 && code <= 0xf726 ? `F${code - 0xf704 + 1}` : (keys[k.key] ?? k.key.toUpperCase());
   const mods = (k.mods & 4 ? '⌃' : '') + (k.mods & 2 ? '⌥' : '') + (k.mods & 1 ? '⇧' : '') + (k.mods & 8 ? '' : '⌘');
-  return mods + (keys[k.key] ?? k.key.toUpperCase());
+  return mods + key;
 }
 
 // `pmset -g batt` read into a battery, or null on a mac without one

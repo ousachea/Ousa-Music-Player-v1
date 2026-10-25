@@ -75,6 +75,9 @@ test('shortcuts read the way the mac writes them on its menus', () => {
   expect(combo({ key: 'H', mods: 2 })).toBe('⌥⌘H');
   expect(combo({ key: 'N', mods: 6 })).toBe('⌃⌥⌘N');
   expect(combo({ key: '\u001b', mods: 8 })).toBe('⎋');
+  expect(combo({ key: '\uf708', mods: 8 })).toBe('F5');
+  expect(combo({ key: '\uf708', mods: 9 })).toBe('⇧F5');
+  expect(combo({ key: '\uf702', mods: 2 })).toBe('⌥⌘←');
   expect(readToDeck({ type: 'keys', app: 'Code', items: [{ menu: 'File', title: 'Save', key: 'S', mods: 0 }, { menu: 'File' }] })).toEqual({
     type: 'keys',
     app: 'Code',

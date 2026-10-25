@@ -534,6 +534,17 @@ export default function App() {
   // the app whose shortcuts are open on the running page, or 'front' for whichever comes forward after opening one
   // from apps; null shows the running apps themselves
   const [shortcutsOf, setShortcutsOf] = useState<Running | 'front' | null>(null);
+  // the running app whose close button has had its first tap, waiting for the second
+  const [quitting, setQuitting] = useState<string | null>(null);
+  const closeApp = (app: Running) => {
+    if (quitting !== app.path) {
+      setQuitting(app.path);
+      setTimeout(() => setQuitting(q => (q === app.path ? null : q)), ARM_MS);
+      return;
+    }
+    setQuitting(null);
+    send({ type: 'quit-app', path: app.path });
+  };
   const [pick, setPick] = useState(0);
   // set on arriving at the running apps, so the first list to come puts the wheel on the app in front
   const aim = useRef(false);
@@ -976,8 +987,10 @@ export default function App() {
               const app = shortcutsOf === 'front' ? front : shortcutsOf;
               const name = shortcutsOf === 'front' ? (keys?.app ?? front?.name ?? 'the app') : shortcutsOf.name;
               const ready = keys && keys.app === name && keys.app === mac?.front?.name;
-              const menus = ready ? [...new Set(keys.items.map(k => k.menu))] : [];
-              const shown = ready ? keys.items.filter(k => !keyMenu || k.menu === keyMenu) : [];
+              // the menus in the app's own order, but its app menu (hide, quit) last, as the least reached for
+              const order = ready ? [...new Set(keys.items.map(k => k.menu))] : [];
+              const menus = order.length > 1 ? [...order.slice(1), order[0]] : order;
+              const groups = menus.filter(m => !keyMenu || m === keyMenu).map(m => [m, keys!.items.filter(k => k.menu === m)] as const);
               return (
                 <div className="flex min-h-0 flex-1 flex-col gap-2.5">
                   <div className="flex shrink-0 items-center gap-2.5">
@@ -1007,25 +1020,36 @@ export default function App() {
                           </button>
                         ))}
                       </div>
-                      <div ref={list} className="-m-1 grid min-h-0 flex-1 auto-rows-min grid-cols-3 gap-2 overflow-y-auto p-1 [scrollbar-width:none]">
-                        {shown.map(k => {
-                          const state = flash[`key:${k.menu}/${k.title}`];
-                          return (
-                            <button
-                              key={`${k.menu}/${k.title}`}
-                              disabled={!k.enabled}
-                              onClick={() => pressKey(k)}
-                              className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-left transition active:scale-[0.97] disabled:opacity-35 ${
-                                state === 'ok' ? 'bg-ok-soft' : state === 'fail' ? 'bg-err-soft' : 'bg-white/6'
-                              } ${state === 'busy' ? 'animate-pulse' : ''}`}>
-                              <span className="min-w-0 flex-1">
-                                <span className="block truncate text-[0.82rem] font-medium">{k.title}</span>
-                                {!keyMenu && <span className="block truncate text-[10px] text-dim">{k.menu}</span>}
-                              </span>
-                              <kbd className="shrink-0 rounded-md bg-white/10 px-1.5 py-0.5 font-sans text-[0.78rem] tracking-[0.05em] text-white/90">{combo(k)}</kbd>
-                            </button>
-                          );
-                        })}
+                      {/* a card per menu, like a cheat sheet: its name, then each shortcut as a row with its keys, the cards
+                          flowing in three columns so short and long menus pack together; one menu chosen fills the width */}
+                      <div ref={list} className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none]">
+                        <div className={keyMenu ? '' : 'columns-3 gap-2.5'}>
+                          {groups.map(([menu, items]) => (
+                            <div key={menu} className="mb-2.5 break-inside-avoid rounded-2xl border border-white/8 bg-white/5 p-1.5">
+                              <div className="flex items-baseline justify-between px-2 pt-1 pb-1.5">
+                                <span className="font-mono text-[10px] tracking-[0.2em] text-soft uppercase">{menu}</span>
+                                <span className="font-mono text-[10px] text-dim">{items.length}</span>
+                              </div>
+                              <div className={keyMenu ? 'grid grid-cols-2 gap-x-2' : ''}>
+                                {items.map(k => {
+                                  const state = flash[`key:${k.menu}/${k.title}`];
+                                  return (
+                                    <button
+                                      key={k.title}
+                                      disabled={!k.enabled}
+                                      onClick={() => pressKey(k)}
+                                      className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition active:scale-[0.98] active:bg-white/10 disabled:opacity-35 ${
+                                        state === 'ok' ? 'bg-ok-soft' : state === 'fail' ? 'bg-err-soft' : ''
+                                      } ${state === 'busy' ? 'animate-pulse' : ''}`}>
+                                      <span className="min-w-0 flex-1 truncate text-[0.8rem]">{k.title}</span>
+                                      <kbd className="shrink-0 rounded-md bg-white/10 px-1.5 py-0.5 font-sans text-[0.74rem] tracking-[0.05em] text-white/90">{combo(k)}</kbd>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </>
                   )}
@@ -1040,15 +1064,15 @@ export default function App() {
             <div ref={sheetList} className="absolute inset-0 flex flex-col overflow-y-auto [scrollbar-width:none]">
               <div className="my-auto flex flex-wrap justify-center gap-2">
                 {running.map(app => (
+                  <div key={app.path} className="relative">
                   <button
-                    key={app.path}
                     onClick={() => {
                       switchTo(app);
                       openShortcuts(app);
                     }}
                     className={`relative flex w-[140px] flex-col items-center justify-start gap-2 rounded-2xl p-3 transition duration-200 active:scale-95 ${
                       app.active ? 'bg-white/12 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : ''
-                    }`}>
+                    } ${flash[`quit:${app.path}`] === 'fail' ? 'animate-tile-fail' : ''}`}>
                     {icons[`run:${app.path}`] ? (
                       <img src={`data:image/png;base64,${icons[`run:${app.path}`]}`} alt="" className={`h-[72px] w-[72px] ${app.hidden ? 'opacity-55' : ''}`} draggable={false} />
                     ) : (
@@ -1058,6 +1082,19 @@ export default function App() {
                     {app.active && <span className="rounded-full bg-ok-soft px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] text-ok uppercase">in front</span>}
                     {!app.active && app.hidden && <span className="font-mono text-[9px] tracking-[0.15em] text-dim uppercase">hidden</span>}
                   </button>
+                  {/* the close button: a first tap asks, a second within a few seconds quits the app */}
+                  {app.name !== 'Finder' && !/bridgething/i.test(app.name) && (
+                    <button
+                      aria-label={`quit ${app.name}`}
+                      onClick={() => closeApp(app)}
+                      className={`absolute top-1.5 right-1.5 flex h-7 items-center justify-center gap-1 rounded-full text-[0.72rem] font-semibold transition active:scale-90 ${
+                        quitting === app.path ? 'bg-err px-2.5 text-white' : 'w-7 bg-black/50 text-white/80 ring-1 ring-white/15'
+                      }`}>
+                      <Svg className="h-3.5 w-3.5">{GLYPH.quit}</Svg>
+                      {quitting === app.path && 'Quit?'}
+                    </button>
+                  )}
+                  </div>
                 ))}
               </div>
             </div>

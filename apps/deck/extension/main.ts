@@ -111,6 +111,19 @@ const MENU_SCRIPT = `function run() {
   }
   return JSON.stringify({ app: p.name(), items: out });
 }`;
+// asks a running app to quit, found by its bundle path, which arrives as an argument. it is the polite quit, so an app
+// with unsaved work still asks; finder and the desktop app this extension lives in are never asked
+const QUIT_APP_SCRIPT = `ObjC.import('AppKit');
+function run(argv) {
+  for (const a of ObjC.unwrap($.NSWorkspace.sharedWorkspace.runningApplications)) {
+    if (a.bundleURL.isNil() || ObjC.unwrap(a.bundleURL.path) !== argv[0]) continue;
+    const name = ObjC.unwrap(a.localizedName);
+    if (name === 'Finder' || /bridgething/i.test(name)) return '';
+    return a.terminate ? 'ok' : '';
+  }
+  return '';
+}`;
+
 // clicks one menu item in an app, by its process name, menu and title, all three arriving as arguments
 const PRESS_SCRIPT = `function run(argv) {
   const p = Application('System Events').applicationProcesses.byName(argv[0]);
@@ -514,6 +527,19 @@ defineExtension({
           const due = running.filter(a => icons.has(a.path) && !runSent.has(a.path));
           if (due.length) send({ type: 'icons', icons: Object.fromEntries(due.map(a => [`run:${a.path}`, icons.get(a.path)!])) });
           due.forEach(a => runSent.add(a.path));
+        });
+      } else if (m.type === 'quit-app' && typeof m.path === 'string' && running.some(a => a.path === m.path)) {
+        jxa(QUIT_APP_SCRIPT, [m.path]).then(out => {
+          send({ type: 'result', id: `quit:${m.path}`, ok: out?.trim() === 'ok' });
+          // an app takes a moment to go, so the list is read again a little later
+          setTimeout(() => jxa(RUNNING_SCRIPT).then(next => {
+            try {
+              running = JSON.parse(next ?? '[]');
+              send({ type: 'running', apps: running });
+            } catch {
+              // the next refresh will have it
+            }
+          }), 800);
         });
       } else if (m.type === 'switch' && typeof m.path === 'string' && running.some(a => a.path === m.path)) {
         // open brings a running app to the front, unhiding it, as choosing it in command-tab does
