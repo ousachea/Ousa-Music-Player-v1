@@ -189,8 +189,8 @@ to go back to it.
 ### Polaroid
 
 The cover as an instant print, with the title written under it by hand, dropped at its own slight angle
-for each track on a table tinted by the album. Tap the photo and it flips over to the next frame: white,
-black, cream, or album, which takes the frame's colour from the cover (**Frame**).
+for each track on a table tinted by the album. Tap the photo and it is shuffled to the bottom of the pile like a
+card, the next print rising in the next frame: white, black, cream, or album, which takes the frame's colour from the cover (**Frame**).
 
 ### Pixel
 

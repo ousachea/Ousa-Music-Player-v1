@@ -17,7 +17,7 @@ Nine new styles:
 - **Calendar**: the song as today's page on a tear-off calendar.
 
 A Button style setting under Controls draws previous, play and next as Round, Square, Outline, Glass, Pill
-or Minimal, each tile showing the look. Polaroid flips over when tapped and gains an Album frame in the
+or Minimal, each tile showing the look. Polaroid shuffles the print to the back like a card when tapped, the next frame rising in its place, and gains an Album frame in the
 cover's colour. About shows the installed version.
 
 Previous, play and next now look like part of their style: an engine start button in Speedometer, date tiles

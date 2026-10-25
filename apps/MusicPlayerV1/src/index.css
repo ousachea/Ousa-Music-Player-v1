@@ -224,15 +224,41 @@
     }
   }
 
-  /* a polaroid turned over in the hand, lifted a little as it goes round */
-  --animate-polaroid-flip: polaroid-flip 800ms cubic-bezier(0.45, 0, 0.25, 1);
+  /* a polaroid shuffled to the bottom of the pile: the top print slides out and tucks in behind, while the
+     next one rises from the under print's angle into the top's. z-index steps, so it goes behind at the half */
+  --animate-polaroid-out: polaroid-out 720ms cubic-bezier(0.45, 0, 0.25, 1) forwards;
+  --animate-polaroid-in: polaroid-in 720ms cubic-bezier(0.45, 0, 0.25, 1);
 
-  @keyframes polaroid-flip {
-    50% {
-      transform: rotateY(180deg) scale(1.06);
+  @keyframes polaroid-out {
+    0% {
+      transform: rotate(var(--tilt));
+      z-index: 3;
     }
-    to {
-      transform: rotateY(360deg);
+    45% {
+      transform: translate(78%, -5%) rotate(calc(var(--tilt) + 16deg));
+      z-index: 3;
+    }
+    50% {
+      transform: translate(80%, -4%) rotate(calc(var(--tilt) + 16deg));
+      z-index: -1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      transform: rotate(var(--under)) scale(0.97);
+      z-index: -1;
+      opacity: 0;
+    }
+  }
+
+  @keyframes polaroid-in {
+    0%,
+    30% {
+      transform: rotate(var(--under)) scale(0.97);
+    }
+    100% {
+      transform: rotate(var(--tilt));
     }
   }
 
