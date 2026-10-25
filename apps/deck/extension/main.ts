@@ -5,7 +5,7 @@
 // three
 import { asJson, defineExtension, json, type ExtensionContext } from '@bridgething/extension';
 
-import { CONTROLS, FOCUS_SHORTCUT, MEDIA_APPS, MEDIA_COMMANDS, categoryOf, readBattery, type Action, type Clip, type Extras, type Front, type Media, type ToDeck, type ToMac } from '../src/protocol';
+import { CONTROLS, FOCUS_SHORTCUT, MEDIA_APPS, MEDIA_COMMANDS, categoryOf, readBattery, type Action, type Clip, type Copied, type Extras, type Front, type Media, type Running, type ToDeck, type ToMac } from '../src/protocol';
 
 const decoder = new TextDecoder();
 // the catalogue is read again this often, so a new shortcut or app turns up without a restart
@@ -13,6 +13,7 @@ const CATALOG_EVERY_MS = 5 * 60_000;
 // volume can change from the keyboard too, so it is read again while a deck is watching
 const STATE_EVERY_MS = 3000;
 const EXTRAS_EVERY_MS = 15_000;
+const CLIP_EVERY_MS = 2000;
 const APP_DIRS = ['/Applications', '/System/Applications', '/System/Applications/Utilities'];
 const ICONS_PER_MESSAGE = 16;
 // draws each app's own icon, as the finder shows it, into a 96 pixel png, sharp at the deck's 80. the paths come from this extension's own
@@ -89,13 +90,35 @@ const SHOW_SCRIPT = `function run(argv) {
   const se = Application('System Events');
   for (const n of argv) try { se.applicationProcesses.byName(n).visible = true; } catch (e) {}
 }`;
-// hides the app in front, as command h would, never finder nor the desktop app
-const HIDE_FRONT_SCRIPT = `function run() {
-  const front = Application('System Events').applicationProcesses.whose({ frontmost: true })[0];
-  const name = front.name();
-  if (name === 'Finder' || /bridgething/i.test(name)) return '';
-  front.visible = false;
-  return name;
+// puts a piece of text back on the clipboard; the text arrives as an argument, never as part of the script
+const COPY_SCRIPT = `ObjC.import('AppKit');
+function run(argv) {
+  const pb = $.NSPasteboard.generalPasteboard;
+  pb.clearContents;
+  return pb.setStringForType(argv[0], $.NSPasteboardTypeString) ? 'ok' : '';
+}`;
+// the clipboard's full text, for the history; the state script only carries a short preview
+const CLIP_SCRIPT = `ObjC.import('AppKit');
+function run() {
+  const pb = $.NSPasteboard.generalPasteboard;
+  const types = ObjC.deepUnwrap(pb.types) || [];
+  if (types.includes('org.nspasteboard.ConcealedType') || types.includes('org.nspasteboard.TransientType')) return '';
+  const s = pb.stringForType($.NSPasteboardTypeString);
+  return s.isNil() ? '' : JSON.stringify(ObjC.unwrap(s));
+}`;
+const CLIPS_KEPT = 25;
+const CLIP_MAX = 10_000;
+
+// every app the user can switch to, the one in front first, as command-tab would list them
+const RUNNING_SCRIPT = `ObjC.import('AppKit');
+function run() {
+  const out = [];
+  for (const a of ObjC.unwrap($.NSWorkspace.sharedWorkspace.runningApplications)) {
+    if (a.activationPolicy !== $.NSApplicationActivationPolicyRegular || a.bundleURL.isNil()) continue;
+    out.push({ name: ObjC.unwrap(a.localizedName), path: ObjC.unwrap(a.bundleURL.path), active: a.active, hidden: a.hidden });
+  }
+  out.sort((x, y) => (y.active ? 1 : 0) - (x.active ? 1 : 0));
+  return JSON.stringify(out);
 }`;
 // quits the app in front, never finder, nor the desktop app this extension lives in
 const QUIT_SCRIPT = `function run() {
@@ -150,8 +173,10 @@ async function readExtras(awake: boolean): Promise<Extras> {
     const ports = (await run('/usr/sbin/networksetup', ['-listallhardwareports'])) ?? '';
     wifiDevice = /Hardware Port: Wi-Fi\nDevice: (\S+)/.exec(ports)?.[1] ?? null;
   }
-  const [power, style, batt] = await Promise.all([
+  const [power, summary, ip, style, batt] = await Promise.all([
     wifiDevice ? run('/usr/sbin/networksetup', ['-getairportpower', wifiDevice]) : null,
+    wifiDevice ? run('/usr/sbin/ipconfig', ['getsummary', wifiDevice]) : null,
+    wifiDevice ? run('/usr/sbin/ipconfig', ['getifaddr', wifiDevice]) : null,
     // the key is missing in light mode, which reads as a failed command
     run('/usr/bin/defaults', ['read', '-g', 'AppleInterfaceStyle']),
     run('/usr/bin/pmset', ['-g', 'batt']),
@@ -159,6 +184,12 @@ async function readExtras(awake: boolean): Promise<Extras> {
   return {
     awake,
     wifi: power === null ? null : /: On/.test(power),
+    // macos writes <redacted> in place of the name for a process it has not given location access
+    network: (() => {
+      const name = /^\s*SSID : (.+)$/m.exec(summary ?? '')?.[1]?.trim();
+      return name && name !== '<redacted>' ? name : null;
+    })(),
+    ip: ip?.trim() || null,
     dark: (style ?? '').trim() === 'Dark',
     battery: batt ? readBattery(batt) : null,
   };
@@ -233,6 +264,25 @@ defineExtension({
     // keep awake is a caffeinate child kept running until it is turned off
     let awake: { kill(signal?: string): void } | null = null;
     let hidden: string[] = [];
+    // the last list the switcher was sent, so a switch can only name one of those
+    let running: Running[] = [];
+    // copied text, newest first, in memory only, so it is gone when the extension stops
+    let clips: Copied[] = [];
+    let clipId = 0;
+    const listClips = () => send({ type: 'clips', items: clips });
+    const noteClip = async () => {
+      const out = await jxa(CLIP_SCRIPT);
+      if (!out?.trim()) return;
+      let text: string;
+      try {
+        text = JSON.parse(out);
+      } catch {
+        return;
+      }
+      if (!text.trim() || clips[0]?.text === text) return;
+      clips = [{ id: ++clipId, text: text.slice(0, CLIP_MAX), at: Date.now() }, ...clips.filter(c => c.text !== text)].slice(0, CLIPS_KEPT);
+      if (watching()) listClips();
+    };
     stopAwake = () => awake?.kill('SIGTERM');
     let extras: Extras | null = null;
     let extrasAt = 0;
@@ -325,8 +375,7 @@ defineExtension({
         if (!wifiDevice || now.wifi === null) return false;
         return (await run('/usr/sbin/networksetup', ['-setairportpower', wifiDevice, now.wifi ? 'off' : 'on'], 15_000)) !== null;
       }
-      if (id === 'battery' || id === 'clipboard') return true;
-      if (id === 'front') return !!(await jxa(HIDE_FRONT_SCRIPT))?.trim();
+      if (id === 'battery') return true;
       if (id === 'focus') return shortcuts.includes(FOCUS_SHORTCUT) && (await run('/usr/bin/shortcuts', ['run', FOCUS_SHORTCUT], 30_000)) !== null;
       if (id === 'screensaver') return (await run('/usr/bin/open', ['-a', 'ScreenSaverEngine'])) !== null;
       if (id === 'quit') return !!(await jxa(QUIT_SCRIPT))?.trim();
@@ -370,6 +419,29 @@ defineExtension({
       } else if (m.type === 'set-volume' && typeof m.level === 'number' && Number.isFinite(m.level)) {
         const level = Math.max(0, Math.min(100, Math.round(m.level)));
         osa(`set volume output volume ${level}`).then(() => state());
+      } else if (m.type === 'clips') listClips();
+      else if (m.type === 'clear-clips') {
+        clips = [];
+        listClips();
+      } else if (m.type === 'copy' && typeof m.id === 'number') {
+        const found = clips.find(c => c.id === m.id);
+        if (found) jxa(COPY_SCRIPT, [found.text]).then(() => noteClip()).then(() => state());
+      } else if (m.type === 'running') {
+        jxa(RUNNING_SCRIPT).then(async out => {
+          try {
+            running = JSON.parse(out ?? '[]');
+          } catch {
+            running = [];
+          }
+          send({ type: 'running', apps: running });
+          // icons for running apps the catalogue does not hold, finder say, drawn once by path
+          const missing = running.map(a => a.path).filter(path => !icons.has(path));
+          for (const [path, png] of Object.entries(await jxaJson<string>(ICON_SCRIPT, missing))) icons.set(path, png);
+          send({ type: 'icons', icons: Object.fromEntries(running.flatMap(a => (icons.has(a.path) ? [[`run:${a.path}`, icons.get(a.path)!]] : []))) });
+        });
+      } else if (m.type === 'switch' && typeof m.path === 'string' && running.some(a => a.path === m.path)) {
+        // open brings a running app to the front, unhiding it, as choosing it in command-tab does
+        run('/usr/bin/open', [m.path]).then(() => setTimeout(() => state(), 300));
       } else if (m.type === 'media' && MEDIA_COMMANDS.includes(m.command) && media && MEDIA_APPS.includes(media.app)) {
         // only the player already reported as playing or paused is told what to do
         jxa(MEDIA_SCRIPT, [media.app, m.command]).then(() => setTimeout(state, 300));
@@ -379,6 +451,8 @@ defineExtension({
     timers = [
       setInterval(() => watching() && catalog(), CATALOG_EVERY_MS),
       setInterval(() => watching() && state(), STATE_EVERY_MS),
+      // the clipboard is watched all the time the extension runs, so the history has what was copied while the deck was away
+      setInterval(noteClip, CLIP_EVERY_MS),
     ];
   },
   stop() {

@@ -25,6 +25,8 @@ test('state is clamped, media must name a known player, and results need an id',
     clip: { kind: 'empty', text: null },
     awake: false,
     wifi: null,
+    network: null,
+    ip: null,
     dark: null,
     battery: null,
   });
@@ -53,4 +55,14 @@ test('battery reads from pmset, and a mac without one gives none', () => {
   expect(readBattery("Now drawing from 'Battery Power'\n -InternalBattery-0 (id=1)\t54%; discharging; 3:12 remaining present: true")).toEqual({ percent: 54, charging: false, plugged: false, remaining: '3:12' });
   expect(readBattery("Now drawing from 'AC Power'\n -InternalBattery-0 (id=1)\t31%; charging; 1:05 remaining present: true")).toMatchObject({ charging: true, remaining: '1:05' });
   expect(readBattery("Now drawing from 'AC Power'")).toBeNull();
+});
+
+test('wifi details, the switcher list and the clipboard history are checked too', () => {
+  expect(readToDeck({ type: 'state', volume: 1, wifi: true, network: 'Home', ip: '192.168.3.12' })).toMatchObject({ network: 'Home', ip: '192.168.3.12' });
+  expect(readToDeck({ type: 'state', volume: 1, ip: '<script>' })).toMatchObject({ ip: null });
+  expect(readToDeck({ type: 'running', apps: [{ name: 'Code', path: '/Applications/Visual Studio Code.app', active: true }, { name: 1 }] })).toEqual({
+    type: 'running',
+    apps: [{ name: 'Code', path: '/Applications/Visual Studio Code.app', active: true, hidden: false }],
+  });
+  expect(readToDeck({ type: 'clips', items: [{ id: 2, text: 'b', at: 5 }, { id: 'x', text: 'a', at: 1 }] })).toEqual({ type: 'clips', items: [{ id: 2, text: 'b', at: 5 }] });
 });

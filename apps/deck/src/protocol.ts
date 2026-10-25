@@ -8,11 +8,16 @@ export const MEDIA_COMMANDS = ['playpause', 'next', 'previous'] as const;
 export type Media = { app: (typeof MEDIA_APPS)[number]; title: string; artist: string; playing: boolean };
 // what the toggle and status tiles show; null where this mac has no such thing, a desktop without a battery say
 export type Battery = { percent: number; charging: boolean; plugged: boolean; remaining: string | null };
-export type Extras = { awake: boolean; wifi: boolean | null; dark: boolean | null; battery: Battery | null };
+// the wifi network's name is null where macos keeps it back, which it does from a process without location access
+export type Extras = { awake: boolean; wifi: boolean | null; network: string | null; ip: string | null; dark: boolean | null; battery: Battery | null };
 // the app in front on the mac, its name and the bundle file it runs from, and what the clipboard holds. a password
 // manager marks what it copies as concealed, and that is only ever reported as hidden, never its text
 export type Front = { name: string; file: string };
 export type Clip = { kind: 'text' | 'image' | 'hidden' | 'empty'; text: string | null };
+// an app running on the mac, as the command-tab switcher lists it; its icon arrives keyed `run:<path>`
+export type Running = { name: string; path: string; active: boolean; hidden: boolean };
+// a piece of text copied on the mac, kept by the extension in memory only; the deck asks for one back by its id
+export type Copied = { id: number; text: string; at: number };
 
 export type ToMac =
   | { type: 'hello' }
@@ -20,14 +25,23 @@ export type ToMac =
   | { type: 'volume'; delta: number }
   // a level dragged to on the slider, 0 to 100
   | { type: 'set-volume'; level: number }
-  | { type: 'media'; command: (typeof MEDIA_COMMANDS)[number] };
+  | { type: 'media'; command: (typeof MEDIA_COMMANDS)[number] }
+  // the switcher asks for what is running, then names one by the path the mac gave it
+  | { type: 'running' }
+  | { type: 'switch'; path: string }
+  // the clipboard sheet asks for the history, puts one entry back by its id, or clears the lot
+  | { type: 'clips' }
+  | { type: 'copy'; id: number }
+  | { type: 'clear-clips' };
 
 export type ToDeck =
   | { type: 'catalog'; actions: Action[] }
   | ({ type: 'state'; volume: number; muted: boolean; micMuted: boolean; media: Media | null; front: Front | null; clip: Clip } & Extras)
   // an app's own icon as base64 png, keyed by its action id; sent in batches after the catalogue
   | { type: 'icons'; icons: Record<string, string> }
-  | { type: 'result'; id: string; ok: boolean };
+  | { type: 'result'; id: string; ok: boolean }
+  | { type: 'running'; apps: Running[] }
+  | { type: 'clips'; items: Copied[] };
 
 // the built-in controls, in the order the pages show them, nine to a page
 export const CONTROLS: Action[] = [
@@ -105,6 +119,8 @@ export function readToDeck(raw: unknown): ToDeck | null {
       clip: readClip(m.clip),
       awake: m.awake === true,
       wifi: flag(m.wifi),
+      network: typeof m.network === 'string' && m.network ? m.network : null,
+      ip: typeof m.ip === 'string' && /^[0-9a-f.:]+$/i.test(m.ip) ? m.ip : null,
       dark: flag(m.dark),
       battery,
     };
@@ -116,6 +132,20 @@ export function readToDeck(raw: unknown): ToDeck | null {
     return { type: 'icons', icons };
   }
   if (m.type === 'result' && typeof m.id === 'string') return { type: 'result', id: m.id, ok: m.ok === true };
+  if (m.type === 'clips' && Array.isArray(m.items))
+    return {
+      type: 'clips',
+      items: (m.items as Record<string, unknown>[])
+        .filter(c => c && typeof c.id === 'number' && typeof c.text === 'string' && typeof c.at === 'number')
+        .map(c => ({ id: c.id as number, text: c.text as string, at: c.at as number })),
+    };
+  if (m.type === 'running' && Array.isArray(m.apps))
+    return {
+      type: 'running',
+      apps: (m.apps as Record<string, unknown>[])
+        .filter(a => a && typeof a.name === 'string' && typeof a.path === 'string')
+        .map(a => ({ name: a.name as string, path: a.path as string, active: a.active === true, hidden: a.hidden === true })),
+    };
   return null;
 }
 

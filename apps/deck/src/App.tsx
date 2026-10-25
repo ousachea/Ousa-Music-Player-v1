@@ -5,7 +5,7 @@ import { BridgethingClient, type PlayerState } from '@bridgething/client';
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { daemonUrl } from './daemon';
-import { CONTROLS, FOCUS_SHORTCUT, readToDeck, type Action, type Clip, type Extras, type Front, type Media, type ToMac } from './protocol';
+import { CONTROLS, FOCUS_SHORTCUT, readToDeck, type Action, type Clip, type Copied, type Extras, type Front, type Media, type Running, type ToMac } from './protocol';
 
 const PAGES = ['Controls', 'Shortcuts', 'Apps', 'Pinned'] as const;
 type Page = (typeof PAGES)[number];
@@ -31,6 +31,11 @@ const SORTS: { id: Sort; label: string }[] = [
 ];
 const SORT_KEY = 'sort';
 const KEYS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+
+function ago(at: number) {
+  const s = Math.max(0, (Date.now() - at) / 1000);
+  return s < 60 ? 'just now' : s < 3600 ? `${Math.round(s / 60)}m ago` : `${Math.round(s / 3600)}h ago`;
+}
 
 function hue(text: string) {
   let h = 0;
@@ -202,7 +207,7 @@ function ControlTile({
         : id === 'awake'
           ? mac?.awake ? 'Staying awake' : 'Keep awake'
           : id === 'wifi'
-            ? mac?.wifi === null ? 'No Wi-Fi' : mac?.wifi ? 'Wi-Fi on' : 'Wi-Fi off'
+            ? mac?.wifi === null ? 'No Wi-Fi' : mac?.wifi ? (mac.network ?? 'Wi-Fi on') : 'Wi-Fi off'
             : id === 'battery'
               ? battery ? `${battery.percent}%` : 'No battery'
               : id === 'trash' && armed
@@ -219,8 +224,10 @@ function ControlTile({
         : id === 'trash' && armed
           ? 'to empty the Trash'
           : id === 'front' && mac?.front
-            ? 'Tap to hide it'
-            : null;
+            ? 'Tap to switch apps'
+            : id === 'wifi' && mac?.wifi
+              ? [mac.ip, mac.network ? null : 'name hidden by macOS'].filter(Boolean).join(' · ') || null
+              : null;
   const clip = mac?.clip ?? null;
   return (
     <button
@@ -513,6 +520,13 @@ export default function App() {
   const [typing, setTyping] = useState(false);
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [ctlPage, setCtlPage] = useState(0);
+  // the command-tab switcher: open or not, what it was sent, and which app the wheel is on
+  const [switcher, setSwitcher] = useState(false);
+  const [running, setRunning] = useState<Running[]>([]);
+  const [pick, setPick] = useState(0);
+  const [clipSheet, setClipSheet] = useState(false);
+  const [clips, setClips] = useState<Copied[]>([]);
+  const sheetList = useRef<HTMLDivElement>(null);
   const [armed, setArmed] = useState(false);
   const swipe = useRef<number | null>(null);
   const [art, setArt] = useState<string | null>(null);
@@ -530,6 +544,8 @@ export default function App() {
         const { type: _type, ...now } = m;
         setMac(now);
       }
+      else if (m.type === 'running') setRunning(m.apps);
+      else if (m.type === 'clips') setClips(m.items);
       else {
         setFlash(f => ({ ...f, [m.id]: m.ok ? 'ok' : 'fail' }));
         setTimeout(() => setFlash(({ [m.id]: _gone, ...rest }) => rest), 1100);
@@ -596,7 +612,32 @@ export default function App() {
     else (playing?.playing ? client.player.pause() : client.player.resume()).catch(() => {});
   };
 
+  const openSwitcher = () => {
+    setRunning([]);
+    setPick(0);
+    setSwitcher(true);
+    send({ type: 'running' });
+  };
+  const openClips = () => {
+    setPick(0);
+    setClipSheet(true);
+    send({ type: 'clips' });
+  };
+  const switchTo = (app: Running) => {
+    send({ type: 'switch', path: app.path });
+    setSwitcher(false);
+  };
+  const copyBack = (clip: Copied) => {
+    send({ type: 'copy', id: clip.id });
+    setFlash(f => ({ ...f, clipboard: 'ok' }));
+    setTimeout(() => setFlash(({ clipboard: _gone, ...rest }) => rest), 1100);
+    setClipSheet(false);
+  };
+
   const run = (id: string) => {
+    // the active app opens the switcher and the clipboard its history, rather than doing something at once
+    if (id === 'front') return openSwitcher();
+    if (id === 'clipboard') return openClips();
     // emptying the trash cannot be undone, so the first tap only arms it
     if (id === 'trash' && !armed) {
       setArmed(true);
@@ -627,6 +668,17 @@ export default function App() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // a sheet up takes the keys: back closes it, a press of the wheel chooses
+      if (switcher || clipSheet) {
+        if (e.key === 'Escape') {
+          setSwitcher(false);
+          setClipSheet(false);
+        } else if (e.key === 'Enter' || e.key === ' ') {
+          if (switcher && running[pick]) switchTo(running[pick]);
+          if (clipSheet && clips[pick]) copyBack(clips[pick]);
+        }
+        return;
+      }
       // with the keyboard up, a real keyboard types too, and back closes it
       if (typing) {
         if (e.key === 'Escape' || e.key === 'Enter') setTyping(false);
@@ -640,6 +692,11 @@ export default function App() {
     };
     const onWheel = (e: WheelEvent) => {
       if (e.deltaX === 0 || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+      if (switcher || clipSheet) {
+        const count = switcher ? running.length : clips.length;
+        setPick(p => Math.max(0, Math.min(count - 1, p + (e.deltaX > 0 ? 1 : -1))));
+        return;
+      }
       if (page === 'Controls') step(e.deltaX > 0 ? 3 : -3);
       else if (list.current) list.current.scrollTop += e.deltaX * 28;
     };
@@ -650,7 +707,11 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, typing]);
+  }, [page, typing, switcher, clipSheet, running, clips, pick]);
+
+  useEffect(() => {
+    sheetList.current?.querySelector(`[data-pick="${pick}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [pick]);
 
   const all = actions ?? CONTROLS;
   const of = (kind: Action['kind']) => all.filter(a => a.kind === kind);
@@ -859,6 +920,73 @@ export default function App() {
         </div>
       )}
       {typing && (page === 'Apps' || page === 'Shortcuts') && keyboard}
+
+      {/* the command-tab switcher: every running app as a big icon, the one in front first */}
+      {switcher && (
+        <div className="absolute inset-0 z-30 grid place-items-center bg-black/55 backdrop-blur-sm" onClick={() => setSwitcher(false)}>
+          <div className="max-w-[740px] rounded-[28px] border border-white/10 bg-[#161b25]/90 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" onClick={e => e.stopPropagation()}>
+            {running.length === 0 ? (
+              <div className="px-10 py-6 text-title text-soft">Asking the Mac what is running…</div>
+            ) : (
+              <>
+                <div ref={sheetList} className="flex gap-2 overflow-x-auto [scrollbar-width:none]">
+                  {running.map((app, i) => (
+                    <button
+                      key={app.path}
+                      data-pick={i}
+                      onClick={() => switchTo(app)}
+                      className={`flex w-[104px] shrink-0 flex-col items-center gap-2 rounded-2xl p-3 transition active:scale-95 ${i === pick ? 'bg-white/14 ring-1 ring-white/25' : ''}`}>
+                      {icons[`run:${app.path}`] ? (
+                        <img src={`data:image/png;base64,${icons[`run:${app.path}`]}`} alt="" className={`h-[72px] w-[72px] ${app.hidden ? 'opacity-60' : ''}`} draggable={false} />
+                      ) : (
+                        <span className="grid h-[72px] w-[72px] place-items-center rounded-[18px] bg-white/10 text-[1.6rem] font-bold">{app.name.slice(0, 1)}</span>
+                      )}
+                      <span className="w-full truncate text-center text-[0.8rem] text-white/85">{app.name}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-2 text-center font-mono text-[10px] tracking-[0.2em] text-dim uppercase">wheel to move · press to switch · back to close</div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* the clipboard history, newest first; a tap puts that one back on the mac's clipboard */}
+      {clipSheet && (
+        <div className="absolute inset-0 z-30 grid place-items-center bg-black/55 backdrop-blur-sm" onClick={() => setClipSheet(false)}>
+          <div className="flex h-[400px] w-[640px] flex-col rounded-[28px] border border-white/10 bg-[#161b25]/92 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" onClick={e => e.stopPropagation()}>
+            <div className="mb-3 flex items-center gap-3">
+              <span className="text-[1.05rem] font-semibold">Clipboard history</span>
+              <span className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">kept on the mac until it restarts</span>
+              {clips.length > 0 && (
+                <button onClick={() => send({ type: 'clear-clips' })} className="ml-auto rounded-full bg-white/8 px-3 py-1.5 text-[0.75rem] text-soft">
+                  Clear
+                </button>
+              )}
+              <button onClick={() => setClipSheet(false)} className={`rounded-full bg-white/8 px-3 py-1.5 text-[0.75rem] text-soft ${clips.length ? '' : 'ml-auto'}`}>
+                Close
+              </button>
+            </div>
+            {clips.length === 0 ? (
+              <div className="grid flex-1 place-items-center text-center text-title text-soft">Nothing copied yet. Text you copy on the Mac turns up here.</div>
+            ) : (
+              <div ref={sheetList} className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto [scrollbar-width:none]">
+                {clips.map((c, i) => (
+                  <button
+                    key={c.id}
+                    data-pick={i}
+                    onClick={() => copyBack(c)}
+                    className={`flex shrink-0 items-start gap-3 rounded-2xl px-3.5 py-2.5 text-left transition active:scale-[0.98] ${i === pick ? 'bg-white/14 ring-1 ring-white/25' : 'bg-white/5'}`}>
+                    <span className="line-clamp-2 min-w-0 flex-1 text-[0.88rem] break-all whitespace-pre-wrap">{c.text}</span>
+                    <span className="shrink-0 pt-0.5 font-mono text-[10px] text-dim">{i === 0 ? 'now' : ago(c.at)}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
