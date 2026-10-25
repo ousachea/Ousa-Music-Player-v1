@@ -626,7 +626,7 @@ and allow its extension; the Car Thing can only run what the Mac lists for it.
   card per menu with their keys, narrowed by menu, a tap doing that one; Back, or the back button, returns to the
   apps. Reading menus needs Accessibility for bridgething, which macOS asks for once
 - **Clipboard**: the text you copied lately, kept on the Mac in memory and never a password manager's, each with a
-  Copy button
+  Copy button on its left, and Clear on the left above them
 
 Hold any tile to pin it; pinned ones lead their own list.
 

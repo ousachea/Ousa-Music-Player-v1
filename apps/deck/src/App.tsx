@@ -1193,12 +1193,12 @@ export default function App() {
       ) : page === 'Clipboard' ? (
         <div className="flex min-h-0 flex-1 flex-col gap-2.5">
           <div className="flex items-center gap-3 px-1">
-            <span className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">copied text, kept on the mac until it restarts · never a password manager’s</span>
             {clips.length > 0 && (
-              <button onClick={() => send({ type: 'clear-clips' })} className="ml-auto rounded-full bg-white/8 px-3 py-1.5 text-[0.75rem] text-soft">
+              <button onClick={() => send({ type: 'clear-clips' })} className="rounded-full bg-white/8 px-3 py-1.5 text-[0.75rem] text-soft">
                 Clear
               </button>
             )}
+            <span className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">copied text, kept on the mac until it restarts · never a password manager’s</span>
           </div>
           {clips.length === 0 ? (
             empty('Nothing copied yet. Text you copy on the Mac turns up here.')
@@ -1215,14 +1215,14 @@ export default function App() {
                   className={`flex shrink-0 items-center gap-3 rounded-2xl px-3.5 py-2.5 text-left transition active:scale-[0.98] ${
                     i === pick ? 'bg-white/14 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : 'bg-white/5'
                   }`}>
-                  <span className="min-w-0 flex-1">
-                    <span className="line-clamp-2 text-[0.88rem] break-all whitespace-pre-wrap">{c.text}</span>
-                    <span className="mt-0.5 block font-mono text-[10px] text-dim">{i === 0 ? 'on the clipboard now' : ago(c.at)}</span>
-                  </span>
                   {/* the copy button; the whole row copies too, this says so and shows when it has */}
                   <span className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.75rem] font-semibold transition ${copied === c.id ? 'bg-ok text-screen' : 'bg-white/10 text-white'}`}>
                     <Svg className="h-3.5 w-3.5">{copied === c.id ? <path d="M5 12.5l4.5 4.5L19 7.5" /> : GLYPH.clipboard}</Svg>
                     {copied === c.id ? 'Copied' : 'Copy'}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="line-clamp-2 text-[0.88rem] break-all whitespace-pre-wrap">{c.text}</span>
+                    <span className="mt-0.5 block font-mono text-[10px] text-dim">{i === 0 ? 'on the clipboard now' : ago(c.at)}</span>
                   </span>
                 </button>
               ))}

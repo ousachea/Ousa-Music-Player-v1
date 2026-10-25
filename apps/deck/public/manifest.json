@@ -1,7 +1,7 @@
 {
   "id": "01a17177-893e-7726-bed0-f3e3b3847724",
   "name": "O-Deck",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Big tiles that work the Mac your Car Thing is plugged into: shortcuts, apps, volume, mic and more.",
   "icon": "icon.png",
   "settings": "settings.html",

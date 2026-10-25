@@ -1,5 +1,9 @@
 # O-Deck
 
+## 0.1.1
+
+- On Clipboard, each Copy button and the Clear button sit on the left
+
 ## 0.1.0
 
 First release: big tiles that work the Mac your Car Thing is plugged into.
