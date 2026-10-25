@@ -34,6 +34,9 @@ export function Departures({
   queue,
 }: StyleProps & { queue: Queue | null }) {
   const tint = accent?.fill ?? AMBER;
+  // the board's lamps take the cover's colour, in its light shade so they read on the dark panel
+  const lamp = accent?.soft ?? AMBER;
+  const panel = accent ? `color-mix(in oklab, ${accent.fill} 12%, #0a0f1c)` : '#0a0f1c';
   const room = upright ? 6 : 4;
   const next = (queue?.items ?? []).slice(0, room);
   const queued = next.length > 0;
@@ -57,7 +60,7 @@ export function Departures({
         });
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#0a0f1c] font-mono" style={{ color: AMBER }}>
+    <div className="absolute inset-0 overflow-hidden font-mono" style={{ color: lamp, background: panel, ['--lamp' as string]: lamp }}>
       <div className={`flex h-full flex-col ${upright ? 'gap-4 px-4 pt-6 pb-6' : 'gap-3 px-6 pt-4 pb-5'}`}>
         <div className="flex items-center justify-between border-b border-white/10 pb-2">
           <div className="flex items-center gap-3">
@@ -88,7 +91,7 @@ export function Departures({
             <div className="truncate text-[13px] tracking-[0.15em] uppercase opacity-80">via {artist}</div>
           </div>
           {!upright && <div className="text-[18px]">{gate(title)}</div>}
-          <div className={`text-right text-[15px] font-bold tracking-[0.15em] ${playing ? 'animate-pulse' : ''}`} style={{ color: playing ? '#5dff8f' : AMBER }}>
+          <div className={`text-right text-[15px] font-bold tracking-[0.15em] ${playing ? 'animate-pulse' : ''}`} style={{ color: playing ? '#5dff8f' : lamp }}>
             {playing ? 'BOARDING' : 'DELAYED'}
           </div>
         </div>
@@ -120,8 +123,8 @@ export function Departures({
               onPrev={onPrev}
               onNext={onNext}
               className="shrink-0 gap-2"
-              button="h-12 w-12 text-[#ffb627]"
-              play="h-14 w-14 rounded-md bg-[#ffb627] text-[#0a0f1c]"
+              button="h-12 w-12 text-[var(--lamp)]"
+              play="h-14 w-14 rounded-md bg-[var(--lamp)] text-[#0a0f1c]"
               icon="h-7 w-7"
             />
           )}
