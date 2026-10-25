@@ -131,8 +131,8 @@ export function Mosaic({
                 onPrev={onPrev}
                 onNext={onNext}
                 className="shrink-0 gap-1 text-white"
-                button="h-12 w-12"
-                play="h-14 w-14 rounded-full bg-white text-black"
+                button="h-12 w-12 rounded-md bg-white/12 ring-1 ring-white/15"
+                play="h-14 w-14 rounded-md bg-white text-black"
                 icon="h-7 w-7"
               />
             )}

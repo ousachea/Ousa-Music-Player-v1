@@ -18,6 +18,11 @@ A Button style setting under Controls draws previous, play and next as Round, Sq
 or Minimal, each tile showing the look. Polaroid flips over when tapped and gains an Album frame in the
 cover's colour. About shows the installed version.
 
+Previous, play and next now look like part of their style: an engine start button in Speedometer, date tiles
+in Calendar, film frames in Film strip, a gold karaoke button, square blocks in Magazine, tiles in Mosaic,
+stamps and a wax seal in Stamp, stubs in Ticket, a shutter button in Polaroid, till keys in Receipt, and
+front panel keys in Oscilloscope.
+
 ## 0.45.2
 
 New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.

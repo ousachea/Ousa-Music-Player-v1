@@ -93,8 +93,8 @@ export function Stamp({ artUrl, title, artist, album, accent, playing, upright, 
               onPrev={onPrev}
               onNext={onNext}
               className={`gap-2 text-[#2b2418] ${upright ? 'justify-center' : ''}`}
-              button="h-14 w-14"
-              play="h-16 w-16 rounded-full bg-[#2b2418] text-[#efe6d2]"
+              button="h-14 w-12 rounded-[2px] bg-[#fbf8f1] outline-2 outline-offset-[-5px] outline-dashed outline-[#2b2418]/30 shadow-[0_3px_6px_rgba(60,40,10,0.25)]"
+              play="h-[72px] w-[72px] rounded-full bg-[radial-gradient(circle_at_35%_30%,#d23a32,#8e1410_70%)] text-[#f6e4c8] shadow-[0_4px_10px_rgba(80,10,5,0.45),inset_0_0_0_5px_rgba(0,0,0,0.12)]"
               icon="h-8 w-8"
             />
           )}

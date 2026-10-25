@@ -99,7 +99,7 @@ export function Polaroid({
               onPrev={onPrev}
               onNext={onNext}
               className={`mt-9 gap-5 text-[#f4efe6] ${upright ? 'justify-center' : '-ml-2'}`}
-              play="grid h-16 w-16 place-items-center rounded-full bg-[#faf8f3] text-[#22324f]"
+              play="grid h-16 w-16 place-items-center rounded-full bg-gradient-to-b from-[#ff5a4e] to-[#c2261b] text-white ring-4 ring-[#f4efe6] shadow-[0_6px_14px_rgba(0,0,0,0.5)]"
             />
           )}
         </div>

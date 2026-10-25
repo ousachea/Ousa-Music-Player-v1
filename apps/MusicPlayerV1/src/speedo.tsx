@@ -29,7 +29,7 @@ export function Speedo({ title, artist, album, accent, playing, motion, upright,
   const [nx, ny] = at(progress, 150);
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#08090b]" style={{ background: `radial-gradient(circle at ${upright ? '50% 32%' : '32% 50%'}, color-mix(in oklab, ${tint} 16%, #111318), #050607 70%)` }}>
+    <div className="absolute inset-0 overflow-hidden bg-[#08090b]" style={{ ['--tint' as string]: tint, background: `radial-gradient(circle at ${upright ? '50% 32%' : '32% 50%'}, color-mix(in oklab, ${tint} 16%, #111318), #050607 70%)` }}>
       <div className={`flex h-full items-center ${upright ? 'flex-col justify-center gap-6 px-6' : 'gap-8 px-8'}`}>
         <svg viewBox="0 0 400 400" className={upright ? 'w-[400px]' : 'h-[440px] shrink-0'}>
           <circle cx="200" cy="200" r="196" fill="#0d0f13" stroke="#2a2e36" strokeWidth="4" />
@@ -89,8 +89,8 @@ export function Speedo({ title, artist, album, accent, playing, motion, upright,
               onPrev={onPrev}
               onNext={onNext}
               className={`gap-3 text-white ${upright ? 'justify-center' : ''}`}
-              button="h-14 w-14 rounded-full bg-white/8"
-              play="h-16 w-16 rounded-full bg-white text-black"
+              button="h-14 w-14 rounded-full bg-gradient-to-b from-[#3a3f49] to-[#121418] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_3px_6px_rgba(0,0,0,0.6)] ring-1 ring-black"
+              play="h-[72px] w-[72px] rounded-full bg-gradient-to-b from-[#2b2f37] to-[#0b0c0f] ring-[3px] ring-[var(--tint)] shadow-[0_0_18px_var(--tint),inset_0_1px_0_rgba(255,255,255,0.2)]"
               icon="h-8 w-8"
             />
           )}

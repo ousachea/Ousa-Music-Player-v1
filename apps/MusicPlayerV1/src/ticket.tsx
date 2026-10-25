@@ -120,8 +120,8 @@ export function Ticket({
               onPrev={onPrev}
               onNext={onNext}
               className="shrink-0 gap-2 text-[#f4ecdc]"
-              button="h-14 w-14"
-              play="h-16 w-16 rounded-full bg-[#f4ecdc] text-[#2a211b]"
+              button="h-14 w-12 rounded-md border-2 border-dashed border-[#2a211b]/35 bg-[#f4ecdc] text-[#2a211b]"
+              play="h-16 w-20 rounded-md border-2 border-dashed border-[#2a211b]/40 bg-[#f4ecdc] text-[#2a211b] shadow-[0_8px_18px_rgba(0,0,0,0.45)]"
               icon="h-8 w-8"
             />
           )}

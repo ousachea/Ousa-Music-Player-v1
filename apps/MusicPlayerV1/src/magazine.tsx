@@ -24,7 +24,7 @@ export function Magazine({
   const month = new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' }).toUpperCase();
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-black">
+    <div className="absolute inset-0 overflow-hidden bg-black" style={{ ['--tint' as string]: tint }}>
       {artUrl && <img src={artUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
       {/* dark at the top for the masthead and at the foot for the story, clear in the middle for the art */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/85" />
@@ -91,8 +91,8 @@ export function Magazine({
               onPrev={onPrev}
               onNext={onNext}
               className="shrink-0 gap-2 text-white"
-              button="h-14 w-14"
-              play="h-16 w-16 rounded-full bg-white text-black"
+              button="h-14 w-14 border-2 border-white bg-black/30"
+              play="h-16 w-16 bg-[var(--tint)] text-white shadow-[4px_4px_0_#000]"
               icon="h-8 w-8"
             />
           )}

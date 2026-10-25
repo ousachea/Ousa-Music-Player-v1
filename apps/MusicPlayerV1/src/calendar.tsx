@@ -51,7 +51,7 @@ export function Calendar({ artUrl, title, artist, album, accent, playing, uprigh
   );
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#3b3530]" style={{ background: 'radial-gradient(ellipse at 50% 30%, #5a4f45, #2a2521)' }}>
+    <div className="absolute inset-0 overflow-hidden bg-[#3b3530]" style={{ ['--tint' as string]: tint, background: 'radial-gradient(ellipse at 50% 30%, #5a4f45, #2a2521)' }}>
       <div className={`flex h-full items-center ${upright ? 'flex-col justify-center gap-6 px-6' : 'gap-8 px-8'}`}>
         <div className={`relative shrink-0 ${upright ? 'h-[520px] w-full' : 'h-[420px] w-[470px]'}`}>
           {/* the binding across the top, with its rings */}
@@ -79,8 +79,8 @@ export function Calendar({ artUrl, title, artist, album, accent, playing, uprigh
               onPrev={onPrev}
               onNext={onNext}
               className={`gap-2 text-white ${upright ? 'justify-center' : ''}`}
-              button="h-14 w-14"
-              play="h-16 w-16 rounded-full bg-white text-[#2a2521]"
+              button="h-14 w-14 rounded-md border-t-[6px] border-[var(--tint)] bg-[#fbfaf6] text-[#2a2521] shadow-[0_4px_10px_rgba(0,0,0,0.35)]"
+              play="h-16 w-16 rounded-md border-t-[8px] border-[var(--tint)] bg-[#fbfaf6] text-[#2a2521] shadow-[0_6px_14px_rgba(0,0,0,0.4)]"
               icon="h-8 w-8"
             />
           )}

@@ -91,8 +91,8 @@ export function Karaoke({ title, artist, accent, playing, motion, upright, showT
               onPrev={onPrev}
               onNext={onNext}
               className="shrink-0 gap-2 text-white"
-              button="h-14 w-14"
-              play="h-16 w-16 rounded-full bg-white text-[#06062a]"
+              button="h-14 w-14 rounded-full bg-[#120a3a] ring-2 ring-white/35 shadow-[0_0_12px_rgba(255,79,216,0.45)]"
+              play="h-[72px] w-[72px] rounded-full bg-gradient-to-b from-[#fff07a] to-[#ff9d00] text-[#3a1500] shadow-[0_0_22px_rgba(255,200,0,0.6),inset_0_2px_0_rgba(255,255,255,0.6)]"
               icon="h-8 w-8"
             />
           )}

@@ -113,7 +113,8 @@ export function Receipt({
           onNext={onNext}
           // over the foot of the roll, where they stay put while it scrolls; the roll's padding lets its last line clear them
           className={`absolute bottom-6 gap-4 text-[#2b2925] ${upright ? 'right-4' : 'right-8'}`}
-          play="grid h-[76px] w-[76px] place-items-center rounded-full bg-[#2b2925] text-[#f3efe6] shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
+          button="h-14 w-14 rounded-md bg-gradient-to-b from-[#f4f0e6] to-[#d8d1c1] shadow-[0_4px_0_#8f8878] active:translate-y-1 active:shadow-none"
+          play="grid h-[68px] w-[76px] place-items-center rounded-md bg-gradient-to-b from-[#3f3b35] to-[#23211d] text-[#f3efe6] shadow-[0_5px_0_#0f0e0c] active:translate-y-1 active:shadow-none"
           icon="h-9 w-9"
         />
       )}

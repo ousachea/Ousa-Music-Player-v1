@@ -118,8 +118,8 @@ export function Scope({ title, artist, accent, playing, motion, upright, showTra
               onPrev={onPrev}
               onNext={onNext}
               className="justify-center gap-3 text-[#d8dcd8]"
-              button="h-12 w-12 rounded-full bg-black/40"
-              play="h-14 w-14 rounded-full bg-[#d8dcd8] text-[#232527]"
+              button="h-11 w-14 rounded-[4px] bg-gradient-to-b from-[#c9cdc9] to-[#9a9e9a] text-[#232527] shadow-[0_3px_0_#5a5d5a]"
+              play="h-11 w-16 rounded-[4px] bg-gradient-to-b from-[#c9cdc9] to-[#9a9e9a] text-[#0b5a24] shadow-[0_3px_0_#5a5d5a,0_0_14px_rgba(93,255,143,0.55)] ring-2 ring-[#5dff8f]"
               icon="h-7 w-7"
             />
           )}

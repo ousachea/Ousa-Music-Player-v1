@@ -82,8 +82,8 @@ export function FilmStrip({
             onPrev={onPrev}
             onNext={onNext}
             className={`shrink-0 gap-2 text-white ${upright ? 'justify-center' : ''}`}
-            button="h-14 w-14"
-            play="h-16 w-16 rounded-full bg-white text-black"
+            button="h-14 w-14 rounded-[3px] border-y-[5px] border-dotted border-[#e8e2d0]/70 bg-[#141210]"
+            play="h-16 w-[72px] rounded-[3px] border-y-[6px] border-dotted border-[#141210]/70 bg-[#f3e9cf] text-[#141210]"
             icon="h-8 w-8"
           />
         )}
