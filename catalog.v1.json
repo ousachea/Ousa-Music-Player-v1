@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-25T03:04:57.140Z",
+  "updated_at": "2026-10-25T03:11:38.399Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -26,6 +26,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.5.3",
+          "released_at": "2026-10-25T03:11:33.948Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.5.3.zip",
+            "size": 1085926,
+            "sha256": "999624fc8d80f63b3419b1c8969cbdc8b43abfada7da61f163b81b083995ad40"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.5.3.html",
+            "size": 26915,
+            "sha256": "a01042926a46239c50d17b4eb87c3017b8a2c028b9532b5bfb0c5079fa44ae63"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour."
+        },
         {
           "version": "0.5.2",
           "released_at": "2026-10-25T03:04:53.824Z",
@@ -179,6 +196,23 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.2.3",
+          "released_at": "2026-10-25T03:11:34.485Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.2.3.zip",
+            "size": 1052770,
+            "sha256": "0ea7b6229e44f463c3db6469eacafe338289bcb9afe3f0d3763c5a80038cc81c"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c6f-f65a-732a-ab3b-acae5a84b207/0.2.3.html",
+            "size": 27799,
+            "sha256": "cbf2e5139bb442dc53438484d569e45217eb6f26f5960f8861edbf433d5ce6fd"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour."
+        },
+        {
           "version": "0.2.2",
           "released_at": "2026-10-25T03:04:54.352Z",
           "download": {
@@ -314,6 +348,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.3.5",
+          "released_at": "2026-10-25T03:11:35.038Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.5.zip",
+            "size": 1057851,
+            "sha256": "010a512f8623a2f47d6579b57d608685e090277e8a7e582fd883e65a8543ef4c"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c7f-7529-7704-b7be-4ea1a6e66d1d/0.3.5.html",
+            "size": 32646,
+            "sha256": "e79721740b8404a99f838edc5cd640e21a96bf1ce6ef2f85ba7b27ca93010a3a"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour."
+        },
         {
           "version": "0.3.4",
           "released_at": "2026-10-24T15:03:16.620Z",
@@ -485,6 +538,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.45.2",
+          "released_at": "2026-10-25T03:11:35.655Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.45.2.zip",
+            "size": 1478691,
+            "sha256": "f1272017dd9f3699337ee03991ffe1e0b6b9cb20ef95798cf89d7b654ebdf088"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.45.2.html",
+            "size": 40278,
+            "sha256": "2d174aa3d4266571c82cfe54d3a98f0126cd25e2ffd685e36f8bfa14403f1820"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour.\nMagazine leaves more room between the title and the seek bar."
+        },
         {
           "version": "0.45.1",
           "released_at": "2026-10-25T03:04:54.991Z",
@@ -2134,6 +2206,60 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.4.4",
+          "released_at": "2026-10-25T03:11:36.233Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c16-be12-7003-91aa-482b107fdccb/0.4.4.zip",
+            "size": 1201295,
+            "sha256": "12a53afabbe0869fd00eb715d227a7f7f6c04b80783497a9fb881c109fc2597a"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c16-be12-7003-91aa-482b107fdccb/0.4.4.html",
+            "size": 26935,
+            "sha256": "40613e2f3a9aad26b2e2687dd27ebcc57fcf5322563b72fbf68732c427e13313"
+          },
+          "permissions": [
+            "net.proxy",
+            "geo"
+          ],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/vm_stat",
+              "run:/usr/sbin/sysctl",
+              "run:/usr/sbin/ioreg",
+              "run:/usr/sbin/netstat",
+              "run:/bin/ps",
+              "run:/usr/bin/pmset",
+              "run:/bin/df",
+              "run:/sbin/ping",
+              "run:/sbin/route",
+              "run:/usr/sbin/system_profiler",
+              "run:/usr/bin/sw_vers",
+              "run:/usr/sbin/scutil",
+              "run:/sbin/ifconfig",
+              "run:/usr/sbin/networksetup",
+              "read:/proc",
+              "read:/sys",
+              "read:/etc/os-release",
+              "run:df",
+              "run:ping",
+              "run:nvidia-smi",
+              "run:C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+              "read:~/.claude",
+              "read:~/.config/claude",
+              "env:HOME",
+              "env:USERPROFILE",
+              "env:CLAUDE_CONFIG_DIR",
+              "net:api.anthropic.com",
+              "run:/usr/bin/security",
+              "sys"
+            ]
+          },
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour."
+        },
+        {
           "version": "0.4.3",
           "released_at": "2026-10-24T15:03:17.216Z",
           "download": {
@@ -2634,6 +2760,25 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.1.4",
+          "released_at": "2026-10-25T03:11:36.783Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.4.zip",
+            "size": 1038371,
+            "sha256": "456234a13c72b49390d55e3477110f492008e4eb07817df0ebb3760e58b8f5ec"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08bd6-9df2-70c3-ab08-cac2951ebcb6/0.1.4.html",
+            "size": 26913,
+            "sha256": "53118aeab454bd4afe9e983322ab0f2171993ceefbdab52c33f481539202f5a3"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour."
+        },
+        {
           "version": "0.1.3",
           "released_at": "2026-10-25T03:04:55.533Z",
           "download": {
@@ -2725,6 +2870,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.2.4",
+          "released_at": "2026-10-25T03:11:37.320Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.4.zip",
+            "size": 1060627,
+            "sha256": "908be870a6afa60556c0de1bb4044c80d8d53350e73580c707dba62cbff5f573"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08be9-18e7-70a4-991d-5cb92145210f/0.2.4.html",
+            "size": 26919,
+            "sha256": "5b622928000f24937407a8215230495ba3c808eed8dd7680286649fd57cc68fa"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour."
+        },
         {
           "version": "0.2.3",
           "released_at": "2026-10-25T03:04:56.066Z",
@@ -2837,6 +3001,23 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.1.4",
+          "released_at": "2026-10-25T03:11:37.856Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a102bb-1d76-7739-a093-ffb81f205f9b/0.1.4.zip",
+            "size": 1048304,
+            "sha256": "3ca5a5a3ba131499aca1ac1bc8ac2ee56e88a655078540d27d11afccdc368e89"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a102bb-1d76-7739-a093-ffb81f205f9b/0.1.4.html",
+            "size": 26777,
+            "sha256": "33fe2350021c92e188ac0440877dc64caf113c66f6acd507c1a443c1868a6de0"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour."
+        },
+        {
           "version": "0.1.3",
           "released_at": "2026-10-25T03:04:56.609Z",
           "download": {
@@ -2919,6 +3100,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.6.8",
+          "released_at": "2026-10-25T03:11:38.397Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07c31-5053-72cd-a790-a2be27c8bc79/0.6.8.zip",
+            "size": 1071532,
+            "sha256": "420a18777d06f8f09e1faee48a646e9f1ca9ac5cc6a8641fef927142bf8760e5"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07c31-5053-72cd-a790-a2be27c8bc79/0.6.8.html",
+            "size": 28609,
+            "sha256": "60a959919bc669e02e0d329b2034c1a0064923f9d011f1eb0816bbb6864447dc"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "New icon in the shared Ousa style: a glowing ring with a dot, in the app's own colour."
+        },
         {
           "version": "0.6.7",
           "released_at": "2026-10-25T03:04:57.138Z",
