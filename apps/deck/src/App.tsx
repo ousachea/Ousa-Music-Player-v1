@@ -1098,16 +1098,17 @@ export default function App() {
                     <span className="line-clamp-2 w-full text-center text-[0.82rem] leading-tight font-medium break-words text-white/85">{app.name}</span>
                     {app.active && <span className="rounded-full bg-ok-soft px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] text-ok uppercase">in front</span>}
                     {!app.active && app.hidden && <span className="font-mono text-[9px] tracking-[0.15em] text-dim uppercase">hidden</span>}
-                    {/* how many taps towards quitting: three dots filling, red once one more would quit */}
+                    {/* how many taps towards quitting, under the name: three dots filling, red once one more would quit.
+                        it hangs below the tile, so the tile keeps its size while it shows */}
                     {tapShown.path === app.path && tapShown.count > 0 && (
-                      <span className={`absolute top-2 right-2 flex items-center gap-1 rounded-full px-1.5 py-1 ${tapShown.count >= 2 ? 'bg-err/90' : 'bg-black/55'}`}>
-                        {[1, 2, 3].map(n => (
-                          <span key={n} className={`h-1.5 w-1.5 rounded-full ${n <= tapShown.count ? 'bg-white' : 'bg-white/30'}`} />
-                        ))}
+                      <span className="absolute inset-x-0 top-full mt-1 flex flex-col items-center gap-1">
+                        <span className="flex items-center gap-1.5">
+                          {[1, 2, 3].map(n => (
+                            <span key={n} className={`h-2 w-2 rounded-full transition ${n <= tapShown.count ? (tapShown.count >= 2 ? 'bg-err' : 'bg-white') : 'bg-white/25'}`} />
+                          ))}
+                        </span>
+                        {tapShown.count === 2 && <span className="font-mono text-[9px] tracking-[0.15em] text-err uppercase">1 more to quit</span>}
                       </span>
-                    )}
-                    {tapShown.path === app.path && tapShown.count === 2 && (
-                      <span className="absolute inset-x-0 -bottom-5 text-center font-mono text-[9px] tracking-[0.15em] text-err uppercase">1 more to quit</span>
                     )}
                   </button>
                   </div>
