@@ -1,7 +1,7 @@
 {
   "id": "01a08085-a3c5-73fc-a3f9-1532161d74d2",
   "name": "O-Clock",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A clock in ten faces, eight timers, a stopwatch and an alarm.",
   "icon": "icon.png",
   "settings": "settings.html",

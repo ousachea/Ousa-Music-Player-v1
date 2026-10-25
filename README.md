@@ -575,3 +575,6 @@ Pushing to main publishes the catalog. Published versions never change, so bump 
 `check` refuses an unbumped change.
 
 > `push` fails if the repository path contains spaces.
+
+> Keep `public/icon.*` under 64 KiB. The device silently drops a bigger icon and the app shows in the
+> launcher without one; `sips -Z 256 <file>` usually brings it under.

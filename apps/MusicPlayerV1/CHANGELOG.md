@@ -1,5 +1,9 @@
 # O-Music Player
 
+## 0.45.1
+
+Icon shrunk under the device's 64 KiB limit so it shows in the launcher.
+
 ## 0.45.0
 
 **Five more styles**, twenty-seven in all:

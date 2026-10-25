@@ -1,5 +1,9 @@
 # O-Desk Exchange
 
+## 0.2.2
+
+Icon shrunk under the device's 64 KiB limit so it shows in the launcher.
+
 ## 0.2.1
 
 Khmer text displays on the device. The Car Thing has no Khmer font, so Khmer in your own text

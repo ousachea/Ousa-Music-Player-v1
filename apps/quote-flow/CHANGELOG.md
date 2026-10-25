@@ -1,5 +1,9 @@
 # O-Quote Flow
 
+## 0.6.7
+
+Icon shrunk under the device's 64 KiB limit so it shows in the launcher.
+
 ## 0.6.6
 
 Khmer text displays on the device. The Car Thing has no Khmer font, so Khmer in your own text
