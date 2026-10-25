@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-25T06:52:04.971Z",
+  "updated_at": "2026-10-25T06:56:07.743Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -214,6 +214,40 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.1.2",
+          "released_at": "2026-10-25T06:56:07.166Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a17177-893e-7726-bed0-f3e3b3847724/0.1.2.zip",
+            "size": 1099824,
+            "sha256": "9b6814fee18f3b4328160be841ab40e121897d5241003f351d4c5a6b9f104a37"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a17177-893e-7726-bed0-f3e3b3847724/0.1.2.html",
+            "size": 39768,
+            "sha256": "1e928c423617b3c138cb19a25655aeb224966c173e373be8495e5b01d655e0f1"
+          },
+          "permissions": [],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/osascript",
+              "run:/usr/bin/shortcuts",
+              "run:/usr/bin/open",
+              "run:/usr/bin/pmset",
+              "run:/usr/sbin/screencapture",
+              "read:/Applications",
+              "read:/System/Applications",
+              "env:HOME",
+              "run:/usr/bin/caffeinate",
+              "run:/usr/sbin/networksetup",
+              "run:/usr/bin/defaults",
+              "run:/usr/sbin/ipconfig"
+            ]
+          },
+          "min_libbridgething_version": "0.13.1",
+          "changelog": "- Installs on Car Things running bridgething 0.13.1, which it works with, instead of asking for 0.14.0"
+        },
+        {
           "version": "0.1.1",
           "released_at": "2026-10-25T06:52:04.968Z",
           "download": {
@@ -244,7 +278,7 @@
               "run:/usr/sbin/ipconfig"
             ]
           },
-          "min_libbridgething_version": "0.14.0",
+          "min_libbridgething_version": "0.13.1",
           "changelog": "- On Clipboard, each Copy button and the Clear button sit on the left"
         },
         {
@@ -278,7 +312,7 @@
               "run:/usr/sbin/ipconfig"
             ]
           },
-          "min_libbridgething_version": "0.14.0",
+          "min_libbridgething_version": "0.13.1",
           "changelog": "First release: big tiles that work the Mac your Car Thing is plugged into.\n\n- **Controls**: the song playing (from the Car Thing's player, or the Mac's Spotify or Music) with its cover, its\n  transport and the Mac's volume as a pill you drag or turn with the wheel, beside two swipeable pages of nine:\n  mute mic, Bluetooth (with what is connected), mute sound, screenshot, lock screen, Mission Control, keep awake,\n  dark mode, show desktop, Wi-Fi (with its IP, and its name where macOS allows), battery, Focus (through a \"Toggle\n  Focus\" shortcut), screen saver, quit app, brightness, empty Trash (tap twice) and sleep. The tiles that switch\n  something light up while on.\n- **Shortcuts**: your own shortcuts from the Mac's Shortcuts app, leaving out Apple's starter ones and untitled\n  drafts, one tap to run, with search.\n- **Apps**: every installed app with its own icon, grouped by category or sorted A to Z or by last opened, with\n  search on an on-screen keyboard. A pressed app is edged in its icon's colour, and opening one takes you to its\n  shortcuts.\n- **Running**: the apps open on the Mac, the one in front in the middle, holding one for a second quitting it, and holding empty space\n  entering an edit mode with a close button on each and Quit all; tap one to bring it forward and see its keyboard shortcuts, read from its own menus as a card per menu,\n  each a tap away, with Back to return.\n- **Clipboard**: the text you copied lately, kept in memory on the Mac, never a password manager's, each with a\n  Copy button.\n\nHold any tile to pin it to the head of its list. A tile answers a press in its own colour: a sheen while the Mac\nworks, a ring of light inside it when done, a shake when not."
         }
       ]
@@ -462,6 +496,31 @@
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
         {
+          "version": "0.1.1",
+          "released_at": "2026-10-25T06:56:07.740Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a17177-9188-7022-a6d4-1760e6fd7434/0.1.1.zip",
+            "size": 1061882,
+            "sha256": "44e814363cf7dce25fbb5cd5676ba8bfcfc301f65850296bdf9d8d5a029115e8"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a17177-9188-7022-a6d4-1760e6fd7434/0.1.1.html",
+            "size": 39881,
+            "sha256": "8239cc73750903afd0f734c9b13513211427e220fed2f0c4c82857428bba5867"
+          },
+          "permissions": [],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/opt/homebrew/bin/gh",
+              "run:/usr/local/bin/gh",
+              "run:/usr/bin/open"
+            ]
+          },
+          "min_libbridgething_version": "0.13.1",
+          "changelog": "- Installs on Car Things running bridgething 0.13.1, which it works with, instead of asking for 0.14.0"
+        },
+        {
           "version": "0.1.0",
           "released_at": "2026-10-25T06:50:31.807Z",
           "download": {
@@ -483,7 +542,7 @@
               "run:/usr/bin/open"
             ]
           },
-          "min_libbridgething_version": "0.14.0",
+          "min_libbridgething_version": "0.13.1",
           "changelog": "First release: GitHub at a glance, read on the Mac through the GitHub CLI signed in there.\n\n- **Repos**: the repositories pushed to most lately, each with its latest commit, its checks, and open pull requests\n  and issues.\n- **My PRs**: your open pull requests with their checks and review state.\n- **Reviews**: pull requests waiting on your review.\n- **Inbox**: your GitHub notifications.\n\nThe wheel moves down the list and a press opens the row on the Mac. The last board stays on the Car Thing while the\nMac is away."
         }
       ]
