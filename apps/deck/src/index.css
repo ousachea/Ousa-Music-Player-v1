@@ -28,6 +28,19 @@
 }
 
 @theme {
+  /* a long line sliding by, one copy's width per loop, resting a beat at the start */
+  --animate-marquee: marquee 12s linear infinite;
+
+  @keyframes marquee {
+    0%,
+    12% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
   /* the background's colour drifting: big soft lights wandering slowly, only their position moving */
   --animate-drift-a: drift-a 26s ease-in-out infinite alternate;
   --animate-drift-b: drift-b 32s ease-in-out infinite alternate;

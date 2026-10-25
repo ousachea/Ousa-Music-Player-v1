@@ -227,6 +227,41 @@ function AppTile({ action, icon, flash, pinned, card, onRun, onPin }: { action: 
   );
 }
 
+// a line that scrolls sideways when it is too long to fit, two copies end to end so the loop has no seam; one that
+// fits sits still. the speed is fixed per character, so long and short lines read at the same pace
+function Marquee({ text, className }: { text: string; className?: string }) {
+  const box = useRef<HTMLDivElement>(null);
+  const line = useRef<HTMLSpanElement>(null);
+  const [over, setOver] = useState(false);
+  useEffect(() => {
+    const fit = () => setOver(!!box.current && !!line.current && line.current.scrollWidth > box.current.clientWidth + 1);
+    fit();
+    document.fonts?.ready.then(fit).catch(() => {});
+  }, [text]);
+  return (
+    <div ref={box} className={`overflow-hidden whitespace-nowrap ${over ? '[mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]' : 'text-center'} ${className ?? ''}`}>
+      {over ? (
+        <div className="inline-flex animate-marquee" style={{ animationDuration: `${Math.max(6, text.length * 0.32)}s` }}>
+          <span className="pr-10">{text}</span>
+          <span className="pr-10" aria-hidden>
+            {text}
+          </span>
+        </div>
+      ) : (
+        // inline-block, since a plain inline span reports no scroll width to measure
+        <span ref={line} className="inline-block">
+          {text}
+        </span>
+      )}
+      {over && (
+        <span ref={line} className="invisible absolute">
+          {text}
+        </span>
+      )}
+    </div>
+  );
+}
+
 // the song and the mac's volume as one card: the cover large, blurred behind the whole card too, the song and its
 // transport under it, and the volume a slim pill at the foot that takes the cover's colour. the pill is dragged
 // sideways or turned with the wheel; a drag shows its own level at once and sends it a few times a second
@@ -250,14 +285,14 @@ function NowPlaying({ mac, media, onSet, onMedia }: { mac: Mac | null; media: Pl
   };
   const waves = level === 0 ? 0 : level < 34 ? 1 : level < 67 ? 2 : 3;
   return (
-    <div className="relative isolate flex w-[230px] shrink-0 flex-col items-center overflow-hidden rounded-[26px] border border-white/10 p-4 shadow-[0_14px_36px_rgba(0,0,0,0.45)]" style={{ ['--tint' as string]: tint }}>
+    <div className="relative isolate flex w-[230px] shrink-0 flex-col items-center overflow-hidden rounded-[26px] border border-white/10 p-3.5 shadow-[0_14px_36px_rgba(0,0,0,0.45)]" style={{ ['--tint' as string]: tint }}>
       {/* the cover again, blurred to fill the card, so the card is the song's colour */}
       <div className="absolute inset-0 -z-10 bg-[#141821]">
         {media?.art && <img src={media.art} alt="" className="h-full w-full scale-150 object-cover opacity-55 blur-2xl" />}
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/70" />
       </div>
 
-      <div className="aspect-square w-[176px] shrink-0 overflow-hidden rounded-2xl bg-white/10 shadow-[0_12px_28px_rgba(0,0,0,0.55)]">
+      <div className="aspect-square w-full shrink-0 overflow-hidden rounded-[18px] bg-white/10 shadow-[0_12px_28px_rgba(0,0,0,0.55)]">
         {media?.art ? (
           <img src={media.art} alt="" className="h-full w-full object-cover" />
         ) : (
@@ -269,12 +304,12 @@ function NowPlaying({ mac, media, onSet, onMedia }: { mac: Mac | null; media: Pl
         )}
       </div>
 
-      <div className="mt-3 w-full text-center">
-        <div className="line-clamp-2 text-[0.95rem] leading-tight font-semibold">{media ? media.title : 'Nothing playing'}</div>
-        <div className="mt-0.5 truncate text-[11px] text-white/60">{media ? [media.artist, media.source].filter(Boolean).join(' · ') : 'Play something on the Mac'}</div>
+      <div className="mt-2.5 w-full">
+        <Marquee text={media ? media.title : 'Nothing playing'} className="text-[0.95rem] leading-tight font-semibold" />
+        <Marquee text={media ? [media.artist, media.source].filter(Boolean).join(' · ') : 'Play something on the Mac'} className="mt-0.5 text-[11px] text-white/60" />
       </div>
 
-      <div className={`mt-auto flex items-center justify-center gap-3 pt-2 ${media ? '' : 'opacity-35'}`}>
+      <div className={`mt-auto flex items-center justify-center gap-3 pt-1 ${media ? '' : 'opacity-35'}`}>
         {(['previous', 'playpause', 'next'] as const).map(c => (
           <button
             key={c}
@@ -287,7 +322,7 @@ function NowPlaying({ mac, media, onSet, onMedia }: { mac: Mac | null; media: Pl
       </div>
 
       <div
-        className="relative mt-3 h-9 w-full shrink-0 cursor-ew-resize touch-none overflow-hidden rounded-full bg-white/12 backdrop-blur-sm"
+        className="relative mt-2.5 h-9 w-full shrink-0 cursor-ew-resize touch-none overflow-hidden rounded-full bg-white/12 backdrop-blur-sm"
         onPointerDown={e => {
           e.currentTarget.setPointerCapture(e.pointerId);
           move(at(e), true);
