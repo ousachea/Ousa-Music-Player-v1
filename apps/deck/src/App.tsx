@@ -1,13 +1,14 @@
 // the deck: tiles that act on the mac the car thing is plugged into. the mac's extension lists what can be run, with
 // each app's own icon, and this page only ever names one of those. presets pick the page, the wheel turns the mac's
-// volume on the first page and scrolls the others, and holding a tile pins it to the last page
+// volume on the first page and scrolls the others, and holding a tile pins it to the head of its own list
 import { BridgethingClient, type PlayerState } from '@bridgething/client';
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { daemonUrl } from './daemon';
 import { CONTROLS, FOCUS_SHORTCUT, readToDeck, type Action, type Clip, type Copied, type Extras, type Front, type Media, type Running, type ToMac } from './protocol';
 
-const PAGES = ['Controls', 'Shortcuts', 'Apps', 'Pinned'] as const;
+// presets 1 to 4 reach the first four; the clipboard is a tap or the mode button away
+const PAGES = ['Controls', 'Shortcuts', 'Apps', 'Running', 'Clipboard'] as const;
 type Page = (typeof PAGES)[number];
 const HOLD_MS = 550;
 // how long the deck waits for the mac to answer before it says what is missing
@@ -20,6 +21,7 @@ type Mac = { volume: number; muted: boolean; micMuted: boolean; media: Media | n
 const ARM_MS = 3000;
 // how far a finger travels before it is a swipe rather than a tap
 const SWIPE_PX = 50;
+const RUNNING_EVERY_MS = 3000;
 // what the music card shows: the car thing's own player, which the desktop app feeds with whatever the mac plays,
 // or failing that what spotify or music reports on the mac
 type Playing = { title: string; artist: string; source: string; playing: boolean; art: string | null; via: 'player' | 'mac' };
@@ -31,6 +33,15 @@ const SORTS: { id: Sort; label: string }[] = [
 ];
 const SORT_KEY = 'sort';
 const KEYS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+
+// the running apps with the one in front in the middle and the rest split either side of it, in their own order
+function centred(apps: Running[]) {
+  const front = apps.find(a => a.active);
+  if (!front) return apps;
+  const others = apps.filter(a => a !== front);
+  const half = Math.floor(others.length / 2);
+  return [...others.slice(0, half), front, ...others.slice(half)];
+}
 
 function ago(at: number) {
   const s = Math.max(0, (Date.now() - at) / 1000);
@@ -64,6 +75,7 @@ const GLYPH: Record<string, ReactNode> = {
   desktop: <path d="M3 5h18v11H3zM8 20h8M12 16v4" />,
   wifi: <path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01" />,
   battery: <path d="M3 8h16v8H3zM19 10.5h2v3h-2" />,
+  bluetooth: <path d="M7 7l10 10-5 4V3l5 4L7 17" />,
   focus: <path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5zM17 3v4M15 5h4" />,
   screensaver: <path d="M3 5h18v12H3zM7 13l3-3 3 3 2-2 3 3M9 20h6" />,
   quit: <path d="M6 6l12 12M18 6L6 18" />,
@@ -86,6 +98,7 @@ const GLYPH: Record<string, ReactNode> = {
 // each control keeps its own colour, the way a hardware deck labels its keys
 const CONTROL_TINT: Record<string, string> = {
   mic: '#ff5d6c',
+  bluetooth: '#3b82f6',
   mute: '#ffb627',
   screenshot: '#4fc3ff',
   mission: '#a78bfa',
@@ -195,6 +208,7 @@ function ControlTile({
     (id === 'awake' && mac?.awake) ||
     (id === 'dark' && mac?.dark) ||
     (id === 'wifi' && mac?.wifi) ||
+    (id === 'bluetooth' && mac?.bluetooth?.on) ||
     (id === 'trash' && armed);
   const glyph = id === 'mic' && mac?.micMuted ? 'mic-off' : id === 'mute' && !mac?.muted ? 'sound' : id;
   const label =
@@ -206,6 +220,8 @@ function ControlTile({
           ? mac?.awake ? 'Staying awake' : 'Keep awake'
           : id === 'wifi'
             ? mac?.wifi === null ? 'No Wi-Fi' : mac?.wifi ? (mac.network ?? 'Wi-Fi on') : 'Wi-Fi off'
+            : id === 'bluetooth'
+              ? !mac?.bluetooth ? 'Bluetooth' : !mac.bluetooth.on ? 'Bluetooth off' : (mac.bluetooth.devices[0] ?? 'Bluetooth on')
             : id === 'battery'
               ? battery ? `${battery.percent}%` : 'No battery'
               : id === 'trash' && armed
@@ -219,6 +235,12 @@ function ControlTile({
         ? `Make a “${FOCUS_SHORTCUT}” shortcut`
         : id === 'trash' && armed
           ? 'to empty the Trash'
+          : id === 'bluetooth' && mac?.bluetooth?.on
+            ? mac.bluetooth.devices.length > 1
+              ? `and ${mac.bluetooth.devices.slice(1).join(', ')}`
+              : mac.bluetooth.devices.length
+                ? 'Connected'
+                : 'Nothing connected'
           : id === 'wifi' && mac?.wifi
               ? [mac.ip, mac.network ? null : 'name hidden by macOS'].filter(Boolean).join(' · ') || null
               : null;
@@ -473,7 +495,8 @@ const TAB_GLYPH: Record<Page, ReactNode> = {
   Controls: <path d="M4 7h10M18 7h2M4 17h4M12 17h8M16 5v4M10 15v4" />,
   Shortcuts: GLYPH.shortcut,
   Apps: <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />,
-  Pinned: GLYPH.pin,
+  Running: <path d="M3 7h12v10H3zM9 4h12v10h-2M6 17v3h12" />,
+  Clipboard: GLYPH.clipboard,
 };
 
 // the moving background: three soft lights drifting behind everything
@@ -502,11 +525,13 @@ export default function App() {
   const [typing, setTyping] = useState(false);
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [ctlPage, setCtlPage] = useState(0);
-  // the command-tab switcher: open or not, what it was sent, and which app the wheel is on
-  const [switcher, setSwitcher] = useState(false);
+  // the running apps and the clipboard pages: what each was sent, and which row the wheel is on
+  const switcher = page === 'Running';
   const [running, setRunning] = useState<Running[]>([]);
   const [pick, setPick] = useState(0);
-  const [clipSheet, setClipSheet] = useState(false);
+  // set on arriving at the running apps, so the first list to come puts the wheel on the app in front
+  const aim = useRef(false);
+  const clipSheet = page === 'Clipboard';
   const [clips, setClips] = useState<Copied[]>([]);
   const [copied, setCopied] = useState<number | null>(null);
   const sheetList = useRef<HTMLDivElement>(null);
@@ -527,7 +552,15 @@ export default function App() {
         const { type: _type, ...now } = m;
         setMac(now);
       }
-      else if (m.type === 'running') setRunning(m.apps);
+      else if (m.type === 'running') {
+        const apps = centred(m.apps);
+        setRunning(apps);
+        // on arriving at the page the wheel starts on the app in front, from where the others spread either side
+        if (aim.current) {
+          aim.current = false;
+          setPick(Math.max(0, apps.findIndex(a => a.active)));
+        }
+      }
       else if (m.type === 'clips') setClips(m.items);
       else {
         setFlash(f => ({ ...f, [m.id]: m.ok ? 'ok' : 'fail' }));
@@ -595,22 +628,26 @@ export default function App() {
     else (playing?.playing ? client.player.pause() : client.player.resume()).catch(() => {});
   };
 
-  const openSwitcher = () => {
-    setRunning([]);
-    setPick(0);
-    setSwitcher(true);
+  // the running apps are asked for on arriving and every few seconds after, so a newly opened app turns up
+  useEffect(() => {
+    if (page !== 'Running') return;
+    aim.current = true;
     send({ type: 'running' });
-  };
-  const openClips = () => {
+    const timer = setInterval(() => send({ type: 'running' }), RUNNING_EVERY_MS);
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+  useEffect(() => {
+    if (page !== 'Clipboard') return;
     setPick(0);
-    setClipSheet(true);
     send({ type: 'clips' });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
   const switchTo = (app: Running) => {
     send({ type: 'switch', path: app.path });
-    setSwitcher(false);
+    setTimeout(() => send({ type: 'running' }), 500);
   };
-  // the sheet stays open after a copy, marking the one copied, so several can be taken in turn
+  // a copy marks the one copied for a moment, so several can be taken in turn
   const copyBack = (clip: Copied) => {
     send({ type: 'copy', id: clip.id });
     setCopied(clip.id);
@@ -648,15 +685,10 @@ export default function App() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      // a sheet up takes the keys: back closes it, a press of the wheel chooses
-      if (switcher || clipSheet) {
-        if (e.key === 'Escape') {
-          setSwitcher(false);
-          setClipSheet(false);
-        } else if (e.key === 'Enter' || e.key === ' ') {
-          if (switcher && running[pick]) switchTo(running[pick]);
-          if (clipSheet && clips[pick]) copyBack(clips[pick]);
-        }
+      // on the running apps and the clipboard a press of the wheel chooses the row it is on
+      if ((switcher || clipSheet) && (e.key === 'Enter' || e.key === ' ')) {
+        if (switcher && running[pick]) switchTo(running[pick]);
+        if (clipSheet && clips[pick]) copyBack(clips[pick]);
         return;
       }
       // with the keyboard up, a real keyboard types too, and back closes it
@@ -695,7 +727,8 @@ export default function App() {
 
   const all = actions ?? CONTROLS;
   const of = (kind: Action['kind']) => all.filter(a => a.kind === kind);
-  const pinned = pins.map(id => all.find(a => a.id === id)).filter((a): a is Action => !!a);
+  // pinned ones lead their own list, in the order they were pinned
+  const pinnedFirst = (list: Action[]) => [...pins.flatMap(id => list.filter(a => a.id === id)), ...list.filter(a => !pins.includes(a.id))];
   const linked = actions !== null;
   const searchable = (page === 'Apps' || page === 'Shortcuts') && of(page === 'Apps' ? 'app' : 'shortcut').length > 0;
 
@@ -718,25 +751,32 @@ export default function App() {
   };
 
   const controlPages: Action[][] = [];
-  of('control').forEach((a, i) => (i % 9 ? controlPages[controlPages.length - 1].push(a) : controlPages.push([a])));
+  pinnedFirst(of('control')).forEach((a, i) => (i % 9 ? controlPages[controlPages.length - 1].push(a) : controlPages.push([a])));
 
   const empty = (text: string) => <div className="grid flex-1 place-items-center px-10 text-center text-title text-soft">{text}</div>;
 
   const found = (kind: 'shortcut' | 'app') => {
     const q = query.trim().toLowerCase();
-    return of(kind).filter(a => !q || a.label.toLowerCase().includes(q));
+    return pinnedFirst(of(kind).filter(a => !q || a.label.toLowerCase().includes(q)));
   };
-  // apps grouped under their category, biggest groups first and other last, or one list by name or by last opened
+  // apps grouped under their category, biggest groups first and other last, or one list by name or by last opened;
+  // either way the pinned ones come first, in a group of their own
   const appSections = (): { title: string | null; items: Action[] }[] => {
     const apps = found('app');
+    const pinnedApps = apps.filter(a => pins.includes(a.id));
+    const rest = apps.filter(a => !pins.includes(a.id));
+    const head = pinnedApps.length ? [{ title: `Pinned · ${pinnedApps.length}`, items: pinnedApps }] : [];
     const byName = (a: Action, b: Action) => a.label.localeCompare(b.label);
-    if (sort === 'az') return [{ title: null, items: [...apps].sort(byName) }];
-    if (sort === 'recent') return [{ title: null, items: [...apps].sort((a, b) => (b.used ?? 0) - (a.used ?? 0) || byName(a, b)) }];
+    if (sort === 'az') return [...head, { title: head.length ? 'All apps' : null, items: [...rest].sort(byName) }];
+    if (sort === 'recent') return [...head, { title: head.length ? 'All apps' : null, items: [...rest].sort((a, b) => (b.used ?? 0) - (a.used ?? 0) || byName(a, b)) }];
     const groups = new Map<string, Action[]>();
-    for (const a of apps) groups.set(a.group ?? 'Other', [...(groups.get(a.group ?? 'Other') ?? []), a]);
-    return [...groups]
-      .sort(([a, x], [b, y]) => (a === 'Other' ? 1 : b === 'Other' ? -1 : y.length - x.length || a.localeCompare(b)))
-      .map(([title, items]) => ({ title: `${title} · ${items.length}`, items: items.sort(byName) }));
+    for (const a of rest) groups.set(a.group ?? 'Other', [...(groups.get(a.group ?? 'Other') ?? []), a]);
+    return [
+      ...head,
+      ...[...groups]
+        .sort(([a, x], [b, y]) => (a === 'Other' ? 1 : b === 'Other' ? -1 : y.length - x.length || a.localeCompare(b)))
+        .map(([title, items]) => ({ title: `${title} · ${items.length}`, items: items.sort(byName) })),
+    ];
   };
 
   // search and, for apps, the sort; the field opens the on-screen keyboard
@@ -812,39 +852,17 @@ export default function App() {
               onClick={() => go(p)}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.8rem] font-semibold transition duration-200 ${p === page ? 'bg-white text-screen shadow-[0_4px_14px_rgba(0,0,0,0.35)]' : 'text-soft'}`}>
               <Svg className="h-3.5 w-3.5">{TAB_GLYPH[p]}</Svg>
-              {/* beside search and sort only the page you are on keeps its name, the others their icon */}
-              {(p === page || !searchable) && p}
+              {/* only the page you are on shows its name; the others are their icon and number */}
+              {p === page && p}
               <span className={`font-mono text-[10px] ${p === page ? 'text-screen/45' : 'text-dim'}`}>{i + 1}</span>
             </button>
           ))}
         </div>
         {searchable && linked && toolbar(page === 'Apps')}
-        {/* the mac's front app and clipboard, each a tap from its sheet; beside search they shrink to their icons */}
-        <div className={`flex shrink-0 items-center gap-0.5 ${searchable && linked ? '' : 'ml-auto'}`}>
-          {linked && mac?.front && (
-            <button onClick={openSwitcher} className="flex items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1 text-[0.78rem] font-semibold text-white transition active:scale-95 active:bg-white/10">
-              {icons[`app:${mac.front.file}`] ? (
-                <img src={`data:image/png;base64,${icons[`app:${mac.front.file}`]}`} alt="" className="h-6 w-6" draggable={false} />
-              ) : (
-                <span className="grid h-6 w-6 place-items-center rounded-md bg-white/15 text-[11px]">{mac.front.name.slice(0, 1)}</span>
-              )}
-              {!searchable && <span className="max-w-[130px] truncate">{mac.front.name}</span>}
-            </button>
-          )}
-          {linked && mac && (
-            <button onClick={openClips} className="flex items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1.5 text-[0.78rem] text-white/85 transition active:scale-95 active:bg-white/10">
-              <span className="grid h-6 w-6 place-items-center rounded-md bg-[#a3e635]/20 text-[#a3e635]">
-                <Svg className="h-4 w-4">{GLYPH.clipboard}</Svg>
-              </span>
-              {!searchable && (
-                <span className="max-w-[120px] truncate">
-                  {mac.clip.kind === 'text' ? mac.clip.text?.split('\n')[0] : mac.clip.kind === 'image' ? 'An image' : mac.clip.kind === 'hidden' ? 'Hidden' : 'Clipboard'}
-                </span>
-              )}
-            </button>
-          )}
-          <span title={linked ? 'mac linked' : 'no mac'} className={`mx-1.5 h-2 w-2 rounded-full ${linked ? 'bg-ok shadow-[0_0_8px_#3ddc84]' : 'bg-warn'}`} />
-        </div>
+        <span
+          title={linked ? 'mac linked' : 'no mac'}
+          className={`mx-1.5 h-2 w-2 shrink-0 rounded-full ${linked ? 'bg-ok shadow-[0_0_8px_#3ddc84]' : 'bg-warn'} ${searchable && linked ? '' : 'ml-auto'}`}
+        />
       </div>
 
       {!linked && waited ? (
@@ -913,101 +931,82 @@ export default function App() {
             </div>
           )}
         </>
-      ) : pinned.length === 0 ? (
-        empty('Hold any tile on the other pages to pin it here.')
-      ) : (
-        <div ref={list} className="-mx-5 -mt-[50px] -mb-4 grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto px-5 pt-[50px] [mask-image:linear-gradient(to_bottom,transparent_18px,#000_50px)] pb-4 [scrollbar-width:none]">
-          {pinned.map(a => (a.kind === 'control' ? <div key={a.id} className="h-[112px] [&>button]:h-full">{tile(a)}</div> : tile(a, true)))}
-        </div>
-      )}
-      {typing && (page === 'Apps' || page === 'Shortcuts') && keyboard}
-
-      {/* the command-tab switcher: every running app as a big icon, the one in front first */}
-      {switcher && (
-        <div className="absolute inset-0 z-30 grid place-items-center bg-black/55 backdrop-blur-sm" onClick={() => setSwitcher(false)}>
-          <div className="max-w-[740px] rounded-[28px] border border-white/10 bg-[#161b25]/90 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" onClick={e => e.stopPropagation()}>
-            {running.length === 0 ? (
-              <div className="px-10 py-6 text-title text-soft">Asking the Mac what is running…</div>
-            ) : (
-              <>
-                {/* padded inside so the chosen app's lift is never clipped by the row's scrolling edge */}
-                <div ref={sheetList} className="-m-2 flex gap-2 overflow-x-auto p-2 [scrollbar-width:none]">
+      ) : page === 'Running' ? (
+        running.length === 0 ? (
+          empty('Asking the Mac what is running…')
+        ) : (
+          <div className="relative min-h-0 flex-1">
+              {/* every app open on the mac, the one in front in the middle, centred both ways; the inner block centres
+                  itself with auto margins, which give way once it outgrows the page, so a long list scrolls from its top */}
+              <div ref={sheetList} className="absolute inset-0 flex flex-col overflow-y-auto [scrollbar-width:none]">
+                <div className="my-auto flex flex-wrap justify-center gap-2">
                   {running.map((app, i) => (
                     <button
                       key={app.path}
                       data-pick={i}
-                      onClick={() => switchTo(app)}
-                      className={`flex w-[116px] shrink-0 flex-col items-center justify-start gap-2 rounded-2xl p-3 transition duration-200 active:scale-95 ${
-                        i === pick ? 'bg-white/12 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28),0_6px_18px_rgba(0,0,0,0.35)]' : ''
+                      onClick={() => {
+                        setPick(i);
+                        switchTo(app);
+                      }}
+                      className={`relative flex w-[140px] flex-col items-center justify-start gap-2 rounded-2xl p-3 transition duration-200 active:scale-95 ${
+                        i === pick ? 'bg-white/12 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : ''
                       }`}>
                       {icons[`run:${app.path}`] ? (
-                        <img
-                          src={`data:image/png;base64,${icons[`run:${app.path}`]}`}
-                          alt=""
-                          className={`h-[72px] w-[72px] transition-transform duration-200 ${i === pick ? 'scale-110' : ''} ${app.hidden ? 'opacity-60' : ''}`}
-                          draggable={false}
-                        />
+                        <img src={`data:image/png;base64,${icons[`run:${app.path}`]}`} alt="" className={`h-[72px] w-[72px] ${app.hidden ? 'opacity-55' : ''}`} draggable={false} />
                       ) : (
                         <span className="grid h-[72px] w-[72px] place-items-center rounded-[18px] bg-white/10 text-[1.6rem] font-bold">{app.name.slice(0, 1)}</span>
                       )}
-                      <span className={`line-clamp-3 w-full text-center text-[0.8rem] leading-tight break-words ${i === pick ? 'font-semibold text-white' : 'text-white/70'}`}>{app.name}</span>
+                      <span className="line-clamp-2 w-full text-center text-[0.82rem] leading-tight font-medium break-words text-white/85">{app.name}</span>
+                      {app.active && <span className="rounded-full bg-ok-soft px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] text-ok uppercase">in front</span>}
+                      {!app.active && app.hidden && <span className="font-mono text-[9px] tracking-[0.15em] text-dim uppercase">hidden</span>}
                     </button>
                   ))}
                 </div>
-                <div className="mt-2 text-center font-mono text-[10px] tracking-[0.2em] text-dim uppercase">wheel to move · press to switch · back to close</div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* the clipboard history, newest first; a tap puts that one back on the mac's clipboard */}
-      {clipSheet && (
-        <div className="absolute inset-0 z-30 grid place-items-center bg-black/55 backdrop-blur-sm" onClick={() => setClipSheet(false)}>
-          <div className="flex h-[400px] w-[640px] flex-col rounded-[28px] border border-white/10 bg-[#161b25]/92 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" onClick={e => e.stopPropagation()}>
-            <div className="mb-3 flex items-center gap-3">
-              <span className="text-[1.05rem] font-semibold">Clipboard history</span>
-              <span className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">kept on the mac until it restarts</span>
-              {clips.length > 0 && (
-                <button onClick={() => send({ type: 'clear-clips' })} className="ml-auto rounded-full bg-white/8 px-3 py-1.5 text-[0.75rem] text-soft">
-                  Clear
-                </button>
-              )}
-              <button onClick={() => setClipSheet(false)} className={`rounded-full bg-white/8 px-3 py-1.5 text-[0.75rem] text-soft ${clips.length ? '' : 'ml-auto'}`}>
-                Close
-              </button>
-            </div>
-            {clips.length === 0 ? (
-              <div className="grid flex-1 place-items-center text-center text-title text-soft">Nothing copied yet. Text you copy on the Mac turns up here.</div>
-            ) : (
-              <div ref={sheetList} className="-m-1.5 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto p-1.5 [scrollbar-width:none]">
-                {clips.map((c, i) => (
-                  <button
-                    key={c.id}
-                    data-pick={i}
-                    onClick={() => copyBack(c)}
-                    className={`flex shrink-0 items-center gap-3 rounded-2xl px-3.5 py-2.5 text-left transition active:scale-[0.98] ${
-                      i === pick ? 'bg-white/14 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : 'bg-white/5'
-                    }`}>
-                    <span className="min-w-0 flex-1">
-                      <span className="line-clamp-2 text-[0.88rem] break-all whitespace-pre-wrap">{c.text}</span>
-                      <span className="mt-0.5 block font-mono text-[10px] text-dim">{i === 0 ? 'on the clipboard now' : ago(c.at)}</span>
-                    </span>
-                    {/* the copy button; the whole row copies too, this says so and shows when it has */}
-                    <span
-                      className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.75rem] font-semibold transition ${
-                        copied === c.id ? 'bg-ok text-screen' : 'bg-white/10 text-white'
-                      }`}>
-                      <Svg className="h-3.5 w-3.5">{copied === c.id ? <path d="M5 12.5l4.5 4.5L19 7.5" /> : GLYPH.clipboard}</Svg>
-                      {copied === c.id ? 'Copied' : 'Copy'}
-                    </span>
-                  </button>
-                ))}
               </div>
+          </div>
+        )
+      ) : page === 'Clipboard' ? (
+        <div className="flex min-h-0 flex-1 flex-col gap-2.5">
+          <div className="flex items-center gap-3 px-1">
+            <span className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">copied text, kept on the mac until it restarts · never a password manager’s</span>
+            {clips.length > 0 && (
+              <button onClick={() => send({ type: 'clear-clips' })} className="ml-auto rounded-full bg-white/8 px-3 py-1.5 text-[0.75rem] text-soft">
+                Clear
+              </button>
             )}
           </div>
+          {clips.length === 0 ? (
+            empty('Nothing copied yet. Text you copy on the Mac turns up here.')
+          ) : (
+            <div ref={sheetList} className="-m-1.5 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto p-1.5 [scrollbar-width:none]">
+              {clips.map((c, i) => (
+                <button
+                  key={c.id}
+                  data-pick={i}
+                  onClick={() => {
+                    setPick(i);
+                    copyBack(c);
+                  }}
+                  className={`flex shrink-0 items-center gap-3 rounded-2xl px-3.5 py-2.5 text-left transition active:scale-[0.98] ${
+                    i === pick ? 'bg-white/14 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : 'bg-white/5'
+                  }`}>
+                  <span className="min-w-0 flex-1">
+                    <span className="line-clamp-2 text-[0.88rem] break-all whitespace-pre-wrap">{c.text}</span>
+                    <span className="mt-0.5 block font-mono text-[10px] text-dim">{i === 0 ? 'on the clipboard now' : ago(c.at)}</span>
+                  </span>
+                  {/* the copy button; the whole row copies too, this says so and shows when it has */}
+                  <span className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.75rem] font-semibold transition ${copied === c.id ? 'bg-ok text-screen' : 'bg-white/10 text-white'}`}>
+                    <Svg className="h-3.5 w-3.5">{copied === c.id ? <path d="M5 12.5l4.5 4.5L19 7.5" /> : GLYPH.clipboard}</Svg>
+                    {copied === c.id ? 'Copied' : 'Copy'}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      ) : null}
+      {typing && (page === 'Apps' || page === 'Shortcuts') && keyboard}
+
     </div>
   );
 }

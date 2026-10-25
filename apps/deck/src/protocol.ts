@@ -9,7 +9,16 @@ export type Media = { app: (typeof MEDIA_APPS)[number]; title: string; artist: s
 // what the toggle and status tiles show; null where this mac has no such thing, a desktop without a battery say
 export type Battery = { percent: number; charging: boolean; plugged: boolean; remaining: string | null };
 // the wifi network's name is null where macos keeps it back, which it does from a process without location access
-export type Extras = { awake: boolean; wifi: boolean | null; network: string | null; ip: string | null; dark: boolean | null; battery: Battery | null };
+export type Extras = {
+  awake: boolean;
+  wifi: boolean | null;
+  network: string | null;
+  ip: string | null;
+  dark: boolean | null;
+  battery: Battery | null;
+  // bluetooth's power and the names of the devices connected now; null where the mac reports nothing
+  bluetooth: { on: boolean; devices: string[] } | null;
+};
 // the app in front on the mac, its name and the bundle file it runs from, and what the clipboard holds. a password
 // manager marks what it copies as concealed, and that is only ever reported as hidden, never its text
 export type Front = { name: string; file: string };
@@ -54,6 +63,7 @@ export const CONTROLS: Action[] = [
   { id: 'dark', label: 'Dark mode', kind: 'control' },
   { id: 'desktop', label: 'Show desktop', kind: 'control' },
   { id: 'wifi', label: 'Wi-Fi', kind: 'control' },
+  { id: 'bluetooth', label: 'Bluetooth', kind: 'control' },
   { id: 'battery', label: 'Battery', kind: 'control' },
   { id: 'focus', label: 'Focus', kind: 'control' },
   { id: 'screensaver', label: 'Screen saver', kind: 'control' },
@@ -67,6 +77,12 @@ export const CONTROLS: Action[] = [
 export const CONTROL_STEPS = ['vol-up', 'vol-down', 'bright-up', 'bright-down'] as const;
 // the shortcut the focus tile runs, since macos has no command for focus of its own
 export const FOCUS_SHORTCUT = 'Toggle Focus';
+
+function readBluetooth(raw: unknown): Extras['bluetooth'] {
+  const b = raw as Record<string, unknown> | null;
+  if (!b || typeof b !== 'object' || typeof b.on !== 'boolean') return null;
+  return { on: b.on, devices: Array.isArray(b.devices) ? b.devices.filter((d): d is string => typeof d === 'string') : [] };
+}
 
 function readClip(raw: unknown): Clip {
   const c = raw as Clip | null;
@@ -121,6 +137,7 @@ export function readToDeck(raw: unknown): ToDeck | null {
       ip: typeof m.ip === 'string' && /^[0-9a-f.:]+$/i.test(m.ip) ? m.ip : null,
       dark: flag(m.dark),
       battery,
+      bluetooth: readBluetooth(m.bluetooth),
     };
   }
   if (m.type === 'icons' && m.icons && typeof m.icons === 'object') {

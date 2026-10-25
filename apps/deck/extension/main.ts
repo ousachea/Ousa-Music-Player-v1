@@ -173,14 +173,21 @@ async function readExtras(awake: boolean): Promise<Extras> {
     const ports = (await run('/usr/sbin/networksetup', ['-listallhardwareports'])) ?? '';
     wifiDevice = /Hardware Port: Wi-Fi\nDevice: (\S+)/.exec(ports)?.[1] ?? null;
   }
-  const [power, summary, ip, style, batt] = await Promise.all([
+  const [power, summary, ip, style, batt, bt] = await Promise.all([
     wifiDevice ? run('/usr/sbin/networksetup', ['-getairportpower', wifiDevice]) : null,
     wifiDevice ? run('/usr/sbin/ipconfig', ['getsummary', wifiDevice]) : null,
     wifiDevice ? run('/usr/sbin/ipconfig', ['getifaddr', wifiDevice]) : null,
     // the key is missing in light mode, which reads as a failed command
     run('/usr/bin/defaults', ['read', '-g', 'AppleInterfaceStyle']),
     run('/usr/bin/pmset', ['-g', 'batt']),
+    jxa(BLUETOOTH_SCRIPT),
   ]);
+  let bluetooth: Extras['bluetooth'] = null;
+  try {
+    bluetooth = bt ? JSON.parse(bt) : null;
+  } catch {
+    // a reading that will not parse shows as no bluetooth
+  }
   return {
     awake,
     wifi: power === null ? null : /: On/.test(power),
@@ -192,8 +199,19 @@ async function readExtras(awake: boolean): Promise<Extras> {
     ip: ip?.trim() || null,
     dark: (style ?? '').trim() === 'Dark',
     battery: batt ? readBattery(batt) : null,
+    bluetooth,
   };
 }
+
+// bluetooth's power and what is connected now, from the bluetooth framework, which answers without a permission
+const BLUETOOTH_SCRIPT = `ObjC.import('IOBluetooth');
+function run() {
+  const paired = ObjC.unwrap($.IOBluetoothDevice.pairedDevices) || [];
+  return JSON.stringify({
+    on: $.IOBluetoothHostController.defaultController.powerState === 1,
+    devices: paired.filter(d => d.isConnected).map(d => ObjC.unwrap(d.name)),
+  });
+}`;
 
 const jxa = (script: string, args: string[] = [], timeoutMs = 8000) => run('/usr/bin/osascript', ['-l', 'JavaScript', '-e', script, ...args], timeoutMs);
 
@@ -266,6 +284,8 @@ defineExtension({
     let hidden: string[] = [];
     // the last list the switcher was sent, so a switch can only name one of those
     let running: Running[] = [];
+    // the running apps' icons already sent to this page, since the list is asked for every few seconds
+    let runSent = new Set<string>();
     // copied text, newest first, in memory only, so it is gone when the extension stops
     let clips: Copied[] = [];
     let clipId = 0;
@@ -316,6 +336,7 @@ defineExtension({
     // a page that has just opened has no icons yet, so they all go again
     const fresh = () => {
       sent = new Set();
+      runSent = new Set();
       catalog().then(() => state());
     };
     // the status readings change slowly, so they are read again only every so often, or after a tile changes one
@@ -347,6 +368,9 @@ defineExtension({
         return capture(['-x', '-c']);
       }
       if (id === 'mission') return (await run('/usr/bin/open', ['-a', 'Mission Control'])) !== null;
+      // macos has no supported switch for bluetooth's power, and turning it off would drop a bluetooth mouse or
+      // keyboard, so the tile opens bluetooth's settings, where devices are connected and the power is
+      if (id === 'bluetooth') return (await run('/usr/bin/open', ['x-apple.systempreferences:com.apple.BluetoothSettings'])) !== null;
       if (id === 'display-sleep') return (await run('/usr/bin/pmset', ['displaysleepnow'])) !== null;
       if (id === 'sleep') return (await run('/usr/bin/pmset', ['sleepnow'])) !== null;
       if (id === 'awake') {
@@ -437,7 +461,9 @@ defineExtension({
           // icons for running apps the catalogue does not hold, finder say, drawn once by path
           const missing = running.map(a => a.path).filter(path => !icons.has(path));
           for (const [path, png] of Object.entries(await jxaJson<string>(ICON_SCRIPT, missing))) icons.set(path, png);
-          send({ type: 'icons', icons: Object.fromEntries(running.flatMap(a => (icons.has(a.path) ? [[`run:${a.path}`, icons.get(a.path)!]] : []))) });
+          const due = running.filter(a => icons.has(a.path) && !runSent.has(a.path));
+          if (due.length) send({ type: 'icons', icons: Object.fromEntries(due.map(a => [`run:${a.path}`, icons.get(a.path)!])) });
+          due.forEach(a => runSent.add(a.path));
         });
       } else if (m.type === 'switch' && typeof m.path === 'string' && running.some(a => a.path === m.path)) {
         // open brings a running app to the front, unhiding it, as choosing it in command-tab does

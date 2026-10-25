@@ -29,7 +29,9 @@ test('state is clamped, media must name a known player, and results need an id',
     ip: null,
     dark: null,
     battery: null,
+    bluetooth: null,
   });
+  expect(readToDeck({ type: 'state', volume: 1, bluetooth: { on: true, devices: ['MX Master 3', 4] } })).toMatchObject({ bluetooth: { on: true, devices: ['MX Master 3'] } });
   expect(readToDeck({ type: 'state', volume: 5, media: { app: 'Spotify', title: 'Song', artist: 'Band', playing: true } })).toMatchObject({ media: { app: 'Spotify', title: 'Song', playing: true } });
   expect(readToDeck({ type: 'state', volume: 5, media: { app: 'VLC', title: 'Song' } })).toMatchObject({ media: null });
   expect(readToDeck({ type: 'result', ok: true })).toBeNull();
