@@ -289,11 +289,13 @@ function Volume({ mac, media, onSet, onMedia }: { mac: Mac | null; media: Playin
       </div>
       {/* what spotify or music is playing on the mac, with its transport */}
       <div className="w-full">
-        <div className="flex items-center gap-2.5">
-          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white/10">{media?.art && <img src={media.art} alt="" className="h-full w-full object-cover" />}</div>
+        <div className="flex items-center gap-3">
+          <div className="h-[68px] w-[68px] shrink-0 overflow-hidden rounded-xl bg-white/10 shadow-[0_6px_16px_rgba(0,0,0,0.45)]">
+            {media?.art && <img src={media.art} alt="" className="h-full w-full object-cover" />}
+          </div>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-[0.85rem] font-semibold">{media ? media.title : 'Nothing playing'}</div>
-            <div className="truncate text-[11px] text-dim">{media ? [media.artist, media.source].filter(Boolean).join(' · ') : 'Play something on the Mac'}</div>
+            <div className="line-clamp-2 text-[0.92rem] leading-tight font-semibold">{media ? media.title : 'Nothing playing'}</div>
+            <div className="mt-0.5 truncate text-[11px] text-dim">{media ? [media.artist, media.source].filter(Boolean).join(' · ') : 'Play something on the Mac'}</div>
           </div>
         </div>
         <div className={`mt-2 flex items-center justify-center gap-2 ${media ? '' : 'opacity-35'}`}>
