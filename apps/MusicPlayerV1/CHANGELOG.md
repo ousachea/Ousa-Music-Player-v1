@@ -4,6 +4,10 @@
 
 The Calendar and Karaoke styles are gone. If either was your style, the player opens in Cover.
 
+The styles are numbered and reordered so similar ones sit together: the artwork, records and tapes, devices,
+the road, words, screens, signs, then paper. Mode steps through them in the same order, and the Style tab shows
+the number with the name.
+
 ## 0.46.3
 
 Polaroid's print passes over the buttons when it is shuffled out across them, rather than under.

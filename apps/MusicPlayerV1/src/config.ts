@@ -5,8 +5,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { POCKET_BODIES, type PocketBody } from './pocket';
 import { GLOWS, type Glow } from './stereo';
 
-// every player style, in the order Mode steps through them; widget, the first, is the default
-export const THEMES = ['widget', 'vinyl', 'cd', 'cassette', 'dial', 'stereo', 'flow', 'pocket', 'poster', 'lyrics', 'night', 'flap', 'receipt', 'jukebox', 'polaroid', 'pixel', 'dashboard', 'neon', 'mosaic', 'ambient', 'tuner', 'typewriter', 'terminal', 'ticket', 'film', 'comic', 'magazine', 'speedo', 'sheet', 'departures', 'handheld', 'vapor', 'scope', 'stamp'] as const;
+// every player style, in the order Mode steps through them and the picker numbers them, kin kept together:
+// the artwork, records and tapes, devices, the road, words, screens, signs, then paper. widget, the first, is the default
+export const THEMES = ['widget', 'poster', 'ambient', 'mosaic', 'flow', 'polaroid', 'vinyl', 'cd', 'cassette', 'film', 'stereo', 'tuner', 'dial', 'jukebox', 'pocket', 'handheld', 'pixel', 'dashboard', 'speedo', 'night', 'lyrics', 'typewriter', 'sheet', 'terminal', 'scope', 'flap', 'departures', 'neon', 'vapor', 'receipt', 'ticket', 'stamp', 'magazine', 'comic'] as const;
 
 // the seek bar kinds; auto picks the one that suits the style
 export const SEEKS = ['bar', 'wave', 'cells', 'dots', 'glow', 'hand', 'pill', 'ruler', 'pulse', 'stripes'] as const;

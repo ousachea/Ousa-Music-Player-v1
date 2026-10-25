@@ -1248,7 +1248,7 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
     values: [...THEMES],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel', 'Dashboard', 'Neon', 'Mosaic', 'Ambient', 'Tuner', 'Typewriter', 'Terminal', 'Ticket', 'Film strip', 'Comic', 'Magazine', 'Speedometer', 'Sheet music', 'Departures', 'Handheld', 'Vaporwave', 'Oscilloscope', 'Stamp'],
+    labels: ['Cover', 'Poster', 'Ambient', 'Mosaic', 'Flow', 'Polaroid', 'Vinyl', 'CD', 'Cassette', 'Film strip', 'Stereo', 'Tuner', 'Dial', 'Jukebox', 'Pocket', 'Handheld', 'Pixel', 'Dashboard', 'Speedometer', 'Night', 'Lyrics', 'Typewriter', 'Sheet music', 'Terminal', 'Oscilloscope', 'Split-flap', 'Departures', 'Neon', 'Vaporwave', 'Receipt', 'Ticket', 'Stamp', 'Magazine', 'Comic'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   polaroidFrame: { values: [...FRAMES], labels: ['White', 'Black', 'Cream', 'Album'] },
@@ -1503,7 +1503,11 @@ function Panel({
               <Glyph name={name} className={`h-5 w-5 shrink-0 ${on ? '' : 'opacity-70'}`} />
               <span className="flex flex-col">
                 <span className="text-row-lg font-semibold">{name}</span>
-                {name === 'Style' && <span className={`text-hint ${on ? 'opacity-70' : 'text-dim'}`}>{styleName}</span>}
+                {name === 'Style' && (
+                  <span className={`text-hint ${on ? 'opacity-70' : 'text-dim'}`}>
+                    {ENUMS.theme.values.indexOf(prefs.theme) + 1} · {styleName}
+                  </span>
+                )}
                 {name === 'About' && <span className={`font-mono text-hint tabular-nums ${on ? 'opacity-70' : 'text-dim'}`}>Version {version}</span>}
               </span>
             </button>
@@ -1533,6 +1537,7 @@ function Panel({
                 ink={ink}
                 cols={upright ? 4 : 5}
                 art={value => <Glyph name={value} className="h-6 w-6" />}
+                numbered
                 // the panel gets out of the way so the style is seen first; its settings, if it has any, are
                 // where the panel opens next time
                 onPick={next => {
@@ -1707,6 +1712,7 @@ function StyleGrid({
   ink,
   cols = 4,
   art,
+  numbered,
   onPick,
 }: {
   values: string[];
@@ -1717,6 +1723,8 @@ function StyleGrid({
   cols?: 4 | 5;
   // a picture over each label, given the value and whether its tile is the chosen one
   art?: (value: string, on: boolean) => ReactNode;
+  // the styles carry their place in the order, which is the one Mode steps through
+  numbered?: boolean;
   onPick: (next: string) => void;
 }) {
   return (
@@ -1730,9 +1738,10 @@ function StyleGrid({
             onClick={() => onPick(option)}
             style={on ? { backgroundColor: tint, color: ink } : undefined}
             // padded so the longest names stop short of the tile's edge, set a size down under a picture to fit
-            className={`flex min-w-0 items-center justify-center rounded-xl px-1.5 text-center font-medium whitespace-nowrap transition duration-200 active:scale-95 ${
+            className={`relative flex min-w-0 items-center justify-center rounded-xl px-1.5 text-center font-medium whitespace-nowrap transition duration-200 active:scale-95 ${
               art ? 'h-16 flex-col gap-1 text-[0.8125rem] leading-tight' : 'h-11 gap-1.5 text-row'
             } ${on ? '' : 'bg-white/10 text-dim'}`}>
+            {numbered && <span className="absolute top-1 left-2 font-mono text-[10px] tabular-nums opacity-55">{i + 1}</span>}
             {art?.(option, on)}
             {labels[i]}
           </button>

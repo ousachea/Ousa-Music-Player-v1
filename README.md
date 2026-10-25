@@ -54,7 +54,48 @@ record or disc. Anything you can tap to change a style's look, such as the recor
 slider, the tape-design key and the Polaroid's photo, lights up for a moment every so often so it gets found.
 In Cover, CD, Flow, Pocket and Poster a long song title shrinks to fit rather than being cut off.
 
-### Vinyl
+### 1. Cover
+
+![Cover style](apps/MusicPlayerV1/screenshots/01-cover.jpg)
+
+A phone lock screen layout: the art, the track, a progress bar, the transport and its own volume
+slider. Options: **Panel behind the track**, **Volume slider**, **Art to the edge**, and **Art pulse**
+with a tempo.
+
+### 2. Poster
+
+![Poster style](apps/MusicPlayerV1/screenshots/04-poster.jpg)
+
+The artwork fills the screen with the track laid over it, a slowly turning play button, and a wavy
+progress line that travels while the music runs.
+
+### 3. Ambient
+
+Only the album's colours, drifting and swirling across the screen. The song's name shows when it starts and fades away; tap the
+screen to bring the name and the buttons back for a few seconds. The presets work throughout.
+
+### 4. Mosaic
+
+A wall of what has recently played, each cover once, newest nearest the middle, where the song playing
+now is large and lit. Every few seconds a tile turns over to another cover, and the middle one slowly
+pushes in and back. Tap it to play or pause.
+
+### 5. Flow
+
+![Flow style](apps/MusicPlayerV1/screenshots/11-flow.jpg)
+
+Cover flow: the current cover in the middle, up next to the right and just played to the left. Tap
+the middle to play or pause, or a side cover to jump to it. With nothing queued, the buttons fill the
+empty right side. **Background** is a dark wash of the album's colours, or black.
+
+### 6. Polaroid
+
+The cover as an instant print, with the title written under it by hand, dropped at its own slight angle
+for each track on a table tinted by the album. A print in each of the other frames lies in the pile under it, in
+the order they come up. Tap the photo and it is shuffled to the bottom of the pile like a card, the next print
+rising in its place: white, black, cream, or album, which takes the frame's colour from the cover (**Frame**).
+
+### 7. Vinyl
 
 ![Vinyl style](apps/MusicPlayerV1/screenshots/02-vinyl.jpg)
 
@@ -70,7 +111,7 @@ arrangements, and tapping the middle of the record steps through them:
 
 **Record colour** presses the disc in black, the album's colour, or a marble of its two colours.
 
-### CD
+### 8. CD
 
 ![CD style](apps/MusicPlayerV1/screenshots/03-cd.jpg)
 
@@ -80,7 +121,7 @@ while the track plays. **Look** picks a frosted **White** shell or a smoked **Bl
 to switch. Tap the cover on the slider to print it across the disc instead: the slider slides away
 and the shell takes the cover's colour; tap the disc to bring them back (**Disc**: Colour or Artwork). The clock sits above the song, with the progress bar and a three-part transport below.
 
-### Cassette
+### 9. Cassette
 
 ![Cassette style](apps/MusicPlayerV1/screenshots/07-cassette.jpg)
 
@@ -94,15 +135,12 @@ The whole tape is coloured from the cover, and each track gets its own pattern. 
 progress bar: the left empties as the right fills. The play key latches down while playing.
 **Artwork on the label** adds the cover to the written label.
 
-### Dial
+### 10. Film strip
 
-![Dial style](apps/MusicPlayerV1/screenshots/09-dial.jpg)
+What has played runs past as frames on a strip of film, sprocket holes and all, with the song playing now
+lit in the projector's gate in the middle.
 
-A jog wheel beside a card. Progress runs round the dial as an arc in the album's colour, with the
-cover turning in the middle and ten-second skip keys either side. The card shows scrolling lyrics
-(or the album and track when there are none), and the transport underneath.
-
-### Stereo
+### 11. Stereo
 
 ![Stereo style](apps/MusicPlayerV1/screenshots/10-stereo.jpg)
 
@@ -115,15 +153,27 @@ badges, and a volume readout on the display itself.
 - **Light or dark**: the glowing night display, a crisp daylight one with dark dots on pale glass, or
   **Auto** (light in the AM, dark in the PM, by the phone's clock). Tap the clock to switch.
 
-### Flow
+### 12. Tuner
 
-![Flow style](apps/MusicPlayerV1/screenshots/11-flow.jpg)
+An old radio: a red needle travels the FM scale as the song plays, the song is written on the station
+card, and the buttons are ivory preset keys.
 
-Cover flow: the current cover in the middle, up next to the right and just played to the left. Tap
-the middle to play or pause, or a side cover to jump to it. With nothing queued, the buttons fill the
-empty right side. **Background** is a dark wash of the album's colours, or black.
+### 13. Dial
 
-### Pocket
+![Dial style](apps/MusicPlayerV1/screenshots/09-dial.jpg)
+
+A jog wheel beside a card. Progress runs round the dial as an arc in the album's colour, with the
+cover turning in the middle and ten-second skip keys either side. The card shows scrolling lyrics
+(or the album and track when there are none), and the transport underneath.
+
+### 14. Jukebox
+
+What is playing sits under a lit arch in the album's colours, and what is queued on the phone shows as
+the title strips of a jukebox selector. Tap a strip to play it. A source with no queue of its own, such
+as a browser tab on the computer, shows what has recently played instead, where the latest can be tapped
+to go back to it.
+
+### 15. Pocket
 
 A pocket music player held sideways: a full-height screen with the cover, track and progress bar,
 and a click wheel beside it. Turned upright, the screen stands above the wheel.
@@ -134,22 +184,34 @@ and a click wheel beside it. Turned upright, the screen stands above the wheel.
 - **Body colour**: silver, black, blue, pink, green, red, gold, or Album, which takes the cover's
   colour. Tap the dot in the screen's corner to step through them.
 
-### Poster
+### 16. Handheld
 
-![Poster style](apps/MusicPlayerV1/screenshots/04-poster.jpg)
+An old pocket console with a four shade green screen. The cover is sampled down to a few dozen pixels in
+the four greens, the pad skips, A plays or pauses and B goes to the next song.
 
-The artwork fills the screen with the track laid over it, a slowly turning play button, and a wavy
-progress line that travels while the music runs.
+### 17. Pixel
 
-### Cover
+The cover taken down to 32 by 32 in a handheld's few colours, with the track in block letters and the
+progress as a row of cells.
 
-![Cover style](apps/MusicPlayerV1/screenshots/01-cover.jpg)
+### 18. Dashboard
 
-A phone lock screen layout: the art, the track, a progress bar, the transport and its own volume
-slider. Options: **Panel behind the track**, **Volume slider**, **Art to the edge**, and **Art pulse**
-with a tempo.
+The song as a car's instrument cluster: the big gauge's needle sweeps the length of the track, the
+small one reads the volume, and the screen between them shows the cover, the title and an odometer of
+the time played.
 
-### Lyrics
+### 19. Speedometer
+
+One big sports car dial. The needle sweeps the song's length, the dial is marked in its minutes, and the
+last stretch is the red line.
+
+### 20. Night
+
+For driving after dark. Nothing is bright: a clock across the width of the screen leads, the track sits
+under it, all in a dim tint of the cover's colour, and the cover is only a faint smear of its own colour behind them. The seek
+bar and large outlined buttons share the bottom row, easy to hit without looking.
+
+### 21. Lyrics
 
 ![Lyrics style](apps/MusicPlayerV1/screenshots/05-lyrics.jpg)
 
@@ -159,139 +221,77 @@ runs as a hairline along the top. The art and track sit in a corner you pick (**
 plus and minus set the text size. Unsynced lyrics show as a page; with none, the art and track show
 instead.
 
-### Night
-
-For driving after dark. Nothing is bright: a clock across the width of the screen leads, the track sits
-under it, all in a dim tint of the cover's colour, and the cover is only a faint smear of its own colour behind them. The seek
-bar and large outlined buttons share the bottom row, easy to hit without looking.
-
-### Split-flap
-
-The track on a departures board that fills the screen: the cells are as big as the title allows in up
-to three rows, so a short title gets huge tiles. Each letter flips through the drum before it lands, in a
-ripple from the left, whenever the song changes, and the time flips along with it. Khmer and other joined scripts
-land whole rather than flipping.
-
-### Receipt
-
-Every song is printed on a till roll that fills the screen, with the time it came on, so what has
-played stacks up above what is playing, one line each, with a song count and total time at the foot.
-The torn edge stays at the bottom of the screen; drag the roll to read back. The roll lasts until the
-app restarts.
-
-### Jukebox
-
-What is playing sits under a lit arch in the album's colours, and what is queued on the phone shows as
-the title strips of a jukebox selector. Tap a strip to play it. A source with no queue of its own, such
-as a browser tab on the computer, shows what has recently played instead, where the latest can be tapped
-to go back to it.
-
-### Polaroid
-
-The cover as an instant print, with the title written under it by hand, dropped at its own slight angle
-for each track on a table tinted by the album. A print in each of the other frames lies in the pile under it, in
-the order they come up. Tap the photo and it is shuffled to the bottom of the pile like a card, the next print
-rising in its place: white, black, cream, or album, which takes the frame's colour from the cover (**Frame**).
-
-### Pixel
-
-The cover taken down to 32 by 32 in a handheld's few colours, with the track in block letters and the
-progress as a row of cells.
-
-### Dashboard
-
-The song as a car's instrument cluster: the big gauge's needle sweeps the length of the track, the
-small one reads the volume, and the screen between them shows the cover, the title and an odometer of
-the time played.
-
-### Neon
-
-The title bent in glowing tube on a dark brick wall, in the album's colours. It flickers on when the song
-changes and buzzes now and then while it plays.
-
-### Mosaic
-
-A wall of what has recently played, each cover once, newest nearest the middle, where the song playing
-now is large and lit. Every few seconds a tile turns over to another cover, and the middle one slowly
-pushes in and back. Tap it to play or pause.
-
-### Ambient
-
-Only the album's colours, drifting and swirling across the screen. The song's name shows when it starts and fades away; tap the
-screen to bring the name and the buttons back for a few seconds. The presets work throughout.
-
-### Tuner
-
-An old radio: a red needle travels the FM scale as the song plays, the song is written on the station
-card, and the buttons are ivory preset keys.
-
-### Typewriter
+### 22. Typewriter
 
 Each song typed onto a sheet that runs the width of the screen, a letter at a time when it starts, with
 the last few still on the page above, and the machine's round keys for the buttons.
 
-### Terminal
+### 23. Sheet music
+
+The song engraved as a score: the title heads the page, the artist signs it, and a tune made from the song
+runs across the staff, inked in as the song plays past each note.
+
+### 24. Terminal
 
 The song printed on a green-on-black command line while code rains down the screen behind it non-stop,
 the way it does in The Matrix. Each new song streams in under the last few, with an ASCII progress bar, a
 cursor at the prompt, and bracketed commands for the buttons. The **[ green ]** key in the bottom right
 trades the classic green for the cover's own colour, text and rain alike (**Text colour**).
 
-### Ticket
-
-The song as a concert ticket: the whole cover as a square poster, the title as the act, the artist as the venue, and a
-stub with a seat and barcode made from the song. Tap the stub to tear it off; a new one grows back.
-
-### Film strip
-
-What has played runs past as frames on a strip of film, sprocket holes and all, with the song playing now
-lit in the projector's gate in the middle.
-
-### Comic
-
-The cover as a halftone comic panel, the title in a speech bubble, the artist in a caption box, and a burst
-(POW!, BAM!, ZAP!) going off when the song changes. Tap the artwork for another word, and the burst moves to another corner. Turned upright, the
-panel fills the width as a square with everything else stacked under it.
-
-### Magazine
-
-The song as the front of a magazine: a masthead, the art full bleed, the title as the cover story, and the
-artist, album and running time as the cover lines.
-
-### Speedometer
-
-One big sports car dial. The needle sweeps the song's length, the dial is marked in its minutes, and the
-last stretch is the red line.
-
-### Sheet music
-
-The song engraved as a score: the title heads the page, the artist signs it, and a tune made from the song
-runs across the staff, inked in as the song plays past each note.
-
-### Departures
-
-An airport board. The song playing is the flight boarding now, and what is queued on the phone lines up
-under it, each due when the songs before it have played.
-
-### Handheld
-
-An old pocket console with a four shade green screen. The cover is sampled down to a few dozen pixels in
-the four greens, the pad skips, A plays or pauses and B goes to the next song.
-
-### Vaporwave
-
-A striped sun behind a grid running to the horizon, a chrome title, and the cover in an old desktop
-window.
-
-### Oscilloscope
+### 25. Oscilloscope
 
 A green trace on a CRT with its graticule, made from the song and moving while it plays. Tap the screen
 for an X-Y circle.
 
-### Postage stamp
+### 26. Split-flap
+
+The track on a departures board that fills the screen: the cells are as big as the title allows in up
+to three rows, so a short title gets huge tiles. Each letter flips through the drum before it lands, in a
+ripple from the left, whenever the song changes, and the time flips along with it. Khmer and other joined scripts
+land whole rather than flipping.
+
+### 27. Departures
+
+An airport board. The song playing is the flight boarding now, and what is queued on the phone lines up
+under it, each due when the songs before it have played.
+
+### 28. Neon
+
+The title bent in glowing tube on a dark brick wall, in the album's colours. It flickers on when the song
+changes and buzzes now and then while it plays.
+
+### 29. Vaporwave
+
+A striped sun behind a grid running to the horizon, a chrome title, and the cover in an old desktop
+window.
+
+### 30. Receipt
+
+Every song is printed on a till roll that fills the screen, with the time it came on, so what has
+played stacks up above what is playing, one line each, with a song count and total time at the foot.
+The torn edge stays at the bottom of the screen; drag the roll to read back. The roll lasts until the
+app restarts.
+
+### 31. Ticket
+
+The song as a concert ticket: the whole cover as a square poster, the title as the act, the artist as the venue, and a
+stub with a seat and barcode made from the song. Tap the stub to tear it off; a new one grows back.
+
+### 32. Postage stamp
 
 The cover as a perforated stamp on an airmail envelope, the artist as its country and the length as its
 value, cancelled by a postmark with today's date.
+
+### 33. Magazine
+
+The song as the front of a magazine: a masthead, the art full bleed, the title as the cover story, and the
+artist, album and running time as the cover lines.
+
+### 34. Comic
+
+The cover as a halftone comic panel, the title in a speech bubble, the artist in a caption box, and a burst
+(POW!, BAM!, ZAP!) going off when the song changes. Tap the artwork for another word, and the burst moves to another corner. Turned upright, the
+panel fills the width as a square with everything else stacked under it.
 
 ### The queue
 
@@ -308,7 +308,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel, Dashboard, Neon, Mosaic, Ambient, Tuner, Typewriter, Terminal, Ticket, Film strip, Comic, Magazine, Speedometer, Sheet music, Departures, Handheld, Vaporwave, Oscilloscope, Stamp |
+| Mode, the button past the presets | Cycle the player style in its numbered order: Cover, Poster, Ambient, Mosaic, Flow, Polaroid, Vinyl, CD, Cassette, Film strip, Stereo, Tuner, Dial, Jukebox, Pocket, Handheld, Pixel, Dashboard, Speedometer, Night, Lyrics, Typewriter, Sheet music, Terminal, Oscilloscope, Split-flap, Departures, Neon, Vaporwave, Receipt, Ticket, Stamp, Magazine, Comic |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -336,7 +336,8 @@ Press the button under the wheel; it opens where you left it, section and scroll
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
-- **Style**: the thirty-four styles as a grid. Tap one to switch to it: the settings close so you see the
+- **Style**: the thirty-four styles as a numbered grid, kin kept together (the artwork, records and tapes,
+  devices, the road, words, screens, signs, then paper), in the order Mode steps through them. Tap one to switch to it: the settings close so you see the
   style first, and next time they open on its own settings (backdrop, time remaining and the rest), or on
   the grid for a style with none; **All styles**, or the button under the wheel, goes back
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
