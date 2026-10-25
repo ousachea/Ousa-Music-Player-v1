@@ -1079,6 +1079,7 @@ export default function App() {
           artUrl={artUrl}
           stylePage={stylePage}
           onStylePage={setStylePage}
+          onClose={() => setPanel(false)}
         />
       )}
     </div>
@@ -1299,6 +1300,7 @@ function Panel({
   artUrl,
   stylePage,
   onStylePage,
+  onClose,
 }: {
   client: BridgethingClient;
   prefs: Prefs;
@@ -1307,6 +1309,7 @@ function Panel({
   artUrl: string | null;
   stylePage: boolean;
   onStylePage: (open: boolean) => void;
+  onClose: () => void;
 }) {
   // the pixel size is what tells you whether the sharper lookup actually landed
   const [artPx, setArtPx] = useState<string | null>(null);
@@ -1346,6 +1349,11 @@ function Panel({
   const rows = (tab === 'Style' ? STYLE_ROWS : (GROUPS.find(g => g.title === tab)?.rows ?? [])).filter(r =>
     shown(r, read),
   );
+  // a style with nothing to set has no page; the mode button can land on one while its page was the last thing open
+  const hasRows = (theme: string) => STYLE_ROWS.some(r => shown(r, key => (key === 'theme' ? theme : read(key))));
+  useEffect(() => {
+    if (stylePage && !hasRows(prefs.theme)) onStylePage(false);
+  });
   const tint = accent?.fill ?? '#efefef';
   const ink = accent?.ink ?? '#060809';
   const { state: update, check } = useUpdateCheck(client);
@@ -1502,6 +1510,7 @@ function Panel({
               <span className="flex flex-col">
                 <span className="text-row-lg font-semibold">{name}</span>
                 {name === 'Style' && <span className={`text-hint ${on ? 'opacity-70' : 'text-dim'}`}>{styleName}</span>}
+                {name === 'About' && <span className={`font-mono text-hint tabular-nums ${on ? 'opacity-70' : 'text-dim'}`}>Version {version}</span>}
               </span>
             </button>
           );
@@ -1520,7 +1529,7 @@ function Panel({
           onScroll={onScroll}
           className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pl-4 [scrollbar-width:none]">
           {/* the grid picks a style and slides its own settings over, rather than piling them under 22 tiles */}
-          {tab === 'Style' && !stylePage && (
+          {tab === 'Style' && !(stylePage && rows.length > 0) && (
             <div key="grid" className={prefs.motion && backing ? 'animate-slide-from-left' : ''}>
               <StyleGrid
                 values={ENUMS.theme.values}
@@ -1530,14 +1539,17 @@ function Panel({
                 ink={ink}
                 cols={upright ? 4 : 5}
                 art={value => <Glyph name={value} className="h-6 w-6" />}
+                // the panel gets out of the way so the style is seen first; its settings, if it has any, are
+                // where the panel opens next time
                 onPick={next => {
                   setPref('theme', next);
-                  onStylePage(true);
+                  onStylePage(hasRows(next));
+                  onClose();
                 }}
               />
             </div>
           )}
-          {tab === 'Style' && stylePage && (
+          {tab === 'Style' && stylePage && rows.length > 0 && (
             <div key="page" className={`flex flex-col gap-4 ${prefs.motion ? 'animate-slide-from-right' : ''}`}>
               <button
                 onClick={() => onStylePage(false)}
@@ -1551,11 +1563,7 @@ function Panel({
                   {styleName}
                 </span>
               </button>
-              {rows.length === 0 ? (
-                <p className="rounded-2xl bg-white/4 px-4 py-5 text-center text-row text-dim">{styleName} has no settings of its own.</p>
-              ) : (
-                <div className="shrink-0 rounded-2xl bg-white/4">{rows.map((row, i) => rowView(row, i === rows.length - 1))}</div>
-              )}
+              <div className="shrink-0 rounded-2xl bg-white/4">{rows.map((row, i) => rowView(row, i === rows.length - 1))}</div>
             </div>
           )}
           {tab !== 'Style' && rows.length > 0 && (
@@ -1565,15 +1573,6 @@ function Panel({
           {tab === 'About' && (
             <>
               <div className="shrink-0 rounded-2xl bg-white/4">
-                <div className="flex items-center justify-between gap-5 border-b border-white/6 px-4 py-2">
-                  <div className="min-w-0">
-                    <div className="truncate text-title text-near">Version</div>
-                    <div className="truncate text-hint text-dim">O-Music Player, installed on this Car Thing</div>
-                  </div>
-                  <span className="shrink-0 rounded-full px-5 py-2 font-mono text-row font-medium tabular-nums" style={{ backgroundColor: 'rgba(255,255,255,0.10)', color: tint }}>
-                    {version}
-                  </span>
-                </div>
                 <div className="flex items-center justify-between gap-5 border-b border-white/6 px-4 py-2">
                   <div className="min-w-0">
                     <div className="truncate text-title text-near">Software update</div>

@@ -346,9 +346,9 @@ Press the button under the wheel; it opens where you left it, section and scroll
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
-- **Style**: the thirty-six styles as a grid. Tap one to switch to it, and its own settings (backdrop,
-  time remaining and the rest) slide in over the grid; **All styles**, or the button under the wheel, goes
-  back
+- **Style**: the thirty-six styles as a grid. Tap one to switch to it: the settings close so you see the
+  style first, and next time they open on its own settings (backdrop, time remaining and the rest), or on
+  the grid for a style with none; **All styles**, or the button under the wheel, goes back
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
 - **Controls**: what the wheel does, seek step, the offer to hide the on-screen buttons, seek bar
   style and playhead dot. The seek bar comes as a plain line, a wave, lit cells, dots, a neon glow, a
@@ -359,7 +359,8 @@ tile carries a small picture of the style, and a setting that needs explaining h
   each style's own. Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Terminal
   and Handheld draw their own buttons and keep them
 - **Clock**: position, size, 12/24 hour, seconds
-- **About**: the installed version, check for updates, and the size of the album art that arrived
+- **About**: check for updates, and the size of the album art that arrived. The installed version is
+  under the About tab's name
 
 A setting that only matters once another is on stays hidden until then: clock size with the clock on,
 seek step with the wheel set to scrub, backdrop blur with a backdrop at all.

@@ -1,5 +1,9 @@
 # O-Music Player
 
+## 0.46.2
+
+Picking a style closes the settings so you see it first; they open on its own settings next time, and a style with none no longer opens an empty page. The installed version sits under the About tab's name.
+
 ## 0.46.1
 
 The settings tiles keep their names clear of the tile's edge: Speedometer, Oscilloscope, Sheet music and the other long names no longer touch it.
