@@ -21,8 +21,8 @@ type Mac = { volume: number; muted: boolean; micMuted: boolean; media: Media | n
 const ARM_MS = 3000;
 // how far a finger travels before it is a swipe rather than a tap
 const SWIPE_PX = 50;
-// how long one tap on a running app waits to see whether more are coming
-const TAP_WAIT_MS = 450;
+// how long a running app is held down before it quits
+const QUIT_HOLD_MS = 1000;
 const RUNNING_EVERY_MS = 3000;
 // what the music card shows: the car thing's own player, which the desktop app feeds with whatever the mac plays,
 // or failing that what spotify or music reports on the mac
@@ -536,34 +536,30 @@ export default function App() {
   // the app whose shortcuts are open on the running page, or 'front' for whichever comes forward after opening one
   // from apps; null shows the running apps themselves
   const [shortcutsOf, setShortcutsOf] = useState<Running | 'front' | null>(null);
-  // a running app answers one tap by opening its shortcuts and three by quitting; the one tap waits a moment, so the
-  // start of a triple tap is not taken for it
-  const tapping = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // taps are counted here rather than read from the click, since a touch screen does not always count them
-  const taps = useRef({ path: '', count: 0 });
-  // the same count as state, so the tile can show how many taps it has had towards quitting
-  const [tapShown, setTapShown] = useState({ path: '', count: 0 });
-  const tapApp = (app: Running) => {
-    if (tapping.current) clearTimeout(tapping.current);
-    taps.current = taps.current.path === app.path ? { path: app.path, count: taps.current.count + 1 } : { path: app.path, count: 1 };
-    setTapShown(taps.current);
-    if (taps.current.count >= 3) {
-      taps.current = { path: '', count: 0 };
-      setTapShown(taps.current);
+  // a running app answers a tap by opening its shortcuts and a hold by quitting; the hold fills a bar as it goes, and
+  // letting go early, or sliding off, lets it be
+  const [holding, setHolding] = useState<string | null>(null);
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const held = useRef(false);
+  const startHold = (app: Running) => {
+    held.current = false;
+    setHolding(app.path);
+    holdTimer.current = setTimeout(() => {
+      held.current = true;
+      setHolding(null);
       setFlash(f => ({ ...f, [`quit:${app.path}`]: 'busy' }));
       send({ type: 'quit-app', path: app.path });
-      return;
+    }, QUIT_HOLD_MS);
+  };
+  const stopHold = (app: Running | null) => {
+    if (holdTimer.current) clearTimeout(holdTimer.current);
+    setHolding(null);
+    // a lift before the hold was up is a tap
+    if (app && !held.current) {
+      switchTo(app);
+      openShortcuts(app);
     }
-    tapping.current = setTimeout(() => {
-      const count = taps.current.count;
-      taps.current = { path: '', count: 0 };
-      setTapShown(taps.current);
-      // two taps that never became three count as one
-      if (count) {
-        switchTo(app);
-        openShortcuts(app);
-      }
-    }, TAP_WAIT_MS);
+    held.current = true;
   };
   const [pick, setPick] = useState(0);
   // set on arriving at the running apps, so the first list to come puts the wheel on the app in front
@@ -1086,7 +1082,11 @@ export default function App() {
                 {running.map(app => (
                   <div key={app.path} className="relative">
                   <button
-                    onClick={() => tapApp(app)}
+                    onPointerDown={() => startHold(app)}
+                    onPointerUp={() => stopHold(app)}
+                    onPointerLeave={() => stopHold(null)}
+                    onPointerCancel={() => stopHold(null)}
+                    onContextMenu={e => e.preventDefault()}
                     className={`relative flex w-[140px] flex-col items-center justify-start gap-2 rounded-2xl p-3 transition duration-200 active:scale-95 ${
                       app.active ? 'bg-white/12 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : ''
                     } ${flash[`quit:${app.path}`] === 'fail' ? 'animate-tile-fail' : ''} ${flash[`quit:${app.path}`] === 'busy' ? 'scale-90 opacity-40' : ''}`}>
@@ -1098,16 +1098,14 @@ export default function App() {
                     <span className="line-clamp-2 w-full text-center text-[0.82rem] leading-tight font-medium break-words text-white/85">{app.name}</span>
                     {app.active && <span className="rounded-full bg-ok-soft px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] text-ok uppercase">in front</span>}
                     {!app.active && app.hidden && <span className="font-mono text-[9px] tracking-[0.15em] text-dim uppercase">hidden</span>}
-                    {/* how many taps towards quitting, under the name: three dots filling, red once one more would quit.
-                        it hangs below the tile, so the tile keeps its size while it shows */}
-                    {tapShown.path === app.path && tapShown.count > 0 && (
-                      <span className="absolute inset-x-0 top-full mt-1 flex flex-col items-center gap-1">
-                        <span className="flex items-center gap-1.5">
-                          {[1, 2, 3].map(n => (
-                            <span key={n} className={`h-2 w-2 rounded-full transition ${n <= tapShown.count ? (tapShown.count >= 2 ? 'bg-err' : 'bg-white') : 'bg-white/25'}`} />
-                          ))}
+                    {/* while held, a bar under the name fills towards quitting; it hangs below the tile, so the tile keeps
+                        its size while it shows */}
+                    {holding === app.path && (
+                      <span className="absolute inset-x-4 top-full mt-1.5 flex flex-col items-center gap-1">
+                        <span className="h-1.5 w-full overflow-hidden rounded-full bg-white/15">
+                          <span className="block h-full animate-[hold-fill_1s_linear_forwards] rounded-full bg-err" />
                         </span>
-                        {tapShown.count === 2 && <span className="font-mono text-[9px] tracking-[0.15em] text-err uppercase">1 more to quit</span>}
+                        <span className="font-mono text-[9px] tracking-[0.15em] whitespace-nowrap text-err uppercase">keep holding to quit</span>
                       </span>
                     )}
                   </button>
@@ -1116,7 +1114,7 @@ export default function App() {
               </div>
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 text-center font-mono text-[10px] tracking-[0.2em] text-dim uppercase">
-              tap an app for its shortcuts · triple-tap to quit it
+              tap an app for its shortcuts · hold to quit it
             </div>
           </div>
           )

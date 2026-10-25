@@ -28,6 +28,16 @@
 }
 
 @theme {
+  /* the bar under a running app filling while it is held towards quitting */
+  @keyframes hold-fill {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
   /* a long line sliding by, one copy's width per loop, resting a beat at the start */
   --animate-marquee: marquee 12s linear infinite;
 

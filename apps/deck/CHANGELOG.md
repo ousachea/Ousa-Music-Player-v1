@@ -15,7 +15,7 @@ First release: big tiles that work the Mac your Car Thing is plugged into.
 - **Apps**: every installed app with its own icon, grouped by category or sorted A to Z or by last opened, with
   search on an on-screen keyboard. A pressed app is edged in its icon's colour, and opening one takes you to its
   shortcuts.
-- **Running**: the apps open on the Mac, the one in front in the middle, a triple tap quitting one; tap one to bring it forward and see its keyboard shortcuts, read from its own menus as a card per menu,
+- **Running**: the apps open on the Mac, the one in front in the middle, holding one for a second quitting it; tap one to bring it forward and see its keyboard shortcuts, read from its own menus as a card per menu,
   each a tap away, with Back to return.
 - **Clipboard**: the text you copied lately, kept in memory on the Mac, never a password manager's, each with a
   Copy button.
