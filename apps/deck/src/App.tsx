@@ -22,7 +22,7 @@ const ARM_MS = 3000;
 // how far a finger travels before it is a swipe rather than a tap
 const SWIPE_PX = 50;
 // how long one tap on a running app waits to see whether more are coming
-const TAP_WAIT_MS = 320;
+const TAP_WAIT_MS = 450;
 const RUNNING_EVERY_MS = 3000;
 // what the music card shows: the car thing's own player, which the desktop app feeds with whatever the mac plays,
 // or failing that what spotify or music reports on the mac
@@ -541,11 +541,15 @@ export default function App() {
   const tapping = useRef<ReturnType<typeof setTimeout> | null>(null);
   // taps are counted here rather than read from the click, since a touch screen does not always count them
   const taps = useRef({ path: '', count: 0 });
+  // the same count as state, so the tile can show how many taps it has had towards quitting
+  const [tapShown, setTapShown] = useState({ path: '', count: 0 });
   const tapApp = (app: Running) => {
     if (tapping.current) clearTimeout(tapping.current);
     taps.current = taps.current.path === app.path ? { path: app.path, count: taps.current.count + 1 } : { path: app.path, count: 1 };
+    setTapShown(taps.current);
     if (taps.current.count >= 3) {
       taps.current = { path: '', count: 0 };
+      setTapShown(taps.current);
       setFlash(f => ({ ...f, [`quit:${app.path}`]: 'busy' }));
       send({ type: 'quit-app', path: app.path });
       return;
@@ -553,6 +557,7 @@ export default function App() {
     tapping.current = setTimeout(() => {
       const count = taps.current.count;
       taps.current = { path: '', count: 0 };
+      setTapShown(taps.current);
       // two taps that never became three count as one
       if (count) {
         switchTo(app);
@@ -1093,6 +1098,17 @@ export default function App() {
                     <span className="line-clamp-2 w-full text-center text-[0.82rem] leading-tight font-medium break-words text-white/85">{app.name}</span>
                     {app.active && <span className="rounded-full bg-ok-soft px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] text-ok uppercase">in front</span>}
                     {!app.active && app.hidden && <span className="font-mono text-[9px] tracking-[0.15em] text-dim uppercase">hidden</span>}
+                    {/* how many taps towards quitting: three dots filling, red once one more would quit */}
+                    {tapShown.path === app.path && tapShown.count > 0 && (
+                      <span className={`absolute top-2 right-2 flex items-center gap-1 rounded-full px-1.5 py-1 ${tapShown.count >= 2 ? 'bg-err/90' : 'bg-black/55'}`}>
+                        {[1, 2, 3].map(n => (
+                          <span key={n} className={`h-1.5 w-1.5 rounded-full ${n <= tapShown.count ? 'bg-white' : 'bg-white/30'}`} />
+                        ))}
+                      </span>
+                    )}
+                    {tapShown.path === app.path && tapShown.count === 2 && (
+                      <span className="absolute inset-x-0 -bottom-5 text-center font-mono text-[9px] tracking-[0.15em] text-err uppercase">1 more to quit</span>
+                    )}
                   </button>
                   </div>
                 ))}
