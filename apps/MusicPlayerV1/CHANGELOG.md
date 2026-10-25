@@ -1,5 +1,14 @@
 # O-Music Player
 
+## 0.47.0
+
+Four new styles:
+
+- **Aquarium**: the cover as a glowing rock on the sand of a tank, fish in the album's colours swimming while it plays.
+- **Night city**: a skyline whose windows light up left to right as the song plays, the title on a rooftop billboard.
+- **Weather**: the song as a forecast in a weather app, with what is queued as the forecast.
+- **Chat**: the song as messages from the artist, the words arriving as they are sung.
+
 ## 0.46.3
 
 Polaroid's print passes over the buttons when it is shuffled out across them, rather than under.

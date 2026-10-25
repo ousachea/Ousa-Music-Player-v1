@@ -8,7 +8,7 @@ none, so Khmer in titles, quotes, names and captions displays properly.
 
 |  | App | What it does |
 | --- | --- | --- |
-| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in thirty-six styles, coloured by the album art, on a screen that turns |
+| <img src="apps/MusicPlayerV1/public/icon.jpg" width="40" alt=""> | **O-Music Player** | Now playing, in forty styles, coloured by the album art, on a screen that turns |
 | <img src="apps/clock/public/icon.png" width="40" alt=""> | **O-Clock** | A clock in ten faces, eight timers, a stopwatch and an alarm |
 | <img src="apps/network-monitor/public/icon.png" width="40" alt=""> | **O-System Monitor** | CPU, GPU, memory, network and storage for your machines |
 | <img src="apps/quote-flow/public/icon.png" width="40" alt=""> | **O-Quote Flow** | A quote of the moment, with favourites and your own lines |
@@ -303,6 +303,26 @@ has timed lyrics. Before the first line, and for songs without them, a title car
 A tear-off desk calendar with the song as today's entry, the cover taped to the page. Tap the page to
 tear it off.
 
+### Aquarium
+
+A dark tank lit from above. The cover is a glowing rock on the sand, fish in the album's colours swim across
+while the song plays and hang in the water when it pauses, and the song is the label on the glass.
+
+### Night city
+
+A skyline at night whose windows light up left to right as the song plays, so the city is the progress bar.
+The title is on a billboard on the tallest roof.
+
+### Weather
+
+The song as a forecast, laid out like a weather app: the title is the place, the sky and numbers are made
+from the song, and what is queued on the phone is the forecast (earlier songs when nothing is queued).
+
+### Chat
+
+The song arrives as messages from the artist: the cover as a photo, then the title and album. With timed
+lyrics, each line arrives as it is sung while the next one types.
+
 ### The queue
 
 ![The queue](apps/MusicPlayerV1/screenshots/08-queue.jpg)
@@ -318,7 +338,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Preset button 2 | Play or pause |
 | Preset button 3 | Next track |
 | Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
-| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel, Dashboard, Neon, Mosaic, Ambient, Tuner, Typewriter, Terminal, Ticket, Film strip, Comic, Magazine, Speedometer, Sheet music, Departures, Handheld, Vaporwave, Oscilloscope, Stamp, Karaoke, Calendar |
+| Mode, the button past the presets | Cycle the player style: Cover, Vinyl, CD, Cassette, Dial, Stereo, Flow, Pocket, Poster, Lyrics, Night, Split-flap, Receipt, Jukebox, Polaroid, Pixel, Dashboard, Neon, Mosaic, Ambient, Tuner, Typewriter, Terminal, Ticket, Film strip, Comic, Magazine, Speedometer, Sheet music, Departures, Handheld, Vaporwave, Oscilloscope, Stamp, Karaoke, Calendar, Aquarium, Night city, Weather, Chat |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
@@ -346,7 +366,7 @@ Press the button under the wheel; it opens where you left it, section and scroll
 the screen; the wheel scrolls it. (Turned on its side, the sections become a row across the top.) Each style
 tile carries a small picture of the style, and a setting that needs explaining has a line under it.
 
-- **Style**: the thirty-six styles as a grid. Tap one to switch to it: the settings close so you see the
+- **Style**: the forty styles as a grid. Tap one to switch to it: the settings close so you see the
   style first, and next time they open on its own settings (backdrop, time remaining and the rest), or on
   the grid for a style with none; **All styles**, or the button under the wheel, goes back
 - **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation

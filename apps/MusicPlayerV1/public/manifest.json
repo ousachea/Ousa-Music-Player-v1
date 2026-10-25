@@ -1,8 +1,8 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "O-Music Player",
-  "version": "0.46.3",
-  "description": "Now playing from your phone, in thirty-six styles coloured by the album art, and turnable to any mounting.",
+  "version": "0.47.0",
+  "description": "Now playing from your phone, in forty styles coloured by the album art, and turnable to any mounting.",
   "icon": "icon.jpg",
   "settings": "settings.html",
   "config": [
@@ -63,7 +63,11 @@
           "scope",
           "stamp",
           "karaoke",
-          "calendar"
+          "calendar",
+          "aquarium",
+          "city",
+          "weather",
+          "chat"
         ],
         "default": "widget"
       }

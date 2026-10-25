@@ -247,6 +247,73 @@
     }
   }
 
+  /* the aquarium: fish crossing the tank either way, bubbles rising off the top, weed swaying from its root */
+  --animate-swim-right: swim-right 24s linear infinite;
+  --animate-swim-left: swim-left 24s linear infinite;
+  --animate-bubble: bubble 8s ease-in infinite;
+  --animate-sway: sway 5s ease-in-out infinite alternate;
+
+  @keyframes swim-right {
+    from {
+      left: -12%;
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-14px);
+    }
+    to {
+      left: 108%;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes swim-left {
+    from {
+      left: 108%;
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(12px);
+    }
+    to {
+      left: -12%;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes bubble {
+    from {
+      top: 92%;
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.9;
+    }
+    to {
+      top: -4%;
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes sway {
+    from {
+      transform: rotate(-6deg);
+    }
+    to {
+      transform: rotate(6deg);
+    }
+  }
+
+  /* a chat message arriving: up from below and in */
+  --animate-msg-in: msg-in 320ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  @keyframes msg-in {
+    from {
+      transform: translateY(14px) scale(0.96);
+      opacity: 0;
+    }
+  }
+
   /* the vaporwave floor running towards you, one cell per loop so it never jumps */
   --animate-grid-run: grid-run 0.9s linear infinite;
 

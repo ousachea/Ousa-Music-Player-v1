@@ -24,7 +24,10 @@ import { Dashboard } from './dashboard';
 import { FilmStrip } from './filmstrip';
 import { Jukebox } from './jukebox';
 import { Magazine } from './magazine';
+import { Aquarium } from './aquarium';
 import { Calendar } from './calendar';
+import { Chat } from './chat';
+import { NightCity } from './city';
 import { Departures } from './departures';
 import { Handheld } from './handheld';
 import { Karaoke } from './karaoke';
@@ -33,6 +36,7 @@ import { SheetMusic } from './sheet';
 import { Speedo } from './speedo';
 import { Stamp } from './stamp';
 import { Vapor } from './vapor';
+import { Weather } from './weather';
 import { Mosaic } from './mosaic';
 import { Neon } from './neon';
 import { Night } from './night';
@@ -166,7 +170,7 @@ export default function App() {
   const artistName = track?.artist ?? foundArtist;
   const lyrics = useLyrics(
     client,
-    prefs.theme === 'lyrics' || prefs.theme === 'dial' || prefs.theme === 'karaoke' ? (track?.persistentId ?? track?.title ?? null) : null,
+    prefs.theme === 'lyrics' || prefs.theme === 'dial' || prefs.theme === 'karaoke' || prefs.theme === 'chat' ? (track?.persistentId ?? track?.title ?? null) : null,
   );
   // the queue is only read while the sheet is up: it is the phone's, and nothing else here wants it
   // Flow fans the queue out either side of the cover, so it reads the queue the whole time it is on
@@ -174,7 +178,7 @@ export default function App() {
   // Mosaic walls the screen with the history, so it reads the queue too
   const queue = useQueue(
     client,
-    sheet || prefs.theme === 'flow' || prefs.theme === 'jukebox' || prefs.theme === 'mosaic' || prefs.theme === 'film' || prefs.theme === 'departures',
+    sheet || prefs.theme === 'flow' || prefs.theme === 'jukebox' || prefs.theme === 'mosaic' || prefs.theme === 'film' || prefs.theme === 'departures' || prefs.theme === 'weather',
     track?.persistentId ?? track?.title ?? null,
   );
   const flowThumbs = useThumbs(
@@ -597,6 +601,14 @@ export default function App() {
         <Karaoke {...styleProps} lyrics={lyrics} />
       ) : prefs.theme === 'calendar' ? (
         <Calendar {...styleProps} />
+      ) : prefs.theme === 'aquarium' ? (
+        <Aquarium {...styleProps} />
+      ) : prefs.theme === 'city' ? (
+        <NightCity {...styleProps} />
+      ) : prefs.theme === 'weather' ? (
+        <Weather {...styleProps} queue={queue} />
+      ) : prefs.theme === 'chat' ? (
+        <Chat {...styleProps} lyrics={lyrics} />
       ) : prefs.theme === 'dashboard' ? (
         <Dashboard {...styleProps} volume={volume} />
       ) : prefs.theme === 'neon' ? (
@@ -1254,7 +1266,7 @@ function alongBar(e: PointerEvent<HTMLDivElement>, rotate: Prefs['rotate']) {
 const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   theme: {
     values: [...THEMES],
-    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel', 'Dashboard', 'Neon', 'Mosaic', 'Ambient', 'Tuner', 'Typewriter', 'Terminal', 'Ticket', 'Film strip', 'Comic', 'Magazine', 'Speedometer', 'Sheet music', 'Departures', 'Handheld', 'Vaporwave', 'Oscilloscope', 'Stamp', 'Karaoke', 'Calendar'],
+    labels: ['Cover', 'Vinyl', 'CD', 'Cassette', 'Dial', 'Stereo', 'Flow', 'Pocket', 'Poster', 'Lyrics', 'Night', 'Split-flap', 'Receipt', 'Jukebox', 'Polaroid', 'Pixel', 'Dashboard', 'Neon', 'Mosaic', 'Ambient', 'Tuner', 'Typewriter', 'Terminal', 'Ticket', 'Film strip', 'Comic', 'Magazine', 'Speedometer', 'Sheet music', 'Departures', 'Handheld', 'Vaporwave', 'Oscilloscope', 'Stamp', 'Karaoke', 'Calendar', 'Aquarium', 'Night city', 'Weather', 'Chat'],
   },
   tape: { values: ['written', 'printed', 'clear'], labels: ['Written', 'Printed', 'Clear'] },
   polaroidFrame: { values: [...FRAMES], labels: ['White', 'Black', 'Cream', 'Album'] },
@@ -1951,6 +1963,22 @@ const GLYPHS: Record<string, ReactNode> = {
       <path d="M3.5 10h17M8 3v4M16 3v4M10 15h4" />
     </>
   ),
+  aquarium: (
+    <>
+      <path d="M3 12c3-4 8-5 12-1l5-3v8l-5-3c-4 4-9 3-12-1z" />
+      <circle cx="7.5" cy="11.5" r="0.6" fill="currentColor" />
+      <circle cx="18" cy="4.5" r="1.2" />
+    </>
+  ),
+  city: <path d="M3 21V11h4v10M7 21V5h5v16M12 21v-8h4v8M16 21V9h5v12M2 21h20M9 8h1M9 11h1M9 14h1M18 12h1M18 15h1" />,
+  weather: (
+    <>
+      <path d="M12 3v1.5M5.6 5.6l1 1M3 12h1.5M18.4 5.6l-1 1" />
+      <path d="M8.5 11a4 4 0 0 1 7-2.5" />
+      <path d="M8 20h9a3.5 3.5 0 0 0 .5-7 5 5 0 0 0-9.5 1A3 3 0 0 0 8 20z" />
+    </>
+  ),
+  chat: <path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1zM8 10h8M8 13h5" />,
   typewriter: (
     <>
       <path d="M7 3h10v6H7z" />
