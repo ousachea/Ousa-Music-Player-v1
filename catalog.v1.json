@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-25T03:42:17.007Z",
+  "updated_at": "2026-10-25T03:46:16.627Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -591,6 +591,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.46.1",
+          "released_at": "2026-10-25T03:46:16.624Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.46.1.zip",
+            "size": 1520260,
+            "sha256": "ec5420d6f5101b95c3990a7900da4ac7461bf7682ef29acd972479b48ccd0290"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.46.1.html",
+            "size": 41691,
+            "sha256": "af46f74f2d3cc1c3407bcc3b97dad57753a5fb5765f61fad76a8cc09762624ab"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "The settings tiles keep their names clear of the tile's edge: Speedometer, Oscilloscope, Sheet music and the other long names no longer touch it."
+        },
         {
           "version": "0.46.0",
           "released_at": "2026-10-25T03:42:14.198Z",
