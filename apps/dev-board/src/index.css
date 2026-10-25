@@ -28,6 +28,29 @@
 }
 
 @theme {
+  /* the background's colour drifting: big soft lights wandering slowly, only their position moving */
+  --animate-drift-a: drift-a 26s ease-in-out infinite alternate;
+  --animate-drift-b: drift-b 32s ease-in-out infinite alternate;
+  --animate-drift-c: drift-c 38s ease-in-out infinite alternate;
+
+  @keyframes drift-a {
+    to {
+      transform: translate(260px, 140px) scale(1.25);
+    }
+  }
+
+  @keyframes drift-b {
+    to {
+      transform: translate(-300px, -90px) scale(0.85);
+    }
+  }
+
+  @keyframes drift-c {
+    to {
+      transform: translate(-160px, 170px) scale(1.15);
+    }
+  }
+
   --color-off-white: #efefef;
   --color-bg: #0a0c0e;
   --color-screen: #060809;

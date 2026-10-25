@@ -1,7 +1,7 @@
 // the deck: tiles that act on the mac the car thing is plugged into. the mac's extension lists what can be run, with
 // each app's own icon, and this page only ever names one of those. presets pick the page, the wheel turns the mac's
 // volume on the first page and scrolls the others, and holding a tile pins it to the last page
-import { BridgethingClient } from '@bridgething/client';
+import { BridgethingClient, type PlayerState } from '@bridgething/client';
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { daemonUrl } from './daemon';
@@ -16,6 +16,9 @@ const PINS_KEY = 'pins';
 
 type Flash = 'ok' | 'fail' | 'busy';
 type Mac = { volume: number; muted: boolean; micMuted: boolean; media: Media | null };
+// what the music card shows: the car thing's own player, which the desktop app feeds with whatever the mac plays,
+// or failing that what spotify or music reports on the mac
+type Playing = { title: string; artist: string; source: string; playing: boolean; art: string | null; via: 'player' | 'mac' };
 type Sort = 'category' | 'az' | 'recent';
 const SORTS: { id: Sort; label: string }[] = [
   { id: 'category', label: 'Category' },
@@ -49,10 +52,10 @@ const GLYPH: Record<string, ReactNode> = {
   shortcut: <path d="M13 3L4 14h7l-1 7 9-11h-7z" />,
   pin: <path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7" />,
   minus: <path d="M5 12h14" />,
-  play: <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" />,
-  pause: <path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor" />,
-  next: <path d="M6 6v12l8.5-6zM16 6h2.5v12H16z" fill="currentColor" />,
-  previous: <path d="M18 6v12l-8.5-6zM8 6H5.5v12H8z" fill="currentColor" />,
+  play: <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none" />,
+  pause: <path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor" stroke="none" />,
+  next: <path d="M6 6v12l8.5-6zM16 6h2.5v12H16z" fill="currentColor" stroke="none" />,
+  previous: <path d="M18 6v12l-8.5-6zM8 6H5.5v12H8z" fill="currentColor" stroke="none" />,
   search: <path d="M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 1 0 0-13zM15.5 15.5L20 20" />,
   back: <path d="M21 6H9l-6 6 6 6h12zM11.5 9.5l5 5M16.5 9.5l-5 5" />,
   plus: <path d="M5 12h14M12 5v14" />,
@@ -224,54 +227,75 @@ function AppTile({ action, icon, flash, pinned, card, onRun, onPin }: { action: 
   );
 }
 
-// the volume as a dial, with the wheel's job written under it
-function Volume({ mac, onStep, onMedia }: { mac: Mac | null; onStep: (delta: number) => void; onMedia: (command: 'playpause' | 'next' | 'previous') => void }) {
-  const media = mac?.media ?? null;
-  const level = mac ? (mac.muted ? 0 : mac.volume) : 0;
-  const r = 52;
-  const arc = 2 * Math.PI * r * 0.75;
+// the volume as a tall panel that fills from the bottom, dragged up and down or turned with the wheel, with what
+// spotify or music is playing under it. a drag shows its own level at once and sends it a few times a second
+const SEND_EVERY_MS = 90;
+
+function Volume({ mac, media, onSet, onMedia }: { mac: Mac | null; media: Playing | null; onSet: (level: number) => void; onMedia: (command: 'playpause' | 'next' | 'previous') => void }) {
+  const [drag, setDrag] = useState<number | null>(null);
+  const sent = useRef(0);
+  const level = drag ?? (mac ? (mac.muted ? 0 : mac.volume) : 0);
+  const at = (e: { clientY: number; currentTarget: Element }) => {
+    const box = e.currentTarget.getBoundingClientRect();
+    return Math.round(Math.max(0, Math.min(1, (box.bottom - e.clientY) / box.height)) * 100);
+  };
+  const move = (next: number, force = false) => {
+    setDrag(next);
+    if (force || Date.now() - sent.current > SEND_EVERY_MS) {
+      sent.current = Date.now();
+      onSet(next);
+    }
+  };
+  // the speaker draws as many waves as the level earns
+  const waves = level === 0 ? 0 : level < 34 ? 1 : level < 67 ? 2 : 3;
   return (
-    <div className="flex w-[230px] shrink-0 flex-col items-center justify-between rounded-[26px] border border-white/8 bg-[linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-      <div className="font-mono text-[10px] tracking-[0.3em] text-dim">MAC VOLUME</div>
-      <div className="relative h-[118px] w-[118px]">
-        <svg viewBox="0 0 120 120" className="h-full w-full rotate-[135deg]">
-          <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="10" strokeLinecap="round" strokeDasharray={`${arc} 999`} />
-          <circle
-            cx="60"
-            cy="60"
-            r={r}
-            fill="none"
-            stroke="url(#deck-vol)"
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeDasharray={`${(arc * level) / 100} 999`}
-            className="transition-[stroke-dasharray] duration-300"
-          />
-          <defs>
-            <linearGradient id="deck-vol" x1="0" x2="1">
-              <stop offset="0" stopColor="#00a8e8" />
-              <stop offset="1" stopColor="#7c5cff" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <div className="absolute inset-0 grid place-items-center">
-          <div className="text-center">
-            <div className="font-display text-[2.2rem] leading-none font-semibold tabular-nums">{mac ? (mac.muted ? '–' : mac.volume) : '··'}</div>
-            <div className="mt-0.5 text-[10px] text-dim">{mac?.muted ? 'muted' : 'turn the wheel'}</div>
-          </div>
-        </div>
+    <div className="flex w-[230px] shrink-0 flex-col gap-3 rounded-[26px] border border-white/8 bg-[linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+      <div className="flex items-baseline justify-between px-1">
+        <span className="font-mono text-[10px] tracking-[0.3em] text-dim">VOLUME</span>
+        <span className="font-display text-[1.9rem] leading-none font-semibold tabular-nums">
+          {mac?.muted && drag === null ? 'off' : level}
+        </span>
       </div>
-      <div className="flex w-full gap-2">
-        {[-6, 6].map(d => (
-          <button key={d} onClick={() => onStep(d)} className="grid h-9 flex-1 place-items-center rounded-xl bg-white/8 text-white transition active:scale-95 active:bg-white/15">
-            <Svg className="h-4 w-4">{GLYPH[d < 0 ? 'minus' : 'plus']}</Svg>
-          </button>
+      <div
+        className="relative min-h-0 flex-1 cursor-ns-resize touch-none overflow-hidden rounded-[22px] bg-white/8"
+        onPointerDown={e => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          move(at(e), true);
+        }}
+        onPointerMove={e => drag !== null && move(at(e))}
+        onPointerUp={e => {
+          move(at(e), true);
+          // the mac's own report takes over once it has caught up
+          setTimeout(() => setDrag(null), 600);
+        }}>
+        <div
+          className={`absolute inset-x-0 bottom-0 ${drag === null ? 'transition-[height] duration-300' : ''}`}
+          style={{ height: `${level}%`, background: 'linear-gradient(to top, #00a8e8, #7c5cff)', boxShadow: '0 -6px 24px rgba(124,92,255,0.45)' }}
+        />
+        {/* notches every quarter, so a level can be judged at a glance */}
+        {[25, 50, 75].map(n => (
+          <div key={n} className="absolute inset-x-3 h-px bg-white/10" style={{ bottom: `${n}%` }} />
         ))}
+        <div className={`absolute bottom-3 left-3.5 ${level > 12 ? 'text-white' : 'text-soft'}`}>
+          <Svg className="h-7 w-7">
+            <path d="M4 9v6h4l5 4V5L8 9z" />
+            {waves >= 1 && <path d="M16 9.5a3.5 3.5 0 0 1 0 5" />}
+            {waves >= 2 && <path d="M18.5 7.5a6.5 6.5 0 0 1 0 9" />}
+            {waves >= 3 && <path d="M21 5.5a9.5 9.5 0 0 1 0 13" />}
+            {waves === 0 && <path d="M16 10l4 4M20 10l-4 4" />}
+          </Svg>
+        </div>
+        <div className="absolute right-3.5 bottom-3.5 font-mono text-[10px] tracking-[0.15em] text-white/60">DRAG · WHEEL</div>
       </div>
       {/* what spotify or music is playing on the mac, with its transport */}
-      <div className="w-full border-t border-white/8 pt-2.5">
-        <div className="truncate text-center text-[0.85rem] font-semibold">{media ? media.title : 'Nothing playing'}</div>
-        <div className="truncate text-center text-[11px] text-dim">{media ? `${media.artist} · ${media.app}` : 'in Spotify or Music'}</div>
+      <div className="w-full">
+        <div className="flex items-center gap-2.5">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white/10">{media?.art && <img src={media.art} alt="" className="h-full w-full object-cover" />}</div>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-[0.85rem] font-semibold">{media ? media.title : 'Nothing playing'}</div>
+            <div className="truncate text-[11px] text-dim">{media ? [media.artist, media.source].filter(Boolean).join(' · ') : 'Play something on the Mac'}</div>
+          </div>
+        </div>
         <div className={`mt-2 flex items-center justify-center gap-2 ${media ? '' : 'opacity-35'}`}>
           {(['previous', 'playpause', 'next'] as const).map(c => (
             <button
@@ -295,6 +319,17 @@ const TAB_GLYPH: Record<Page, ReactNode> = {
   Pinned: GLYPH.pin,
 };
 
+// the moving background: three soft lights drifting behind everything
+function Backdrop() {
+  return (
+    <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#0a0c10]">
+      <div className="absolute -top-40 -left-32 h-[420px] w-[420px] animate-drift-a rounded-full bg-[#00a8e8] opacity-25 blur-[90px]" />
+      <div className="absolute -right-40 -bottom-48 h-[460px] w-[460px] animate-drift-b rounded-full bg-[#7c5cff] opacity-25 blur-[100px]" />
+      <div className="absolute top-20 left-[45%] h-[300px] w-[300px] animate-drift-c rounded-full bg-[#14b8a6] opacity-15 blur-[90px]" />
+    </div>
+  );
+}
+
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
   const [page, setPage] = useState<Page>('Controls');
@@ -308,6 +343,8 @@ export default function App() {
   const [sort, setSort] = useState<Sort>('category');
   const [query, setQuery] = useState('');
   const [typing, setTyping] = useState(false);
+  const [player, setPlayer] = useState<PlayerState | null>(null);
+  const [art, setArt] = useState<string | null>(null);
   const list = useRef<HTMLDivElement>(null);
 
   const send = (m: ToMac) => client.forward.json(m).catch(() => {});
@@ -324,6 +361,8 @@ export default function App() {
         setTimeout(() => setFlash(({ [m.id]: _gone, ...rest }) => rest), 1100);
       }
     });
+    const offPlayer = client.player.onSnapshot(reply => setPlayer(reply.state));
+    client.player.stateGet().then(r => r.ok && setPlayer(r.response.state));
     const offCaps = client.capabilities.onUpdate(s => setForward(s.capabilities.available.forward));
     client.capabilities.get().then(r => r.ok && setForward(r.response.capabilities.available.forward));
     client.store.get({ key: PINS_KEY }).then(r => {
@@ -345,12 +384,43 @@ export default function App() {
     const timer = setTimeout(() => setWaited(true), WAIT_MS);
     return () => {
       off();
+      offPlayer();
       offCaps();
       offConn();
       clearTimeout(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client]);
+
+  // the cover for the player's song, fetched by its asset id and let go when the song changes
+  const artworkId = player?.track?.artworkId ?? null;
+  useEffect(() => {
+    if (!artworkId) return setArt(null);
+    let url: string | null = null;
+    let gone = false;
+    client.asset.get({ id: artworkId, requestId: crypto.randomUUID() }).then(r => {
+      if (gone || !r.ok) return;
+      url = URL.createObjectURL(new Blob([new Uint8Array(r.response.bytes as unknown as number[])], { type: r.response.mime ?? 'image/jpeg' }));
+      setArt(url);
+    });
+    return () => {
+      gone = true;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [client, artworkId]);
+
+  const track = player?.track ?? null;
+  const playing: Playing | null = track
+    ? { title: track.title ?? 'Unknown', artist: track.artist ?? '', source: '', playing: player?.playback.state === 'playing', art, via: 'player' }
+    : mac?.media
+      ? { title: mac.media.title, artist: mac.media.artist, source: mac.media.app, playing: mac.media.playing, art: null, via: 'mac' }
+      : null;
+  const media = (command: 'playpause' | 'next' | 'previous') => {
+    if (playing?.via === 'mac') return send({ type: 'media', command });
+    if (command === 'next') client.player.skipNext().catch(() => {});
+    else if (command === 'previous') client.player.skipPrev({ allowSeeking: true }).catch(() => {});
+    else (playing?.playing ? client.player.pause() : client.player.resume()).catch(() => {});
+  };
 
   const run = (id: string) => {
     setFlash(f => ({ ...f, [id]: 'busy' }));
@@ -438,7 +508,7 @@ export default function App() {
     <div className="flex min-w-0 flex-1 items-center gap-1.5">
       <button
         onClick={() => setTyping(true)}
-        className={`flex h-8 min-w-0 flex-1 items-center gap-2 rounded-full border px-3 text-left text-[0.8rem] transition ${typing ? 'border-accent bg-white/10' : 'border-white/8 bg-white/5'}`}>
+        className={`flex h-8 min-w-0 flex-1 items-center gap-2 rounded-full border px-3 text-left text-[0.8rem] backdrop-blur-md transition ${typing ? 'border-accent bg-black/50' : 'border-white/10 bg-black/35'}`}>
         <Svg className="h-4 w-4 shrink-0 text-dim">{GLYPH.search}</Svg>
         <span className={`truncate ${query ? 'text-white' : 'text-dim'}`}>{query || (sorts ? 'Search apps' : 'Search shortcuts')}</span>
         {typing && <span className="h-4 w-px animate-pulse bg-accent" />}
@@ -494,8 +564,11 @@ export default function App() {
   );
 
   return (
-    <div className="relative flex h-full w-full flex-col gap-3 px-5 pt-4 pb-4 text-off-white" style={{ background: 'radial-gradient(120% 90% at 50% -20%, #1d2535, #0a0c10 62%)' }}>
-      <div className="flex items-center gap-2">
+    <div className="relative flex h-full w-full flex-col gap-3 px-5 pt-[50px] pb-4 isolate text-off-white">
+      <Backdrop />
+      {/* the nav floats over the page with nothing behind it; the lists run the full height and scroll up under it,
+          and a shadow keeps its words readable over whatever passes beneath */}
+      <div className="absolute inset-x-5 top-2.5 z-10 flex items-center gap-2 [filter:drop-shadow(0_2px_6px_rgba(0,0,0,0.7))]">
         <div className="flex shrink-0 gap-0.5">
           {PAGES.map((p, i) => (
             <button
@@ -524,7 +597,7 @@ export default function App() {
         )
       ) : page === 'Controls' ? (
         <div className="flex min-h-0 flex-1 gap-3.5">
-          <Volume mac={mac} onStep={step} onMedia={command => send({ type: 'media', command })} />
+          <Volume mac={mac} media={playing} onSet={level => send({ type: 'set-volume', level })} onMedia={media} />
           <div className="grid flex-1 grid-cols-3 grid-rows-2 gap-3">{of('control').filter(a => a.id !== 'vol-up' && a.id !== 'vol-down').map(a => tile(a))}</div>
         </div>
       ) : page === 'Shortcuts' ? (
@@ -535,7 +608,7 @@ export default function App() {
             {found('shortcut').length === 0 ? (
               empty(`No shortcut matches “${query}”.`)
             ) : (
-              <div ref={list} className={`-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto p-2 [scrollbar-width:none] ${typing ? 'pb-[230px]' : ''}`}>
+              <div ref={list} className={`-mx-5 -mt-[50px] -mb-4 grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto px-5 pt-[50px] [mask-image:linear-gradient(to_bottom,transparent_18px,#000_50px)] [scrollbar-width:none] ${typing ? 'pb-[230px]' : 'pb-4'}`}>
                 {found('shortcut').map(a => tile(a))}
               </div>
             )}
@@ -546,7 +619,7 @@ export default function App() {
           {found('app').length === 0 ? (
             empty(`No app matches “${query}”.`)
           ) : (
-            <div ref={list} className={`-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-5 gap-x-2 gap-y-2 overflow-y-auto p-2 [scrollbar-width:none] ${typing ? 'pb-[230px]' : ''}`}>
+            <div ref={list} className={`-mx-5 -mt-[50px] -mb-4 grid min-h-0 flex-1 auto-rows-min grid-cols-5 gap-x-2 gap-y-2 overflow-y-auto px-5 pt-[50px] [mask-image:linear-gradient(to_bottom,transparent_18px,#000_50px)] [scrollbar-width:none] ${typing ? 'pb-[230px]' : 'pb-4'}`}>
               {appSections().map(s => (
                 <Fragment key={s.title ?? 'all'}>
                   {s.title && <div className="col-span-full px-1 pt-2 font-mono text-[10px] tracking-[0.25em] text-dim uppercase first:pt-0">{s.title}</div>}
@@ -559,7 +632,7 @@ export default function App() {
       ) : pinned.length === 0 ? (
         empty('Hold any tile on the other pages to pin it here.')
       ) : (
-        <div ref={list} className="-m-2 grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto p-2 [scrollbar-width:none]">
+        <div ref={list} className="-mx-5 -mt-[50px] -mb-4 grid min-h-0 flex-1 auto-rows-min grid-cols-4 gap-3 overflow-y-auto px-5 pt-[50px] [mask-image:linear-gradient(to_bottom,transparent_18px,#000_50px)] pb-4 [scrollbar-width:none]">
           {pinned.map(a => (a.kind === 'control' ? <div key={a.id} className="h-[112px] [&>button]:h-full">{tile(a)}</div> : tile(a, true)))}
         </div>
       )}

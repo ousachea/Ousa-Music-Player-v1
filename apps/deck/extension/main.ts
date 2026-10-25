@@ -1,7 +1,8 @@
 // the deck's hands on the mac. it lists what the deck may ask for, the built-in controls, the user's shortcuts and
 // the installed apps, and runs only what is on that list: the deck sends an id, never a command, path or script.
 // every program runs from a fixed path with fixed arguments and no shell. the only values from the deck that reach a
-// script are a volume step, clamped to a whole number first, and a media command checked against a fixed three
+// script are a volume step or level, each clamped to a whole number first, and a media command checked against a fixed
+// three
 import { asJson, defineExtension, json, type ExtensionContext } from '@bridgething/extension';
 
 import { CONTROLS, MEDIA_APPS, MEDIA_COMMANDS, categoryOf, type Action, type Media, type ToDeck, type ToMac } from '../src/protocol';
@@ -257,6 +258,9 @@ defineExtension({
         });
       } else if (m.type === 'volume' && typeof m.delta === 'number' && Number.isFinite(m.delta)) {
         step(Math.max(-20, Math.min(20, m.delta))).then(state);
+      } else if (m.type === 'set-volume' && typeof m.level === 'number' && Number.isFinite(m.level)) {
+        const level = Math.max(0, Math.min(100, Math.round(m.level)));
+        osa(`set volume output volume ${level}`).then(state);
       } else if (m.type === 'media' && MEDIA_COMMANDS.includes(m.command) && media && MEDIA_APPS.includes(media.app)) {
         // only the player already reported as playing or paused is told what to do
         jxa(MEDIA_SCRIPT, [media.app, m.command]).then(() => setTimeout(state, 300));

@@ -4,8 +4,8 @@
 
 First release: big tiles that work the Mac your Car Thing is plugged into.
 
-- **Controls**: a volume dial the wheel turns, with play, pause, next and previous for whatever Spotify or Music is
-  playing on the Mac, beside tiles to mute the mic, mute sound, take a screenshot (to the Desktop, or the clipboard
+- **Controls**: a volume panel you drag or turn with the wheel, with the song playing (from the Car Thing's player,
+  or the Mac's Spotify or Music) and its previous, play or pause and next, beside tiles to mute the mic, mute sound, take a screenshot (to the Desktop, or the clipboard
   when macOS keeps Deck out of the Desktop), open Mission Control, lock the screen and sleep the Mac. The mic and
   sound tiles light up while muted.
 - **Shortcuts**: your own shortcuts from the Mac's Shortcuts app, leaving out Apple's starter ones and untitled

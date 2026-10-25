@@ -11,6 +11,8 @@ export type ToMac =
   | { type: 'hello' }
   | { type: 'run'; id: string }
   | { type: 'volume'; delta: number }
+  // a level dragged to on the slider, 0 to 100
+  | { type: 'set-volume'; level: number }
   | { type: 'media'; command: (typeof MEDIA_COMMANDS)[number] };
 
 export type ToDeck =

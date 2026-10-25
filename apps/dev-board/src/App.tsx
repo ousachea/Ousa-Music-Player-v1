@@ -68,6 +68,17 @@ const EMPTY: Record<Page, string> = {
   Inbox: 'Inbox zero.',
 };
 
+// the moving background: three soft lights drifting behind everything
+function Backdrop() {
+  return (
+    <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#0a0c10]">
+      <div className="absolute -top-40 -left-32 h-[420px] w-[420px] animate-drift-a rounded-full bg-[#00a8e8] opacity-25 blur-[90px]" />
+      <div className="absolute -right-40 -bottom-48 h-[460px] w-[460px] animate-drift-b rounded-full bg-[#7c5cff] opacity-25 blur-[100px]" />
+      <div className="absolute top-20 left-[45%] h-[300px] w-[300px] animate-drift-c rounded-full bg-[#14b8a6] opacity-15 blur-[90px]" />
+    </div>
+  );
+}
+
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
   const [page, setPage] = useState<Page>('Repos');
@@ -160,8 +171,10 @@ export default function App() {
             : null;
 
   return (
-    <div className="flex h-full w-full flex-col gap-3 px-5 pt-4 pb-4 text-off-white" style={{ background: 'radial-gradient(120% 90% at 50% -20%, #1d2535, #0a0c10 62%)' }}>
-      <div className="flex items-center gap-3">
+    <div className="relative flex h-full w-full flex-col gap-3 px-5 pt-[50px] pb-4 isolate text-off-white">
+      <Backdrop />
+      {/* the nav floats over the page with nothing behind it, and the list scrolls up under it */}
+      <div className="absolute inset-x-5 top-2.5 z-10 flex items-center gap-3 [filter:drop-shadow(0_2px_6px_rgba(0,0,0,0.7))]">
         <div className="flex gap-0.5">
           {PAGES.map((p, i) => (
             <button
@@ -193,7 +206,7 @@ export default function App() {
         <div className="grid flex-1 place-items-center text-title text-soft">{EMPTY[page]}</div>
       ) : (
         // padded inside and pulled back out, so the chosen row's border and shadow are not clipped by the scroll edge
-        <div ref={list} className="-m-2 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto p-2 [scroll-padding:8px] [scrollbar-width:none]">
+        <div ref={list} className="-mx-5 -mt-[50px] flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto px-5 pt-[50px] [mask-image:linear-gradient(to_bottom,transparent_18px,#000_50px)] pb-2 [scroll-padding:50px_0_8px] [scrollbar-width:none]">
           {shown.map((r, i) => (
             <button
               key={r.key}
