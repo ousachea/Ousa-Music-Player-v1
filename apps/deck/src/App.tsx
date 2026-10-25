@@ -170,7 +170,6 @@ function ControlTile({
   pinned,
   armed,
   missing,
-  icon,
   onRun,
   onStep,
   onPin,
@@ -181,7 +180,6 @@ function ControlTile({
   pinned: boolean;
   armed?: boolean;
   missing?: boolean;
-  icon?: string;
   onRun: () => void;
   onStep: (id: 'bright-up' | 'bright-down') => void;
   onPin: () => void;
@@ -212,9 +210,7 @@ function ControlTile({
               ? battery ? `${battery.percent}%` : 'No battery'
               : id === 'trash' && armed
                 ? 'Tap again'
-                : id === 'front'
-                  ? mac?.front?.name ?? 'Nothing in front'
-                  : action.label;
+                : action.label;
   // a second line where the tile has more to say
   const sub =
     id === 'battery' && battery
@@ -223,12 +219,9 @@ function ControlTile({
         ? `Make a “${FOCUS_SHORTCUT}” shortcut`
         : id === 'trash' && armed
           ? 'to empty the Trash'
-          : id === 'front' && mac?.front
-            ? 'Tap to switch apps'
-            : id === 'wifi' && mac?.wifi
+          : id === 'wifi' && mac?.wifi
               ? [mac.ip, mac.network ? null : 'name hidden by macOS'].filter(Boolean).join(' · ') || null
               : null;
-  const clip = mac?.clip ?? null;
   return (
     <button
       {...press}
@@ -238,24 +231,12 @@ function ControlTile({
         background: on ? `linear-gradient(150deg, ${tint}, color-mix(in oklab, ${tint} 55%, #000))` : 'linear-gradient(150deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03))',
         borderColor: on ? 'transparent' : 'rgba(255,255,255,0.08)',
       }}>
-      {id === 'front' && icon ? (
-        <img src={`data:image/png;base64,${icon}`} alt="" className="h-9 w-9 drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]" draggable={false} />
-      ) : (
       <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-xl" style={{ background: on ? 'rgba(255,255,255,0.22)' : `color-mix(in srgb, ${tint} 20%, transparent)`, color: on ? '#fff' : tint }}>
         <Svg className="h-5 w-5">{GLYPH[id === 'brightness' ? 'bright-up' : glyph]}</Svg>
         {/* the battery's charge drawn inside its outline */}
         {id === 'battery' && battery && <span className="absolute top-[15px] left-[10.5px] h-[7px] rounded-[1px] bg-current" style={{ width: `${(battery.percent / 100) * 12}px` }} />}
       </span>
-      )}
-      {id === 'clipboard' ? (
-        // the clipboard's text itself, or what kind of thing it holds
-        <span className="min-w-0 leading-tight">
-          <span className={`line-clamp-2 block break-all text-white ${clip?.kind === 'text' ? 'text-[0.8rem]' : 'text-[0.92rem] font-semibold'}`}>
-            {clip?.kind === 'text' ? clip.text : clip?.kind === 'image' ? 'An image' : clip?.kind === 'hidden' ? 'Hidden' : 'Empty'}
-          </span>
-          <span className="mt-0.5 block text-[10px] text-white/60">{clip?.kind === 'hidden' ? 'from a password manager' : 'Clipboard'}</span>
-        </span>
-      ) : id === 'brightness' ? (
+      {id === 'brightness' ? (
         // two halves, dimmer and brighter, each its own button
         <span className="text-[0.92rem] leading-tight font-semibold text-white">Brightness</span>
       ) : (
@@ -527,6 +508,7 @@ export default function App() {
   const [pick, setPick] = useState(0);
   const [clipSheet, setClipSheet] = useState(false);
   const [clips, setClips] = useState<Copied[]>([]);
+  const [copied, setCopied] = useState<number | null>(null);
   const sheetList = useRef<HTMLDivElement>(null);
   const [armed, setArmed] = useState(false);
   const swipe = useRef<number | null>(null);
@@ -628,17 +610,14 @@ export default function App() {
     send({ type: 'switch', path: app.path });
     setSwitcher(false);
   };
+  // the sheet stays open after a copy, marking the one copied, so several can be taken in turn
   const copyBack = (clip: Copied) => {
     send({ type: 'copy', id: clip.id });
-    setFlash(f => ({ ...f, clipboard: 'ok' }));
-    setTimeout(() => setFlash(({ clipboard: _gone, ...rest }) => rest), 1100);
-    setClipSheet(false);
+    setCopied(clip.id);
+    setTimeout(() => setCopied(c => (c === clip.id ? null : c)), 1400);
   };
 
   const run = (id: string) => {
-    // the active app opens the switcher and the clipboard its history, rather than doing something at once
-    if (id === 'front') return openSwitcher();
-    if (id === 'clipboard') return openClips();
     // emptying the trash cannot be undone, so the first tap only arms it
     if (id === 'trash' && !armed) {
       setArmed(true);
@@ -731,7 +710,6 @@ export default function App() {
           mac={mac}
           armed={a.id === 'trash' && armed}
           missing={a.id === 'focus' && !all.some(s => s.id === `shortcut:${FOCUS_SHORTCUT}`)}
-          icon={a.id === 'front' && mac?.front ? icons[`app:${mac.front.file}`] : undefined}
           onStep={step => send({ type: 'run', id: step })}
         />
       );
@@ -841,9 +819,31 @@ export default function App() {
           ))}
         </div>
         {searchable && linked && toolbar(page === 'Apps')}
-        <div className={`flex shrink-0 items-center gap-2 px-1 py-1.5 font-mono text-[10px] tracking-[0.2em] text-soft uppercase ${searchable && linked ? '' : 'ml-auto'}`} title={linked ? 'mac linked' : 'no mac'}>
-          <span className={`h-2 w-2 rounded-full ${linked ? 'bg-ok shadow-[0_0_8px_#3ddc84]' : 'bg-warn'}`} />
-          {!searchable && (linked ? 'mac' : 'no mac')}
+        {/* the mac's front app and clipboard, each a tap from its sheet; beside search they shrink to their icons */}
+        <div className={`flex shrink-0 items-center gap-0.5 ${searchable && linked ? '' : 'ml-auto'}`}>
+          {linked && mac?.front && (
+            <button onClick={openSwitcher} className="flex items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1 text-[0.78rem] font-semibold text-white transition active:scale-95 active:bg-white/10">
+              {icons[`app:${mac.front.file}`] ? (
+                <img src={`data:image/png;base64,${icons[`app:${mac.front.file}`]}`} alt="" className="h-6 w-6" draggable={false} />
+              ) : (
+                <span className="grid h-6 w-6 place-items-center rounded-md bg-white/15 text-[11px]">{mac.front.name.slice(0, 1)}</span>
+              )}
+              {!searchable && <span className="max-w-[130px] truncate">{mac.front.name}</span>}
+            </button>
+          )}
+          {linked && mac && (
+            <button onClick={openClips} className="flex items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1.5 text-[0.78rem] text-white/85 transition active:scale-95 active:bg-white/10">
+              <span className="grid h-6 w-6 place-items-center rounded-md bg-[#a3e635]/20 text-[#a3e635]">
+                <Svg className="h-4 w-4">{GLYPH.clipboard}</Svg>
+              </span>
+              {!searchable && (
+                <span className="max-w-[120px] truncate">
+                  {mac.clip.kind === 'text' ? mac.clip.text?.split('\n')[0] : mac.clip.kind === 'image' ? 'An image' : mac.clip.kind === 'hidden' ? 'Hidden' : 'Clipboard'}
+                </span>
+              )}
+            </button>
+          )}
+          <span title={linked ? 'mac linked' : 'no mac'} className={`mx-1.5 h-2 w-2 rounded-full ${linked ? 'bg-ok shadow-[0_0_8px_#3ddc84]' : 'bg-warn'}`} />
         </div>
       </div>
 
@@ -986,11 +986,21 @@ export default function App() {
                     key={c.id}
                     data-pick={i}
                     onClick={() => copyBack(c)}
-                    className={`flex shrink-0 items-start gap-3 rounded-2xl px-3.5 py-2.5 text-left transition active:scale-[0.98] ${
+                    className={`flex shrink-0 items-center gap-3 rounded-2xl px-3.5 py-2.5 text-left transition active:scale-[0.98] ${
                       i === pick ? 'bg-white/14 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.28)]' : 'bg-white/5'
                     }`}>
-                    <span className="line-clamp-2 min-w-0 flex-1 text-[0.88rem] break-all whitespace-pre-wrap">{c.text}</span>
-                    <span className="shrink-0 pt-0.5 font-mono text-[10px] text-dim">{i === 0 ? 'now' : ago(c.at)}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-2 text-[0.88rem] break-all whitespace-pre-wrap">{c.text}</span>
+                      <span className="mt-0.5 block font-mono text-[10px] text-dim">{i === 0 ? 'on the clipboard now' : ago(c.at)}</span>
+                    </span>
+                    {/* the copy button; the whole row copies too, this says so and shows when it has */}
+                    <span
+                      className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.75rem] font-semibold transition ${
+                        copied === c.id ? 'bg-ok text-screen' : 'bg-white/10 text-white'
+                      }`}>
+                      <Svg className="h-3.5 w-3.5">{copied === c.id ? <path d="M5 12.5l4.5 4.5L19 7.5" /> : GLYPH.clipboard}</Svg>
+                      {copied === c.id ? 'Copied' : 'Copy'}
+                    </span>
                   </button>
                 ))}
               </div>

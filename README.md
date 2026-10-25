@@ -610,12 +610,13 @@ Big tiles that work the Mac your Car Thing is plugged into. Install it from the 
 and allow its extension; the Car Thing can only run what the Mac lists for it.
 
 - **Controls**: the song playing with its cover, transport and the Mac's volume (drag it or turn the wheel), beside
-  two swipeable pages of nine: the app in front (tap for a command-tab switcher), the clipboard (tap for the
-  history of what you copied, kept on the Mac in memory, to copy one again), mute mic, mute sound, screenshot, lock screen,
+  two swipeable pages of nine: mute mic, mute sound, screenshot, lock screen,
   Mission Control, keep awake, dark mode, show desktop, Wi-Fi, battery, Focus, screen saver, quit app, brightness,
   empty Trash and sleep; the ones that switch something light up while on. Focus runs a shortcut called "Toggle
   Focus", since macOS has no command for it; dark mode, show desktop, quit app, brightness and empty Trash ask
   macOS once for permission
+- **In the nav**: the app in front on the Mac (tap for a command-tab switcher) and the clipboard (tap for the
+  history of what you copied, kept on the Mac in memory, each with a Copy button)
 - **Shortcuts**: your own shortcuts from the Mac's Shortcuts app (not Apple's starters or untitled drafts), with
   search
 - **Apps**: every installed app with its own icon, grouped by category or sorted A to Z or by last opened, with

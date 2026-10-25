@@ -45,8 +45,6 @@ export type ToDeck =
 
 // the built-in controls, in the order the pages show them, nine to a page
 export const CONTROLS: Action[] = [
-  { id: 'front', label: 'Active app', kind: 'control' },
-  { id: 'clipboard', label: 'Clipboard', kind: 'control' },
   { id: 'mic', label: 'Mute mic', kind: 'control' },
   { id: 'mute', label: 'Mute sound', kind: 'control' },
   { id: 'screenshot', label: 'Screenshot', kind: 'control' },
