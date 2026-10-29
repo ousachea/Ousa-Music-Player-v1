@@ -35,7 +35,7 @@
     },
     "apps/clock": {
       "name": "clock",
-      "version": "0.5.4",
+      "version": "0.6.0",
       "dependencies": {
         "@bridgething/client": "^0.12.1",
         "preact": "^10.29.7",
@@ -58,7 +58,7 @@
     },
     "apps/deck": {
       "name": "deck",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "dependencies": {
         "@bridgething/client": "^0.14.0",
         "@bridgething/extension": "^0.14.0",
@@ -107,7 +107,7 @@
     },
     "apps/dev-board": {
       "name": "dev-board",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dependencies": {
         "@bridgething/client": "^0.14.0",
         "@bridgething/extension": "^0.14.0",
@@ -215,6 +215,29 @@
       "devDependencies": {
         "@msgpack/msgpack": "^3.1.3",
         "@preact/preset-vite": "^2.10.5",
+        "@tailwindcss/vite": "^4.3.3",
+        "@types/react": "^19.2.10",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.1.1",
+        "fflate": "^0.8.2",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^6.0.3",
+        "vite": "^8.2.2",
+        "vite-plugin-singlefile": "^2.3.3",
+      },
+    },
+    "apps/phone-dock": {
+      "name": "phone-dock",
+      "version": "0.1.0",
+      "dependencies": {
+        "@bridgething/client": "^0.15.1",
+        "preact": "^11.0.1",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+      },
+      "devDependencies": {
+        "@msgpack/msgpack": "^3.1.3",
+        "@preact/preset-vite": "^2.10.6",
         "@tailwindcss/vite": "^4.3.3",
         "@types/react": "^19.2.10",
         "@types/react-dom": "^19.2.3",
@@ -616,6 +639,8 @@
 
     "o-photos": ["o-photos@workspace:apps/o-photos"],
 
+    "phone-dock": ["phone-dock@workspace:apps/phone-dock"],
+
     "picocolors": ["picocolors@1.1.1", "", {}, "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA=="],
 
     "picomatch": ["picomatch@4.0.7", "", {}, "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA=="],
@@ -702,6 +727,10 @@
 
     "network-monitor/@bridgething/extension": ["@bridgething/extension@0.12.1", "", { "dependencies": { "@bridgething/lib": "0.12.1" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-YFD4IkmkEpxMXpcyLQviHPN+uIVUw+2Cur40RFmhw60t81eHYMgrrJyE9vZCHim/S8uej7jPn1ghhTd8q+g7uA=="],
 
+    "phone-dock/@bridgething/client": ["@bridgething/client@0.15.1", "", { "dependencies": { "@bridgething/lib": "0.15.1", "@msgpack/msgpack": "^3.1.3" }, "peerDependencies": { "react": ">=18", "typescript": "^6.0.3" }, "optionalPeers": ["react"] }, "sha512-CzOjSYlluwWT5YXKzDOTz6Ja0ImJW3Wl3vVV41D9/0Fe+qQ8IqjXiG/nFTeHMVl+LHiU2P0C5WSmnUufh33HgQ=="],
+
+    "phone-dock/preact": ["preact@11.0.2", "", { "peerDependencies": { "preact-render-to-string": ">=6.7.0" }, "optionalPeers": ["preact-render-to-string"] }, "sha512-ofG+Lqznbt13JKDjdWPLTo5ONBqcNgidqnLRzJBG6PZjzGXOLRd5y9r448+HUofTyDbgKWVrPhHP0IgcxEZslQ=="],
+
     "@prefresh/vite/@rollup/pluginutils/picomatch": ["picomatch@2.3.2", "", {}, "sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA=="],
 
     "@tailwindcss/node/lightningcss/lightningcss-android-arm64": ["lightningcss-android-arm64@1.32.0", "", { "os": "android", "cpu": "arm64" }, "sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg=="],
@@ -729,5 +758,7 @@
     "deck/@bridgething/client/@bridgething/lib": ["@bridgething/lib@0.14.0", "", { "dependencies": { "uuid": "^14.0.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-GCkcQGkQzMWmhPLiJYUsefK0MsvKjpv9mqrcx6wnS1yZcZwsSifDZQg6Ir3FRuVVmD1SJiuY4F9CsRKCYCs/CQ=="],
 
     "dev-board/@bridgething/client/@bridgething/lib": ["@bridgething/lib@0.14.0", "", { "dependencies": { "uuid": "^14.0.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-GCkcQGkQzMWmhPLiJYUsefK0MsvKjpv9mqrcx6wnS1yZcZwsSifDZQg6Ir3FRuVVmD1SJiuY4F9CsRKCYCs/CQ=="],
+
+    "phone-dock/@bridgething/client/@bridgething/lib": ["@bridgething/lib@0.15.1", "", { "dependencies": { "uuid": "^14.0.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-95X+b7botRBNBK0pNmmktl3kbwspaX6oWy3C6ktKC/VgGKOoGX/7STnGBoLp5SqkXXnXSngwYr8B0P3qoLAc3w=="],
   }
 }
