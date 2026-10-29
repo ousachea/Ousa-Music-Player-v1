@@ -176,7 +176,9 @@ export default function App() {
       <Wash pal={screenPal} />
       {/* whatever the screen is, it keeps clear of the strip the music sits in */}
       {/* the clock keeps the whole screen, since Border draws on its edge; it makes its own room */}
-      <div className={`absolute inset-0 ${playing && view !== 'clock' ? 'pb-12' : ''}`}>
+      <div
+        key={view === 'clock' ? prefs.style : view}
+        className={`face-in absolute inset-0 ${playing && view !== 'clock' ? 'pb-12' : ''}`}>
       {view === 'clock' && <ClockFace prefs={prefs} zone={zone} at={at} pal={pal} music={!!playing} />}
       {view === 'timer' && timer.render(screenPal)}
       {view === 'stopwatch' && (

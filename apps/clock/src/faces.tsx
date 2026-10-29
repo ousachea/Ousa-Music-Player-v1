@@ -78,7 +78,7 @@ export function ClockFace({
             {parts.hour}
           </span>
           <span
-            className="text-[7rem] leading-none font-light text-dim transition-opacity duration-150"
+            className="text-[7rem] leading-none font-light text-dim transition-opacity duration-500 ease-in-out"
             style={{ opacity: lit ? 1 : 0.12 }}>
             :
           </span>
@@ -130,24 +130,24 @@ function Digits({
       className="flex items-center font-display font-light tracking-display tabular-nums"
       style={{ fontSize: size, textShadow: `0 0 0.35em ${pal.glow}` }}>
       <span className="leading-none" style={{ color: pal.main }}>
-        {parts.hour}
+        <Roll text={parts.hour} />
       </span>
       {/* two round dots rather than the font's colon, which sits low and thin at this size */}
       <span
-        className="mx-[0.12em] flex flex-col gap-[0.24em] transition-opacity duration-150"
+        className="mx-[0.12em] flex flex-col gap-[0.24em] transition-opacity duration-500 ease-in-out"
         style={{ opacity: lit ? 0.75 : 0.12 }}>
         <i className="block size-[0.11em] rounded-full" style={{ background: pal.main }} />
         <i className="block size-[0.11em] rounded-full" style={{ background: pal.second }} />
       </span>
       <span className="leading-none" style={{ color: pal.second }}>
-        {parts.minute}
+        <Roll text={parts.minute} />
       </span>
       {(seconds || parts.dayPeriod) && (
         <span className="ml-[0.18em] flex flex-col justify-between self-stretch py-[0.1em] font-normal leading-none">
           <span className="text-[0.14em] tracking-[0.18em] text-dim uppercase">{parts.dayPeriod}</span>
           {seconds && (
             <span className="text-[0.3em] opacity-70" style={{ color: pal.second }}>
-              {parts.second}
+              <Roll text={parts.second} />
             </span>
           )}
         </span>
@@ -155,6 +155,46 @@ function Digits({
     </div>
   );
 }
+
+// keyed from the right, so the ones digit stays the ones digit when 9 becomes 10
+function Roll({ text }: { text: string }) {
+  return (
+    <>
+      {Array.from(text).map((ch, i) => (
+        <Glyph key={text.length - i} ch={ch} />
+      ))}
+    </>
+  );
+}
+
+// the old digit rises out while the new one rises in under it, rather than one replacing the other
+function Glyph({ ch }: { ch: string }) {
+  const [prev, setPrev] = useState<string | null>(null);
+  const last = useRef(ch);
+  useEffect(() => {
+    if (last.current === ch) return;
+    setPrev(last.current);
+    last.current = ch;
+    const t = setTimeout(() => setPrev(null), ROLL_MS);
+    return () => clearTimeout(t);
+  }, [ch]);
+  // known during the render that brings the new digit, so neither half waits a frame for the effect
+  const out = last.current !== ch ? last.current : prev;
+  return (
+    <span className="relative inline-block">
+      <span key={ch} className={`inline-block ${out === null ? '' : 'digit-in'}`}>
+        {ch}
+      </span>
+      {out !== null && (
+        <span key={`out-${out}`} className="digit-out absolute inset-0">
+          {out}
+        </span>
+      )}
+    </span>
+  );
+}
+
+const ROLL_MS = 450;
 
 const SIZES: Record<Exclude<Prefs['size'], 'fill'>, number> = { small: 0.78, medium: 1, large: 1.24 };
 const FOOT_SIZE: Record<Prefs['size'], string> = {

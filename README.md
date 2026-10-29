@@ -382,7 +382,7 @@ behind each setting's name, and changes saved as you make them. The last change 
 A clock, timers, a stopwatch and an alarm, one per preset.
 
 - **1, the clock**: ten faces (Digital, Digital + Date, Minimal, Border, Flip, Analogue, Calendar,
-  World, Binary, Word); the digital ones glow softly in your colour. Press 1 again or turn the wheel to change face.
+  World, Binary, Word); the digital ones glow softly in your colour and roll each digit into place. Press 1 again or turn the wheel to change face.
 - **2, timers**: Countdown, Circular, Bezel, Pomodoro, Interval, Kitchen, Preset and Multi.
 - **3, stopwatch**: hundredths, with laps.
 - **4, alarm**: set it, switch it on, and it survives a restart.
