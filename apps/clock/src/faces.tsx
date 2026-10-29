@@ -126,24 +126,32 @@ function Digits({
   lit?: boolean;
 }) {
   return (
-    <div className="flex items-baseline gap-1 font-mono tabular-nums" style={{ fontSize: size }}>
+    <div
+      className="flex items-center font-display font-light tracking-display tabular-nums"
+      style={{ fontSize: size, textShadow: `0 0 0.35em ${pal.glow}` }}>
       <span className="leading-none" style={{ color: pal.main }}>
         {parts.hour}
       </span>
+      {/* two round dots rather than the font's colon, which sits low and thin at this size */}
       <span
-        className="leading-none transition-opacity duration-150"
-        style={{ color: pal.main, opacity: lit ? 0.4 : 0.05 }}>
-        :
+        className="mx-[0.12em] flex flex-col gap-[0.24em] transition-opacity duration-150"
+        style={{ opacity: lit ? 0.75 : 0.12 }}>
+        <i className="block size-[0.11em] rounded-full" style={{ background: pal.main }} />
+        <i className="block size-[0.11em] rounded-full" style={{ background: pal.second }} />
       </span>
       <span className="leading-none" style={{ color: pal.second }}>
         {parts.minute}
       </span>
-      {seconds && (
-        <span className="ml-2 self-end pb-[0.35em] text-[0.31em] leading-none opacity-70" style={{ color: pal.second }}>
-          {parts.second}
+      {(seconds || parts.dayPeriod) && (
+        <span className="ml-[0.18em] flex flex-col justify-between self-stretch py-[0.1em] font-normal leading-none">
+          <span className="text-[0.14em] tracking-[0.18em] text-dim uppercase">{parts.dayPeriod}</span>
+          {seconds && (
+            <span className="text-[0.3em] opacity-70" style={{ color: pal.second }}>
+              {parts.second}
+            </span>
+          )}
         </span>
       )}
-      {parts.dayPeriod && <span className="ml-2 self-end pb-[0.45em] text-[0.16em] leading-none text-dim">{parts.dayPeriod}</span>}
     </div>
   );
 }
@@ -389,14 +397,7 @@ function World({
     <div className="flex h-full w-full items-center gap-8 px-12 pt-7">
       <div className="flex flex-1 flex-col items-start gap-1">
         <span className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Here</span>
-        <div className="flex items-baseline gap-1 font-mono text-[4.5rem] leading-none tabular-nums">
-          <span style={{ color: pal.main }}>{parts.hour}</span>
-          <span className="opacity-40" style={{ color: pal.main }}>
-            :
-          </span>
-          <span style={{ color: pal.second }}>{parts.minute}</span>
-          {parts.dayPeriod && <span className="ml-2 text-title text-dim">{parts.dayPeriod}</span>}
-        </div>
+        <Digits parts={parts} pal={pal} seconds={false} size="4.5rem" />
         <span className="text-hint text-dim">{parts.date}</span>
         {!zone.synced && <span className="text-hint text-dim opacity-70">waiting for the phone's clock</span>}
       </div>
@@ -410,7 +411,7 @@ function World({
               <span className="text-row-lg text-near">{city.label}</span>
               <span className="flex items-baseline gap-2">
                 {shift !== 0 && <span className="text-hint text-dim">{shift > 0 ? 'tomorrow' : 'yesterday'}</span>}
-                <span className="font-mono text-title tabular-nums" style={{ color: pal.main }}>
+                <span className="font-display text-title tabular-nums" style={{ color: pal.main }}>
                   {readIn(at, city.tz, zone.locale, prefs.format)}
                 </span>
               </span>

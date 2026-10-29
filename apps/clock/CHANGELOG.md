@@ -4,6 +4,9 @@
 
 Light mode, switched on from the settings.
 
+The digital faces (Digital, Digital + Date, Border, World) are redrawn in the app's own rounded font,
+with a soft glow in the chosen colour, a colon of two round dots, and the seconds tucked under AM/PM.
+
 ## 0.5.4
 
 Bigger icon: the ring and its glyph now fill the tile.

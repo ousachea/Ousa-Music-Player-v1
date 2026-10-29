@@ -19,6 +19,7 @@ none, so Khmer in titles, quotes, names and captions displays properly.
 | <img src="apps/pixel-art/public/icon.png" width="40" alt=""> | **O-Pixel Art** | A glowing LED wall: animated scenes, and pixel art you draw yourself |
 | <img src="apps/deck/public/icon.png" width="40" alt=""> | **O-Deck** | Big tiles that work your Mac: shortcuts, apps, volume, mic, screenshot, sleep |
 | <img src="apps/dev-board/public/icon.png" width="40" alt=""> | **O-Dev Board** | GitHub at a glance: repos and their checks, pull requests, reviews and inbox |
+| <img src="apps/phone-dock/public/icon.png" width="40" alt=""> | **O-Phone Dock** | Your phone on the dash: answer calls and act on notifications |
 
 ## Put it on your Car Thing
 
@@ -381,7 +382,7 @@ behind each setting's name, and changes saved as you make them. The last change 
 A clock, timers, a stopwatch and an alarm, one per preset.
 
 - **1, the clock**: ten faces (Digital, Digital + Date, Minimal, Border, Flip, Analogue, Calendar,
-  World, Binary, Word). Press 1 again or turn the wheel to change face.
+  World, Binary, Word); the digital ones glow softly in your colour. Press 1 again or turn the wheel to change face.
 - **2, timers**: Countdown, Circular, Bezel, Pomodoro, Interval, Kitchen, Preset and Multi.
 - **3, stopwatch**: hundredths, with laps.
 - **4, alarm**: set it, switch it on, and it survives a restart.
