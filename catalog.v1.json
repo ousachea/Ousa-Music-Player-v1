@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-29T03:56:11.223Z",
+  "updated_at": "2026-10-29T05:37:04.534Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -3428,10 +3428,27 @@
       "name": "O-Phone Dock",
       "description": "Your phone on the dash: answer calls and act on notifications",
       "author": "Ousa Chea",
-      "icon": null,
+      "icon": "https://ousachea.github.io/Ousa-Music-Player-v1/icons/01a185c2-0d9b-731a-b017-c5061b5bbe2a.png",
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.1.1",
+          "released_at": "2026-10-29T05:37:04.532Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a185c2-0d9b-731a-b017-c5061b5bbe2a/0.1.1.zip",
+            "size": 877542,
+            "sha256": "5e58ad55f2bc9404fa204f26be18ab4e37020113484741055a11b582e7dd099d"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a185c2-0d9b-731a-b017-c5061b5bbe2a/0.1.1.html",
+            "size": 39926,
+            "sha256": "4401b096b2968871b05be15053d110922f59b0284e7a9648fca772c79612f0ed"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.15.1",
+          "changelog": "The app's icon now shows in the store and on the Car Thing's launcher."
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-10-29T03:56:11.220Z",
