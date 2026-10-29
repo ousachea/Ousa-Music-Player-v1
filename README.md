@@ -681,6 +681,12 @@ big glowing clock, the date and the song instead.
 
 The list starts empty each time the app opens, since the phone only sends what arrives after.
 
+- **Simulate**: turn on Simulate calls and notifications in the app's settings to try it all without a phone.
+  Buttons there play out an incoming call, an unknown number, a second caller during a call, the caller hanging up,
+  a text, a long message, an email, a reminder with no actions, five notifications at once, and clearing it all.
+  Answering, declining, muting, ending and the notification actions then work on the Car Thing as usual, but nothing
+  reaches the phone, and a Simulating badge stays in the corner. Turning it off removes everything it made
+
 ### Controls
 
 | What you do | What happens |

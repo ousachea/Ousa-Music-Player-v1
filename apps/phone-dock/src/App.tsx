@@ -1,10 +1,7 @@
 import { BridgethingClient, type ConnectionState, type PlayerState } from '@bridgething/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { daemonUrl } from './daemon';
-
-type Handler<F> = F extends (handler: (msg: infer M) => void) => unknown ? M : never;
-type PhoneCall = Handler<BridgethingClient['phone']['onCallStarted']>;
-type Notification = Handler<BridgethingClient['notifications']['onPosted']>;
+import { SIM_CONFIG, SIM_DOC, SIM_PREFIX, simulate, type Notification, type PhoneCall, type SimAction } from './simulate';
 
 const LIVE: PhoneCall['status'][] = ['ringing', 'sending', 'connecting', 'active', 'held'];
 const MAX_NOTIFICATIONS = 50;
@@ -44,6 +41,15 @@ function initials(name: string): string {
 
 const GLOW = '#38bdf8';
 
+const isSim = (id: string) => id.startsWith(SIM_PREFIX);
+
+// drops a call, and when nothing is live after it, resumes the newest held one
+function dropCall(calls: PhoneCall[], callId: string | undefined): PhoneCall[] {
+  const rest = calls.filter(c => c.callId !== callId);
+  if (rest.some(c => c.status !== 'held')) return rest;
+  return rest.map((c, i) => (i === rest.length - 1 ? { ...c, status: 'active' as const } : c));
+}
+
 export default function App() {
   const client = useMemo(() => new BridgethingClient({ url: daemonUrl() }), []);
   const [conn, setConn] = useState<ConnectionState>(client.connectionState);
@@ -56,6 +62,9 @@ export default function App() {
   // when each call went live, for phones that leave startedAtUnixS null
   const liveSince = useRef(new Map<string, number>());
   const listRef = useRef<HTMLDivElement>(null);
+  const [simulating, setSimulating] = useState(false);
+  const simulatingRef = useRef(false);
+  simulatingRef.current = simulating;
 
   useEffect(() => {
     const offs = [
@@ -76,7 +85,15 @@ export default function App() {
       client.notifications.onPosted(n => setNotes(ns => upsertNotification(ns, n))),
       client.notifications.onUpdated(n => setNotes(ns => upsertNotification(ns, n))),
       client.notifications.onRemoved(({ id }) => setNotes(ns => ns.filter(n => n.id !== id))),
+      client.config.onChanged(({ key, value }) => key === SIM_CONFIG && setSimulating(value === 'true')),
+      client.doc.onChanged(({ key, value }) => {
+        if (key !== SIM_DOC || !value || !simulatingRef.current) return;
+        try {
+          playSim(JSON.parse(value).action as SimAction);
+        } catch {}
+      }),
     ];
+    client.config.get({ key: SIM_CONFIG }).then(r => r.ok && setSimulating(r.response.value === 'true'));
     const tick = setInterval(() => setNow(Date.now()), 1000);
     return () => {
       offs.forEach(off => off());
@@ -84,8 +101,32 @@ export default function App() {
     };
   }, [client]);
 
+  // turning simulate off takes its fake calls and notifications with it
+  useEffect(() => {
+    if (simulating) return;
+    setCalls(cs => cs.filter(c => !isSim(c.callId)));
+    setNotes(ns => ns.filter(n => !isSim(n.id)));
+  }, [simulating]);
+
+  function playSim(action: SimAction) {
+    const effect = simulate(action);
+    if (effect.kind === 'call') setCalls(cs => [...cs, effect.call]);
+    else if (effect.kind === 'hangup') setCalls(cs => dropCall(cs, [...cs].reverse().find(c => isSim(c.callId))?.callId));
+    else if (effect.kind === 'notes') {
+      setNotes(ns => effect.notes.reduce(upsertNotification, ns));
+      setSelected(0);
+    } else {
+      setCalls(cs => cs.filter(c => !isSim(c.callId)));
+      setNotes(ns => ns.filter(n => !isSim(n.id)));
+    }
+  }
+
   // ringing incoming wins over an active call so a second caller can be answered
-  const call = calls.find(c => c.status === 'ringing' && c.direction === 'incoming') ?? calls[0] ?? null;
+  const call =
+    calls.find(c => c.status === 'ringing' && c.direction === 'incoming') ??
+    calls.find(c => c.status === 'active') ??
+    calls[0] ??
+    null;
   const ringing = call?.status === 'ringing' && call.direction === 'incoming';
   if (call?.status === 'active' && !liveSince.current.has(call.callId)) liveSince.current.set(call.callId, Date.now());
   const callStart = call && (call.startedAtUnixS != null ? call.startedAtUnixS * 1000 : liveSince.current.get(call.callId));
@@ -95,14 +136,26 @@ export default function App() {
   const act = (n: Notification | null, positive: boolean) => {
     if (!n) return;
     if (positive ? !n.positiveAction : !n.negativeAction) return;
+    if (isSim(n.id)) return setNotes(ns => ns.filter(x => x.id !== n.id));
     (positive ? client.notifications.invokePositive : client.notifications.invokeNegative).call(client.notifications, {
       id: n.id,
     });
   };
 
-  const answer = () => call && client.phone.accept({ callId: call.callId, action: 'accept' });
-  const hangUp = () => call && (ringing ? client.phone.decline({ callId: call.callId }) : client.phone.end({ callId: call.callId }));
-  const toggleMute = () => client.phone.mute({ mute: !muted }).then(() => setMuted(m => !m));
+  // a simulated call plays out locally: answering holds the others, ending one resumes a held call
+  const answer = () => {
+    if (!call) return;
+    if (!isSim(call.callId)) return client.phone.accept({ callId: call.callId, action: 'accept' });
+    const live = { ...call, status: 'active' as const, startedAtUnixS: Math.floor(Date.now() / 1000) };
+    setCalls(cs => [...cs.filter(c => c.callId !== call.callId).map(c => ({ ...c, status: 'held' as const })), live]);
+  };
+  const hangUp = () => {
+    if (!call) return;
+    if (isSim(call.callId)) return setCalls(cs => dropCall(cs, call.callId));
+    return ringing ? client.phone.decline({ callId: call.callId }) : client.phone.end({ callId: call.callId });
+  };
+  const toggleMute = () =>
+    call && isSim(call.callId) ? setMuted(m => !m) : client.phone.mute({ mute: !muted }).then(() => setMuted(m => !m));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -141,9 +194,15 @@ export default function App() {
   const song = track ? `${track.title ?? 'unknown'}${track.artist ? ` · ${track.artist}` : ''}` : null;
   const idle = conn !== 'open' || notes.length === 0;
   const glowText = { textShadow: `0 0 24px ${GLOW}66` };
+  const simBadge = simulating && (
+    <div className="absolute top-3 right-4 z-10 rounded-full border border-experimental px-3 py-1 font-mono text-eyebrow tracking-[0.2em] text-experimental uppercase">
+      simulating
+    </div>
+  );
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-bg text-off-white">
+      {simBadge}
       {idle ? (
         <div
           className="flex flex-1 flex-col items-center justify-center"
@@ -170,7 +229,7 @@ export default function App() {
           <header className="flex h-16 shrink-0 items-center gap-5 border-b border-rule px-7">
             <div className="font-display text-hero font-medium">{clock(now)}</div>
             <div className="min-w-0 flex-1 truncate text-row-lg text-soft">{song ? `♪ ${song}` : ''}</div>
-            <span className="h-2.5 w-2.5 rounded-full" style={{ background: GLOW, boxShadow: `0 0 10px ${GLOW}` }} />
+            {!simulating && <span className="h-2.5 w-2.5 rounded-full" style={{ background: GLOW, boxShadow: `0 0 10px ${GLOW}` }} />}
           </header>
           <div ref={listRef} className="flex-1 overflow-y-auto">
             {notes.map((n, i) => {

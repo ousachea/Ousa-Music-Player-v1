@@ -1,5 +1,9 @@
 # O-Phone Dock
 
+## 0.1.2
+
+A Simulate toggle in Settings, with buttons that play out calls and notifications on the Car Thing without a phone: an incoming call, an unknown number, a second caller, the caller hanging up, a text, a long message, an email, a reminder, five at once, and clear everything. A Simulating badge shows while it is on.
+
 ## 0.1.1
 
 The app's icon now shows in the store and on the Car Thing's launcher.
