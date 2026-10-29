@@ -670,10 +670,11 @@ It refreshes every two minutes, and the last board stays on the Car Thing, marke
 
 ## O-Phone Dock
 
-Your phone's calls and notifications on the dash, with the song playing along the top.
+Your phone's calls and notifications on the dash, with the song playing along the top. With nothing new, it shows a
+big glowing clock, the date and the song instead.
 
 - **Calls**: an incoming call takes the whole screen with the caller's name and number. Answer or decline it; once
-  it is live, mute it or end it, and the wheel sets the volume
+  it is live, its timer runs, you can mute it or end it, and the wheel sets the volume
 - **Notifications**: what your phone posts while the dock is open, newest first, each with its app and age. The
   selected one opens up to show the whole message and its actions, such as reply or mark as read, in the phone's own
   words. A notification cleared on the phone leaves the list too
