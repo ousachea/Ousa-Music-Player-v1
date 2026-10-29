@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-25T06:56:07.743Z",
+  "updated_at": "2026-10-29T03:56:11.223Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -26,6 +26,23 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.6.0",
+          "released_at": "2026-10-29T03:56:10.741Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.6.0.zip",
+            "size": 1101742,
+            "sha256": "6fbe1449f01eb95c0d335635f90626252e8ac591dbe07b9de0573edd291fbe3f"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a08085-a3c5-73fc-a3f9-1532161d74d2/0.6.0.html",
+            "size": 26915,
+            "sha256": "a01042926a46239c50d17b4eb87c3017b8a2c028b9532b5bfb0c5079fa44ae63"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Light mode, switched on from the settings.\n\nThe digital faces (Digital, Digital + Date, Border, World) are redrawn in the app's own rounded font,\nwith a soft glow in the chosen colour, a colon of two round dots, and the seconds tucked under AM/PM.\n\nSmooth motion: changing digits roll up into place, the colon fades in and out rather than flicking,\nand switching face or screen fades in."
+        },
         {
           "version": "0.5.4",
           "released_at": "2026-10-25T03:42:12.429Z",
@@ -3403,6 +3420,34 @@
           ],
           "min_libbridgething_version": "0.12.1",
           "changelog": "An Immich library on the dash, as a photo frame rather than a web client.\n\nThe screen has no network of its own, so every request goes through the phone: one fetch helper over\nthe daemon's tunnel, an API key in the header and never in a url, and CORS never enters into it. The\nserver address and the key are typed in the companion app, since a Car Thing has nowhere to type a\nurl.\n\nRecent, Loved, Albums and Search are the four presets. Pictures come back thumbnail first, forty at\na time, and the next page loads as the grid nears its end. Touching one opens the viewer at preview\nsize, with the wheel and the arrow keys moving through, the file, place, camera, size and date\nbehind Info, and the heart writing the favourite back to Immich when the key is allowed to.\n\nThe slideshow runs from whichever list is open, one picture ahead of itself and no further, with\nfive transitions and a Ken Burns drift that holds still under prefers-reduced-motion. Shuffle is a\nFisher-Yates order taken once rather than a coin flip a picture, loop is a setting, and the chrome\nfades out until a touch brings it back.\n\nEvery picture that arrives is kept in IndexedDB with the time it was last wanted. When the box\npasses its limit the oldest go until it is back under four fifths, rather than the whole thing being\nemptied, and the settings say what is in it and offer to clear thumbnails, previews or all of it.\nObject urls are handed back as the grid moves on, so a slideshow can run for hours.\n\nA demo library is built in, drawn on a canvas rather than downloaded, for looking around before a\nkey exists."
+        }
+      ]
+    },
+    {
+      "id": "01a185c2-0d9b-731a-b017-c5061b5bbe2a",
+      "name": "O-Phone Dock",
+      "description": "Your phone on the dash: answer calls and act on notifications",
+      "author": "Ousa Chea",
+      "icon": null,
+      "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-10-29T03:56:11.220Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a185c2-0d9b-731a-b017-c5061b5bbe2a/0.1.0.zip",
+            "size": 877532,
+            "sha256": "d7b2af2dd28fd6e36ccbc345a13b29c01f3a390b47e247df4b6259dc98d040e7"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a185c2-0d9b-731a-b017-c5061b5bbe2a/0.1.0.html",
+            "size": 39926,
+            "sha256": "4401b096b2968871b05be15053d110922f59b0284e7a9648fca772c79612f0ed"
+          },
+          "permissions": [],
+          "min_libbridgething_version": "0.15.1",
+          "changelog": "First release: incoming calls full-screen with answer, decline, end and mute on the presets, a wheel-scrolled feed of\nyour phone's notifications with their actions, and a now-playing strip.\nWith nothing new it shows a big clock and the date; a live call shows its caller's initials and a running timer."
         }
       ]
     },
