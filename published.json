@@ -1992,6 +1992,17 @@
         "size": 39926,
         "sha256": "4401b096b2968871b05be15053d110922f59b0284e7a9648fca772c79612f0ed"
       }
+    },
+    "0.1.2": {
+      "released_at": "2026-10-29T05:43:14.097Z",
+      "sha256": "4b474e19f7f5f66ccf6cd86fa29d4e1ed2712d5354ef81c5e15eec255f99c23b",
+      "size": 882530,
+      "file": "r/01a185c2-0d9b-731a-b017-c5061b5bbe2a/0.1.2.zip",
+      "settings": {
+        "file": "s/01a185c2-0d9b-731a-b017-c5061b5bbe2a/0.1.2.html",
+        "size": 41143,
+        "sha256": "05dc58fa7546b24f22579bc349f634162b22b9d0867a186289c8e5bcd268de1e"
+      }
     }
   }
 }
