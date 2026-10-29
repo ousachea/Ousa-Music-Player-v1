@@ -391,7 +391,7 @@ A clock, timers, a stopwatch and an alarm, one per preset.
 ![Analogue face](apps/clock/screenshots/02-analogue.jpg)
 
 The wheel button opens settings for the current screen. Options include a flashing colon, face size
-(up to Fill), screen rotation, eight colour pairs, or **Follow the album art**. A now-playing strip
+(up to Fill), screen rotation, **Light mode**, eight colour pairs, or **Follow the album art**. A now-playing strip
 with previous, play and next sits along the bottom while music plays. Time comes from the phone.
 
 ![Stopwatch](apps/clock/screenshots/05-stopwatch.jpg)

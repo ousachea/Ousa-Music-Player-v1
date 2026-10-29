@@ -171,7 +171,7 @@ export default function App() {
   const turn = Number(prefs.rotate);
 
   return (
-    <Stage rotate={turn}>
+    <Stage rotate={turn} light={prefs.light}>
     <div className="absolute inset-0 overflow-hidden bg-screen text-off-white">
       <Wash pal={screenPal} />
       {/* whatever the screen is, it keeps clear of the strip the music sits in */}
@@ -224,10 +224,11 @@ export default function App() {
 
 // the screen never resizes, so a quarter turn is laid out at the swapped size and rotated into
 // place; the strip left either side is dead space, which is what a turn costs
-function Stage({ rotate, children }: { rotate: number; children: ReactNode }) {
+function Stage({ rotate, light, children }: { rotate: number; light: boolean; children: ReactNode }) {
   const quarter = rotate === 90 || rotate === 270;
   return (
-    <div className="absolute inset-0 overflow-hidden bg-screen">
+    // flipping lightness but not hue turns every hand-picked dark colour into its light twin in one place
+    <div className="absolute inset-0 overflow-hidden bg-screen" style={light ? { filter: 'invert(1) hue-rotate(180deg)' } : undefined}>
       <div
         className="absolute top-1/2 left-1/2"
         style={{
@@ -581,6 +582,7 @@ function Settings({
             'Screen rotation',
             seg(CHOICES.rotate, ['0°', '90°', '180°', '270°'], prefs.rotate, v => setPref('rotate', v)),
           ),
+          row('Light mode', toggle(prefs.light, () => setPref('light', prefs.light ? 'false' : 'true'))),
           row('What is playing', toggle(prefs.music, () => setPref('music', prefs.music ? 'false' : 'true'))),
           row('Follow the album art', toggle(prefs.artColour, () => setPref('artColour', prefs.artColour ? 'false' : 'true'))),
           row(

@@ -1,5 +1,9 @@
 # O-Clock
 
+## 0.6.0
+
+Light mode, switched on from the settings.
+
 ## 0.5.4
 
 Bigger icon: the ring and its glyph now fill the tile.
