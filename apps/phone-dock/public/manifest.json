@@ -1,0 +1,10 @@
+{
+  "id": "01a185c2-0d9b-731a-b017-c5061b5bbe2a",
+  "name": "O-Phone Dock",
+  "version": "0.1.0",
+  "description": "Your phone on the dash: answer calls and act on notifications",
+  "settings": "settings.html",
+  "config": [],
+  "permissions": [],
+  "art": { "heroPx": 248, "thumbPx": 96 }
+}

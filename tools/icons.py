@@ -55,6 +55,10 @@ G = {
         <rect x="166" y="166" width="80" height="80" rx="18"/><rect x="266" y="166" width="80" height="80" rx="18" opacity=".7"/>
         <rect x="166" y="266" width="80" height="80" rx="18" opacity=".7"/><rect x="266" y="266" width="80" height="80" rx="18"/>
       </g>'''),
+    'phone-dock': ('#38bdf8', '''
+      <rect x="196" y="150" width="120" height="212" rx="24" fill="none" stroke="C" stroke-width="20"/>
+      <rect x="236" y="324" width="40" height="12" rx="6" fill="C"/>
+      <circle cx="318" cy="166" r="30" fill="#fb7185" stroke="#0b0b12" stroke-width="12"/>'''),
     'dev-board': ('#a3e635', '''
       <g fill="none" stroke="C" stroke-width="20" stroke-linecap="round">
         <circle cx="196" cy="176" r="26"/><circle cx="196" cy="336" r="26"/><circle cx="316" cy="336" r="26"/>

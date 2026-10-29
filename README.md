@@ -668,6 +668,29 @@ It refreshes every two minutes, and the last board stays on the Car Thing, marke
 | Press the wheel, or tap a row | Open it on the Mac |
 | The refresh chip | Read GitHub again now |
 
+## O-Phone Dock
+
+Your phone's calls and notifications on the dash, with the song playing along the top.
+
+- **Calls**: an incoming call takes the whole screen with the caller's name and number. Answer or decline it; once
+  it is live, mute it or end it, and the wheel sets the volume
+- **Notifications**: what your phone posts while the dock is open, newest first, each with its app and age. The
+  selected one opens up to show the whole message and its actions, such as reply or mark as read, in the phone's own
+  words. A notification cleared on the phone leaves the list too
+
+The list starts empty each time the app opens, since the phone only sends what arrives after.
+
+### Controls
+
+| What you do | What happens |
+| --- | --- |
+| Turn the wheel | Move down the notifications; the volume during a call |
+| Preset 1 | The selected notification's first action; answer a ringing call |
+| Preset 2 | Mute or unmute a live call |
+| Preset 4 | The selected notification's second action; decline or end a call |
+| Back | Back to the newest notification |
+| Tap a row | Select it |
+
 ## Working on it
 
 ```sh
