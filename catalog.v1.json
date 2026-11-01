@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-11-01T09:44:38.435Z",
+  "updated_at": "2026-11-01T10:22:31.916Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -788,6 +788,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.50.0",
+          "released_at": "2026-11-01T10:22:31.911Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.50.0.zip",
+            "size": 1539979,
+            "sha256": "946e71f66fc23375f8f8a283e2d2b8a0442c243f90eddeb894926cfe256cb5d1"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.50.0.html",
+            "size": 42483,
+            "sha256": "740a2f7228fc2e3b9ae90722bf16b395832dbbb8e5c074819ec5d97166638daa"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "Dim in the dark, under Display: the Car Thing's light sensor turns the screen down to a soft glow when the room goes dark, and back to your brightness when the light returns. Off unless you turn it on.\n\nBigger touch targets: Cassette's deck keys, the Pocket's body colour dot and the Stereo's second display line were a little small to hit, in landscape and upright. Every button in every style is now at least 40 pixels across."
+        },
         {
           "version": "0.48.0",
           "released_at": "2026-11-01T09:44:38.430Z",
