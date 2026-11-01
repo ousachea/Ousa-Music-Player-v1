@@ -88,6 +88,14 @@ export function LibrarySheet({
   const [typing, setTyping] = useState(true);
   const [searched, setSearched] = useState(false);
   const list = useRef<HTMLDivElement>(null);
+  // the library is spotify's, reached through the companion app; without a linked service every request fails
+  const [unlinked, setUnlinked] = useState(false);
+  useEffect(() => {
+    client.capabilities
+      .get()
+      .then(r => r.ok && setUnlinked(r.response.capabilities.musicProvider === 'none'))
+      .catch(() => {});
+  }, [client]);
 
   useEffect(() => {
     if (tab !== 'Liked' || liked.rows) return;
@@ -202,9 +210,14 @@ export function LibrarySheet({
       )}
 
       <div ref={list} data-library-list className="min-h-0 flex-1 overflow-y-auto px-4 pb-3 [scrollbar-width:none]">
-        {shown.rows === null && <p className="py-8 text-center text-hint text-dim">Asking the phone...</p>}
-        {shown.error && <p className="py-8 text-center text-title text-dim">{shown.error}</p>}
-        {shown.rows?.length === 0 && !shown.error && (
+        {unlinked && (
+          <p className="py-8 text-center text-title text-dim">
+            The library needs Spotify linked in the bridgething app on your phone.
+          </p>
+        )}
+        {!unlinked && shown.rows === null && <p className="py-8 text-center text-hint text-dim">Asking the phone...</p>}
+        {!unlinked && shown.error && <p className="py-8 text-center text-title text-dim">{shown.error}</p>}
+        {!unlinked && shown.rows?.length === 0 && !shown.error && (
           <p className="py-8 text-center text-hint text-dim">
             {tab === 'Search' ? (searched ? 'Nothing found.' : 'Type what to play, then Search.') : 'Nothing here yet.'}
           </p>

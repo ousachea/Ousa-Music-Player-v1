@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type MouseEvent,
   type PointerEvent,
   type ReactNode,
 } from 'react';
@@ -276,6 +277,16 @@ export default function App() {
 
   // the phone's own heart for the song, kept in step with a like made anywhere else
   const [liked, setLiked] = useState<boolean | null>(null);
+  // likes go to the linked music service; an iphone reporting over its accessory link has none to send them to
+  const [unlinked, setUnlinked] = useState(false);
+  useEffect(() => {
+    const take = (provider: string) => setUnlinked(provider === 'none');
+    client.capabilities
+      .get()
+      .then(r => r.ok && take(r.response.capabilities.musicProvider))
+      .catch(() => {});
+    return client.capabilities.onSnapshot(s => take(s.capabilities.musicProvider));
+  }, [client]);
   useEffect(() => setLiked(track?.liked ?? null), [track?.uri, track?.liked]);
   useEffect(() => {
     const uri = track?.uri;
@@ -285,14 +296,14 @@ export default function App() {
     });
   }, [client, track?.uri]);
   const toggleLike = useCallback(() => {
-    if (!track?.uri) return;
+    if (unlinked || !track?.uri) return flash('Liking needs Spotify linked in the bridgething app');
     const next = !liked;
     setLiked(next);
     client.library
       .favoritesSet({ item: { uri: track.uri, kind: 'track', persistentId: track.persistentId }, liked: next })
       .catch(() => setLiked(!next));
     flash(next ? '♥ Added to Liked Songs' : 'Removed from Liked Songs');
-  }, [client, track?.uri, track?.persistentId, liked, flash]);
+  }, [client, track?.uri, track?.persistentId, liked, flash, unlinked]);
 
   const playRow = useCallback(
     (uri: string, name: string) => {
@@ -1010,6 +1021,7 @@ export default function App() {
             showVolume={prefs.coverVolume}
             pulse={prefs.motion && prefs.pulse}
             pulseMs={Math.round(60000 / (prefs.pulseBpm || AUTO_PULSE_BPM))}
+            onLook={key => setPref(key, prefs[key] ? 'false' : 'true')}
             upright={upright}
             progress={progress}
             elapsed={elapsed}
@@ -1269,6 +1281,9 @@ export default function App() {
             flash(mode === 'off' ? 'Repeat off' : mode === 'all' ? 'Repeat all' : 'Repeat this song');
           }}
           sleepAt={sleepAt?.at ?? null}
+          position={
+            playback?.queueIndex != null && playback.queueCount ? { index: playback.queueIndex, count: playback.queueCount } : null
+          }
           onSleep={stepSleep}
           onLibrary={() => {
             setSheet(false);
@@ -1326,6 +1341,7 @@ function QueueSheet({
   sleepAt,
   onSleep,
   onLibrary,
+  position,
   onPick,
   onClose,
 }: {
@@ -1341,6 +1357,8 @@ function QueueSheet({
   sleepAt: number | null;
   onSleep: () => void;
   onLibrary: () => void;
+  // where the song sits in the phone's list, which an iphone sends even when it sends no list
+  position: { index: number; count: number } | null;
   onPick: (index: number) => void;
   onClose: () => void;
 }) {
@@ -1379,7 +1397,10 @@ function QueueSheet({
 
         <div className="flex shrink-0 flex-wrap items-center gap-2 px-4 pb-2">
           <h2 className="mr-auto font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
-            Up next <span className="tabular-nums">{queue ? queue.items.length : '--'}</span>
+            Up next{' '}
+            <span className="tabular-nums">
+              {queue?.items.length || !position ? (queue ? queue.items.length : '--') : position.count - position.index - 1}
+            </span>
           </h2>
           <Chip on={!!liked} tint={tint} onClick={onLike}>
             <span className="flex items-center gap-1.5">
@@ -1418,7 +1439,11 @@ function QueueSheet({
           {!queue && <p className="px-1 py-6 text-center text-hint text-dim">Asking the phone for the queue…</p>}
           {queue && items.length === 0 && (
             <p className="px-1 py-6 text-center text-hint text-dim">
-              {played.length > 0 ? 'Nothing lined up after this one.' : 'The phone has not sent a queue.'}
+              {position && position.count > position.index + 1
+                ? `Song ${position.index + 1} of ${position.count}. The phone shares where you are in the list but not the songs in it, so they cannot be shown here.`
+                : played.length > 0
+                  ? 'Nothing lined up after this one.'
+                  : 'The phone has not sent a queue.'}
             </p>
           )}
           {items.map((item, i) => (
@@ -3143,6 +3168,9 @@ const WAVE_LENGTH = 26;
 // transport and a volume slider. the arrangement never changes; only the frame around it does.
 // landscape floats it as a narrow card over the blurred art, because stacking six rows is the whole
 // look and a full width version of it would just be the Cover style again
+type CoverLook = 'coverEdge' | 'coverPanel';
+const TAP_SLOP_PX = 12;
+
 function Widget({
   artUrl,
   context,
@@ -3160,6 +3188,7 @@ function Widget({
   showVolume,
   pulse,
   pulseMs,
+  onLook,
   rotate,
   upright,
   progress,
@@ -3192,6 +3221,7 @@ function Widget({
   showVolume: boolean;
   pulse: boolean;
   pulseMs: number;
+  onLook: (key: CoverLook) => void;
   rotate: Prefs['rotate'];
   upright: boolean;
   progress: number;
@@ -3215,8 +3245,27 @@ function Widget({
   const small = !upright;
 
   const round = small ? 'rounded-2xl' : 'rounded-[22px]';
+  // a tap on the cover runs the art to the edge and back; a press that travelled was a swipe for the next track
+  const downAt = useRef<{ x: number; y: number } | null>(null);
+  // the track's own side trades the panel on and off, as long as the tap missed every control on it
+  const panelDownAt = useRef<{ x: number; y: number } | null>(null);
+  const panelTap = {
+    onPointerDown: (e: PointerEvent<HTMLDivElement>) => (panelDownAt.current = { x: e.clientX, y: e.clientY }),
+    onClick: (e: MouseEvent<HTMLDivElement>) => {
+      const from = panelDownAt.current;
+      if (from && Math.hypot(e.clientX - from.x, e.clientY - from.y) > TAP_SLOP_PX) return;
+      if (e.target instanceof Element && e.target.closest('button, input, .cursor-pointer')) return;
+      onLook('coverPanel');
+    },
+  };
   const cover = (
     <div
+      onPointerDown={e => (downAt.current = { x: e.clientX, y: e.clientY })}
+      onClick={e => {
+        const from = downAt.current;
+        if (from && Math.hypot(e.clientX - from.x, e.clientY - from.y) > TAP_SLOP_PX) return;
+        onLook('coverEdge');
+      }}
       className={`relative aspect-square bg-white/6 ${small ? 'h-full shrink-0' : 'w-full min-h-0 shrink'} ${
         edge ? '' : `overflow-hidden shadow-2xl ring-1 ring-white/10 ${round}`
       }`}>
@@ -3356,7 +3405,7 @@ function Widget({
     return (
       <div className={`relative flex h-full w-full flex-col ${edge ? 'p-0' : 'p-7'}`}>
         {cover}
-        <div className={`flex min-h-0 flex-1 flex-col ${edge ? 'p-7' : 'pt-4'}`}>
+        <div {...panelTap} className={`flex min-h-0 flex-1 flex-col ${edge ? 'p-7' : 'pt-4'}`}>
           {wrap(<div className="flex min-h-0 flex-1 flex-col justify-between gap-4">{rest}</div>)}
         </div>
       </div>
@@ -3368,7 +3417,7 @@ function Widget({
     // ratio needs or a content-sized track grows to fit it
     <div className={`absolute inset-0 flex items-stretch overflow-hidden ${edge ? 'gap-0 p-0' : 'gap-7 p-7'}`}>
       {cover}
-      <div className={`flex min-w-0 flex-1 flex-col ${edge ? 'p-7' : ''}`}>
+      <div {...panelTap} className={`flex min-w-0 flex-1 flex-col ${edge ? 'p-7' : ''}`}>
         {wrap(
           <div className="flex min-h-0 flex-1 flex-col gap-5">
             {/* the track takes the space above; the controls hold the bottom edge whatever is left */}

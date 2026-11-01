@@ -1,5 +1,11 @@
 # O-Music Player
 
+## 0.51.0
+
+In the Cover style, tap the cover to run the art to the edge and back, and tap the track's side, away from the buttons and bars, to put the panel behind it on or off. A swipe across the art still changes the track.
+
+On an iPhone the queue showed nothing, or said nothing was lined up, because an iPhone shares where you are in the list but not the songs in it. It now says so, with the position, for example song 13 of 73, and the count of songs left. The library and the like button say plainly when they need Spotify linked in the bridgething app, rather than waiting on an answer that never comes or claiming a like that went nowhere.
+
 ## 0.50.0
 
 Dim in the dark, under Display: the Car Thing's light sensor turns the screen down to a soft glow when the room goes dark, and back to your brightness when the light returns. Off unless you turn it on.

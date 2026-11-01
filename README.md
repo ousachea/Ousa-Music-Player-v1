@@ -63,7 +63,8 @@ In Cover, CD, Flow, Pocket and Poster a long song title shrinks to fit rather th
 
 A phone lock screen layout: the art, the track, a progress bar, the transport and its own volume
 slider. Options: **Panel behind the track**, **Volume slider**, **Art to the edge**, and **Art pulse**
-with a tempo.
+with a tempo. Tap the cover to run the art to the edge and back, and tap the track's side, away from the
+buttons and bars, to put the panel on or off.
 
 ### 2. Poster
 
@@ -303,6 +304,9 @@ panel fills the width as a square with everything else stacked under it.
 Swipe up from the bottom edge for the phone's queue: what's playing, what's next and what just
 played. Tap a row to skip to it. Swipe down or press Back to close.
 
+An iPhone shares where you are in the list (song 13 of 73, say) but not the songs in it, so with one the
+queue shows that position and what has played rather than what is coming up.
+
 Along the top of the queue: **Like** hearts the song in your Spotify library, **Shuffle** and **Repeat**
 (off, all, this song) set the phone's player, **Sleep** steps a timer through 15, 30 and 60 minutes and
 off, after which the music pauses and the screen goes dark, and **Library** opens your library.
@@ -310,7 +314,7 @@ off, after which the music pauses and the screen goes dark, and **Library** open
 ### Your library
 
 Pull down from the top edge, tap **Library** in the queue, or tap **Browse your library** when nothing is
-playing. **Liked** lists what you have saved, **Browse** walks your playlists and folders, and **Search**
+playing. The library and liking need Spotify linked in the bridgething app on your phone. **Liked** lists what you have saved, **Browse** walks your playlists and folders, and **Search**
 has an on-screen keyboard; on a Car Thing with voice turned on, hold the mic and say what to play. Tap
 anything to play it. The wheel scrolls, Back steps out of a folder and then closes.
 
