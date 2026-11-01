@@ -617,9 +617,8 @@ export default function App() {
       else if (e.key === '4') setPref('rotate', String((prefs.rotate + 90) % 360));
       // the button past the four presets; the launcher still owns five fast presses of it. no button
       // sends 5, so it costs the device nothing and gives a keyboard the same thing in reach
-      else if (e.key === 'm' || e.key === 'M' || e.key === '5') {
-        setPref('theme', THEMES[(THEMES.indexOf(prefs.theme) + 1) % THEMES.length]);
-      }
+      // a held mode button is the device's way home, so the style only moves on a short press, on release
+      else if (e.key === 'm' || e.key === 'M' || e.key === '5') hold(e.key, HOLD_MS_LIKE, () => {});
     };
     const onKeyUp = (e: KeyboardEvent) => {
       const held = holdKey.current;
@@ -628,6 +627,8 @@ export default function App() {
       holdKey.current = null;
       if (held.done) return;
       if (e.key === ' ' || e.key === 'Enter') return press();
+      if (e.key === 'm' || e.key === 'M' || e.key === '5')
+        return setPref('theme', THEMES[(THEMES.indexOf(prefs.theme) + 1) % THEMES.length]);
       const slot = presetSlots.slots[e.key];
       if (slot) playRow(slot.uri, slot.name);
       else flash(`Hold ${e.key} to save what is playing`);
@@ -1232,10 +1233,15 @@ export default function App() {
       )}
 
       <VolumeHud show={hud && !ownsVolume} volume={volume} accent={accentOn} />
-      {held && link.linked !== true && (
-        <div className="pointer-events-none absolute top-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/75 px-4 py-1.5 text-hint text-off-white backdrop-blur-sm">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-[#ffb627]" />
-          Reconnecting to {link.phone ?? 'your phone'}...
+      {/* the song can stay on screen after the phone has gone, so say so for as long as it is gone */}
+      {((held && link.linked !== true) || link.linked === false || conn !== 'open') && (
+        <div className="pointer-events-none absolute top-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/75 px-4 py-1.5 text-hint whitespace-nowrap text-off-white backdrop-blur-sm">
+          <span className={`h-2 w-2 rounded-full ${held ? 'animate-pulse bg-[#ffb627]' : 'bg-[#ff5c5c]'}`} />
+          {conn !== 'open'
+            ? 'Car Thing reconnecting...'
+            : held
+              ? `Reconnecting to ${link.phone ?? 'your phone'}...`
+              : 'Phone not connected'}
         </div>
       )}
       <div
@@ -1915,6 +1921,14 @@ function Panel({
                 </div>
               </div>
               <p className="px-1 text-hint text-dim">Changing a setting in the companion app overrides it here.</p>
+              {/* a webapp cannot open the home screen itself; the device keeps that gesture for its own */}
+              <div className="flex shrink-0 items-center gap-3 rounded-2xl bg-white/4 px-4 py-3">
+                <BackGlyph className="h-4 w-4 shrink-0 text-dim" />
+                <div className="min-w-0">
+                  <div className="text-title text-near">Exit the player</div>
+                  <div className="text-hint text-dim">Hold the Mode button to go back to the home screen.</div>
+                </div>
+              </div>
             </>
           )}
         </div>
@@ -2027,6 +2041,7 @@ function controlsHelp(favourites: boolean): [string, string][] {
           ['Preset 4', 'Turn the screen a quarter'],
         ] as [string, string][])),
     ['Mode', 'Next style'],
+    ['Hold Mode', 'Back to the home screen'],
     ['Swipe across', 'Next or previous track'],
     ['Pull up from the bottom', 'Queue, shuffle, repeat, sleep timer, like'],
     ['Pull down from the top', 'Your library: liked, browse, search'],

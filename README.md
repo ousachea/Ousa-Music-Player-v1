@@ -385,6 +385,7 @@ play that again. The wheel still plays, pauses and skips.
 | Hold a preset, in favourites mode | Save what's playing to it |
 | Mode, the button past the presets | Cycle the player style in its numbered order: Cover, Poster, Ambient, Mosaic, Flow, Polaroid, Vinyl, CD, Cassette, Film strip, Stereo, Tuner, Dial, Jukebox, Pocket, Handheld, Pixel, Dashboard, Speedometer, Night, Lyrics, Typewriter, Sheet music, Terminal, Oscilloscope, Split-flap, Departures, Neon, Vaporwave, Receipt, Ticket, Stamp, Magazine, Comic |
 | `5` on a keyboard | The same, for working against the dev server |
+| Hold Mode | Back to the Car Thing's home screen (the style stays as it was) |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
 | Press it twice | Next track |
@@ -403,7 +404,8 @@ play that again. The wheel still plays, pauses and skips.
 ### When the phone drops
 
 If the link to the phone blinks, the song stays on screen, paused, with a small **Reconnecting** note for up to
-twenty seconds, rather than flashing the empty screen. If no phone is connected at all, the screen says so, the
+twenty seconds, rather than flashing the empty screen. Whenever a song is on screen with no phone connected, a
+small **Phone not connected** note sits at the top. If no phone is connected at all, the screen says so, the
 player asks the Car Thing to reconnect the default paired phone on its own (after 10, 30 and 60 seconds, then every
 two minutes), and **Reconnect now** tries straight away. It never redials while a phone, or the desktop app, is
 connected; the link itself belongs to the Car Thing and the phone.

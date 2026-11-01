@@ -6,6 +6,10 @@ In the Cover style, tap the cover to run the art to the edge and back, and tap t
 
 On an iPhone the queue showed nothing, or said nothing was lined up, because an iPhone shares where you are in the list but not the songs in it. It now says so, with the position, for example song 13 of 73, and the count of songs left. The library and the like button say plainly when they need Spotify linked in the bridgething app, rather than waiting on an answer that never comes or claiming a like that went nowhere.
 
+While a song is on screen with no phone connected, a small note at the top says so, for as long as the phone is away.
+
+Holding Mode to go back to the home screen no longer changes the style on the way out: Mode now moves to the next style when you let go of a short press. Settings, About ends with a reminder that holding Mode is the way home, and Help lists it too.
+
 ## 0.50.0
 
 Dim in the dark, under Display: the Car Thing's light sensor turns the screen down to a soft glow when the room goes dark, and back to your brightness when the light returns. Off unless you turn it on.
