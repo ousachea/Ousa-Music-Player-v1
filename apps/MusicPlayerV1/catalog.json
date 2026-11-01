@@ -3,6 +3,13 @@
   "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
   "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
   "icon": null,
-  "screenshots": [],
+  "screenshots": [
+    "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/01-cover.jpg",
+    "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/02-styles-artwork.jpg",
+    "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/03-styles-records.jpg",
+    "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/04-styles-devices.jpg",
+    "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/05-styles-road.jpg",
+    "https://ousachea.github.io/Ousa-Music-Player-v1/screenshots/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/06-styles-signs.jpg"
+  ],
   "min_libbridgething_version": "0.12.1"
 }

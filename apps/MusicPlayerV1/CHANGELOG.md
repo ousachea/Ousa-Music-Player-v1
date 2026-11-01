@@ -1,5 +1,9 @@
 # O-Music Player
 
+## 0.51.1
+
+The store listing now shows twenty-one of the player styles: Cover, then the artwork, records and tapes, devices, road and screens, and signs and paper styles, four to a screenshot.
+
 ## 0.51.0
 
 In the Cover style, tap the cover to run the art to the edge and back, and tap the track's side, away from the buttons and bars, to put the panel behind it on or off. A swipe across the art still changes the track.
