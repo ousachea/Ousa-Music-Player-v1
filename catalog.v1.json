@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-11-01T10:22:31.916Z",
+  "updated_at": "2026-11-01T10:43:43.602Z",
   "repo": {
     "name": "OusaMusic",
     "description": "Ousa Music player app",
@@ -788,6 +788,25 @@
       "homepage": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "source": "https://github.com/ousachea/Ousa-Music-Player-v1",
       "versions": [
+        {
+          "version": "0.51.0",
+          "released_at": "2026-11-01T10:43:43.598Z",
+          "download": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/r/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.51.0.zip",
+            "size": 1542475,
+            "sha256": "2ee09817e4152c3b3b7e11e6f4d2d24f760499db9dfbcae9c896ba5b69664a68"
+          },
+          "settings": {
+            "url": "https://ousachea.github.io/Ousa-Music-Player-v1/s/01a07715-9963-72b3-9c4e-edcc6f6ebb6f/0.51.0.html",
+            "size": 42483,
+            "sha256": "740a2f7228fc2e3b9ae90722bf16b395832dbbb8e5c074819ec5d97166638daa"
+          },
+          "permissions": [
+            "net.proxy"
+          ],
+          "min_libbridgething_version": "0.12.1",
+          "changelog": "In the Cover style, tap the cover to run the art to the edge and back, and tap the track's side, away from the buttons and bars, to put the panel behind it on or off. A swipe across the art still changes the track.\n\nOn an iPhone the queue showed nothing, or said nothing was lined up, because an iPhone shares where you are in the list but not the songs in it. It now says so, with the position, for example song 13 of 73, and the count of songs left. The library and the like button say plainly when they need Spotify linked in the bridgething app, rather than waiting on an answer that never comes or claiming a like that went nowhere.\n\nWhile a song is on screen with no phone connected, a small note at the top says so, for as long as the phone is away.\n\nHolding Mode to go back to the home screen no longer changes the style on the way out: Mode now moves to the next style when you let go of a short press. Settings, About ends with a reminder that holding Mode is the way home, and Help lists it too."
+        },
         {
           "version": "0.50.0",
           "released_at": "2026-11-01T10:22:31.911Z",
