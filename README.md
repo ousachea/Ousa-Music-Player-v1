@@ -319,6 +319,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Press it three times | Previous track |
 | Button under the wheel | Opens and closes settings |
 | Double-press the button under the wheel | Shows or hides the on-screen buttons |
+| Triple-press the button under the wheel | Turns the screen off; any button, turn or touch wakes it |
 | Tap the play button | Play or pause |
 | Drag the progress bar | Seek |
 | Swipe across the screen | Next track, or previous if you swipe the other way |

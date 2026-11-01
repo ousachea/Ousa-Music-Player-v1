@@ -72,7 +72,8 @@ const HINT_MS = 7000;
 // long enough that the note is not the first thing a track does, short enough to still be about it
 const TIP_DELAY_MS = 6000;
 const WHEEL_SCROLL_PX = 26;
-// a second press of the button under the wheel inside this shows or hides the on-screen buttons
+// presses of the button under the wheel inside this count together: one opens the settings, two show or hide the
+// on-screen buttons, three turn the screen off
 const DOUBLE_PRESS_MS = 300;
 // the seek bar each style gets on Auto: the wave for Poster, a neon line in the dark and on the jukebox, cells on
 // the board, ink on the polaroid; the rest keep the plain line
@@ -125,6 +126,47 @@ export default function App() {
   // a style's own settings slide over the style grid; the button under the wheel steps back from them first
   const [stylePage, setStylePage] = useState(false);
   const backPress = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const backCount = useRef(0);
+  // the device has no true off, so the backlight goes to its floor under a black cover and comes back as it was
+  const [dark, setDark] = useState(false);
+  const wakeTo = useRef<{ mode: 'auto' | 'manual'; level: number } | null>(null);
+  const darkNow = useRef(false);
+  const screenOff = useCallback(async () => {
+    setDark(true);
+    darkNow.current = true;
+    const r = await client.hardware.stateGet();
+    // a wake that beat the reply must not be followed by the dimming
+    if (!darkNow.current) return;
+    if (r.ok) wakeTo.current = r.response.state.brightness;
+    // a level is refused in auto mode, so manual has to land first
+    await client.hardware.displaySetMode({ mode: 'manual' }).catch(() => {});
+    client.hardware.displaySetLevel({ level: 0 }).catch(() => {});
+  }, [client]);
+  const wake = useCallback(() => {
+    setDark(false);
+    darkNow.current = false;
+    const was = wakeTo.current;
+    wakeTo.current = null;
+    if (was?.mode === 'auto') client.hardware.displaySetMode({ mode: 'auto' }).catch(() => {});
+    else client.hardware.displaySetLevel({ level: was?.level || 1 }).catch(() => {});
+  }, [client]);
+  // the input that wakes the screen is spent on waking it, so a press in the dark never skips a song
+  useEffect(() => {
+    if (!dark) return;
+    const swallow = (e: Event) => {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      if (e.type !== 'keyup' && e.type !== 'pointerup') wake();
+    };
+    const kinds = ['keydown', 'keyup', 'wheel', 'pointerdown', 'pointerup', 'touchstart'];
+    kinds.forEach(k => window.addEventListener(k, swallow, { capture: true, passive: false }));
+    // leaving the app in the dark would strand the launcher at the floor too
+    window.addEventListener('pagehide', wake);
+    return () => {
+      kinds.forEach(k => window.removeEventListener(k, swallow, { capture: true }));
+      window.removeEventListener('pagehide', wake);
+    };
+  }, [dark, wake]);
   // the settings open on the general page; a style's own settings are a page of their own under it
   const [sheet, setSheet] = useState(false);
   const [pocketArt, setPocketArt] = useState(false);
@@ -447,15 +489,17 @@ export default function App() {
       else if (e.key === 'Escape') {
         if (sheet) setSheet(false);
         else if (panel && stylePage) setStylePage(false);
-        else if (backPress.current) {
-          clearTimeout(backPress.current);
-          backPress.current = null;
-          setPref('transport', prefs.transport ? 'false' : 'true');
-        } else {
-          // the settings wait out the double press window, so a double press never flashes them open
+        else {
+          // every press waits out the window, so a double or triple press never flashes the settings open
+          backCount.current += 1;
+          if (backPress.current) clearTimeout(backPress.current);
           backPress.current = setTimeout(() => {
+            const count = backCount.current;
+            backCount.current = 0;
             backPress.current = null;
-            setPanel(open => !open);
+            if (count === 1) setPanel(open => !open);
+            else if (count === 2) setPref('transport', prefs.transport ? 'false' : 'true');
+            else screenOff();
           }, DOUBLE_PRESS_MS);
         }
       }
@@ -527,11 +571,11 @@ export default function App() {
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
     };
-  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.transport, prefs.wheel, press, scrub, seek, setPref, sheet, stylePage, toggle]);
+  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.transport, prefs.wheel, press, screenOff, scrub, seek, setPref, sheet, stylePage, toggle]);
 
   if (!track)
     return (
-      <Stage rotate={prefs.rotate}>
+      <Stage rotate={prefs.rotate} dark={dark}>
         <Empty conn={conn} link={link} />
         <VolumeHud show={hud} volume={volume} accent={accentOn} />
       </Stage>
@@ -565,7 +609,7 @@ export default function App() {
   const edge = prefs.theme === 'widget' && prefs.coverEdge;
 
   return (
-    <Stage rotate={prefs.rotate}>
+    <Stage rotate={prefs.rotate} dark={dark}>
     <ButtonLook.Provider value={prefs.buttons}>
     <div className="relative h-full w-full overflow-hidden bg-screen" data-motion={prefs.motion ? undefined : 'off'}>
       {/* outside the keyed wrapper: inside it, every track change tore the blurred art down and
@@ -1227,7 +1271,7 @@ function QueueSheet({
 
 // the screen never resizes, so a quarter turn is laid out at the swapped size and rotated into place;
 // the strip left either side is dead space, which is why 90 and 270 cost the player its width
-function Stage({ rotate, children }: { rotate: Prefs['rotate']; children: ReactNode }) {
+function Stage({ rotate, dark, children }: { rotate: Prefs['rotate']; dark: boolean; children: ReactNode }) {
   const quarter = rotate === 90 || rotate === 270;
   return (
     <div className="absolute inset-0 overflow-hidden bg-black">
@@ -1240,6 +1284,7 @@ function Stage({ rotate, children }: { rotate: Prefs['rotate']; children: ReactN
         }}>
         {children}
       </div>
+      {dark && <div className="absolute inset-0 z-[1000] bg-black" />}
     </div>
   );
 }

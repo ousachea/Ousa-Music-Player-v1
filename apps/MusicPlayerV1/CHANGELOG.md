@@ -1,5 +1,9 @@
 # O-Music Player
 
+## 0.48.0
+
+Press the button under the wheel three times to turn the screen off. Any button, a turn of the wheel or a touch wakes it at the brightness it had, and that first press only wakes it. A double press now waits a moment before the on-screen buttons show or hide, so it can tell a triple press apart.
+
 ## 0.47.1
 
 A phone link that drops for a moment keeps the song on screen, paused, with a Reconnecting note, instead of flashing the empty screen. With no phone connected, the screen says so, the player asks the Car Thing to reconnect your paired phone on its own, and Reconnect now tries straight away.
