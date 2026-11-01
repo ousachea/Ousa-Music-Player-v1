@@ -1,6 +1,6 @@
 # Ousa apps for the Car Thing
 
-Eleven apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
+Twelve apps for the [Spotify Car Thing](https://bridgething.com), published from one source. Add the
 source once and all of them are available. Every app carries its own Khmer font, since the device has
 none, so Khmer in titles, quotes, names and captions displays properly.
 
@@ -50,7 +50,7 @@ update**.
 
 ## O-Music Player
 
-Twenty-seven player styles, all tinted by the album art, with music notes drifting up over them (**Display →
+Thirty-four player styles, all tinted by the album art, with music notes drifting up over them (**Display →
 Floating notes**). Switch styles with **Mode** or in the settings; a small tag at the bottom names
 the current one. Track changes cross-fade the blurred background, and Vinyl and CD swap in a new
 record or disc. Anything you can tap to change a style's look, such as the record's label, the CD's hub and
@@ -75,10 +75,14 @@ progress line that travels while the music runs.
 
 ### 3. Ambient
 
+![Ambient style](docs/music-player/01-ambient.jpg)
+
 Only the album's colours, drifting and swirling across the screen. The song's name shows when it starts and fades away; tap the
 screen to bring the name and the buttons back for a few seconds. The presets work throughout.
 
 ### 4. Mosaic
+
+![Mosaic style](docs/music-player/02-mosaic.jpg)
 
 A wall of what has recently played, each cover once, newest nearest the middle, where the song playing
 now is large and lit. Every few seconds a tile turns over to another cover, and the middle one slowly
@@ -93,6 +97,8 @@ the middle to play or pause, or a side cover to jump to it. With nothing queued,
 empty right side. **Background** is a dark wash of the album's colours, or black.
 
 ### 6. Polaroid
+
+![Polaroid style](docs/music-player/03-polaroid.jpg)
 
 The cover as an instant print, with the title written under it by hand, dropped at its own slight angle
 for each track on a table tinted by the album. A print in each of the other frames lies in the pile under it, in
@@ -141,6 +147,8 @@ progress bar: the left empties as the right fills. The play key latches down whi
 
 ### 10. Film strip
 
+![Film strip style](docs/music-player/04-film-strip.jpg)
+
 What has played runs past as frames on a strip of film, sprocket holes and all, with the song playing now
 lit in the projector's gate in the middle.
 
@@ -159,6 +167,8 @@ badges, and a volume readout on the display itself.
 
 ### 12. Tuner
 
+![Tuner style](docs/music-player/05-tuner.jpg)
+
 An old radio: a red needle travels the FM scale as the song plays, the song is written on the station
 card, and the buttons are ivory preset keys.
 
@@ -172,12 +182,16 @@ cover turning in the middle and ten-second skip keys either side. The card shows
 
 ### 14. Jukebox
 
+![Jukebox style](docs/music-player/06-jukebox.jpg)
+
 What is playing sits under a lit arch in the album's colours, and what is queued on the phone shows as
 the title strips of a jukebox selector. Tap a strip to play it. A source with no queue of its own, such
 as a browser tab on the computer, shows what has recently played instead, where the latest can be tapped
 to go back to it.
 
 ### 15. Pocket
+
+![Pocket style](docs/music-player/07-pocket.jpg)
 
 A pocket music player held sideways: a full-height screen with the cover, track and progress bar,
 and a click wheel beside it. Turned upright, the screen stands above the wheel.
@@ -190,15 +204,21 @@ and a click wheel beside it. Turned upright, the screen stands above the wheel.
 
 ### 16. Handheld
 
+![Handheld style](docs/music-player/08-handheld.jpg)
+
 An old pocket console with a four shade green screen. The cover is sampled down to a few dozen pixels in
 the four greens, the pad skips, A plays or pauses and B goes to the next song.
 
 ### 17. Pixel
 
+![Pixel style](docs/music-player/09-pixel.jpg)
+
 The cover taken down to 32 by 32 in a handheld's few colours, with the track in block letters and the
 progress as a row of cells.
 
 ### 18. Dashboard
+
+![Dashboard style](docs/music-player/10-dashboard.jpg)
 
 The song as a car's instrument cluster: the big gauge's needle sweeps the length of the track, the
 small one reads the volume, and the screen between them shows the cover, the title and an odometer of
@@ -206,10 +226,14 @@ the time played.
 
 ### 19. Speedometer
 
+![Speedometer style](docs/music-player/11-speedometer.jpg)
+
 One big sports car dial. The needle sweeps the song's length, the dial is marked in its minutes, and the
 last stretch is the red line.
 
 ### 20. Night
+
+![Night style](docs/music-player/12-night.jpg)
 
 For driving after dark. Nothing is bright: a clock across the width of the screen leads, the track sits
 under it, all in a dim tint of the cover's colour, and the cover is only a faint smear of its own colour behind them. The seek
@@ -227,15 +251,21 @@ instead.
 
 ### 22. Typewriter
 
+![Typewriter style](docs/music-player/13-typewriter.jpg)
+
 Each song typed onto a sheet that runs the width of the screen, a letter at a time when it starts, with
 the last few still on the page above, and the machine's round keys for the buttons.
 
 ### 23. Sheet music
 
+![Sheet music style](docs/music-player/14-sheet-music.jpg)
+
 The song engraved as a score: the title heads the page, the artist signs it, and a tune made from the song
 runs across the staff, inked in as the song plays past each note.
 
 ### 24. Terminal
+
+![Terminal style](docs/music-player/15-terminal.jpg)
 
 The song printed on a green-on-black command line while code rains down the screen behind it non-stop,
 the way it does in The Matrix. Each new song streams in under the last few, with an ASCII progress bar, a
@@ -244,10 +274,14 @@ trades the classic green for the cover's own colour, text and rain alike (**Text
 
 ### 25. Oscilloscope
 
+![Oscilloscope style](docs/music-player/16-oscilloscope.jpg)
+
 A green trace on a CRT with its graticule, made from the song and moving while it plays. Tap the screen
 for an X-Y circle.
 
 ### 26. Split-flap
+
+![Split-flap style](docs/music-player/17-split-flap.jpg)
 
 The track on a departures board that fills the screen: the cells are as big as the title allows in up
 to three rows, so a short title gets huge tiles. Each letter flips through the drum before it lands, in a
@@ -256,20 +290,28 @@ land whole rather than flipping.
 
 ### 27. Departures
 
+![Departures style](docs/music-player/18-departures.jpg)
+
 An airport board. The song playing is the flight boarding now, and what is queued on the phone lines up
 under it, each due when the songs before it have played.
 
 ### 28. Neon
+
+![Neon style](docs/music-player/19-neon.jpg)
 
 The title bent in glowing tube on a dark brick wall, in the album's colours. It flickers on when the song
 changes and buzzes now and then while it plays.
 
 ### 29. Vaporwave
 
+![Vaporwave style](docs/music-player/20-vaporwave.jpg)
+
 A striped sun behind a grid running to the horizon, a chrome title, and the cover in an old desktop
 window.
 
 ### 30. Receipt
+
+![Receipt style](docs/music-player/21-receipt.jpg)
 
 Every song is printed on a till roll that fills the screen, with the time it came on, so what has
 played stacks up above what is playing, one line each, with a song count and total time at the foot.
@@ -278,20 +320,28 @@ app restarts.
 
 ### 31. Ticket
 
+![Ticket style](docs/music-player/22-ticket.jpg)
+
 The song as a concert ticket: the whole cover as a square poster, the title as the act, the artist as the venue, and a
 stub with a seat and barcode made from the song. Tap the stub to tear it off; a new one grows back.
 
 ### 32. Postage stamp
+
+![Postage stamp style](docs/music-player/23-stamp.jpg)
 
 The cover as a perforated stamp on an airmail envelope, the artist as its country and the length as its
 value, cancelled by a postmark with today's date.
 
 ### 33. Magazine
 
+![Magazine style](docs/music-player/24-magazine.jpg)
+
 The song as the front of a magazine: a masthead, the art full bleed, the title as the cover story, and the
 artist, album and running time as the cover lines.
 
 ### 34. Comic
+
+![Comic style](docs/music-player/25-comic.jpg)
 
 The cover as a halftone comic panel, the title in a speech bubble, the artist in a caption box, and a burst
 (POW!, BAM!, ZAP!) going off when the song changes. Tap the artwork for another word, and the burst moves to another corner. Turned upright, the
