@@ -1,5 +1,11 @@
 # O-Music Player
 
+## 0.50.0
+
+Dim in the dark, under Display: the Car Thing's light sensor turns the screen down to a soft glow when the room goes dark, and back to your brightness when the light returns. Off unless you turn it on.
+
+Bigger touch targets: Cassette's deck keys, the Pocket's body colour dot and the Stereo's second display line were a little small to hit, in landscape and upright. Every button in every style is now at least 40 pixels across.
+
 ## 0.49.0
 
 Your library on the Car Thing: pull down from the top edge, or tap Browse your library when nothing is playing, for your liked songs, your playlists and folders, and a search with an on-screen keyboard and, where the Car Thing has voice, a hold-to-talk mic. Tap anything to play it.

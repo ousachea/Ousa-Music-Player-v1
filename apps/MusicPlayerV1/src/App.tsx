@@ -18,6 +18,7 @@ import { explicitFor, hdArtwork } from './hd-art';
 import { holdDrops, usePhoneLink, type PhoneLink } from './link';
 import { LibrarySheet } from './library';
 import { usePresetSlots } from './presets';
+import { useNightDim } from './dim';
 import { activeIndex, useLyrics } from './lyrics';
 import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
 import { Cartridge } from './cartridge';
@@ -158,6 +159,7 @@ export default function App() {
     if (was?.mode === 'auto') client.hardware.displaySetMode({ mode: 'auto' }).catch(() => {});
     else client.hardware.displaySetLevel({ level: was?.level || 1 }).catch(() => {});
   }, [client]);
+  useNightDim(client, prefs.nightDim, dark);
   // the input that wakes the screen is spent on waking it, so a press in the dark never skips a song
   useEffect(() => {
     if (!dark) return;
@@ -5340,7 +5342,7 @@ function Cassette({
   const deck = showTransport && (
     <div
       className={`flex shrink-0 items-stretch gap-[3px] rounded-[6px] bg-black/55 p-[3px] shadow-[inset_0_2px_7px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/8 ${
-        column ? 'w-11 flex-col' : 'h-11'
+        column ? 'w-[3.25rem] flex-col' : 'h-[3.25rem]'
       }`}>
       {key('tape design', onTape, <TapeGlyph className="h-4 w-4" />)}
       {/* a column of keys runs the tape up and down, so the arrows point along the bar they sit in */}

@@ -2,6 +2,7 @@ import { expect, test } from 'bun:test';
 
 import { apply, PREF_KEYS, type Prefs } from '../src/config';
 import { rowOf, uriOf } from '../src/library';
+import { nightFrom } from '../src/dim';
 import { parseSlot } from '../src/presets';
 
 test('a stored preset only comes back whole', () => {
@@ -25,4 +26,11 @@ test('a bare id becomes a playable uri, a uri stays as it is', () => {
   const album = { id: 'a1', name: 'Discovery', artworkId: null };
   const row = rowOf({ type: 'track', data: { id: 't1', name: 'One More Time', album, artist: { id: 'r', name: 'Daft Punk', artworkId: null }, artists: [], durationMs: 1, imageId: 'img', saved: false } });
   expect(row).toMatchObject({ uri: 'spotify:track:t1', title: 'One More Time', subtitle: 'Daft Punk', artworkId: 'img' });
+});
+
+test('night dims in the dark and only undims once the light is clearly back', () => {
+  expect(nightFrom(false, 2)).toBe(true);
+  expect(nightFrom(true, 8)).toBe(true);
+  expect(nightFrom(false, 8)).toBe(false);
+  expect(nightFrom(true, 20)).toBe(false);
 });

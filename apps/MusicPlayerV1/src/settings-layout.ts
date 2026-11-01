@@ -61,6 +61,7 @@ export const GROUPS: { title: string; rows: Row[] }[] = [
       { key: 'motion', label: 'Animations' },
       { key: 'notes', label: 'Floating notes', when: v => v('motion') !== 'false' },
       { key: 'rotate', label: 'Screen rotation' },
+      { key: 'nightDim', label: 'Dim in the dark', hint: 'The light sensor turns the screen down to a glow at night.' },
       { key: 'idleOff', label: 'Screen off when paused', hint: 'Any button, turn or touch wakes it.' },
     ],
   },

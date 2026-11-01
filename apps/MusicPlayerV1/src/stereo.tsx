@@ -499,7 +499,7 @@ export function Stereo({
           {width > 0 && (
             <>
               <Line text={main} chars={chars} pitch={pitch} color={color} motion={motion} />
-              <button aria-label="change what the second line shows" onClick={nextPage} className="block w-full">
+              <button aria-label="change what the second line shows" onClick={nextPage} className="-my-1.5 block w-full py-1.5">
                 <Line text={sub} chars={subChars} pitch={subPitch} color={color} motion={motion} />
               </button>
             </>

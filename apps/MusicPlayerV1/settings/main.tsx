@@ -114,6 +114,7 @@ const FIELD_LABELS: Record<string, Record<string, string>> = {
 };
 
 const HINTS: Record<string, string> = {
+  nightDim: 'Turns the screen down to a soft glow when the room goes dark, using the Car Thing\u2019s light sensor, and back to your brightness when the light returns.',
   presets: 'Saved favourites turn the four presets into shortcuts: hold one for a second to save the playlist or album playing now, press it to play that again. The wheel still plays, pauses and skips.',
   idleOff: 'Turns the screen off once the music has been paused this long. Any button, a turn of the wheel or a touch wakes it.',
   wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',

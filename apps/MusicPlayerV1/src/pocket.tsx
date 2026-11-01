@@ -313,7 +313,7 @@ function Screen({
             e.stopPropagation();
             onBody();
           }}
-          className="absolute top-1.5 left-2 grid h-7 w-7 place-items-center rounded-full transition-transform active:scale-90">
+          className="absolute top-0 left-0 grid h-11 w-11 place-items-center rounded-full transition-transform active:scale-90">
           <span className="h-3.5 w-3.5 rounded-full ring-2 ring-white/80 shadow-[0_1px_3px_rgba(0,0,0,0.5)]" style={{ background: swatch }} />
         </button>
 

@@ -373,7 +373,7 @@ tile carries a small picture of the style, and a setting that needs explaining h
   through them. Tap one to switch to it: the settings close so you see the
   style first, and next time they open on its own settings (backdrop, time remaining and the rest), or on
   the grid for a style with none; **All styles**, or the button under the wheel, goes back
-- **Display**: on-screen buttons, screen off after 5, 15 or 30 minutes paused, accent colour, HD album art, animations, floating notes, rotation
+- **Display**: on-screen buttons, dim in the dark (the light sensor turns the screen down to a glow at night), screen off after 5, 15 or 30 minutes paused, accent colour, HD album art, animations, floating notes, rotation
 - **Controls**: what the wheel does, what the presets do (transport or favourites), seek step, the offer to hide the on-screen buttons, seek bar
   style and playhead dot. The seek bar comes as a plain line, a wave, lit cells, dots, a neon glow, a
   hand-drawn line, a chunky pill, a ruler, a heartbeat or running stripes, each tile showing what it looks
