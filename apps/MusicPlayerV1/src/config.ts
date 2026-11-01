@@ -54,6 +54,8 @@ export type Prefs = {
   vinylStyle: 'turntable' | 'sleeve' | 'picture';
   vinylFront: 'record' | 'sleeve';
   wheel: 'volume' | 'seek';
+  presets: 'transport' | 'favourites';
+  idleOff: number;
   seekSeconds: number;
   seek: 'auto' | Seek;
   seekDot: 'auto' | 'on' | 'off';
@@ -77,12 +79,15 @@ export type Prefs = {
   clockFormat: 'auto' | 'h12' | 'h24';
 };
 
-const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, lyricSize: 100, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', polaroidFrame: 'white', terminalColor: 'green', vinylTint: 'black', deckGlow: 'album', flowBg: 'album', pocketBody: 'silver', cdStyle: 'tray', cdDisc: 'colour', stereoMode: 'dark', vinylStyle: 'turntable', vinylFront: 'record', wheel: 'volume', seekSeconds: 2, seek: 'auto', seekDot: 'auto', buttons: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
+const DEFAULTS: Prefs = { theme: 'widget', rotate: 0, lyricsInfo: 'tl', words: true, lyricSize: 100, coverEdge: false, coverPanel: false, coverVolume: true, tapeArt: true, tape: 'written', polaroidFrame: 'white', terminalColor: 'green', vinylTint: 'black', deckGlow: 'album', flowBg: 'album', pocketBody: 'silver', cdStyle: 'tray', cdDisc: 'colour', stereoMode: 'dark', vinylStyle: 'turntable', vinylFront: 'record', wheel: 'volume', presets: 'transport', idleOff: 0, seekSeconds: 2, seek: 'auto', seekDot: 'auto', buttons: 'auto', accent: 'artwork', hdArt: true, pulse: false, pulseBpm: 0, backdrop: 100, blur: 60, drift: 100, transport: true, tip: true, motion: true, notes: true, remaining: true, clock: true, clockPos: 'left', clockSize: 150, clockSeconds: true, clockFormat: 'auto' };
 
 // zero means auto, which is only ever this tempo: the app has no way to know the song's own
 export const AUTO_PULSE_BPM = 90;
 export const PULSE_BPM_MIN = 40;
 export const PULSE_BPM_MAX = 180;
+
+// minutes paused before the screen turns itself off; zero never does
+export const IDLE_OFF = [0, 5, 15, 30];
 
 export const LYRIC_SIZE_MIN = 70;
 export const LYRIC_SIZE_MAX = 160;
@@ -102,6 +107,12 @@ export function apply(prefs: Prefs, key: string, value: string | null): Prefs {
       };
     case 'wheel':
       return { ...prefs, wheel: value === 'seek' ? 'seek' : 'volume' };
+    case 'presets':
+      return { ...prefs, presets: value === 'favourites' ? 'favourites' : 'transport' };
+    case 'idleOff': {
+      const minutes = Number(value);
+      return { ...prefs, idleOff: IDLE_OFF.includes(minutes) ? minutes : 0 };
+    }
     case 'rotate': {
       const turn = Number(value);
       return { ...prefs, rotate: turn === 90 || turn === 180 || turn === 270 ? turn : 0 };

@@ -16,6 +16,8 @@ import {
 import { accentFrom, type Accent } from './artwork-color';
 import { explicitFor, hdArtwork } from './hd-art';
 import { holdDrops, usePhoneLink, type PhoneLink } from './link';
+import { LibrarySheet } from './library';
+import { usePresetSlots } from './presets';
 import { activeIndex, useLyrics } from './lyrics';
 import { requestId, useQueue, useThumbs, type Queue, type QueueTrack } from './queue';
 import { Cartridge } from './cartridge';
@@ -49,7 +51,7 @@ import { version } from '../public/manifest.json';
 import { POCKET_BODIES, Pocket } from './pocket';
 import { GLOWS, PixelNote, Stereo, glowColor } from './stereo';
 import { useClock, type ClockParts } from './clock';
-import { AUTO_PULSE_BPM, BUTTONS, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, FRAMES, STYLE_GROUPS, THEMES, usePrefs, type Prefs, type Seek as SeekKind } from './config';
+import { AUTO_PULSE_BPM, BUTTONS, IDLE_OFF, LYRIC_SIZE_MAX, LYRIC_SIZE_MIN, PULSE_BPM_MAX, PULSE_BPM_MIN, FRAMES, STYLE_GROUPS, THEMES, usePrefs, type Prefs, type Seek as SeekKind } from './config';
 import { useUpdateCheck, type UpdateState } from './update';
 import { daemonUrl } from './daemon';
 import { FitTitle } from './fit-title';
@@ -75,6 +77,12 @@ const WHEEL_SCROLL_PX = 26;
 // presses of the button under the wheel inside this count together: one opens the settings, two show or hide the
 // on-screen buttons, three turn the screen off
 const DOUBLE_PRESS_MS = 300;
+// holding the wheel this long likes the song; holding a preset this long saves to it
+const HOLD_MS_LIKE = 600;
+const HOLD_MS_SAVE = 800;
+const TOAST_MS = 1600;
+// the sleep timer steps through these minutes, then back off
+const SLEEP_STEPS = [15, 30, 60];
 // the seek bar each style gets on Auto: the wave for Poster, a neon line in the dark and on the jukebox, cells on
 // the board, ink on the polaroid; the rest keep the plain line
 const AUTO_SEEK: Partial<Record<Prefs['theme'], SeekKind>> = {
@@ -169,6 +177,17 @@ export default function App() {
   }, [dark, wake]);
   // the settings open on the general page; a style's own settings are a page of their own under it
   const [sheet, setSheet] = useState(false);
+  const [library, setLibrary] = useState(false);
+  const [toast, setToast] = useState<{ text: string; n: number } | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flash = useCallback((text: string) => {
+    setToast(t => ({ text, n: (t?.n ?? 0) + 1 }));
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), TOAST_MS);
+  }, []);
+  // a sleep timer lives only as long as the app; it is not a setting
+  const [sleepAt, setSleepAt] = useState<{ at: number; minutes: number } | null>(null);
+  const presetSlots = usePresetSlots(client);
   const [pocketArt, setPocketArt] = useState(false);
   const [hint, setHint] = useState(false);
   const [tip, setTip] = useState(false);
@@ -252,6 +271,57 @@ export default function App() {
   const artworkId = track?.artworkId ?? null;
   const playing = playback?.state === 'playing';
   const duration = track?.durationMs ?? 0;
+
+  // the phone's own heart for the song, kept in step with a like made anywhere else
+  const [liked, setLiked] = useState<boolean | null>(null);
+  useEffect(() => setLiked(track?.liked ?? null), [track?.uri, track?.liked]);
+  useEffect(() => {
+    const uri = track?.uri;
+    if (!uri) return;
+    return client.library.onFavoriteChanged(f => {
+      if (f.uri === uri) setLiked(f.liked);
+    });
+  }, [client, track?.uri]);
+  const toggleLike = useCallback(() => {
+    if (!track?.uri) return;
+    const next = !liked;
+    setLiked(next);
+    client.library
+      .favoritesSet({ item: { uri: track.uri, kind: 'track', persistentId: track.persistentId }, liked: next })
+      .catch(() => setLiked(!next));
+    flash(next ? '♥ Added to Liked Songs' : 'Removed from Liked Songs');
+  }, [client, track?.uri, track?.persistentId, liked, flash]);
+
+  const playRow = useCallback(
+    (uri: string, name: string) => {
+      client.player.play({ uri, context: null }).catch(() => flash('The phone could not play that'));
+      flash(`▶ ${name}`);
+    },
+    [client, flash],
+  );
+
+  const stepSleep = useCallback(() => {
+    const at = sleepAt ? SLEEP_STEPS.indexOf(sleepAt.minutes) + 1 : 0;
+    const minutes = SLEEP_STEPS[at];
+    setSleepAt(minutes ? { at: Date.now() + minutes * 60_000, minutes } : null);
+    flash(minutes ? `Music stops in ${minutes} min` : 'Sleep timer off');
+  }, [sleepAt, flash]);
+  useEffect(() => {
+    if (!sleepAt) return;
+    const timer = setTimeout(() => {
+      client.player.pause();
+      setSleepAt(null);
+      screenOff();
+    }, sleepAt.at - Date.now());
+    return () => clearTimeout(timer);
+  }, [client, sleepAt, screenOff]);
+
+  // a player left paused does not need to light the room
+  useEffect(() => {
+    if (!prefs.idleOff || playing || dark) return;
+    const timer = setTimeout(screenOff, prefs.idleOff * 60_000);
+    return () => clearTimeout(timer);
+  }, [prefs.idleOff, playing, dark, screenOff]);
 
   useEffect(() => {
     if (!artworkId) {
@@ -431,16 +501,24 @@ export default function App() {
       const count = clicks.current;
       clicks.current = 0;
       if (count === 1) toggle();
-      else if (count === 2) goNext();
+      else if (count === 2) {
+        goNext();
+        flash('Next ›');
+      }
       // a triple press means the previous track, never a restart of this one
-      else goPrev(false);
+      else {
+        goPrev(false);
+        flash('‹ Previous');
+      }
     }, MULTI_CLICK_MS);
-  }, [client, toggle]);
+  }, [flash, goNext, goPrev, toggle]);
+  // a press that is still down: the wheel likes on a hold, a favourites preset saves on one
+  const holdKey = useRef<{ key: string; done: boolean; timer: ReturnType<typeof setTimeout> } | null>(null);
 
   useEffect(() => {
     // both modes go through the same detent gate, so a click means the same amount either way
     const onWheel = (e: WheelEvent) => {
-      if (panel || !turned(e)) return;
+      if (panel || library || !turned(e)) return;
       detents.current += e.deltaX;
       const steps = Math.trunc(detents.current / WHEEL_PER_STEP);
       if (!steps) return;
@@ -483,9 +561,23 @@ export default function App() {
       }
       flashHud();
     };
+    const hold = (key: string, ms: number, then: () => void) => {
+      if (holdKey.current) clearTimeout(holdKey.current.timer);
+      const held = { key, done: false, timer: setTimeout(() => ((held.done = true), then()), ms) };
+      holdKey.current = held;
+    };
+    const favourites = prefs.presets === 'favourites';
     const onKey = (e: KeyboardEvent) => {
-      if (e.repeat) return;
-      if (e.key === ' ' || e.key === 'Enter') press();
+      // the library takes the keys for itself while it is open
+      if (e.repeat || library) return;
+      // the press lands on release, so a hold can like the song instead
+      if (e.key === ' ' || e.key === 'Enter') hold(e.key, HOLD_MS_LIKE, toggleLike);
+      else if (favourites && ['1', '2', '3', '4'].includes(e.key)) {
+        const n = e.key;
+        hold(n, HOLD_MS_SAVE, () =>
+          presetSlots.save(n, state).then(slot => flash(slot ? `Saved ${slot.name} to preset ${n}` : 'Nothing playing to save')),
+        );
+      }
       else if (e.key === 'Escape') {
         if (sheet) setSheet(false);
         else if (panel && stylePage) setStylePage(false);
@@ -498,7 +590,10 @@ export default function App() {
             backCount.current = 0;
             backPress.current = null;
             if (count === 1) setPanel(open => !open);
-            else if (count === 2) setPref('transport', prefs.transport ? 'false' : 'true');
+            else if (count === 2) {
+              setPref('transport', prefs.transport ? 'false' : 'true');
+              flash(prefs.transport ? 'On-screen buttons hidden' : 'On-screen buttons shown');
+            }
             else screenOff();
           }, DOUBLE_PRESS_MS);
         }
@@ -513,12 +608,23 @@ export default function App() {
         setPref('theme', THEMES[(THEMES.indexOf(prefs.theme) + 1) % THEMES.length]);
       }
     };
+    const onKeyUp = (e: KeyboardEvent) => {
+      const held = holdKey.current;
+      if (!held || held.key !== e.key) return;
+      clearTimeout(held.timer);
+      holdKey.current = null;
+      if (held.done) return;
+      if (e.key === ' ' || e.key === 'Enter') return press();
+      const slot = presetSlots.slots[e.key];
+      if (slot) playRow(slot.uri, slot.name);
+      else flash(`Hold ${e.key} to save what is playing`);
+    };
     // a flick across the screen skips a track. the seek bar and the buttons take their own pointer
     // events first, so a swipe only ever starts on the artwork or the empty parts of the layout
     // the origin lives in a ref because this effect re-registers on every progress tick, and a
     // local would be wiped between the press and the release
     const onDown = (e: globalThis.PointerEvent) => {
-      if (panel) return;
+      if (panel || library) return;
       const target = e.target instanceof Element ? e.target : null;
       // a drag round a click wheel is a turn, not a flick
       if (target?.closest('[data-no-swipe]')) return void (swipeFrom.current = null);
@@ -546,6 +652,11 @@ export default function App() {
           setSheet(true);
           return;
         }
+        // and a pull down off the top edge brings the library in
+        if (!sheet && dy > 0 && start.y < SHEET_EDGE_PX) {
+          setLibrary(true);
+          return;
+        }
       }
       if (sheet) return;
 
@@ -558,6 +669,7 @@ export default function App() {
 
     window.addEventListener('wheel', onWheel, { passive: true });
     window.addEventListener('keydown', onKey);
+    window.addEventListener('keyup', onKeyUp);
     const onCancel = () => {
       swipeFrom.current = null;
     };
@@ -567,17 +679,30 @@ export default function App() {
     return () => {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
+      window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
     };
-  }, [client, duration, flashHud, live, lyrics, panel, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.transport, prefs.wheel, press, screenOff, scrub, seek, setPref, sheet, stylePage, toggle]);
+  }, [client, duration, flash, flashHud, library, live, lyrics, panel, playRow, presetSlots, prefs.presets, prefs.rotate, prefs.seekSeconds, prefs.theme, prefs.transport, prefs.wheel, press, screenOff, scrub, seek, setPref, sheet, state, stylePage, toggle, toggleLike]);
 
   if (!track)
     return (
       <Stage rotate={prefs.rotate} dark={dark}>
-        <Empty conn={conn} link={link} />
+        <Empty conn={conn} link={link} onLibrary={() => setLibrary(true)} />
         <VolumeHud show={hud} volume={volume} accent={accentOn} />
+        {library && (
+          <LibrarySheet
+            client={client}
+            accent={accentOn}
+            onClose={() => setLibrary(false)}
+            onPlay={row => {
+              playRow(row.uri!, row.title);
+              setLibrary(false);
+            }}
+          />
+        )}
+        <Toast toast={toast} />
       </Stage>
     );
 
@@ -1082,7 +1207,7 @@ export default function App() {
           {ENUMS.theme.labels[ENUMS.theme.values.indexOf(prefs.theme)]}
         </span>
       </div>
-      {!prefs.transport && (
+      {!prefs.transport && prefs.presets === 'transport' && (
         <PresetHint
           playing={playing}
           rotate={prefs.rotate}
@@ -1127,6 +1252,26 @@ export default function App() {
           client={client}
           queue={queue}
           accent={accentOn}
+          liked={liked}
+          onLike={toggleLike}
+          shuffle={playback?.shuffle ?? false}
+          onShuffle={() => {
+            const on = !playback?.shuffle;
+            client.player.setShuffle({ on });
+            flash(on ? 'Shuffle on' : 'Shuffle off');
+          }}
+          repeat={playback?.repeat ?? 'off'}
+          onRepeat={() => {
+            const mode = REPEAT_NEXT[playback?.repeat ?? 'off'];
+            client.player.setRepeat({ mode });
+            flash(mode === 'off' ? 'Repeat off' : mode === 'all' ? 'Repeat all' : 'Repeat this song');
+          }}
+          sleepAt={sleepAt?.at ?? null}
+          onSleep={stepSleep}
+          onLibrary={() => {
+            setSheet(false);
+            setLibrary(true);
+          }}
           onClose={() => setSheet(false)}
           onPick={index => {
             client.player.skipToIndex({ index });
@@ -1146,6 +1291,18 @@ export default function App() {
           onClose={() => setPanel(false)}
         />
       )}
+      {library && (
+        <LibrarySheet
+          client={client}
+          accent={accentOn}
+          onClose={() => setLibrary(false)}
+          onPlay={row => {
+            playRow(row.uri!, row.title);
+            setLibrary(false);
+          }}
+        />
+      )}
+      <Toast toast={toast} />
     </div>
     </ButtonLook.Provider>
     </Stage>
@@ -1158,15 +1315,40 @@ function QueueSheet({
   client,
   queue,
   accent,
+  liked,
+  onLike,
+  shuffle,
+  onShuffle,
+  repeat,
+  onRepeat,
+  sleepAt,
+  onSleep,
+  onLibrary,
   onPick,
   onClose,
 }: {
   client: BridgethingClient;
   queue: Queue | null;
   accent: Accent | null;
+  liked: boolean | null;
+  onLike: () => void;
+  shuffle: boolean;
+  onShuffle: () => void;
+  repeat: 'off' | 'all' | 'one';
+  onRepeat: () => void;
+  sleepAt: number | null;
+  onSleep: () => void;
+  onLibrary: () => void;
   onPick: (index: number) => void;
   onClose: () => void;
 }) {
+  // the sleep chip counts down, so it needs a tick of its own while a timer runs
+  const [, tick] = useState(0);
+  useEffect(() => {
+    if (!sleepAt) return;
+    const id = setInterval(() => tick(t => t + 1), 15_000);
+    return () => clearInterval(id);
+  }, [sleepAt]);
   const items = (queue?.items ?? []).slice(0, QUEUE_MAX);
   // newest first, the way a history reads back from where you are
   const played = (queue?.previous ?? []).slice(-QUEUE_MAX).reverse();
@@ -1193,11 +1375,28 @@ function QueueSheet({
           <span className="h-1 w-10 rounded-full bg-white/25" />
         </div>
 
-        <div className="flex shrink-0 items-baseline justify-between px-5 pb-2">
-          <h2 className="font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">Up next</h2>
-          <span className="font-mono text-hint text-dim tabular-nums">
-            {queue ? `${queue.items.length}` : '--'}
-          </span>
+        <div className="flex shrink-0 flex-wrap items-center gap-2 px-4 pb-2">
+          <h2 className="mr-auto font-mono text-eyebrow tracking-[0.22em] text-dim uppercase">
+            Up next <span className="tabular-nums">{queue ? queue.items.length : '--'}</span>
+          </h2>
+          <Chip on={!!liked} tint={tint} onClick={onLike}>
+            <span className="flex items-center gap-1.5">
+              <Heart filled={!!liked} className="h-4 w-4" color="currentColor" />
+              {liked ? 'Liked' : 'Like'}
+            </span>
+          </Chip>
+          <Chip on={shuffle} tint={tint} onClick={onShuffle}>
+            Shuffle
+          </Chip>
+          <Chip on={repeat !== 'off'} tint={tint} onClick={onRepeat}>
+            {repeat === 'one' ? 'Repeat 1' : 'Repeat'}
+          </Chip>
+          <Chip on={!!sleepAt} tint={tint} onClick={onSleep}>
+            {sleepAt ? `Sleep ${Math.max(1, Math.round((sleepAt - Date.now()) / 60_000))}m` : 'Sleep'}
+          </Chip>
+          <Chip on={false} tint={tint} onClick={onLibrary}>
+            Library
+          </Chip>
         </div>
 
         {queue?.current && (
@@ -1334,6 +1533,8 @@ const ENUMS: Record<string, { values: string[]; labels: string[] }> = {
   vinylStyle: { values: ['turntable', 'sleeve', 'picture'], labels: ['Turntable', 'Sleeve', 'Picture disc'] },
   vinylFront: { values: ['record', 'sleeve'], labels: ['Record', 'Sleeve'] },
   wheel: { values: ['volume', 'seek'], labels: ['Volume', 'Scrub'] },
+  presets: { values: ['transport', 'favourites'], labels: ['Transport', 'Favourites'] },
+  idleOff: { values: IDLE_OFF.map(String), labels: IDLE_OFF.map(m => (m ? `${m} min` : 'Never')) },
   seek: {
     values: ['auto', 'bar', 'wave', 'cells', 'dots', 'glow', 'hand', 'pill', 'ruler', 'pulse', 'stripes'],
     labels: ['Auto', 'Bar', 'Wave', 'Cells', 'Dots', 'Glow', 'Hand', 'Pill', 'Ruler', 'Pulse', 'Stripes'],
@@ -1641,6 +1842,17 @@ function Panel({
             <div className="shrink-0 rounded-2xl bg-white/4">{rows.map((row, i) => rowView(row, i === rows.length - 1))}</div>
           )}
 
+          {tab === 'Help' && (
+            <div className="shrink-0 rounded-2xl bg-white/4">
+              {controlsHelp(prefs.presets === 'favourites').map(([what, does], i, all) => (
+                <div key={what} className={`flex items-center justify-between gap-5 px-4 py-2 ${i < all.length - 1 ? 'border-b border-white/6' : ''}`}>
+                  <span className="text-title text-near">{what}</span>
+                  <span className="text-right text-hint text-dim">{does}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
           {tab === 'About' && (
             <>
               <div className="shrink-0 rounded-2xl bg-white/4">
@@ -1768,7 +1980,33 @@ function Segments({
 // past this many choices a row of pills runs off the side, so they become tiles
 const GRID_FROM = 6;
 
-const TABS = ['Style', ...GROUPS.map(g => g.title), 'About'];
+// every way to drive the player, since most of them leave nothing on screen to find them by
+function controlsHelp(favourites: boolean): [string, string][] {
+  return [
+    ['Turn the wheel', 'Volume, or scrub, set under Controls'],
+    ['Press the wheel', 'Play or pause'],
+    ['Press it twice / three times', 'Next / previous track'],
+    ['Hold the wheel', 'Like or unlike the song'],
+    ['Button under the wheel', 'Settings'],
+    ['Press it twice', 'Show or hide the on-screen buttons'],
+    ['Press it three times', 'Screen off; anything wakes it'],
+    ...(favourites
+      ? ([
+          ['Press a preset', 'Play what is saved on it'],
+          ['Hold a preset', 'Save the playlist or album playing'],
+        ] as [string, string][])
+      : ([
+          ['Presets 1, 2, 3', 'Previous, play or pause, next'],
+          ['Preset 4', 'Turn the screen a quarter'],
+        ] as [string, string][])),
+    ['Mode', 'Next style'],
+    ['Swipe across', 'Next or previous track'],
+    ['Pull up from the bottom', 'Queue, shuffle, repeat, sleep timer, like'],
+    ['Pull down from the top', 'Your library: liked, browse, search'],
+  ];
+}
+
+const TABS = ['Style', ...GROUPS.map(g => g.title), 'Help', 'About'];
 
 // where the settings panel was left; it unmounts on close, so this lives outside it, for as long as the app runs.
 // the style leads the first time because it is what the panel is opened for most
@@ -1864,6 +2102,12 @@ const GLYPHS: Record<string, ReactNode> = {
     <>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 11v5.5M12 7.5v.01" />
+    </>
+  ),
+  Help: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4v.3M12 16.5v.01" />
     </>
   ),
   widget: (
@@ -5182,7 +5426,7 @@ function Speaker({ className, muted }: { className?: string; muted?: boolean }) 
   );
 }
 
-function Empty({ conn, link }: { conn: ConnectionState; link: PhoneLink }) {
+function Empty({ conn, link, onLibrary }: { conn: ConnectionState; link: PhoneLink; onLibrary: () => void }) {
   // no phone at all is a different problem from a phone with nothing playing, so it says which
   const lost = conn === 'open' && link.linked === false;
   return (
@@ -5199,14 +5443,54 @@ function Empty({ conn, link }: { conn: ConnectionState; link: PhoneLink }) {
               ? link.phone
                 ? `Trying ${link.phone} again on its own. Bluetooth on the phone has to be on.`
                 : 'Pair a phone from the bridgething companion app.'
-              : 'Start a track on your phone to see it here.'}
+              : 'Start a track on your phone, or pick one here.'}
         </div>
         {lost && link.phone && (
           <button onClick={link.reconnect} className="rounded-full bg-white/10 px-6 py-2.5 text-row font-medium text-off-white transition active:scale-95">
             Reconnect now
           </button>
         )}
+        {conn === 'open' && !lost && (
+          <button onClick={onLibrary} className="min-h-11 rounded-full bg-white/10 px-6 py-2.5 text-row font-medium text-off-white transition active:scale-95">
+            Browse your library
+          </button>
+        )}
       </div>
+    </div>
+  );
+}
+
+const REPEAT_NEXT = { off: 'all', all: 'one', one: 'off' } as const;
+
+function Chip({ on, tint, onClick, children }: { on: boolean; tint: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={on}
+      className={`min-h-10 shrink-0 rounded-full px-3.5 text-hint font-medium transition active:scale-95 ${on ? '' : 'bg-white/8 text-near'}`}
+      style={on ? { backgroundColor: tint, color: '#060809' } : undefined}>
+      {children}
+    </button>
+  );
+}
+
+function Heart({ filled, className, color }: { filled: boolean; className?: string; color: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill={filled ? color : 'none'} stroke={color} strokeWidth="2" strokeLinejoin="round">
+      <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z" />
+    </svg>
+  );
+}
+
+// what a multi-press or a hold just did, since none of them show anything of their own
+function Toast({ toast }: { toast: { text: string; n: number } | null }) {
+  if (!toast) return null;
+  return (
+    <div
+      key={toast.n}
+      role="status"
+      className="pointer-events-none absolute top-4 left-1/2 z-40 -translate-x-1/2 rounded-full bg-black/80 px-5 py-2.5 text-title font-medium whitespace-nowrap text-off-white ring-1 ring-white/12 backdrop-blur-md">
+      {toast.text}
     </div>
   );
 }

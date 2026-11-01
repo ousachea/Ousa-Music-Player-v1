@@ -1,7 +1,7 @@
 {
   "id": "01a07715-9963-72b3-9c4e-edcc6f6ebb6f",
   "name": "O-Music Player",
-  "version": "0.48.0",
+  "version": "0.49.0",
   "description": "Now playing from your phone, in thirty-four styles coloured by the album art, and turnable to any mounting.",
   "icon": "icon.jpg",
   "settings": "settings.html",
@@ -316,6 +316,32 @@
           "seek"
         ],
         "default": "volume"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "presets",
+        "label": "Preset buttons",
+        "choices": [
+          "transport",
+          "favourites"
+        ],
+        "default": "transport"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "idleOff",
+        "label": "Turn the screen off when paused",
+        "choices": [
+          "0",
+          "5",
+          "15",
+          "30"
+        ],
+        "default": "0"
       }
     },
     {

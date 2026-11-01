@@ -303,20 +303,39 @@ panel fills the width as a square with everything else stacked under it.
 Swipe up from the bottom edge for the phone's queue: what's playing, what's next and what just
 played. Tap a row to skip to it. Swipe down or press Back to close.
 
+Along the top of the queue: **Like** hearts the song in your Spotify library, **Shuffle** and **Repeat**
+(off, all, this song) set the phone's player, **Sleep** steps a timer through 15, 30 and 60 minutes and
+off, after which the music pauses and the screen goes dark, and **Library** opens your library.
+
+### Your library
+
+Pull down from the top edge, tap **Library** in the queue, or tap **Browse your library** when nothing is
+playing. **Liked** lists what you have saved, **Browse** walks your playlists and folders, and **Search**
+has an on-screen keyboard; on a Car Thing with voice turned on, hold the mic and say what to play. Tap
+anything to play it. The wheel scrolls, Back steps out of a folder and then closes.
+
+### Preset favourites
+
+Set **Controls → Preset buttons** to **Favourites** and the four presets become shortcuts, the way the
+original Car Thing used them: hold one for a second to save the playlist or album playing now, press it to
+play that again. The wheel still plays, pauses and skips.
+
 ### Controls
 
 | What you do | What happens |
 | --- | --- |
-| Preset button 1 | Previous track |
-| Preset button 2 | Play or pause |
-| Preset button 3 | Next track |
-| Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270 |
+| Preset button 1 | Previous track, or a saved favourite (see below) |
+| Preset button 2 | Play or pause, or a saved favourite |
+| Preset button 3 | Next track, or a saved favourite |
+| Preset button 4 | Turn the screen a quarter: 0, 90, 180, 270, or a saved favourite |
+| Hold a preset, in favourites mode | Save what's playing to it |
 | Mode, the button past the presets | Cycle the player style in its numbered order: Cover, Poster, Ambient, Mosaic, Flow, Polaroid, Vinyl, CD, Cassette, Film strip, Stereo, Tuner, Dial, Jukebox, Pocket, Handheld, Pixel, Dashboard, Speedometer, Night, Lyrics, Typewriter, Sheet music, Terminal, Oscilloscope, Split-flap, Departures, Neon, Vaporwave, Receipt, Ticket, Stamp, Magazine, Comic |
 | `5` on a keyboard | The same, for working against the dev server |
 | Turn the wheel | Volume, or scrub the track — your choice in settings |
 | Press the wheel once | Play or pause |
 | Press it twice | Next track |
 | Press it three times | Previous track |
+| Hold the wheel | Like or unlike the song |
 | Button under the wheel | Opens and closes settings |
 | Double-press the button under the wheel | Shows or hides the on-screen buttons |
 | Triple-press the button under the wheel | Turns the screen off; any button, turn or touch wakes it |
@@ -325,6 +344,7 @@ played. Tap a row to skip to it. Swipe down or press Back to close.
 | Swipe across the screen | Next track, or previous if you swipe the other way |
 | Swipe up from the bottom edge | Open the queue |
 | Swipe it back down, or Back | Close the queue |
+| Pull down from the top edge | Open your library |
 
 ### When the phone drops
 
@@ -353,8 +373,8 @@ tile carries a small picture of the style, and a setting that needs explaining h
   through them. Tap one to switch to it: the settings close so you see the
   style first, and next time they open on its own settings (backdrop, time remaining and the rest), or on
   the grid for a style with none; **All styles**, or the button under the wheel, goes back
-- **Display**: on-screen buttons, accent colour, HD album art, animations, floating notes, rotation
-- **Controls**: what the wheel does, seek step, the offer to hide the on-screen buttons, seek bar
+- **Display**: on-screen buttons, screen off after 5, 15 or 30 minutes paused, accent colour, HD album art, animations, floating notes, rotation
+- **Controls**: what the wheel does, what the presets do (transport or favourites), seek step, the offer to hide the on-screen buttons, seek bar
   style and playhead dot. The seek bar comes as a plain line, a wave, lit cells, dots, a neon glow, a
   hand-drawn line, a chunky pill, a ruler, a heartbeat or running stripes, each tile showing what it looks
   like; Auto gives each style the one that suits it (the wave in Poster, the glow in Night and
@@ -366,6 +386,7 @@ tile carries a small picture of the style, and a setting that needs explaining h
   ![Settings: Controls, with the seek bar and button style tiles](apps/MusicPlayerV1/screenshots/12-settings-controls.jpg)
 
 - **Clock**: position, size, 12/24 hour, seconds
+- **Help**: every button, press, hold and swipe, and what it does
 - **About**: check for updates, and the size of the album art that arrived. The installed version is
   under the About tab's name
 

@@ -104,9 +104,18 @@ const CHOICE_LABELS: Record<string, string> = {
   right: 'Right',
   h12: '12 hour',
   h24: '24 hour',
+  transport: 'Previous, play, next, turn',
+  favourites: 'Saved favourites',
+};
+
+// choices whose names mean something else in another setting
+const FIELD_LABELS: Record<string, Record<string, string>> = {
+  idleOff: { '0': 'Never', '5': 'After 5 minutes', '15': 'After 15 minutes', '30': 'After 30 minutes' },
 };
 
 const HINTS: Record<string, string> = {
+  presets: 'Saved favourites turn the four presets into shortcuts: hold one for a second to save the playlist or album playing now, press it to play that again. The wheel still plays, pauses and skips.',
+  idleOff: 'Turns the screen off once the music has been paused this long. Any button, a turn of the wheel or a touch wakes it.',
   wheel: 'Seeking always works by dragging the progress bar, whichever this is set to.',
   seekSeconds: 'How far one click of the wheel jumps. Lower is finer. Only used when the wheel is set to scrub.',
   theme: 'Cover sets the album art beside the track with a volume slider of its own, after a phone lock screen. Vinyl puts the art on a spinning record and CD prints it on a spinning disc. Cassette winds the track through a tape. Dial puts the track on a jog wheel with the words beside it. Car stereo reads it out on the dot matrix display of a head unit. Cover flow fans the queue out either side of the cover. Poster fills the screen with it. Lyrics follows the words, when the phone has them. Night is dim from edge to edge for driving after dark. Split-flap flips the track in on a departures board. Receipt prints each song on a till roll as it starts. Jukebox puts what is queued on the phone on a selector you can tap. Polaroid shows the cover as an instant photo with the title written under it. Pixel turns the cover into big square pixels with block lettering. Dashboard reads the song off a car\u2019s instrument cluster, the needle sweeping its length and a second gauge showing the volume. Neon writes the title in glowing tube on a brick wall. Mosaic surrounds the cover with a wall of what has recently played. Ambient is only the album\u2019s colours drifting, the name showing when a song starts or when you tap. Radio tuner moves a needle across an old FM dial as the song plays. Typewriter types each song onto a sheet as it starts. Terminal prints the song on a green command line. Concert ticket makes the song a ticket whose stub you can tear off. Film strip runs what has played past as frames of film, the song playing now lit in the gate. Comic puts the cover in a halftone panel with the title in a speech bubble. Magazine cover lays the song out as the front of a magazine. Speedometer sweeps a sports car needle through the song\u2019s minutes. Sheet music writes the song as a score, inked in as it plays. Departures boards the song like a flight, with what is queued as the later departures. Handheld puts it on an old pocket console\u2019s four shade green screen. Vaporwave sets it against a striped sun and a running grid. Oscilloscope draws a green trace on a crt; tap the screen for a circle. Postage stamp makes the cover a stamp, cancelled with today\u2019s date.',
@@ -223,7 +232,7 @@ function Settings() {
         <select aria-label={label} value={value} onChange={e => change(key, e.currentTarget.value)}>
           {field.data.choices.map(choice => (
             <option value={choice} key={choice}>
-              {CHOICE_LABELS[choice] ?? choice}
+              {FIELD_LABELS[key]?.[choice] ?? CHOICE_LABELS[choice] ?? choice}
             </option>
           ))}
         </select>

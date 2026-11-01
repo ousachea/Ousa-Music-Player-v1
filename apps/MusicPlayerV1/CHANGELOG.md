@@ -1,5 +1,15 @@
 # O-Music Player
 
+## 0.49.0
+
+Your library on the Car Thing: pull down from the top edge, or tap Browse your library when nothing is playing, for your liked songs, your playlists and folders, and a search with an on-screen keyboard and, where the Car Thing has voice, a hold-to-talk mic. Tap anything to play it.
+
+Hold the wheel to like or unlike the song. The queue sheet gains Like, Shuffle, Repeat and a Sleep timer that pauses the music and darkens the screen after 15, 30 or 60 minutes.
+
+Preset buttons can be favourites, under Controls: hold one to save the playlist or album playing, press it to play it again.
+
+The screen can turn itself off after 5, 15 or 30 minutes paused, under Display. Double and triple presses now say what they did, and a new Help page in settings lists every control.
+
 ## 0.48.0
 
 Press the button under the wheel three times to turn the screen off. Any button, a turn of the wheel or a touch wakes it at the brightness it had, and that first press only wakes it. A double press now waits a moment before the on-screen buttons show or hide, so it can tell a triple press apart.

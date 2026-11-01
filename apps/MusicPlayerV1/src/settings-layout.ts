@@ -61,12 +61,18 @@ export const GROUPS: { title: string; rows: Row[] }[] = [
       { key: 'motion', label: 'Animations' },
       { key: 'notes', label: 'Floating notes', when: v => v('motion') !== 'false' },
       { key: 'rotate', label: 'Screen rotation' },
+      { key: 'idleOff', label: 'Screen off when paused', hint: 'Any button, turn or touch wakes it.' },
     ],
   },
   {
     title: 'Controls',
     rows: [
       { key: 'wheel', label: 'Rotary wheel' },
+      {
+        key: 'presets',
+        label: 'Preset buttons',
+        hint: 'Favourites: hold a preset to save what is playing, press it to play it again.',
+      },
       {
         key: 'tip',
         label: 'Offer to hide the buttons',
